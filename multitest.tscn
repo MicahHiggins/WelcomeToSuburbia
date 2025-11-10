@@ -1,0 +1,87 @@
+[gd_scene load_steps=9 format=3 uid="uid://dyhkv10ucs0b2"]
+
+[ext_resource type="Script" path="res://multitest.gd" id="1_1wp1r"]
+[ext_resource type="PackedScene" uid="uid://bs72ogkvdd7d6" path="res://addons/proto_controller/proto_controller.tscn" id="1_gw4tm"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_n8xij"]
+
+[sub_resource type="PrismMesh" id="PrismMesh_bc3r8"]
+size = Vector3(20, 13, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_8g04g"]
+size = Vector3(200, 1, 200)
+
+[sub_resource type="Environment" id="Environment_tujet"]
+
+[sub_resource type="CameraAttributesPractical" id="CameraAttributesPractical_kaat3"]
+
+[sub_resource type="Compositor" id="Compositor_hv52f"]
+
+[node name="Multitest" type="Node3D"]
+script = ExtResource("1_1wp1r")
+player_scene = ExtResource("1_gw4tm")
+
+[node name="Player" parent="." instance=ExtResource("1_gw4tm")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.25513, 16.4113, 32.2319)
+
+[node name="Node3D" type="Node3D" parent="."]
+
+[node name="world" type="StaticBody3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="world"]
+transform = Transform3D(20000, 0, 0, 0, 10, 0, 0, 0, 20000, -6.69995, 0.515676, 0)
+visible = false
+shape = SubResource("BoxShape3D_n8xij")
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="world"]
+transform = Transform3D(0.541928, 0, -0.840425, 0, 1, 0, 0.840425, 0, 0.541928, 7.36793, 6.80044, -4.69398)
+mesh = SubResource("PrismMesh_bc3r8")
+skeleton = NodePath("../..")
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="world/MeshInstance3D2"]
+transform = Transform3D(0.541928, 0, -0.840425, 0, 1, 0, 0.840425, 0, 0.541928, -1.23738, 0.200629, 0.848042)
+mesh = SubResource("PrismMesh_bc3r8")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="world"]
+gi_mode = 2
+mesh = SubResource("BoxMesh_8g04g")
+skeleton = NodePath("../..")
+
+[node name="OmniLight3D" type="OmniLight3D" parent="world"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -20.7536, 18.2099, 0)
+light_color = Color(1, 0.741176, 0.647059, 1)
+light_energy = 7.384
+light_indirect_energy = 4.071
+light_volumetric_fog_energy = 4.313
+light_size = 0.076
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="world/OmniLight3D"]
+environment = SubResource("Environment_tujet")
+camera_attributes = SubResource("CameraAttributesPractical_kaat3")
+compositor = SubResource("Compositor_hv52f")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="world/OmniLight3D"]
+transform = Transform3D(1, 0, 0, 0, -0.739749, -0.672883, 0, 0.672883, -0.739749, -8.3003, 66.4018, 5.02048)
+light_energy = 7.796
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="Host" type="Button" parent="CanvasLayer"]
+offset_top = 32.0
+offset_right = 44.0
+offset_bottom = 63.0
+text = "Host
+"
+
+[node name="Join" type="Button" parent="CanvasLayer"]
+offset_right = 8.0
+offset_bottom = 8.0
+text = "Join
+"
+
+[node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="."]
+_spawnable_scenes = PackedStringArray("res://addons/proto_controller/proto_controller.tscn")
+spawn_path = NodePath("..")
+
+[connection signal="pressed" from="CanvasLayer/Host" to="." method="_on_host_pressed"]
+[connection signal="pressed" from="CanvasLayer/Join" to="." method="_on_join_pressed"]
