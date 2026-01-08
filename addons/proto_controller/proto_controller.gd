@@ -1,101 +1,208 @@
+# Player.gd
 extends CharacterBody3D
 
-@export var can_move : bool = true
-@export var has_gravity : bool = true
-@export var can_jump : bool = true
-@export var can_sprint : bool = false
-@export var can_freefly : bool = false
+# ---- toggles
+@export var can_move := true
+@export var has_gravity := true
+@export var can_jump := true
+@export var can_sprint := true
+@export var can_freefly := true
 
-@export_group("Speeds")
-@export var look_speed : float = 0.002
-@export var base_speed : float = 7.0
-@export var jump_velocity : float = 4.5
-@export var sprint_speed : float = 10.0
-@export var freefly_speed : float = 25.0
+# ---- speeds
+@export var look_speed := 0.002
+@export var base_speed := 7.0
+@export var jump_velocity := 4.5
+@export var sprint_speed := 10.0
+@export var freefly_speed := 25.0
 
-@export_group("Input Actions")
-@export var input_left : String = "ui_left"
-@export var input_right : String = "ui_right"
-@export var input_forward : String = "ui_up"
-@export var input_back : String = "ui_down"
-@export var input_jump : String = "ui_accept"
-@export var input_sprint : String = "sprint"
-@export var input_freefly : String = "freefly"
+# ---- input actions
+@export var input_left := "ui_left"
+@export var input_right := "ui_right"
+@export var input_forward := "ui_up"
+@export var input_back := "ui_down"
+@export var input_jump := "ui_accept"
+@export var input_sprint := "sprint"
+@export var input_freefly := "freefly"
+@export var input_interact := "interact"
 
-var mouse_captured : bool = false
-var look_rotation : Vector2
-var move_speed : float = 0.0
-var freeflying : bool = false
+const SERVER_ID := 1  # default server peer id
 
+# ---- runtime
+var mouse_captured := false
+var look_rotation := Vector2.ZERO
+var move_speed := 0.0
+var freeflying := false
+var picked_object: Node = null
+var last_hovered: Node = null
+
+# ---- nodes
 @onready var head: Node3D = $Head
 @onready var collider: CollisionShape3D = $Collider
-@onready var cam = $Head/Camera3D
+@onready var cam: Camera3D = $Head/Camera3D
+@onready var ray: RayCast3D = $Head/Camera3D/RayCast3D
+@onready var carry_marker: Node3D = $Head/CarryObjectMarker if $Head.has_node("CarryObjectMarker") else null
 
-func _enter_tree():
+# UI hint (auto-created if missing)
+var hint_label: Label
+
+signal interact_object(target: Node)
+
+func _enter_tree() -> void:
+	# Assumes node name is string(peer_id)
 	set_multiplayer_authority(name.to_int())
 
 func _ready() -> void:
-	cam.current = is_multiplayer_authority()
-	check_input_mappings()
+	add_to_group("player")
+
+	# Local authority gets control + camera + ray
+	if is_multiplayer_authority():
+		cam.current = true
+		ray.enabled = true
+	else:
+		cam.current = false
+		ray.enabled = false
+
+	# Only hit pickup layer (4)
+	ray.collision_mask = (1 << 4)
+	ray.collide_with_areas = true
+	ray.collide_with_bodies = true
+
 	look_rotation.y = rotation.y
 	look_rotation.x = head.rotation.x
 
-func _unhandled_input(event: InputEvent) -> void:
-	if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
-		capture_mouse()
-	if Input.is_key_pressed(KEY_ESCAPE):
-		release_mouse()
+	_setup_hint_ui()
+	_check_input_mappings()
 
-	if mouse_captured and event is InputEventMouseMotion:
-		rotate_look(event.relative)
+func _setup_hint_ui() -> void:
+	var ui := $UI if has_node("UI") else null
+	if ui == null:
+		ui = CanvasLayer.new()
+		ui.name = "UI"
+		add_child(ui)
+	var h := ui.get_node("Hint") if ui.has_node("Hint") else null
+	if h == null:
+		h = Label.new()
+		h.name = "Hint"
+		h.text = "Press E to interact"
+		h.visible = false
+		h.add_theme_color_override("font_color", Color(1,1,1))
+		h.add_theme_color_override("font_outline_color", Color(0,0,0))
+		h.add_theme_constant_override("outline_size", 3)
+		# Anchor top-center
+		h.anchor_left = 0.5
+		h.anchor_right = 0.5
+		h.anchor_top = 0.0
+		h.anchor_bottom = 0.0
+		h.position = Vector2(0, 40)
+		ui.add_child(h)
+	hint_label = h
 
-	if can_freefly and Input.is_action_just_pressed(input_freefly):
-		if not freeflying:
-			enable_freefly()
+func _input(event: InputEvent) -> void:
+	if not is_multiplayer_authority():
+		return
+
+	# Toggle capture
+	if event.is_action_pressed("ui_cancel"):
+		_release_mouse()
+
+	# Interact
+	if event.is_action_pressed(input_interact):
+		if picked_object != null:
+			var path := picked_object.get_path()
+			rpc_id(SERVER_ID, "request_drop", path)
 		else:
-			disable_freefly()
+			var target := _get_pickup_under_crosshair()
+			if target != null:
+				var item_path := target.get_path()
+				rpc_id(SERVER_ID, "request_pickup", item_path)
+
+func _unhandled_input(event: InputEvent) -> void:
+	if not is_multiplayer_authority():
+		return
+
+	# Capture mouse on click
+	if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
+		_capture_mouse()
+
+	# Mouse look
+	if mouse_captured and event is InputEventMouseMotion:
+		var mm := event as InputEventMouseMotion
+		_rotate_look(mm.relative)
+
+	# Toggle freefly
+	if can_freefly and Input.is_action_just_pressed(input_freefly):
+		if freeflying:
+			_disable_freefly()
+		else:
+			_enable_freefly()
+
+func _process(_dt: float) -> void:
+	if not is_multiplayer_authority():
+		return
+
+	var hovered: Node = _get_pickup_under_crosshair()
+	if hovered != last_hovered:
+		# clear old
+		if last_hovered and "set_hovered" in last_hovered:
+			last_hovered.call_deferred("set_hovered", false)
+		# set new
+		if hovered and "set_hovered" in hovered:
+			hovered.call_deferred("set_hovered", true)
+		last_hovered = hovered
+
+	# toggle hint
+	if hint_label:
+		hint_label.visible = (hovered != null and picked_object == null)
+
+	# optional: tell items who is hovered (legacy)
+	interact_object.emit(hovered)
 
 func _physics_process(delta: float) -> void:
-	if is_multiplayer_authority():
-		if can_freefly and freeflying:
-			var input_dir := Input.get_vector(input_left, input_right, input_forward, input_back)
-			var motion := (head.global_basis * Vector3(input_dir.x, 0, input_dir.y)).normalized()
-			motion *= freefly_speed * delta
-			move_and_collide(motion)
-			return
+	if not is_multiplayer_authority():
+		return
 
-		if has_gravity:
-			if not is_on_floor():
-				velocity += get_gravity() * delta
+	# Freefly noclip
+	if can_freefly and freeflying:
+		var input_dir := Input.get_vector(input_left, input_right, input_forward, input_back)
+		var motion := (head.global_basis * Vector3(input_dir.x, 0.0, input_dir.y)).normalized() * freefly_speed * delta
+		move_and_collide(motion)
+		return
 
-		if can_jump:
-			if Input.is_action_just_pressed(input_jump) and is_on_floor():
-				velocity.y = jump_velocity
+	# Gravity
+	if has_gravity and not is_on_floor():
+		velocity += get_gravity() * delta
 
-		if can_sprint and Input.is_action_pressed(input_sprint):
-			move_speed = sprint_speed
+	# Jump
+	if can_jump and Input.is_action_just_pressed(input_jump) and is_on_floor():
+		velocity.y = jump_velocity
+
+	# Sprint
+	if can_sprint and Input.is_action_pressed(input_sprint):
+		move_speed = sprint_speed
+	else:
+		move_speed = base_speed
+
+	# Move
+	if can_move:
+		var input_dir := Input.get_vector(input_left, input_right, input_forward, input_back)
+		var move_dir := (transform.basis * Vector3(input_dir.x, 0.0, input_dir.y)).normalized()
+		if move_dir != Vector3.ZERO:
+			velocity.x = move_dir.x * move_speed
+			velocity.z = move_dir.z * move_speed
 		else:
-			move_speed = base_speed
+			velocity.x = move_toward(velocity.x, 0.0, move_speed)
+			velocity.z = move_toward(velocity.z, 0.0, move_speed)
+	else:
+		velocity.x = 0.0
+		velocity.y = 0.0
 
-		if can_move:
-			var input_dir := Input.get_vector(input_left, input_right, input_forward, input_back)
-			var move_dir := (transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized()
-			if move_dir:
-				velocity.x = move_dir.x * move_speed
-				velocity.z = move_dir.z * move_speed
-			else:
-				velocity.x = move_toward(velocity.x, 0, move_speed)
-				velocity.z = move_toward(velocity.z, 0, move_speed)
-		else:
-			velocity.x = 0
-			velocity.y = 0
+	move_and_slide()
 
-		move_and_slide()
-
-func rotate_look(rot_input : Vector2):
-	look_rotation.x -= rot_input.y * look_speed
-	look_rotation.x = clamp(look_rotation.x, deg_to_rad(-85), deg_to_rad(85))
-	look_rotation.y -= rot_input.x * look_speed
+# ---------- helpers ----------
+func _rotate_look(delta_rel: Vector2) -> void:
+	look_rotation.x -= delta_rel.y * look_speed
+	look_rotation.x = clamp(look_rotation.x, deg_to_rad(-85.0), deg_to_rad(85.0))
+	look_rotation.y -= delta_rel.x * look_speed
 
 	transform.basis = Basis()
 	rotate_y(look_rotation.y)
@@ -103,42 +210,128 @@ func rotate_look(rot_input : Vector2):
 	head.transform.basis = Basis()
 	head.rotate_x(look_rotation.x)
 
-func enable_freefly():
+func _capture_mouse() -> void:
+	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+	mouse_captured = true
+
+func _release_mouse() -> void:
+	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+	mouse_captured = false
+
+func _enable_freefly() -> void:
 	collider.disabled = true
 	freeflying = true
 	velocity = Vector3.ZERO
 
-func disable_freefly():
+func _disable_freefly() -> void:
 	collider.disabled = false
 	freeflying = false
 
-func capture_mouse():
-	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
-	mouse_captured = true
+func _get_pickup_under_crosshair() -> Node:
+	if not ray.is_colliding():
+		return null
+	var hit := ray.get_collider()
+	return _ascend_to_pickup_group(hit)
 
-func release_mouse():
-	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
-	mouse_captured = false
+func _ascend_to_pickup_group(o: Object) -> Node:
+	var n := o as Node
+	while n != null:
+		if n.is_in_group("pickup"):
+			return n
+		n = n.get_parent()
+	return null
 
-func check_input_mappings():
+func _check_input_mappings() -> void:
 	if can_move and not InputMap.has_action(input_left):
-		push_error("Movement disabled. No InputAction found for input_left: " + input_left)
-		can_move = false
+		push_error("Missing action: " + input_left); can_move = false
 	if can_move and not InputMap.has_action(input_right):
-		push_error("Movement disabled. No InputAction found for input_right: " + input_right)
-		can_move = false
+		push_error("Missing action: " + input_right); can_move = false
 	if can_move and not InputMap.has_action(input_forward):
-		push_error("Movement disabled. No InputAction found for input_forward: " + input_forward)
-		can_move = false
+		push_error("Missing action: " + input_forward); can_move = false
 	if can_move and not InputMap.has_action(input_back):
-		push_error("Movement disabled. No InputAction found for input_back: " + input_back)
-		can_move = false
+		push_error("Missing action: " + input_back); can_move = false
 	if can_jump and not InputMap.has_action(input_jump):
-		push_error("Jumping disabled. No InputAction found for input_jump: " + input_jump)
-		can_jump = false
+		push_error("Missing action: " + input_jump); can_jump = false
 	if can_sprint and not InputMap.has_action(input_sprint):
-		push_error("Sprinting disabled. No InputAction found for input_sprint: " + input_sprint)
-		can_sprint = false
+		push_error("Missing action: " + input_sprint); can_sprint = false
 	if can_freefly and not InputMap.has_action(input_freefly):
-		push_error("Freefly disabled. No InputAction found for input_freefly: " + input_freefly)
-		can_freefly = false
+		push_error("Missing action: " + input_freefly); can_freefly = false
+	if not InputMap.has_action(input_interact):
+		push_error("Missing action: " + input_interact)
+
+# ---------- RPC: server-authoritative pickup/drop ----------
+@rpc("any_peer", "reliable")
+func request_pickup(item_path: NodePath) -> void:
+	if not multiplayer.is_server():
+		return
+
+	var sender := multiplayer.get_remote_sender_id()
+	var item := get_tree().root.get_node_or_null(item_path)
+	if item == null:
+		return
+	if not item.is_in_group("pickup"):
+		return
+
+	# prevent double pickup
+	if item.has_meta("locked") and bool(item.get_meta("locked")):
+		return
+	item.set_meta("locked", true)
+
+	var p := _player_for_peer(sender)
+	if p == null:
+		item.set_meta("locked", false)
+		return
+
+	rpc("apply_pickup", item_path, p.get_path(), sender)
+
+@rpc("call_local", "reliable")
+func apply_pickup(item_path: NodePath, player_path: NodePath, new_owner_id: int) -> void:
+	var item := get_tree().root.get_node_or_null(item_path)
+	var player := get_tree().root.get_node_or_null(player_path)
+	if item == null or player == null:
+		return
+
+	item.set_multiplayer_authority(new_owner_id)
+	item.reparent(player)
+
+	# snap to marker and disable colliders while held
+	var marker := player.get_node_or_null("Head/CarryObjectMarker")
+	if marker and marker is Node3D:
+		item.global_position = (marker as Node3D).global_position
+	if "set_held" in item:
+		item.call_deferred("set_held", true)
+
+	if multiplayer.get_unique_id() == new_owner_id:
+		picked_object = item
+
+@rpc("any_peer", "reliable")
+func request_drop(item_path: NodePath) -> void:
+	if not multiplayer.is_server():
+		return
+	var item := get_tree().root.get_node_or_null(item_path)
+	if item == null:
+		return
+	item.set_meta("locked", false)
+	rpc("apply_drop", item_path)
+
+@rpc("call_local", "reliable")
+func apply_drop(item_path: NodePath) -> void:
+	var item := get_tree().root.get_node_or_null(item_path)
+	if item == null:
+		return
+
+	item.reparent(get_tree().current_scene)
+	if "set_held" in item:
+		item.call_deferred("set_held", false)
+
+	if picked_object == item and is_multiplayer_authority():
+		picked_object = null
+
+func _player_for_peer(peer_id: int) -> Node3D:
+	var players := get_tree().get_nodes_in_group("player")
+	for n in players:
+		if n is Node3D:
+			var nd := n as Node3D
+			if nd.get_multiplayer_authority() == peer_id:
+				return nd
+	return null

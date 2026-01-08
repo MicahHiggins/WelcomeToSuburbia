@@ -1,0 +1,70 @@
+[gd_scene load_steps=6 format=3 uid="uid://c1r1x8w0iengl"]
+
+[ext_resource type="PackedScene" uid="uid://cig2s70l0dubs" path="res://Assets/Cute_Demon.glb" id="1_05q2j"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_05q2j"]
+albedo_color = Color(0.91806, 0.575202, 0.222449, 1)
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_du45q"]
+radius = 0.4
+height = 1.8
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_uif7v"]
+radius = 0.4
+height = 1.8
+
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_hj8cr"]
+properties/0/path = NodePath(".:position")
+properties/0/spawn = true
+properties/0/replication_mode = 1
+properties/1/path = NodePath(".:rotation")
+properties/1/spawn = true
+properties/1/replication_mode = 1
+
+[node name="Cute_Demon" instance=ExtResource("1_05q2j")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -4.1901255, 0)
+
+[node name="Skeleton3D" parent="Cute Demon" index="0"]
+transform = Transform3D(0.1, 0, 0, 0, 0.1, 0, 0, 0, 0.1, 0, 0, 0)
+bones/4/rotation = Quaternion(0.99997795, 0.00664359, 2.2525124e-07, -2.6073979e-08)
+bones/6/position = Vector3(2.1564515, 3.9310718, -3.3954055e-07)
+bones/6/rotation = Quaternion(-2.111151e-08, -2.9548946e-08, -0.9961947, 0.08715555)
+bones/8/rotation = Quaternion(1.3476753e-07, 1.6516664e-07, -0.6275172, 0.7786028)
+bones/8/scale = Vector3(0.99999994, 0.99999994, 1)
+bones/11/rotation = Quaternion(0.99997795, -0.00664359, -2.2525124e-07, -2.6073979e-08)
+bones/13/position = Vector3(-2.1564515, 3.9310718, -3.3954055e-07)
+bones/13/rotation = Quaternion(-2.1111507e-08, 2.9548943e-08, 0.9961947, 0.08715548)
+bones/15/rotation = Quaternion(1.3476755e-07, -1.6516663e-07, 0.6275172, 0.7786028)
+bones/15/scale = Vector3(1, 0.99999994, 1)
+bones/18/position = Vector3(-0.10688028, 7.20949, 2.3004484)
+bones/18/rotation = Quaternion(0.8422424, 3.2132886e-07, 5.020172e-07, 0.539099)
+bones/19/position = Vector3(-2.6198841e-15, 7.2999587, 2.340125)
+bones/19/rotation = Quaternion(0.69997054, 7.816246e-15, 7.816248e-15, 0.71417177)
+bones/19/scale = Vector3(1, 1, 1)
+
+[node name="Left Eye" parent="Cute Demon/Skeleton3D/Eye_L" index="0"]
+transform = Transform3D(0.1, 0, 0, 0, 0.1, 0, 0, 0, 0.1, -0.0015140772, 0.00033855438, 0.00021743774)
+
+[node name="Right Eye" parent="Cute Demon/Skeleton3D/Eye_R" index="0"]
+transform = Transform3D(0.1, 0, 0, 0, 0.1, 0, 0, 0, 0.1, 0.0030593872, 0.00033855438, 0.00021743774)
+
+[node name="Body" parent="Cute Demon/Skeleton3D" index="2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -48.04573, 0)
+
+[node name="Mesh" type="MeshInstance3D" parent="." index="2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+material_override = SubResource("StandardMaterial3D_05q2j")
+cast_shadow = 0
+mesh = SubResource("CapsuleMesh_du45q")
+
+[node name="Collider" type="CollisionShape3D" parent="." index="3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+shape = SubResource("CapsuleShape3D_uif7v")
+
+[node name="Head" type="Node3D" parent="." index="4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.7, 0)
+
+[node name="Camera3D" type="Camera3D" parent="Head" index="0"]
+
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="." index="5"]
+replication_config = SubResource("SceneReplicationConfig_hj8cr")
