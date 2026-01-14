@@ -33,16 +33,14 @@ var look_rotation := Vector2.ZERO
 var move_speed := 0.0
 var freeflying := false
 var picked_object: Node = null
-var last_hovered: Node = null
 
 # ---- nodes
 @onready var head: Node3D = $Head
 @onready var collider: CollisionShape3D = $Collider
 @onready var cam: Camera3D = $Head/Camera3D
-@onready var ray: RayCast3D = $Head/Camera3D/RayCast3D
 @onready var carry_marker: Node3D = $Head/CarryObjectMarker if $Head.has_node("CarryObjectMarker") else null
 
-# UI hint (auto-created if missing)
+# UI hint (optional – currently not driven by ray, but kept if you want later)
 var hint_label: Label
 
 signal interact_object(target: Node)
@@ -54,21 +52,11 @@ func _enter_tree() -> void:
 func _ready() -> void:
 	add_to_group("player")
 
-	# Local authority gets control + camera + ray
+	# Local authority gets the camera
 	if is_multiplayer_authority():
 		cam.current = true
-		ray.enabled = true
 	else:
 		cam.current = false
-		ray.enabled = false
-
-	# Only hit pickup layer (4)
-	ray.collision_mask = (1 << 4)
-	ray.collide_with_areas = true
-	ray.collide_with_bodies = true
-
-	look_rotation.y = rotation.y
-	look_rotation.x = head.rotation.x
 
 	_setup_hint_ui()
 	_check_input_mappings()
@@ -85,8 +73,8 @@ func _setup_hint_ui() -> void:
 		h.name = "Hint"
 		h.text = "Press E to interact"
 		h.visible = false
-		h.add_theme_color_override("font_color", Color(1,1,1))
-		h.add_theme_color_override("font_outline_color", Color(0,0,0))
+		h.add_theme_color_override("font_color", Color(1, 1, 1))
+		h.add_theme_color_override("font_outline_color", Color(0, 0, 0))
 		h.add_theme_constant_override("outline_size", 3)
 		# Anchor top-center
 		h.anchor_left = 0.5
@@ -105,16 +93,7 @@ func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_cancel"):
 		_release_mouse()
 
-	# Interact
-	if event.is_action_pressed(input_interact):
-		if picked_object != null:
-			var path := picked_object.get_path()
-			rpc_id(SERVER_ID, "request_drop", path)
-		else:
-			var target := _get_pickup_under_crosshair()
-			if target != null:
-				var item_path := target.get_path()
-				rpc_id(SERVER_ID, "request_pickup", item_path)
+	# We no longer handle "interact" here – RayCast3D handles pickup/drop.
 
 func _unhandled_input(event: InputEvent) -> void:
 	if not is_multiplayer_authority():
@@ -139,23 +118,8 @@ func _unhandled_input(event: InputEvent) -> void:
 func _process(_dt: float) -> void:
 	if not is_multiplayer_authority():
 		return
-
-	var hovered: Node = _get_pickup_under_crosshair()
-	if hovered != last_hovered:
-		# clear old
-		if last_hovered and "set_hovered" in last_hovered:
-			last_hovered.call_deferred("set_hovered", false)
-		# set new
-		if hovered and "set_hovered" in hovered:
-			hovered.call_deferred("set_hovered", true)
-		last_hovered = hovered
-
-	# toggle hint
-	if hint_label:
-		hint_label.visible = (hovered != null and picked_object == null)
-
-	# optional: tell items who is hovered (legacy)
-	interact_object.emit(hovered)
+	# Hover / hint can be driven from the RayCast script.
+	# Left empty for now.
 
 func _physics_process(delta: float) -> void:
 	if not is_multiplayer_authority():
@@ -227,20 +191,6 @@ func _disable_freefly() -> void:
 	collider.disabled = false
 	freeflying = false
 
-func _get_pickup_under_crosshair() -> Node:
-	if not ray.is_colliding():
-		return null
-	var hit := ray.get_collider()
-	return _ascend_to_pickup_group(hit)
-
-func _ascend_to_pickup_group(o: Object) -> Node:
-	var n := o as Node
-	while n != null:
-		if n.is_in_group("pickup"):
-			return n
-		n = n.get_parent()
-	return null
-
 func _check_input_mappings() -> void:
 	if can_move and not InputMap.has_action(input_left):
 		push_error("Missing action: " + input_left); can_move = false
@@ -259,6 +209,27 @@ func _check_input_mappings() -> void:
 	if not InputMap.has_action(input_interact):
 		push_error("Missing action: " + input_interact)
 
+# ---------- bridge methods used by RayCast3D ----------
+func request_pickup_rpc(item_path: NodePath) -> void:
+	# Called by the RayCast on the local player
+	if multiplayer.is_server():
+		# If we ARE the server/host, call directly (no RPC),
+		# but we still want to resolve the correct "sender" inside request_pickup.
+		request_pickup(item_path)
+	else:
+		# Client asks the server (peer 1) to run request_pickup
+		rpc_id(SERVER_ID, "request_pickup", item_path)
+
+func request_drop_rpc() -> void:
+	if picked_object == null:
+		return
+
+	var item_path: NodePath = picked_object.get_path()
+	if multiplayer.is_server():
+		request_drop(item_path)
+	else:
+		rpc_id(SERVER_ID, "request_drop", item_path)
+
 # ---------- RPC: server-authoritative pickup/drop ----------
 @rpc("any_peer", "reliable")
 func request_pickup(item_path: NodePath) -> void:
@@ -266,6 +237,11 @@ func request_pickup(item_path: NodePath) -> void:
 		return
 
 	var sender := multiplayer.get_remote_sender_id()
+	# If this was called locally by the host (not via RPC), remote_sender_id == 0.
+	# In that case, treat sender as "this server's" own peer id.
+	if sender == 0:
+		sender = multiplayer.get_unique_id()
+
 	var item := get_tree().root.get_node_or_null(item_path)
 	if item == null:
 		return
@@ -284,7 +260,7 @@ func request_pickup(item_path: NodePath) -> void:
 
 	rpc("apply_pickup", item_path, p.get_path(), sender)
 
-@rpc("call_local", "reliable")
+@rpc("any_peer", "call_local", "reliable")
 func apply_pickup(item_path: NodePath, player_path: NodePath, new_owner_id: int) -> void:
 	var item := get_tree().root.get_node_or_null(item_path)
 	var player := get_tree().root.get_node_or_null(player_path)
@@ -301,6 +277,7 @@ func apply_pickup(item_path: NodePath, player_path: NodePath, new_owner_id: int)
 	if "set_held" in item:
 		item.call_deferred("set_held", true)
 
+	# Only the owning peer tracks picked_object
 	if multiplayer.get_unique_id() == new_owner_id:
 		picked_object = item
 
@@ -314,7 +291,7 @@ func request_drop(item_path: NodePath) -> void:
 	item.set_meta("locked", false)
 	rpc("apply_drop", item_path)
 
-@rpc("call_local", "reliable")
+@rpc("any_peer", "call_local", "reliable")
 func apply_drop(item_path: NodePath) -> void:
 	var item := get_tree().root.get_node_or_null(item_path)
 	if item == null:

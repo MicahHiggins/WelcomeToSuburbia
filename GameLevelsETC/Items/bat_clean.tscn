@@ -28,13 +28,21 @@ collision_layer = 9
 collision_mask = 9
 script = ExtResource("1_5ksxd")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." groups=["pickup"]]
 shape = SubResource("ConvexPolygonShape3D_5ksxd")
 
 [node name="batclean_low2" parent="." instance=ExtResource("1_gd4uu")]
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="batclean_low2/batclean_low" index="0"]
+[node name="batclean_low" parent="batclean_low2" index="0"]
+layers = 9
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="batclean_low2/batclean_low" index="0" groups=["pickup"]]
 mesh = SubResource("ArrayMesh_hg5e5")
 surface_material_override/0 = SubResource("StandardMaterial3D_hhpfs")
+
+[node name="Area3D" type="Area3D" parent="." groups=["pickup"]]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Area3D" groups=["pickup"]]
+shape = SubResource("ConvexPolygonShape3D_5ksxd")
 
 [editable path="batclean_low2"]
