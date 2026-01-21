@@ -56,6 +56,7 @@ var picked_object: Node = null
 @onready var head: Node3D = $Head                     # yaw/pitch root for camera
 @onready var collider: CollisionShape3D = $Collider   # player collision shape
 @onready var cam: Camera3D = $Head/Camera3D           # first-person camera
+@onready var footstep: AudioStreamPlayer3D = $PlayerAudios/Footstep
 
 # Marker where held items attach (bat in hand). Must exist in scene:
 # Head/CarryObjectMarker (Node3D or Marker3D).
@@ -206,10 +207,16 @@ func _physics_process(delta: float) -> void:
 	else:
 		velocity.x = 0.0
 		velocity.y = 0.0
+	
+	if is_on_floor() and velocity != Vector3(0,0,0):
+		%FootstepAnimation.play("walk")
 
 	move_and_slide()
 
-
+func _play_footstep_audio():
+	footstep.pitch_scale = randf_range(0.85,1.25)
+	footstep.play()
+	
 # =========================
 #       HELPER METHODS
 # =========================

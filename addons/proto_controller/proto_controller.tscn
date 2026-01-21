@@ -1,7 +1,8 @@
-[gd_scene load_steps=7 format=3 uid="uid://bs72ogkvdd7d6"]
+[gd_scene load_steps=10 format=3 uid="uid://bs72ogkvdd7d6"]
 
 [ext_resource type="Script" uid="uid://psbmqqwxvny5" path="res://addons/proto_controller/proto_controller.gd" id="1_ucva2"]
 [ext_resource type="Script" uid="uid://boitue63820b1" path="res://addons/proto_controller/ray_cast_3d.gd" id="2_wr06p"]
+[ext_resource type="AudioStream" uid="uid://77vhd06aou5i" path="res://Audio/SFX/Steps_gravel-006.ogg" id="3_5hfox"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_iof21"]
 albedo_color = Color(0.91806, 0.575202, 0.222449, 1)
@@ -21,6 +22,29 @@ properties/0/replication_mode = 1
 properties/1/path = NodePath(".:rotation")
 properties/1/spawn = true
 properties/1/replication_mode = 1
+
+[sub_resource type="Animation" id="Animation_6dqce"]
+resource_name = "walk"
+length = 0.4
+tracks/0/type = "method"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("..")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0.0001),
+"transitions": PackedFloat32Array(1),
+"values": [{
+"args": [],
+"method": &"_play_footstep_audio"
+}]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_0rk7u"]
+_data = {
+&"walk": SubResource("Animation_6dqce")
+}
 
 [node name="ProtoController" type="CharacterBody3D"]
 script = ExtResource("1_ucva2")
@@ -53,3 +77,17 @@ script = ExtResource("2_wr06p")
 
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
 replication_config = SubResource("SceneReplicationConfig_2gj5w")
+
+[node name="PlayerAudios" type="Node3D" parent="."]
+
+[node name="Footstep" type="AudioStreamPlayer3D" parent="PlayerAudios"]
+stream = ExtResource("3_5hfox")
+volume_db = -18.0
+
+[node name="AnimationPlayers" type="Node" parent="."]
+
+[node name="FootstepAnimation" type="AnimationPlayer" parent="AnimationPlayers"]
+unique_name_in_owner = true
+libraries = {
+&"": SubResource("AnimationLibrary_0rk7u")
+}
