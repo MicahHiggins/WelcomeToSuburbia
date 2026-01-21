@@ -1,11 +1,12 @@
 extends RayCast3D
 #
 # Network-aware interaction ray:
-# - Node path in the scene: Player -> Head -> Camera3D -> RayCast3D
+# - Scene path: Player -> Head -> Camera3D -> RayCast3D
 # - Handles:
 #     * Hover detection (for outlines)
 #     * Interact input (e.g. E)
 # - Delegates pickup/drop requests to the Player script
+# - Works with any MultiplayerPeer backend (ENet, SteamMultiplayerPeer, etc.)
 #
 
 # Input action name used for interaction (e.g. "interact" mapped to E)
@@ -18,8 +19,8 @@ extends RayCast3D
 var hovered_item: Node = null
 
 # Assumes this RayCast3D is at: Player -> Head -> Camera3D -> RayCast3D
-# parent           = Camera3D
-# parent.parent    = Head
+# parent             = Camera3D
+# parent.parent      = Head
 # parent.parent.parent = Player
 @onready var player := get_parent().get_parent().get_parent() as Node
 
@@ -41,7 +42,7 @@ func _process(_delta: float) -> void:
 	if player == null:
 		return
 
-	# In multiplayer, only the local authority should control hover/interaction.
+	# In multiplayer, only the local authority should drive hover/interaction.
 	if "is_multiplayer_authority" in player and not player.is_multiplayer_authority():
 		return
 
@@ -50,13 +51,14 @@ func _process(_delta: float) -> void:
 		_set_hovered(null)
 		return
 
-	# The collider can be a mesh, area, etc.
+	# The collider can be a mesh, area, rigid body, etc.
 	var hit := get_collider()
 	if hit == null:
 		_set_hovered(null)
 		return
 
 	# Walk up the node tree until a node in group "pickup" is found.
+	# This lets us hit child meshes/areas while the root node is the pickup.
 	var pickup := _find_pickup_root(hit)
 
 	# Update hovered item and outline state.
@@ -81,7 +83,7 @@ func _input(event: InputEvent) -> void:
 
 # Set which item is currently hovered, and toggle outline state via set_hovered().
 func _set_hovered(new_item: Node) -> void:
-	# No change → no work.
+	# No change → nothing to do.
 	if new_item == hovered_item:
 		return
 
