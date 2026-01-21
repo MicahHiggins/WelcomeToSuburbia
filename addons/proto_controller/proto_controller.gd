@@ -53,6 +53,31 @@ var freeflying := false            # noclip state
 var picked_object: Node = null
 
 # =========================
+#       NET-SYNC STATE
+# =========================
+
+# For remote players: target transform to lerp toward
+var net_target_transform: Transform3D
+var net_has_state: bool = false
+
+# How strongly remote players lerp toward net state (0..1)
+@export var net_lerp_strength := 0.2
+
+# How often the authority sends transforms (Hz)
+@export var net_send_rate_hz := 15.0
+var _net_send_accum: float = 0.0
+
+
+@rpc("any_peer", "unreliable")
+func _net_sync_state(t: Transform3D) -> void:
+	# Only non-authority peers use this
+	if is_multiplayer_authority():
+		return
+	net_target_transform = t
+	net_has_state = true
+
+
+# =========================
 #          NODE REFS
 # =========================
 @onready var head: Node3D = $Head                     # yaw/pitch root for camera
@@ -165,21 +190,36 @@ func _unhandled_input(event: InputEvent) -> void:
 #      FRAME / PHYSICS
 # =========================
 func _process(_dt: float) -> void:
-	if not is_multiplayer_authority():
-		return
 	# Hover + hint visibility can be driven from the RayCast script.
 	# Nothing special needed here right now.
+	pass
 
 
 func _physics_process(delta: float) -> void:
-	if not is_multiplayer_authority():
+	# REMOTE PLAYERS: do not simulate physics, just lerp toward net state.
+	if multiplayer.has_multiplayer_peer() and not is_multiplayer_authority():
+		if net_has_state:
+			global_transform = global_transform.interpolate_with(
+				net_target_transform,
+				clamp(net_lerp_strength, 0.0, 1.0)
+			)
 		return
+
+	# LOCAL AUTHORITY PLAYERS BELOW
 
 	# --- Freefly mode (noclip) ---
 	if can_freefly and freeflying:
-		var input_dir := Input.get_vector(input_left, input_right, input_forward, input_back)
-		var motion := (head.global_basis * Vector3(input_dir.x, 0.0, input_dir.y)).normalized() * freefly_speed * delta
+		var input_dir_ff := Input.get_vector(input_left, input_right, input_forward, input_back)
+		var motion := (head.global_basis * Vector3(input_dir_ff.x, 0.0, input_dir_ff.y)).normalized() * freefly_speed * delta
 		move_and_collide(motion)
+
+		# Still net-sync in freefly
+		_net_send_accum += delta
+		if multiplayer.has_multiplayer_peer():
+			var interval_ff: float = 1.0 / max(net_send_rate_hz, 1.0)
+			if _net_send_accum >= interval_ff:
+				_net_send_accum = 0.0
+				rpc("_net_sync_state", global_transform)
 		return
 
 	# --- Gravity ---
@@ -210,15 +250,25 @@ func _physics_process(delta: float) -> void:
 		velocity.x = 0.0
 		velocity.y = 0.0
 	
-	if is_on_floor() and velocity != Vector3(0,0,0):
+	if is_on_floor() and velocity != Vector3(0, 0, 0):
 		%FootstepAnimation.play("walk")
 
 	move_and_slide()
 
-func _play_footstep_audio():
-	footstep.pitch_scale = randf_range(0.85,1.25)
+	# Send net state periodically from the authority
+	if multiplayer.has_multiplayer_peer():
+		_net_send_accum += delta
+		var interval: float = 1.0 / max(net_send_rate_hz, 1.0)
+		if _net_send_accum >= interval:
+			_net_send_accum = 0.0
+			rpc("_net_sync_state", global_transform)
+
+
+func _play_footstep_audio() -> void:
+	footstep.pitch_scale = randf_range(0.85, 1.25)
 	footstep.play()
 	
+
 # =========================
 #       HELPER METHODS
 # =========================
@@ -386,8 +436,6 @@ func apply_pickup(item_path: NodePath, player_path: NodePath, new_owner_id: int)
 		# Fallback: if marker is missing for some reason, reparent
 		# under the player and match global transform roughly.
 		item.reparent(player)
-		# Optional: you could keep previous global transform or
-		# set it based on some default offset.
 
 	# Let the item know it's now held (disables collision, hides outline, etc.)
 	if "set_held" in item:
