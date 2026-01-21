@@ -12,6 +12,7 @@ albedo_color = Color(0.078431375, 0.43529412, 0.06666667, 1)
 size = Vector3(16.164581, 0.58447266, 16.030792)
 
 [node name="Block Design" type="Node3D"]
+transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0)
 
 [node name="Ground" type="Area3D" parent="."]
 
