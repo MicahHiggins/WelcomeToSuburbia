@@ -15,11 +15,14 @@ extends CharacterBody3D
 @onready var interact_area: Area3D = $Area3D
 
 # Local state flags
-var _hovered := false    # true while the ray is pointing at this pickup
-var _held := false       # true while a player is holding this item
+var _hovered: bool = false   # true while the ray is pointing at this pickup
+var _held: bool = false      # true while a player is holding this item
 
 # Gravity strength for this body (pulled from project settings)
 var gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity")
+
+# If true, only the multiplayer authority will simulate gravity/physics
+@export var authority_only_physics: bool = true
 
 
 func _ready() -> void:
@@ -62,6 +65,10 @@ func set_held(v: bool) -> void:
 	# While held, this body should not simulate physics / gravity
 	if v:
 		velocity = Vector3.ZERO
+	else:
+		# On drop, we just let gravity resume in _physics_process.
+		# If you want a little "toss", you can give velocity here.
+		pass
 
 
 func interact() -> void:
@@ -72,6 +79,13 @@ func interact() -> void:
 
 
 func _physics_process(delta: float) -> void:
+	# In multiplayer, let only the authority drive physics.
+	# This pairs with the pickup system where the server/owner sets
+	# multiplayer authority on this node.
+	if authority_only_physics and multiplayer.has_multiplayer_peer():
+		if not is_multiplayer_authority():
+			return
+
 	# If held by a player, it should not fall or slide on the ground.
 	if _held:
 		velocity = Vector3.ZERO

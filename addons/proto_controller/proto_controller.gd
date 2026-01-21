@@ -5,6 +5,7 @@
 # - Owns a "carry marker" where pickup items are attached
 # - Provides RPCs for server-authoritative pickup/drop
 # - Is driven by a separate RayCast3D script for interaction
+# - Works with any MultiplayerPeer backend (ENet, SteamMultiplayerPeer, etc.)
 
 extends CharacterBody3D
 
@@ -36,7 +37,8 @@ extends CharacterBody3D
 @export var input_freefly := "freefly"
 @export var input_interact := "interact"
 
-# The server/host is assumed to have peer id 1 in ENet setup
+# In Godot's MultiplayerAPI (SceneMultiplayer), the server/host
+# always has peer ID 1, regardless of underlying transport (ENet, Steam, etc.)
 const SERVER_ID := 1
 
 # =========================
@@ -278,12 +280,12 @@ func _check_input_mappings() -> void:
 func request_pickup_rpc(item_path: NodePath) -> void:
 	# Called by the RayCast on THIS local player.
 	# The server should always be the authority that decides
-	# who actually picks up the item.
+	# who actually picks up the item (even with Steam).
 
 	if multiplayer.is_server():
-		# If this is the host/server, call request_pickup() directly
-		# (no rpc). request_pickup looks at remote_sender_id,
-		# so the host case is handled inside that function.
+		# If this is the host/server, we can call request_pickup()
+		# directly (no rpc), but request_pickup uses remote_sender_id,
+		# so the host case is handled inside request_pickup.
 		request_pickup(item_path)
 	else:
 		# Clients send an RPC to the server (peer 1).
@@ -297,7 +299,7 @@ func request_drop_rpc() -> void:
 	var item_path: NodePath = picked_object.get_path()
 
 	if multiplayer.is_server():
-		# Host calls request_drop directly
+		# Host just calls request_drop directly
 		request_drop(item_path)
 	else:
 		# Clients ask server to process the drop
@@ -307,7 +309,7 @@ func request_drop_rpc() -> void:
 # =========================
 #   SERVER-AUTH PICKUP/DROP
 # =========================
-# The server is the only peer that modifies game state
+# The server is the only peer that modifies the game state
 # (who holds what). Changes are then broadcast via apply_* RPCs.
 
 @rpc("any_peer", "reliable")
@@ -375,8 +377,10 @@ func apply_pickup(item_path: NodePath, player_path: NodePath, new_owner_id: int)
 		item.transform = Transform3D.IDENTITY
 	else:
 		# Fallback: if marker is missing for some reason, reparent
-		# under the player. Godot will keep the global transform.
+		# under the player and match global transform roughly.
 		item.reparent(player)
+		# Optional: you could keep previous global transform or
+		# set it based on some default offset.
 
 	# Let the item know it's now held (disables collision, hides outline, etc.)
 	if "set_held" in item:
