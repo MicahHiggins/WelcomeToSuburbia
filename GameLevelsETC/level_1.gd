@@ -6,12 +6,12 @@ extends Node3D
 # - Creates a SteamMultiplayerPeer host/client
 # - Spawns and removes Player instances across all peers
 
-# Player scene used for each connected peer.
+# Player scene used for each connected peer (set this in the inspector).
 @export var player_scene: PackedScene
 
 # Steam test App ID (Spacewar). Replace with your own later.
-const APP_ID := 480
-const MAX_PLAYERS := 4
+const APP_ID: int = 480
+const MAX_PLAYERS: int = 4
 
 # Track whether Steamworks was initialized OK.
 var steam_initialized: bool = false
@@ -22,11 +22,9 @@ var peer: MultiplayerPeer = null
 # Simple main menu UI (Host / Join etc.)
 @onready var menu: CanvasLayer = $Menu/CanvasLayer
 
-# Node used to show / type the lobby ID.
-# Can be a Label or LineEdit – both have a .text property.
-@onready var join_code_node: Node = (
-	$Menu/CanvasLayer/JoinCode if has_node("Menu/CanvasLayer/JoinCode") else null
-)
+# LineEdit for entering / showing the lobby ID.
+@onready var join_code_node: LineEdit = null
+
 
 func _ready() -> void:
 	# UI needs mouse visible before game starts
@@ -35,7 +33,10 @@ func _ready() -> void:
 	# Initialize Steam / GodotSteam
 	_init_steam()
 
-	# Connect SceneMultiplayer signals (generic, works with SteamMultiplayerPeer too)
+	# Resolve JoinCode node robustly
+	_init_join_code_node()
+
+	# Connect global multiplayer signals (works with SteamMultiplayerPeer too)
 	multiplayer.peer_connected.connect(_on_peer_connected)
 	multiplayer.peer_disconnected.connect(_on_peer_disconnected)
 	multiplayer.connected_to_server.connect(_on_connected_ok)
@@ -46,6 +47,44 @@ func _process(_delta: float) -> void:
 	# GodotSteam needs its callbacks pumped every frame.
 	if steam_initialized:
 		Steam.run_callbacks()
+
+
+func _unhandled_input(event: InputEvent) -> void:
+	# ESC to free mouse + show menu again
+	if event.is_action_pressed("ui_cancel"):
+		_capture_mouse(false)
+		if menu:
+			menu.show()
+
+
+# =========================
+#   RESOLVE JOINCODE NODE
+# =========================
+func _init_join_code_node() -> void:
+	if menu == null:
+		push_error("Menu/CanvasLayer not found; cannot resolve JoinCode LineEdit.")
+		return
+
+	var canvas := menu
+
+	# 1) Try 'joinCode'
+	var node := canvas.get_node_or_null("joinCode")
+	# 2) Try 'JoinCode'
+	if node == null:
+		node = canvas.get_node_or_null("JoinCode")
+	# 3) Fallback: first LineEdit child under CanvasLayer
+	if node == null:
+		for child in canvas.get_children():
+			if child is LineEdit:
+				node = child
+				break
+
+	if node == null:
+		push_error("Could not find a LineEdit for lobby join code under Menu/CanvasLayer.")
+		return
+
+	join_code_node = node as LineEdit
+	print("JoinCode LineEdit resolved as: ", join_code_node.get_path())
 
 
 # =========================
@@ -59,17 +98,16 @@ func _init_steam() -> void:
 
 	# Initialize Steamworks with APP_ID
 	var init_result: Dictionary = Steam.steamInitEx(APP_ID, false)
-	if init_result.has("status") and init_result["status"] == 0:
+	if init_result.has("status") and int(init_result["status"]) == 0:
 		steam_initialized = true
 		print("Steamworks initialized. User: %s (%s)" % [
 			Steam.getPersonaName(),
-			Steam.getSteamID()
+			str(Steam.getSteamID())
 		])
 
 		# Hook up Steam lobby signals
 		Steam.lobby_created.connect(_on_lobby_created)
 		Steam.lobby_joined.connect(_on_lobby_joined)
-		# (Optional) Steam.lobby_match_list.connect(...) if you want a list UI
 	else:
 		steam_initialized = false
 		var msg: String = str(init_result.get("verbal", "Unknown error"))
@@ -80,27 +118,31 @@ func _init_steam() -> void:
 #     HOST / JOIN BUTTONS
 # =========================
 func _on_host_pressed() -> void:
-	# Called by the Host button in your Menu.
+	# Host button -> Steam.createLobby -> _on_lobby_created -> _host_game()
+
 	if not steam_initialized:
 		push_error("Steam not initialized; cannot host.")
 		return
 
 	print("Requesting Steam lobby creation...")
-	# Public lobby, up to MAX_PLAYERS players.
 	Steam.createLobby(Steam.LOBBY_TYPE_PUBLIC, MAX_PLAYERS)
 
 
 func _on_join_pressed() -> void:
-	# Called by the Join button in your Menu.
+	# Join button -> Steam.joinLobby -> _on_lobby_joined -> _join_game()
+
 	if not steam_initialized:
 		push_error("Steam not initialized; cannot join.")
 		return
 
-	if join_code_node == null or not ("text" in join_code_node):
-		push_error("JoinCode node missing or has no .text property.")
+	if join_code_node == null:
+		push_error("JoinCode LineEdit missing; could not resolve it under Menu/CanvasLayer.")
 		return
 
-	var code_str: String = str(join_code_node.text).strip_edges()
+	var code_str: String = join_code_node.text.strip_edges()
+	if code_str == "":
+		push_error("Enter a lobby ID first.")
+		return
 	if not code_str.is_valid_int():
 		push_error("Join code must be a numeric Steam lobby ID.")
 		return
@@ -114,22 +156,17 @@ func _on_join_pressed() -> void:
 #     STEAM LOBBY CALLBACKS
 # =========================
 func _on_lobby_created(result: int, lobby_id: int) -> void:
-	# Called by GodotSteam after Steam.createLobby(...)
-	# result == 1 usually means success (Steam.RESULT_OK).
 	if result == 1:
 		print("Lobby created successfully. Lobby ID:", lobby_id)
 
-		# Show lobby ID in UI so friends can type it as a join code.
-		if join_code_node != null and "text" in join_code_node:
+		if join_code_node != null:
 			join_code_node.text = str(lobby_id)
 
-		# Optional: give the lobby a human-friendly name
 		Steam.setLobbyData(lobby_id, "name", Steam.getPersonaName() + "'s Lobby")
 
-		# Start hosting the actual game
 		_host_game(lobby_id)
 	else:
-		push_error("Failed to create lobby. Result code: %s" % result)
+		push_error("Failed to create lobby. Result code: %s" % str(result))
 
 
 func _on_lobby_joined(
@@ -138,126 +175,137 @@ func _on_lobby_joined(
 		_locked: bool,
 		chat_response: int
 	) -> void:
-	# Called by GodotSteam after Steam.joinLobby(...)
 	if chat_response == Steam.CHAT_ROOM_ENTER_RESPONSE_SUCCESS:
 		print("Entered lobby successfully. Lobby ID:", lobby_id)
 		_join_game(lobby_id)
 	else:
-		push_error("Failed to enter lobby. Response code: %s" % chat_response)
+		push_error("Failed to enter lobby. Response code: %s" % str(chat_response))
 
 
 # =========================
 #     START HOST / CLIENT
 # =========================
 func _host_game(_lobby_id: int) -> void:
-	# Create the SteamMultiplayerPeer host and set it on SceneMultiplayer.
 	if peer != null:
-		# Already have a peer; avoid double-hosting.
 		return
 
-	var steam_peer: MultiplayerPeer = SteamMultiplayerPeer.new()
-	# Per working examples: create_host() takes no arguments.
-	steam_peer.create_host()
+	var steam_peer: SteamMultiplayerPeer = SteamMultiplayerPeer.new()
+	var err: int = steam_peer.create_host()
+	if err != OK:
+		push_error("SteamMultiplayerPeer.create_host failed with code: %d" % err)
+		return
 
 	peer = steam_peer
 	multiplayer.multiplayer_peer = peer
-	print("SteamMultiplayerPeer host created.")
+	print("SteamMultiplayerPeer host created. My unique_id:", multiplayer.get_unique_id())
 
-	# Hide lobby UI and spawn the host's local player.
-	menu.hide()
+	var p := _spawn_local_player(multiplayer.get_unique_id())
+	if p == null:
+		push_error("Failed to spawn local player on host.")
+		return
+
+	if menu:
+		menu.hide()
 	_capture_mouse(true)
-	_spawn_local_player(multiplayer.get_unique_id())
 
 
 func _join_game(lobby_id: int) -> void:
-	# Create the SteamMultiplayerPeer client and set it on SceneMultiplayer.
 	if peer != null:
-		# If this was invoked on the host, ignore; host already has a peer.
 		return
 
-	var steam_peer: MultiplayerPeer = SteamMultiplayerPeer.new()
+	var steam_peer: SteamMultiplayerPeer = SteamMultiplayerPeer.new()
 	var host_id: int = Steam.getLobbyOwner(lobby_id)
-	steam_peer.create_client(host_id)
+	var err: int = steam_peer.create_client(host_id)
+	if err != OK:
+		push_error("SteamMultiplayerPeer.create_client failed with code: %d" % err)
+		return
 
 	peer = steam_peer
 	multiplayer.multiplayer_peer = peer
 	print("SteamMultiplayerPeer client created. Host SteamID:", host_id)
 
-	menu.hide()
+	var p := _spawn_local_player(multiplayer.get_unique_id())
+	if p == null:
+		push_error("Failed to spawn local player on client.")
+		return
+
+	if menu:
+		menu.hide()
 	_capture_mouse(true)
-	_spawn_local_player(multiplayer.get_unique_id())
 
 
 # =========================
 #   MULTIPLAYER CALLBACKS
 # =========================
 func _on_connected_ok() -> void:
-	# This may be emitted when the client finishes connecting to the host.
 	print("Multiplayer: connected_to_server")
 
 
 func _on_connected_fail() -> void:
 	print("Multiplayer: connection_failed")
 	_capture_mouse(false)
-	menu.show()
+	if menu:
+		menu.show()
 
 
 func _on_peer_connected(id: int) -> void:
-	# Called on ALL peers when a new peer connects.
-	# We only drive spawn logic from the host.
 	if multiplayer.is_server():
-		# Step 1: send the newcomer info about existing players
 		for child in get_children():
 			if child is Node and child.name.is_valid_int():
 				rpc_id(id, "add_player", int(child.name))
 
-		# Step 2: announce the newcomer to everyone (including host)
 		rpc("add_player", id)
 
 
 func _on_peer_disconnected(id: int) -> void:
-	# Called when a peer disconnects.
 	if multiplayer.is_server():
 		rpc("del_player", id)
 	else:
-		# Clients also clean up just in case
 		del_player(id)
 
 
 # =========================
 #        SPAWN HELPERS
 # =========================
-func _spawn_local_player(id: int) -> void:
-	# Instantiates a Player scene locally and attaches it under this node.
-	# Name is set to the peer ID so Player.gd can use name.to_int()
-	# as its authority.
-
+func _spawn_local_player(id: int) -> Node3D:
 	if player_scene == null:
-		push_error("player_scene is not assigned in the inspector.")
-		return
+		push_error("player_scene not set (assign it in the inspector).")
+		return null
 
-	# Avoid duplicates
+	# If already there, just return it
 	if has_node(str(id)):
-		return
+		var existing := get_node(str(id))
+		if existing is Node3D:
+			return existing as Node3D
+		return null
 
-	var p: Node = player_scene.instantiate()
-	p.name = str(id)
-	p.set_multiplayer_authority(id)
-	add_child(p)
+	var p := player_scene.instantiate()
+	if not (p is Node3D):
+		push_error("player_scene root is not a Node3D/CharacterBody3D.")
+		add_child(p)
+		return null
 
-	# Basic spacing so players don't overlap on spawn.
-	if p is Node3D:
-		var idx: int = get_child_count()
-		(p as Node3D).global_transform.origin = Vector3(2.0 * float(idx), 2.0, 0.0)
+	var p3d := p as Node3D
+	p3d.name = str(id)
+	p3d.set_multiplayer_authority(id)
+	add_child(p3d)
+
+	# Simple spawn position
+	var idx: int = get_child_count()
+	p3d.global_transform.origin = Vector3(2.0 * float(idx), 2.0, 0.0)
+
+	# IMPORTANT: do NOT force any camera here.
+	# Player.gd will handle cam.current = true for the multiplayer authority.
+
+	print("Spawned local player with id:", id, " at ", p3d.global_transform.origin)
+	return p3d
 
 
-# Called on ALL peers (server + clients) to create a player node
 @rpc("call_local", "reliable")
 func add_player(id: int) -> void:
 	_spawn_local_player(id)
 
 
-# Called on ALL peers (server + clients) to delete a player node
 @rpc("call_local", "reliable")
 func del_player(id: int) -> void:
 	var n: Node = get_node_or_null(str(id))

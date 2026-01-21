@@ -1,4 +1,4 @@
-[gd_scene load_steps=19 format=3 uid="uid://d1ibgfwne281y"]
+[gd_scene load_steps=18 format=3 uid="uid://d1ibgfwne281y"]
 
 [ext_resource type="Script" uid="uid://dppcbcba5rvbf" path="res://GameLevelsETC/level_1.gd" id="1_oh3op"]
 [ext_resource type="PackedScene" uid="uid://bs72ogkvdd7d6" path="res://addons/proto_controller/proto_controller.tscn" id="2_jvlpr"]
@@ -12,7 +12,6 @@
 [ext_resource type="PackedScene" uid="uid://c3xn6otd7y75" path="res://Assets/kenney_city-kit-suburban_20/Models/GLB format/building-type-a.glb" id="8_wxf7o"]
 [ext_resource type="PackedScene" uid="uid://7rf6k7dglhi5" path="res://Assets/kenney_city-kit-suburban_20/Models/GLB format/building-type-d.glb" id="9_wjimw"]
 [ext_resource type="PackedScene" uid="uid://b36mjwh3wwi6m" path="res://GameLevelsETC/Items/bat_clean.tscn" id="12_wjimw"]
-[ext_resource type="Script" uid="uid://dpupyxhnbxb6w" path="res://GameLevelsETC/menu.gd" id="13_wxf7o"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_jo2a5"]
 albedo_color = Color(0.33333334, 0.41960785, 0.18431373, 1)
@@ -95,7 +94,6 @@ tree_scene = ExtResource("7_buyxr")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5201786, 3.1837187, -3.0952702)
 
 [node name="Menu" type="Node" parent="."]
-script = ExtResource("13_wxf7o")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="Menu"]
 
