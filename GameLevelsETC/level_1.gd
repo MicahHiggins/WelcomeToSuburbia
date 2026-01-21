@@ -294,10 +294,8 @@ func _spawn_local_player(id: int) -> Node3D:
 	var idx: int = get_child_count()
 	p3d.global_transform.origin = Vector3(2.0 * float(idx), 2.0, 0.0)
 
-	# Try to force this player's camera current, in case Player.gd doesn't yet.
-	var cam_node := p3d.get_node_or_null("Head/Camera3D")
-	if cam_node is Camera3D:
-		(cam_node as Camera3D).current = true
+	# IMPORTANT: do NOT force any camera here.
+	# Player.gd will handle cam.current = true for the multiplayer authority.
 
 	print("Spawned local player with id:", id, " at ", p3d.global_transform.origin)
 	return p3d
