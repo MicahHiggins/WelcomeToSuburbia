@@ -166,6 +166,11 @@ func _process(_dt: float) -> void:
 
 
 func _physics_process(delta: float) -> void:
+	# If we’re back at main menu and there is no multiplayer peer,
+	# skip all networked-player logic (prevents "no peer" errors).
+	if not multiplayer.has_multiplayer_peer():
+		return
+
 	# AUTHORITY: simulate full movement and send state
 	if is_multiplayer_authority():
 		_physics_authority(delta)
@@ -238,7 +243,6 @@ func _net_maybe_send_state() -> void:
 	_net_last_send_time = now
 
 	# Everyone (host + clients) calls this; server will rebroadcast.
-	# Reliability is defined by the @rpc annotation on _net_state_from_client.
 	rpc("_net_state_from_client", global_transform)
 
 
@@ -249,30 +253,20 @@ func _net_interpolate_remote() -> void:
 	global_transform = global_transform.interpolate_with(_net_target_transform, net_lerp_alpha)
 
 
-# Called from authority on ANY peer.
-# - On a client: runs locally (because of call_local) and also on the server.
-# - On the server: after receiving from a client, rebroadcasts to everyone.
 @rpc("any_peer", "call_local", "unreliable")
 func _net_state_from_client(new_transform: Transform3D) -> void:
 	if multiplayer.is_server():
-		# On the server's copy of this player
 		if not is_multiplayer_authority():
 			_net_set_target(new_transform)
-		# Rebroadcast to all clients (including the sender; they will ignore if authority)
 		rpc("_net_apply_state", new_transform)
 	else:
-		# On a client:
-		# - For the local authority player, is_multiplayer_authority() == true → ignore.
-		# - For remote players (copies spawned by RPCs), apply as target.
 		if not is_multiplayer_authority():
 			_net_set_target(new_transform)
 
 
 @rpc("any_peer", "unreliable")
 func _net_apply_state(new_transform: Transform3D) -> void:
-	# Received from server on every client
 	if is_multiplayer_authority():
-		# Never override the locally controlled player
 		return
 	_net_set_target(new_transform)
 

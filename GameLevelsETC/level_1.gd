@@ -19,11 +19,22 @@ var steam_initialized: bool = false
 # The actual MultiplayerPeer (SteamMultiplayerPeer under the hood).
 var peer: MultiplayerPeer = null
 
+# Track current lobby so we can leave it when going back to main menu.
+var current_lobby_id: int = 0
+
 # Simple main menu UI (Host / Join etc.)
 @onready var menu: CanvasLayer = $Menu/CanvasLayer
 
-# LineEdit for entering / showing the lobby ID.
-@onready var join_code_node: LineEdit = null
+# Pause / ESC menu UI (you create this in the scene).
+# Expected path: PauseMenu/CanvasLayer (or just PauseMenu if it's a CanvasLayer).
+@onready var pause_menu: CanvasLayer = $InGameMenu/CanvasLayer
+
+# Label (or other text control) inside the pause menu to show lobby code.
+# Expected node name under pause_menu: LobbyCodeLabel
+@onready var pause_lobby_label: Label = $InGameMenu/CanvasLayer/lobbycode
+
+# LineEdit for entering / showing the lobby ID on the main menu.
+@onready var join_code_node: LineEdit = $Menu/CanvasLayer/joinCode
 
 
 func _ready() -> void:
@@ -33,8 +44,11 @@ func _ready() -> void:
 	# Initialize Steam / GodotSteam
 	_init_steam()
 
-	# Resolve JoinCode node robustly
+	# Resolve JoinCode node robustly (main menu)
 	_init_join_code_node()
+
+	# Resolve pause menu + lobby label (ESC menu)
+	_init_pause_menu_ui()
 
 	# Connect global multiplayer signals (works with SteamMultiplayerPeer too)
 	multiplayer.peer_connected.connect(_on_peer_connected)
@@ -50,11 +64,17 @@ func _process(_delta: float) -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
-	# ESC to free mouse + show menu again
+	# ESC behavior:
+	# - Before connecting (peer == null): show main menu.
+	# - After connecting (peer != null): toggle pause menu with lobby code.
 	if event.is_action_pressed("ui_cancel"):
-		_capture_mouse(false)
-		if menu:
-			menu.show()
+		if peer == null:
+			# Not in a game yet, just show the main menu.
+			_capture_mouse(false)
+			if menu:
+				menu.show()
+		else:
+			_toggle_pause_menu()
 
 
 # =========================
@@ -85,6 +105,57 @@ func _init_join_code_node() -> void:
 
 	join_code_node = node as LineEdit
 	print("JoinCode LineEdit resolved as: ", join_code_node.get_path())
+
+
+# =========================
+#   PAUSE MENU / LOBBY UI
+# =========================
+func _init_pause_menu_ui() -> void:
+	# Try PauseMenu/CanvasLayer
+	if has_node("PauseMenu/CanvasLayer"):
+		pause_menu = get_node("PauseMenu/CanvasLayer") as CanvasLayer
+	elif has_node("PauseMenu"):
+		# Or just PauseMenu if that's already a CanvasLayer
+		var n := get_node("PauseMenu")
+		if n is CanvasLayer:
+			pause_menu = n as CanvasLayer
+
+	if pause_menu == null:
+		# Not fatal: you just won't have an ESC menu until you wire it up.
+		push_warning("PauseMenu CanvasLayer not found. ESC pause menu will be disabled.")
+		return
+
+	# Optional label inside pause menu that displays the lobby code.
+	var label_node := pause_menu.get_node_or_null("LobbyCodeLabel")
+	if label_node is Label:
+		pause_lobby_label = label_node as Label
+
+	# Hide pause menu initially.
+	pause_menu.hide()
+
+
+func _toggle_pause_menu() -> void:
+	if pause_menu == null:
+		return
+
+	if pause_menu.visible:
+		# Close pause menu, recapture mouse
+		pause_menu.hide()
+		_capture_mouse(true)
+	else:
+		# Open pause menu, release mouse and update lobby code text
+		_capture_mouse(false)
+		pause_menu.show()
+		_update_pause_lobby_code_display()
+
+
+func _update_pause_lobby_code_display() -> void:
+	if pause_lobby_label == null:
+		return
+	if join_code_node == null:
+		return
+
+	pause_lobby_label.text = join_code_node.text
 
 
 # =========================
@@ -158,6 +229,7 @@ func _on_join_pressed() -> void:
 func _on_lobby_created(result: int, lobby_id: int) -> void:
 	if result == 1:
 		print("Lobby created successfully. Lobby ID:", lobby_id)
+		current_lobby_id = lobby_id
 
 		if join_code_node != null:
 			join_code_node.text = str(lobby_id)
@@ -177,6 +249,7 @@ func _on_lobby_joined(
 	) -> void:
 	if chat_response == Steam.CHAT_ROOM_ENTER_RESPONSE_SUCCESS:
 		print("Entered lobby successfully. Lobby ID:", lobby_id)
+		current_lobby_id = lobby_id
 		_join_game(lobby_id)
 	else:
 		push_error("Failed to enter lobby. Response code: %s" % str(chat_response))
@@ -294,8 +367,7 @@ func _spawn_local_player(id: int) -> Node3D:
 	var idx: int = get_child_count()
 	p3d.global_transform.origin = Vector3(2.0 * float(idx), 2.0, 0.0)
 
-	# IMPORTANT: do NOT force any camera here.
-	# Player.gd will handle cam.current = true for the multiplayer authority.
+	# Player.gd will handle camera ownership for the authority player.
 
 	print("Spawned local player with id:", id, " at ", p3d.global_transform.origin)
 	return p3d
@@ -311,6 +383,55 @@ func del_player(id: int) -> void:
 	var n: Node = get_node_or_null(str(id))
 	if n:
 		n.queue_free()
+
+
+# =========================
+#      PAUSE MENU BUTTONS
+# =========================
+func _on_pause_quit_pressed() -> void:
+	# Hook this up to a "Quit" button in your pause menu.
+	get_tree().quit()
+
+
+func _on_pause_back_to_menu_pressed() -> void:
+	# Hook this up to a "Back to Main Menu" button in your pause menu.
+	# 1) Leave lobby if possible (host or client)
+	if current_lobby_id != 0 and Steam.isSteamRunning():
+		Steam.leaveLobby(current_lobby_id)
+		current_lobby_id = 0
+
+	# 2) Drop the multiplayer peer
+	if peer != null:
+		multiplayer.multiplayer_peer = null
+		peer = null
+
+	# 3) Remove all player nodes whose names are numeric
+	for child in get_children():
+		if child.name.is_valid_int():
+			child.queue_free()
+
+	# 4) Switch UI: hide pause menu, show main menu, free mouse
+	if pause_menu:
+		pause_menu.hide()
+	if menu:
+		menu.show()
+	_capture_mouse(false)
+
+
+func _on_pause_copy_code_pressed() -> void:
+	# Hook this up to a "Copy Code" button in your pause menu.
+	var code_text := ""
+	if join_code_node != null:
+		code_text = join_code_node.text
+	elif pause_lobby_label != null:
+		code_text = pause_lobby_label.text
+
+	if code_text == "":
+		push_warning("No lobby code to copy.")
+		return
+
+	DisplayServer.clipboard_set(code_text)
+	print("Lobby code copied to clipboard: ", code_text)
 
 
 # =========================

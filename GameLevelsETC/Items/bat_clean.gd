@@ -5,6 +5,7 @@ extends CharacterBody3D
 #  - Simple gravity when on the ground
 #  - "Held" state (used when a Player picks it up)
 #  - Area3D used as the raycast target / hit shape
+#  - Optional: only the network authority simulates physics
 # --------------------------------------------
 
 # Mesh that should glow / outline when hovered
@@ -79,9 +80,10 @@ func interact() -> void:
 
 
 func _physics_process(delta: float) -> void:
-	# In multiplayer, let only the authority drive physics.
-	# This pairs with the pickup system where the server/owner sets
-	# multiplayer authority on this node.
+	# If we have a multiplayer peer and we're in authority-only mode,
+	# let ONLY the authority simulate physics.
+	# When you quit to main menu, multiplayer.multiplayer_peer = null, so
+	# has_multiplayer_peer() becomes false and this check is skipped.
 	if authority_only_physics and multiplayer.has_multiplayer_peer():
 		if not is_multiplayer_authority():
 			return
