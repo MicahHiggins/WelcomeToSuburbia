@@ -22,10 +22,11 @@ mesh = SubResource("BoxMesh_oxdg3")
 surface_material_override/0 = SubResource("StandardMaterial3D_0kqub")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Ground"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.208, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.225, 0)
 shape = SubResource("BoxShape3D_ko78g")
 
 [node name="Houses" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.01093328, 0)
 
 [node name="BuildingTypeA" type="MeshInstance3D" parent="Houses"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 0.092, 7.3793163)
@@ -148,6 +149,7 @@ mesh = ExtResource("1_7yfhi")
 skeleton = NodePath("../..")
 
 [node name="Roads" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.03, 0)
 
 [node name="DrivewayLong" type="MeshInstance3D" parent="Roads"]
 transform = Transform3D(-1.3113416e-07, 0, 3, 0, 3, 0, -3, 0, -1.3113416e-07, 7.3830404, 0.109850585, 5.48493)
@@ -430,6 +432,6 @@ mesh = ExtResource("2_ypk4p")
 skeleton = NodePath("../..")
 
 [node name="DrivewayLong57" type="MeshInstance3D" parent="Roads"]
-transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, 5.089427, 0.11, -7.3824067)
+transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, 5.089427, 0.11, -7.396688)
 mesh = ExtResource("2_ypk4p")
 skeleton = NodePath("../..")
