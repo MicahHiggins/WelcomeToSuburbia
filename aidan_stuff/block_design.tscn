@@ -14,7 +14,8 @@ size = Vector3(16.164581, 0.58447266, 16.030792)
 [node name="Block Design" type="Node3D"]
 transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0)
 
-[node name="Ground" type="Area3D" parent="."]
+[node name="Ground" type="StaticBody3D" parent="."]
+disable_mode = 1
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Ground"]
 transform = Transform3D(16, 0, 0, 0, 5, 0, 0, 0, 16, 0, -2.423976, 0)
@@ -145,6 +146,11 @@ skeleton = NodePath("../..")
 
 [node name="BuildingTypeA24" type="MeshInstance3D" parent="Houses"]
 transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, -7.200263, 0.092, -3)
+mesh = ExtResource("1_7yfhi")
+skeleton = NodePath("../..")
+
+[node name="BuildingTypeA25" type="MeshInstance3D" parent="Houses"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 0.092, 7.3793163)
 mesh = ExtResource("1_7yfhi")
 skeleton = NodePath("../..")
 
@@ -435,3 +441,5 @@ skeleton = NodePath("../..")
 transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, 5.089427, 0.11, -7.396688)
 mesh = ExtResource("2_ypk4p")
 skeleton = NodePath("../..")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
