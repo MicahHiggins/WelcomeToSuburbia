@@ -1,14 +1,11 @@
-[gd_scene load_steps=19 format=3 uid="uid://d1ibgfwne281y"]
+[gd_scene load_steps=11 format=3 uid="uid://d1ibgfwne281y"]
 
 [ext_resource type="Script" uid="uid://dppcbcba5rvbf" path="res://GameLevelsETC/level_1.gd" id="1_oh3op"]
 [ext_resource type="PackedScene" uid="uid://bs72ogkvdd7d6" path="res://addons/proto_controller/proto_controller.tscn" id="2_jvlpr"]
 [ext_resource type="PackedScene" uid="uid://bs2jm62cmkbrk" path="res://addons/instant-realistic-light/light_scene.tscn" id="3_jo2a5"]
+[ext_resource type="PackedScene" uid="uid://cg04msv62ujdu" path="res://Max's Folder (do not touch!!!)/pcg_attempt.tscn" id="5_ytqdj"]
 [ext_resource type="PackedScene" uid="uid://b36mjwh3wwi6m" path="res://GameLevelsETC/Items/bat_clean.tscn" id="12_wjimw"]
-[ext_resource type="PackedScene" uid="uid://cg04msv62ujdu" path="res://Max's Folder (do not touch!!!)/pcg_attempt.tscn" id="13_grjf3"]
 [ext_resource type="Texture2D" uid="uid://3i53ybhtpc0f" path="res://Assets/—Pngtree—vector copy icon_4013516.png" id="13_grjf3"]
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_jo2a5"]
-albedo_color = Color(0.33333334, 0.41960785, 0.18431373, 1)
 
 [sub_resource type="PhysicalSkyMaterial" id="PhysicalSkyMaterial_gn88m"]
 ground_color = Color(0, 0, 0, 1)
@@ -111,11 +108,42 @@ offset_top = 247.0
 offset_right = 507.0
 offset_bottom = 287.0
 
-[node name="PCGAttempt" parent="." instance=ExtResource("13_grjf3")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17.782766, 0.47683716, 0)
+[node name="pause" type="CanvasLayer" parent="Menu"]
+
+[node name="quit" type="Button" parent="Menu/pause"]
+offset_left = 39.0
+offset_top = 55.0
+offset_right = 208.0
+offset_bottom = 120.0
+text = "Quit
+"
+
+[node name="menu" type="Button" parent="Menu/pause"]
+offset_left = 41.0
+offset_top = 127.0
+offset_right = 206.0
+offset_bottom = 196.0
+text = "Menu
+"
+
+[node name="code" type="Label" parent="Menu/pause"]
+offset_left = 41.0
+offset_top = 199.0
+offset_right = 210.0
+offset_bottom = 225.0
+
+[node name="copy" type="Button" parent="Menu/pause"]
+offset_left = 97.0
+offset_top = 232.0
+offset_right = 1129.0
+offset_bottom = 1264.0
+scale = Vector2(0.05, 0.05)
+icon = ExtResource("13_grjf3")
+
+[node name="PCGAttempt2" parent="." instance=ExtResource("5_ytqdj")]
 
 [connection signal="pressed" from="Menu/CanvasLayer/Host" to="." method="_on_host_pressed"]
 [connection signal="pressed" from="Menu/CanvasLayer/Join" to="." method="_on_join_pressed"]
-[connection signal="pressed" from="InGameMenu/CanvasLayer/quit" to="." method="_on_pause_quit_pressed"]
-[connection signal="pressed" from="InGameMenu/CanvasLayer/main" to="." method="_on_pause_back_to_menu_pressed"]
-[connection signal="pressed" from="InGameMenu/CanvasLayer/Button" to="." method="_on_pause_copy_code_pressed"]
+[connection signal="pressed" from="Menu/pause/quit" to="." method="_on_pause_quit_pressed"]
+[connection signal="pressed" from="Menu/pause/menu" to="." method="_on_pause_back_to_menu_pressed"]
+[connection signal="pressed" from="Menu/pause/copy" to="." method="_on_pause_copy_code_pressed"]

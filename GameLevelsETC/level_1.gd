@@ -27,11 +27,11 @@ var current_lobby_id: int = 0
 
 # Pause / ESC menu UI (you create this in the scene).
 # Expected path: PauseMenu/CanvasLayer (or just PauseMenu if it's a CanvasLayer).
-@onready var pause_menu: CanvasLayer = $InGameMenu/CanvasLayer
+@onready var pause_menu: CanvasLayer = $Menu/pause
 
 # Label (or other text control) inside the pause menu to show lobby code.
 # Expected node name under pause_menu: LobbyCodeLabel
-@onready var pause_lobby_label: Label = $InGameMenu/CanvasLayer/lobbycode
+@onready var pause_lobby_label: Label = $Menu/pause/code
 
 # LineEdit for entering / showing the lobby ID on the main menu.
 @onready var join_code_node: LineEdit = $Menu/CanvasLayer/joinCode
