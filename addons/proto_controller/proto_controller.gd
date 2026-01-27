@@ -35,7 +35,7 @@ extends CharacterBody3D
 @export var input_interact := "interact"
 
 # Server peer ID for SceneMultiplayer (ENet, Steam, etc.)
-const SERVER_ID := 1
+const SERVER_ID: int = 1
 
 # =========================
 #         RUNTIME STATE
@@ -47,6 +47,15 @@ var freeflying: bool = false
 
 # Item currently held by THIS local player
 var picked_object: Node = null
+
+# =========================
+#      SANITY / TETHER
+# =========================
+var sanity: float = 100.0
+var sanity_fx_intensity: float = 0.0
+
+var _sanity_fx_rect: ColorRect
+var _sanity_fx_mat: ShaderMaterial
 
 # =========================
 #    NETWORK SYNC CONFIG
@@ -96,6 +105,7 @@ func _ready() -> void:
 
 	_setup_hint_ui()
 	_check_input_mappings()
+	_setup_sanity_fx_ui()
 
 
 # =========================
@@ -112,7 +122,7 @@ func _setup_hint_ui() -> void:
 	if h == null:
 		h = Label.new()
 		h.name = "Hint"
-		h.text = "Press E to interact"
+		h.text = "Press F to interact" # your project.godot binds interact to F
 		h.visible = false
 		h.add_theme_color_override("font_color", Color(1, 1, 1))
 		h.add_theme_color_override("font_outline_color", Color(0, 0, 0))
@@ -125,6 +135,70 @@ func _setup_hint_ui() -> void:
 		ui.add_child(h)
 
 	hint_label = h
+
+
+# =========================
+#     SANITY SCREEN FX UI
+# =========================
+func _setup_sanity_fx_ui() -> void:
+	# Only build FX UI for the locally-controlled player
+	if not is_multiplayer_authority():
+		return
+
+	var ui := $UI if has_node("UI") else null
+	if ui == null:
+		ui = CanvasLayer.new()
+		ui.name = "UI"
+		add_child(ui)
+
+	_sanity_fx_rect = ui.get_node_or_null("SanityFX")
+	if _sanity_fx_rect == null:
+		_sanity_fx_rect = ColorRect.new()
+		_sanity_fx_rect.name = "SanityFX"
+		_sanity_fx_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		_sanity_fx_rect.anchor_left = 0.0
+		_sanity_fx_rect.anchor_top = 0.0
+		_sanity_fx_rect.anchor_right = 1.0
+		_sanity_fx_rect.anchor_bottom = 1.0
+		_sanity_fx_rect.offset_left = 0.0
+		_sanity_fx_rect.offset_top = 0.0
+		_sanity_fx_rect.offset_right = 0.0
+		_sanity_fx_rect.offset_bottom = 0.0
+		_sanity_fx_rect.z_index = 999
+		ui.add_child(_sanity_fx_rect)
+
+		var sh := Shader.new()
+		sh.code = """
+shader_type canvas_item;
+render_mode unshaded;
+
+uniform float intensity : hint_range(0.0, 1.0) = 0.0;
+uniform sampler2D screen_tex : hint_screen_texture, filter_linear_mipmap;
+
+void fragment() {
+	vec2 uv = SCREEN_UV;
+	float t = TIME;
+
+	// Wobble
+	float w = sin((uv.y * 14.0 + t * 2.0)) * cos((uv.x * 10.0 - t * 1.7));
+	vec2 offs = vec2(w, -w) * (0.012 * intensity);
+
+	vec4 col = texture(screen_tex, uv + offs);
+
+	// Color warp + vignette
+	col.rgb += vec3(0.08, -0.03, 0.06) * intensity * sin(t + uv.x * 6.0);
+	vec2 p = uv - 0.5;
+	float v = 1.0 - smoothstep(0.15, 0.70, dot(p, p));
+	col.rgb *= mix(1.0, v, 0.9 * intensity);
+
+	COLOR = col;
+}
+"""
+		_sanity_fx_mat = ShaderMaterial.new()
+		_sanity_fx_mat.shader = sh
+		_sanity_fx_rect.material = _sanity_fx_mat
+
+	_sanity_fx_rect.visible = false
 
 
 # =========================
@@ -161,8 +235,13 @@ func _unhandled_input(event: InputEvent) -> void:
 #      FRAME / PHYSICS
 # =========================
 func _process(_dt: float) -> void:
-	# Hover + hint visibility driven from RayCast; nothing special here now.
-	pass
+	# Apply sanity screen FX only on the local player
+	if not is_multiplayer_authority():
+		return
+
+	if _sanity_fx_mat != null and _sanity_fx_rect != null:
+		_sanity_fx_rect.visible = sanity_fx_intensity > 0.01
+		_sanity_fx_mat.set_shader_parameter("intensity", sanity_fx_intensity)
 
 
 func _physics_process(delta: float) -> void:
@@ -236,7 +315,7 @@ func _net_maybe_send_state() -> void:
 
 	# Throttle to net_send_rate_hz
 	var now: float = float(Time.get_ticks_msec()) / 1000.0
-	var min_interval: float = 1.0 / max(net_send_rate_hz, 1.0)
+	var min_interval: float = 1.0 / maxf(net_send_rate_hz, 1.0)
 	if now - _net_last_send_time < min_interval:
 		return
 
@@ -335,6 +414,35 @@ func _check_input_mappings() -> void:
 		push_error("Missing action: " + input_freefly); can_freefly = false
 	if not InputMap.has_action(input_interact):
 		push_error("Missing action: " + input_interact)
+
+
+# =========================
+#  SERVER -> CLIENT RPCs
+# =========================
+@rpc("any_peer", "unreliable")
+func server_set_sanity(new_sanity: float, intensity: float) -> void:
+	if multiplayer.get_remote_sender_id() != SERVER_ID:
+		return
+	sanity = clamp(new_sanity, 0.0, 100.0)
+	sanity_fx_intensity = clamp(intensity, 0.0, 1.0)
+
+
+@rpc("any_peer", "reliable")
+func server_force_teleport(new_pos: Vector3, new_yaw: float) -> void:
+	if multiplayer.get_remote_sender_id() != SERVER_ID:
+		return
+
+	global_position = new_pos
+	velocity = Vector3.ZERO
+
+	# Align root yaw with the anchor (keep your current pitch)
+	look_rotation.y = new_yaw
+	transform.basis = Basis()
+	rotate_y(look_rotation.y)
+
+	# Stop remote interpolation from “snapping back”
+	_net_target_transform = global_transform
+	_net_has_target = true
 
 
 # =========================
