@@ -1,0 +1,445 @@
+[gd_scene load_steps=6 format=3 uid="uid://r8vqf0qcnkdn"]
+
+[ext_resource type="ArrayMesh" uid="uid://1gdxilugbc4i" path="res://Assets/kenney_city-kit-suburban_20/Models/OBJ format/building-type-a.obj" id="1_7yfhi"]
+[ext_resource type="ArrayMesh" uid="uid://dgv4eih41bu3t" path="res://Assets/kenney_city-kit-suburban_20/Models/OBJ format/driveway-long.obj" id="2_ypk4p"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_oxdg3"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_0kqub"]
+albedo_color = Color(0.078431375, 0.43529412, 0.06666667, 1)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_ko78g"]
+size = Vector3(16.164581, 0.58447266, 16.030792)
+
+[node name="Block Design" type="Node3D"]
+
+[node name="Ground" type="StaticBody3D" parent="."]
+transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0)
+disable_mode = 1
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Ground"]
+transform = Transform3D(16, 0, 0, 0, 5, 0, 0, 0, 16, 0, -2.423976, 0)
+mesh = SubResource("BoxMesh_oxdg3")
+surface_material_override/0 = SubResource("StandardMaterial3D_0kqub")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Ground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.225, 0)
+shape = SubResource("BoxShape3D_ko78g")
+
+[node name="Houses" type="Node3D" parent="."]
+transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, 0, -0.01093328, 0)
+
+[node name="BuildingTypeA" type="MeshInstance3D" parent="Houses"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 0.092, 7.3793163)
+mesh = ExtResource("1_7yfhi")
+skeleton = NodePath("../..")
+
+[node name="BuildingTypeA2" type="MeshInstance3D" parent="Houses"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0.092, 7.3793163)
+mesh = ExtResource("1_7yfhi")
+skeleton = NodePath("../..")
+
+[node name="BuildingTypeA3" type="MeshInstance3D" parent="Houses"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 0.092, 7.3793163)
+mesh = ExtResource("1_7yfhi")
+skeleton = NodePath("../..")
+
+[node name="BuildingTypeA4" type="MeshInstance3D" parent="Houses"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 0.092, 7.3793163)
+mesh = ExtResource("1_7yfhi")
+skeleton = NodePath("../..")
+
+[node name="BuildingTypeA5" type="MeshInstance3D" parent="Houses"]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 3, 0.092, 1.1517024)
+mesh = ExtResource("1_7yfhi")
+skeleton = NodePath("../..")
+
+[node name="BuildingTypeA6" type="MeshInstance3D" parent="Houses"]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 1, 0.092, 1.1517024)
+mesh = ExtResource("1_7yfhi")
+skeleton = NodePath("../..")
+
+[node name="BuildingTypeA7" type="MeshInstance3D" parent="Houses"]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, -1, 0.092, 1.1517024)
+mesh = ExtResource("1_7yfhi")
+skeleton = NodePath("../..")
+
+[node name="BuildingTypeA8" type="MeshInstance3D" parent="Houses"]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, -3, 0.092, 1.1517024)
+mesh = ExtResource("1_7yfhi")
+skeleton = NodePath("../..")
+
+[node name="BuildingTypeA9" type="MeshInstance3D" parent="Houses"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 0.092, -1.0259879)
+mesh = ExtResource("1_7yfhi")
+skeleton = NodePath("../..")
+
+[node name="BuildingTypeA10" type="MeshInstance3D" parent="Houses"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0.092, -1.0259879)
+mesh = ExtResource("1_7yfhi")
+skeleton = NodePath("../..")
+
+[node name="BuildingTypeA11" type="MeshInstance3D" parent="Houses"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 0.092, -1.0259879)
+mesh = ExtResource("1_7yfhi")
+skeleton = NodePath("../..")
+
+[node name="BuildingTypeA12" type="MeshInstance3D" parent="Houses"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 0.092, -1.0259879)
+mesh = ExtResource("1_7yfhi")
+skeleton = NodePath("../..")
+
+[node name="BuildingTypeA13" type="MeshInstance3D" parent="Houses"]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 3, 0.092, -7.278836)
+mesh = ExtResource("1_7yfhi")
+skeleton = NodePath("../..")
+
+[node name="BuildingTypeA14" type="MeshInstance3D" parent="Houses"]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 1, 0.092, -7.278836)
+mesh = ExtResource("1_7yfhi")
+skeleton = NodePath("../..")
+
+[node name="BuildingTypeA15" type="MeshInstance3D" parent="Houses"]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, -1, 0.092, -7.278836)
+mesh = ExtResource("1_7yfhi")
+skeleton = NodePath("../..")
+
+[node name="BuildingTypeA16" type="MeshInstance3D" parent="Houses"]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, -3, 0.092, -7.278836)
+mesh = ExtResource("1_7yfhi")
+skeleton = NodePath("../..")
+
+[node name="BuildingTypeA17" type="MeshInstance3D" parent="Houses"]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 7.123, 0.092, 3)
+mesh = ExtResource("1_7yfhi")
+skeleton = NodePath("../..")
+
+[node name="BuildingTypeA18" type="MeshInstance3D" parent="Houses"]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 7.123, 0.092, 1)
+mesh = ExtResource("1_7yfhi")
+skeleton = NodePath("../..")
+
+[node name="BuildingTypeA19" type="MeshInstance3D" parent="Houses"]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 7.123, 0.092, -1)
+mesh = ExtResource("1_7yfhi")
+skeleton = NodePath("../..")
+
+[node name="BuildingTypeA20" type="MeshInstance3D" parent="Houses"]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 7.123, 0.092, -3)
+mesh = ExtResource("1_7yfhi")
+skeleton = NodePath("../..")
+
+[node name="BuildingTypeA21" type="MeshInstance3D" parent="Houses"]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, -7.200263, 0.092, 3)
+mesh = ExtResource("1_7yfhi")
+skeleton = NodePath("../..")
+
+[node name="BuildingTypeA22" type="MeshInstance3D" parent="Houses"]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, -7.200263, 0.092, 1)
+mesh = ExtResource("1_7yfhi")
+skeleton = NodePath("../..")
+
+[node name="BuildingTypeA23" type="MeshInstance3D" parent="Houses"]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, -7.200263, 0.092, -1)
+mesh = ExtResource("1_7yfhi")
+skeleton = NodePath("../..")
+
+[node name="BuildingTypeA24" type="MeshInstance3D" parent="Houses"]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, -7.200263, 0.092, -3)
+mesh = ExtResource("1_7yfhi")
+skeleton = NodePath("../..")
+
+[node name="BuildingTypeA25" type="MeshInstance3D" parent="Houses"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 0.092, 7.3793163)
+mesh = ExtResource("1_7yfhi")
+skeleton = NodePath("../..")
+
+[node name="Roads" type="Node3D" parent="."]
+transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, 0, -0.03, 0)
+
+[node name="DrivewayLong" type="MeshInstance3D" parent="Roads"]
+transform = Transform3D(-1.3113416e-07, 0, 3, 0, 3, 0, -3, 0, -1.3113416e-07, 7.3830404, 0.109850585, 5.48493)
+mesh = ExtResource("2_ypk4p")
+skeleton = NodePath("../..")
+
+[node name="DrivewayLong2" type="MeshInstance3D" parent="Roads"]
+transform = Transform3D(-1.3113416e-07, 0, 3, 0, 3, 0, -3, 0, -1.3113416e-07, 6.2016487, 0.11, 5.485)
+mesh = ExtResource("2_ypk4p")
+skeleton = NodePath("../..")
+
+[node name="DrivewayLong3" type="MeshInstance3D" parent="Roads"]
+transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, 5.089427, 0.11, 7.4062123)
+mesh = ExtResource("2_ypk4p")
+skeleton = NodePath("../..")
+
+[node name="DrivewayLong4" type="MeshInstance3D" parent="Roads"]
+transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, 5.089427, 0.11, 6.2136083)
+mesh = ExtResource("2_ypk4p")
+skeleton = NodePath("../..")
+
+[node name="DrivewayLong5" type="MeshInstance3D" parent="Roads"]
+transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, 5.089427, 0.11, 5.0198565)
+mesh = ExtResource("2_ypk4p")
+skeleton = NodePath("../..")
+
+[node name="DrivewayLong6" type="MeshInstance3D" parent="Roads"]
+transform = Transform3D(-1.3113416e-07, 0, 3, 0, 3, 0, -3, 0, -1.3113416e-07, 3.950634, 0.11, 5.485)
+mesh = ExtResource("2_ypk4p")
+skeleton = NodePath("../..")
+
+[node name="DrivewayLong7" type="MeshInstance3D" parent="Roads"]
+transform = Transform3D(-1.3113416e-07, 0, 3, 0, 3, 0, -3, 0, -1.3113416e-07, 2.7515004, 0.11, 5.485)
+mesh = ExtResource("2_ypk4p")
+skeleton = NodePath("../..")
+
+[node name="DrivewayLong8" type="MeshInstance3D" parent="Roads"]
+transform = Transform3D(-1.3113416e-07, 0, 3, 0, 3, 0, -3, 0, -1.3113416e-07, 1.5590065, 0.11, 5.485)
+mesh = ExtResource("2_ypk4p")
+skeleton = NodePath("../..")
+
+[node name="DrivewayLong9" type="MeshInstance3D" parent="Roads"]
+transform = Transform3D(-1.3113416e-07, 0, 3, 0, 3, 0, -3, 0, -1.3113416e-07, 0.35830665, 0.11, 5.485)
+mesh = ExtResource("2_ypk4p")
+skeleton = NodePath("../..")
+
+[node name="DrivewayLong10" type="MeshInstance3D" parent="Roads"]
+transform = Transform3D(-1.3113416e-07, 0, 3, 0, 3, 0, -3, 0, -1.3113416e-07, -0.83614814, 0.11, 5.485)
+mesh = ExtResource("2_ypk4p")
+skeleton = NodePath("../..")
+
+[node name="DrivewayLong11" type="MeshInstance3D" parent="Roads"]
+transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, -5.089, 0.11, 7.406)
+mesh = ExtResource("2_ypk4p")
+skeleton = NodePath("../..")
+
+[node name="DrivewayLong12" type="MeshInstance3D" parent="Roads"]
+transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, -5.089, 0.11, 6.2127113)
+mesh = ExtResource("2_ypk4p")
+skeleton = NodePath("../..")
+
+[node name="DrivewayLong13" type="MeshInstance3D" parent="Roads"]
+transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, -5.089, 0.11, 5.0179)
+mesh = ExtResource("2_ypk4p")
+skeleton = NodePath("../..")
+
+[node name="DrivewayLong14" type="MeshInstance3D" parent="Roads"]
+transform = Transform3D(-1.3113416e-07, 0, 3, 0, 3, 0, -3, 0, -1.3113416e-07, -2.026155, 0.11, 5.485)
+mesh = ExtResource("2_ypk4p")
+skeleton = NodePath("../..")
+
+[node name="DrivewayLong15" type="MeshInstance3D" parent="Roads"]
+transform = Transform3D(-1.3113416e-07, 0, 3, 0, 3, 0, -3, 0, -1.3113416e-07, -3.1806757, 0.11, 5.485)
+mesh = ExtResource("2_ypk4p")
+skeleton = NodePath("../..")
+
+[node name="DrivewayLong16" type="MeshInstance3D" parent="Roads"]
+transform = Transform3D(-1.3113416e-07, 0, 3, 0, 3, 0, -3, 0, -1.3113416e-07, -4.120409, 0.11, 5.485)
+mesh = ExtResource("2_ypk4p")
+skeleton = NodePath("../..")
+
+[node name="DrivewayLong17" type="MeshInstance3D" parent="Roads"]
+transform = Transform3D(-1.3113416e-07, 0, 3, 0, 3, 0, -3, 0, -1.3113416e-07, -6.0791354, 0.11, 5.485)
+mesh = ExtResource("2_ypk4p")
+skeleton = NodePath("../..")
+
+[node name="DrivewayLong18" type="MeshInstance3D" parent="Roads"]
+transform = Transform3D(-1.3113416e-07, 0, 3, 0, 3, 0, -3, 0, -1.3113416e-07, 6.062095, 0.11, 5.485)
+mesh = ExtResource("2_ypk4p")
+skeleton = NodePath("../..")
+
+[node name="DrivewayLong19" type="MeshInstance3D" parent="Roads"]
+transform = Transform3D(-1.3113416e-07, 0, 3, 0, 3, 0, -3, 0, -1.3113416e-07, 4.1148396, 0.11, 5.485)
+mesh = ExtResource("2_ypk4p")
+skeleton = NodePath("../..")
+
+[node name="DrivewayLong20" type="MeshInstance3D" parent="Roads"]
+transform = Transform3D(-1.3113416e-07, 0, 3, 0, 3, 0, -3, 0, -1.3113416e-07, -7.2703347, 0.11, 5.485)
+mesh = ExtResource("2_ypk4p")
+skeleton = NodePath("../..")
+
+[node name="DrivewayLong21" type="MeshInstance3D" parent="Roads"]
+transform = Transform3D(-1.3113416e-07, 0, 3, 0, 3, 0, -3, 0, -1.3113416e-07, -7.4220986, 0.11, 5.485)
+mesh = ExtResource("2_ypk4p")
+skeleton = NodePath("../..")
+
+[node name="DrivewayLong22" type="MeshInstance3D" parent="Roads"]
+transform = Transform3D(-1.3113416e-07, 0, 3, 0, 3, 0, -3, 0, -1.3113416e-07, -7.422, 0.11, -5.485)
+mesh = ExtResource("2_ypk4p")
+skeleton = NodePath("../..")
+
+[node name="DrivewayLong23" type="MeshInstance3D" parent="Roads"]
+transform = Transform3D(-1.3113416e-07, 0, 3, 0, 3, 0, -3, 0, -1.3113416e-07, -6.241652, 0.11, -5.485)
+mesh = ExtResource("2_ypk4p")
+skeleton = NodePath("../..")
+
+[node name="DrivewayLong24" type="MeshInstance3D" parent="Roads"]
+transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, -5.089, 0.11, 3.8393383)
+mesh = ExtResource("2_ypk4p")
+skeleton = NodePath("../..")
+
+[node name="DrivewayLong25" type="MeshInstance3D" parent="Roads"]
+transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, -5.089, 0.11, 2.6523218)
+mesh = ExtResource("2_ypk4p")
+skeleton = NodePath("../..")
+
+[node name="DrivewayLong26" type="MeshInstance3D" parent="Roads"]
+transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, -5.089, 0.11, 1.4706359)
+mesh = ExtResource("2_ypk4p")
+skeleton = NodePath("../..")
+
+[node name="DrivewayLong27" type="MeshInstance3D" parent="Roads"]
+transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, -5.089, 0.11, 0.29972267)
+mesh = ExtResource("2_ypk4p")
+skeleton = NodePath("../..")
+
+[node name="DrivewayLong28" type="MeshInstance3D" parent="Roads"]
+transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, -5.089, 0.11, -0.9001446)
+mesh = ExtResource("2_ypk4p")
+skeleton = NodePath("../..")
+
+[node name="DrivewayLong29" type="MeshInstance3D" parent="Roads"]
+transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, -5.089, 0.11, -2.095565)
+mesh = ExtResource("2_ypk4p")
+skeleton = NodePath("../..")
+
+[node name="DrivewayLong30" type="MeshInstance3D" parent="Roads"]
+transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, -5.089, 0.11, -3.2814522)
+mesh = ExtResource("2_ypk4p")
+skeleton = NodePath("../..")
+
+[node name="DrivewayLong31" type="MeshInstance3D" parent="Roads"]
+transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, -5.089, 0.11, -4.464762)
+mesh = ExtResource("2_ypk4p")
+skeleton = NodePath("../..")
+
+[node name="DrivewayLong32" type="MeshInstance3D" parent="Roads"]
+transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, -5.089, 0.11, -5.661288)
+mesh = ExtResource("2_ypk4p")
+skeleton = NodePath("../..")
+
+[node name="DrivewayLong33" type="MeshInstance3D" parent="Roads"]
+transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, -5.089, 0.11, -6.841844)
+mesh = ExtResource("2_ypk4p")
+skeleton = NodePath("../..")
+
+[node name="DrivewayLong34" type="MeshInstance3D" parent="Roads"]
+transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, -5.089, 0.11, -7.4137726)
+mesh = ExtResource("2_ypk4p")
+skeleton = NodePath("../..")
+
+[node name="DrivewayLong35" type="MeshInstance3D" parent="Roads"]
+transform = Transform3D(-1.3113416e-07, 0, 3, 0, 3, 0, -3, 0, -1.3113416e-07, -5.9306755, 0.11, -5.485)
+mesh = ExtResource("2_ypk4p")
+skeleton = NodePath("../..")
+
+[node name="DrivewayLong36" type="MeshInstance3D" parent="Roads"]
+transform = Transform3D(-1.3113416e-07, 0, 3, 0, 3, 0, -3, 0, -1.3113416e-07, -4.144844, 0.11, -5.485)
+mesh = ExtResource("2_ypk4p")
+skeleton = NodePath("../..")
+
+[node name="DrivewayLong37" type="MeshInstance3D" parent="Roads"]
+transform = Transform3D(-1.3113416e-07, 0, 3, 0, 3, 0, -3, 0, -1.3113416e-07, -2.9529357, 0.11, -5.485)
+mesh = ExtResource("2_ypk4p")
+skeleton = NodePath("../..")
+
+[node name="DrivewayLong38" type="MeshInstance3D" parent="Roads"]
+transform = Transform3D(-1.3113416e-07, 0, 3, 0, 3, 0, -3, 0, -1.3113416e-07, -1.8420556, 0.11, -5.485)
+mesh = ExtResource("2_ypk4p")
+skeleton = NodePath("../..")
+
+[node name="DrivewayLong39" type="MeshInstance3D" parent="Roads"]
+transform = Transform3D(-1.3113416e-07, 0, 3, 0, 3, 0, -3, 0, -1.3113416e-07, -0.6465614, 0.11, -5.485)
+mesh = ExtResource("2_ypk4p")
+skeleton = NodePath("../..")
+
+[node name="DrivewayLong40" type="MeshInstance3D" parent="Roads"]
+transform = Transform3D(-1.3113416e-07, 0, 3, 0, 3, 0, -3, 0, -1.3113416e-07, 0.5222645, 0.11, -5.485)
+mesh = ExtResource("2_ypk4p")
+skeleton = NodePath("../..")
+
+[node name="DrivewayLong41" type="MeshInstance3D" parent="Roads"]
+transform = Transform3D(-1.3113416e-07, 0, 3, 0, 3, 0, -3, 0, -1.3113416e-07, 1.6724067, 0.11, -5.485)
+mesh = ExtResource("2_ypk4p")
+skeleton = NodePath("../..")
+
+[node name="DrivewayLong42" type="MeshInstance3D" parent="Roads"]
+transform = Transform3D(-1.3113416e-07, 0, 3, 0, 3, 0, -3, 0, -1.3113416e-07, 2.8524187, 0.11, -5.4872136)
+mesh = ExtResource("2_ypk4p")
+skeleton = NodePath("../..")
+
+[node name="DrivewayLong43" type="MeshInstance3D" parent="Roads"]
+transform = Transform3D(-1.3113416e-07, 0, 3, 0, 3, 0, -3, 0, -1.3113416e-07, 3.9972167, 0.11, -5.485)
+mesh = ExtResource("2_ypk4p")
+skeleton = NodePath("../..")
+
+[node name="DrivewayLong44" type="MeshInstance3D" parent="Roads"]
+transform = Transform3D(-1.3113416e-07, 0, 3, 0, 3, 0, -3, 0, -1.3113416e-07, 5.164897, 0.11, -5.485)
+mesh = ExtResource("2_ypk4p")
+skeleton = NodePath("../..")
+
+[node name="DrivewayLong45" type="MeshInstance3D" parent="Roads"]
+transform = Transform3D(-1.3113416e-07, 0, 3, 0, 3, 0, -3, 0, -1.3113416e-07, 6.340837, 0.11, -5.485)
+mesh = ExtResource("2_ypk4p")
+skeleton = NodePath("../..")
+
+[node name="DrivewayLong46" type="MeshInstance3D" parent="Roads"]
+transform = Transform3D(-1.3113416e-07, 0, 3, 0, 3, 0, -3, 0, -1.3113416e-07, 7.3905616, 0.11, -5.485)
+mesh = ExtResource("2_ypk4p")
+skeleton = NodePath("../..")
+
+[node name="DrivewayLong47" type="MeshInstance3D" parent="Roads"]
+transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, 5.089427, 0.11, 3.8805904)
+mesh = ExtResource("2_ypk4p")
+skeleton = NodePath("../..")
+
+[node name="DrivewayLong48" type="MeshInstance3D" parent="Roads"]
+transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, 5.089427, 0.11, 2.724442)
+mesh = ExtResource("2_ypk4p")
+skeleton = NodePath("../..")
+
+[node name="DrivewayLong49" type="MeshInstance3D" parent="Roads"]
+transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, 5.089427, 0.11, 1.5682716)
+mesh = ExtResource("2_ypk4p")
+skeleton = NodePath("../..")
+
+[node name="DrivewayLong50" type="MeshInstance3D" parent="Roads"]
+transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, 5.089427, 0.11, 0.4313718)
+mesh = ExtResource("2_ypk4p")
+skeleton = NodePath("../..")
+
+[node name="DrivewayLong51" type="MeshInstance3D" parent="Roads"]
+transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, 5.089427, 0.11, -0.67540026)
+mesh = ExtResource("2_ypk4p")
+skeleton = NodePath("../..")
+
+[node name="DrivewayLong52" type="MeshInstance3D" parent="Roads"]
+transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, 5.089427, 0.11, -1.8227472)
+mesh = ExtResource("2_ypk4p")
+skeleton = NodePath("../..")
+
+[node name="DrivewayLong53" type="MeshInstance3D" parent="Roads"]
+transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, 5.089427, 0.11, -3.0113912)
+mesh = ExtResource("2_ypk4p")
+skeleton = NodePath("../..")
+
+[node name="DrivewayLong54" type="MeshInstance3D" parent="Roads"]
+transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, 5.089427, 0.11, -4.0702643)
+mesh = ExtResource("2_ypk4p")
+skeleton = NodePath("../..")
+
+[node name="DrivewayLong55" type="MeshInstance3D" parent="Roads"]
+transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, 5.089427, 0.11, -4.762784)
+mesh = ExtResource("2_ypk4p")
+skeleton = NodePath("../..")
+
+[node name="DrivewayLong56" type="MeshInstance3D" parent="Roads"]
+transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, 5.089427, 0.11, -6.459009)
+mesh = ExtResource("2_ypk4p")
+skeleton = NodePath("../..")
+
+[node name="DrivewayLong57" type="MeshInstance3D" parent="Roads"]
+transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, 5.089427, 0.11, -7.396688)
+mesh = ExtResource("2_ypk4p")
+skeleton = NodePath("../..")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
