@@ -1,19 +1,16 @@
-# Player.gd
-# -----------
-# Networked first-person player controller that:
-# - Handles local movement + camera look
-# - Owns a "carry marker" where pickup items are attached
-# - Provides RPCs for server-authoritative pickup/drop
-# - Is driven by a separate RayCast3D script for interaction
-# - Works with any MultiplayerPeer backend (ENet, SteamMultiplayerPeer, etc.)
-
 extends CharacterBody3D
+# --------------------------------------------
+# Networked first-person player controller:
+# - Local movement + camera look
+# - Carry marker for pickup items
+# - Server-authoritative pickup/drop
+# - Transport-agnostic (ENet, SteamMultiplayerPeer, etc.)
+# --------------------------------------------
 
 # =========================
 #        CONFIG / TOGGLES
 # =========================
 
-# Movement / abilities toggles (enable/disable features per player)
 @export var can_move := true
 @export var has_gravity := true
 @export var can_jump := true
@@ -37,36 +34,42 @@ extends CharacterBody3D
 @export var input_freefly := "freefly"
 @export var input_interact := "interact"
 
-# In Godot's MultiplayerAPI (SceneMultiplayer), the server/host
-# always has peer ID 1, regardless of underlying transport (ENet, Steam, etc.)
+# Server peer ID for SceneMultiplayer (ENet, Steam, etc.)
 const SERVER_ID := 1
 
 # =========================
 #         RUNTIME STATE
 # =========================
-var mouse_captured := false        # whether mouse is locked to screen for FPS look
-var look_rotation := Vector2.ZERO  # pitch (x) + yaw (y)
-var move_speed := 0.0              # current movement speed (walk/sprint)
-var freeflying := false            # noclip state
+var mouse_captured: bool = false
+var look_rotation: Vector2 = Vector2.ZERO
+var move_speed: float = 0.0
+var freeflying: bool = false
 
-# Item currently held by THIS local player (only valid on the owning peer)
+# Item currently held by THIS local player
 var picked_object: Node = null
+
+# =========================
+#    NETWORK SYNC CONFIG
+# =========================
+@export var net_send_rate_hz: float = 20.0      # how often authority sends state
+@export var net_lerp_alpha: float = 0.2         # interpolation factor for remotes
+
+var _net_last_send_time: float = 0.0
+var _net_target_transform: Transform3D = Transform3D.IDENTITY
+var _net_has_target: bool = false
 
 # =========================
 #          NODE REFS
 # =========================
-@onready var head: Node3D = $Head                     # yaw/pitch root for camera
-@onready var collider: CollisionShape3D = $Collider   # player collision shape
-@onready var cam: Camera3D = $Head/Camera3D           # first-person camera
+@onready var head: Node3D = $Head
+@onready var collider: CollisionShape3D = $Collider
+@onready var cam: Camera3D = $Head/Camera3D
 @onready var footstep: AudioStreamPlayer3D = $PlayerAudios/Footstep
 
-# Marker where held items attach (bat in hand). Must exist in scene:
-# Head/CarryObjectMarker (Node3D or Marker3D).
 @onready var carry_marker: Node3D = (
 	$Head/CarryObjectMarker if $Head.has_node("CarryObjectMarker") else null
 )
 
-# Optional UI hint label ("Press E to interact")
 var hint_label: Label
 
 signal interact_object(target: Node)
@@ -76,18 +79,20 @@ signal interact_object(target: Node)
 #       MULTIPLAYER SETUP
 # =========================
 func _enter_tree() -> void:
-	# Assumes each Player node's name == its peer_id as string.
-	# Example: node named "1" is host, "2" is a client, etc.
+	# Name of Player node is expected to be the peer ID as string.
 	set_multiplayer_authority(name.to_int())
+
 
 func _ready() -> void:
 	add_to_group("player")
 
-	# Only the local authority controls this player and owns its camera
+	# Only the local authority owns its camera
 	if is_multiplayer_authority():
 		cam.current = true
 	else:
 		cam.current = false
+
+	_net_target_transform = global_transform
 
 	_setup_hint_ui()
 	_check_input_mappings()
@@ -112,7 +117,6 @@ func _setup_hint_ui() -> void:
 		h.add_theme_color_override("font_color", Color(1, 1, 1))
 		h.add_theme_color_override("font_outline_color", Color(0, 0, 0))
 		h.add_theme_constant_override("outline_size", 3)
-		# Anchor top-center on screen
 		h.anchor_left = 0.5
 		h.anchor_right = 0.5
 		h.anchor_top = 0.0
@@ -130,30 +134,22 @@ func _input(event: InputEvent) -> void:
 	if not is_multiplayer_authority():
 		return
 
-	# Escape / ui_cancel = release mouse
 	if event.is_action_pressed("ui_cancel"):
 		_release_mouse()
-
-	# NOTE:
-	# "interact" is NOT handled here.
-	# The RayCast3D script listens for interact and calls
-	# request_pickup_rpc / request_drop_rpc on THIS player.
+	# "interact" is handled by the RayCast script.
 
 
 func _unhandled_input(event: InputEvent) -> void:
 	if not is_multiplayer_authority():
 		return
 
-	# Capture mouse whenever we click the left button
 	if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
 		_capture_mouse()
 
-	# Mouse look (only when mouse is captured)
 	if mouse_captured and event is InputEventMouseMotion:
 		var mm := event as InputEventMouseMotion
 		_rotate_look(mm.relative)
 
-	# Toggle noclip / freefly mode
 	if can_freefly and Input.is_action_just_pressed(input_freefly):
 		if freeflying:
 			_disable_freefly()
@@ -165,16 +161,27 @@ func _unhandled_input(event: InputEvent) -> void:
 #      FRAME / PHYSICS
 # =========================
 func _process(_dt: float) -> void:
-	if not is_multiplayer_authority():
-		return
-	# Hover + hint visibility can be driven from the RayCast script.
-	# Nothing special needed here right now.
+	# Hover + hint visibility driven from RayCast; nothing special here now.
+	pass
 
 
 func _physics_process(delta: float) -> void:
-	if not is_multiplayer_authority():
+	# If we’re back at main menu and there is no multiplayer peer,
+	# skip all networked-player logic (prevents "no peer" errors).
+	if not multiplayer.has_multiplayer_peer():
 		return
 
+	# AUTHORITY: simulate full movement and send state
+	if is_multiplayer_authority():
+		_physics_authority(delta)
+		_net_maybe_send_state()
+		return
+
+	# NON-AUTHORITY: just interpolate toward last received state
+	_net_interpolate_remote()
+
+
+func _physics_authority(delta: float) -> void:
 	# --- Freefly mode (noclip) ---
 	if can_freefly and freeflying:
 		var input_dir := Input.get_vector(input_left, input_right, input_forward, input_back)
@@ -209,28 +216,80 @@ func _physics_process(delta: float) -> void:
 	else:
 		velocity.x = 0.0
 		velocity.y = 0.0
-	
-	if is_on_floor() and velocity != Vector3(0,0,0):
+
+	if is_on_floor() and velocity != Vector3.ZERO:
 		%FootstepAnimation.play("walk")
 
 	move_and_slide()
 
-func _play_footstep_audio():
-	footstep.pitch_scale = randf_range(0.85,1.25)
+
+func _net_maybe_send_state() -> void:
+	# Only send if we actually have a connected peer
+	if not multiplayer.has_multiplayer_peer():
+		return
+
+	var mp: MultiplayerPeer = multiplayer.multiplayer_peer
+	if mp == null:
+		return
+	if mp.get_connection_status() != MultiplayerPeer.CONNECTION_CONNECTED:
+		return
+
+	# Throttle to net_send_rate_hz
+	var now: float = float(Time.get_ticks_msec()) / 1000.0
+	var min_interval: float = 1.0 / max(net_send_rate_hz, 1.0)
+	if now - _net_last_send_time < min_interval:
+		return
+
+	_net_last_send_time = now
+
+	# Everyone (host + clients) calls this; server will rebroadcast.
+	rpc("_net_state_from_client", global_transform)
+
+
+func _net_interpolate_remote() -> void:
+	if not _net_has_target:
+		return
+	# Simple lerp toward target transform
+	global_transform = global_transform.interpolate_with(_net_target_transform, net_lerp_alpha)
+
+
+@rpc("any_peer", "call_local", "unreliable")
+func _net_state_from_client(new_transform: Transform3D) -> void:
+	if multiplayer.is_server():
+		if not is_multiplayer_authority():
+			_net_set_target(new_transform)
+		rpc("_net_apply_state", new_transform)
+	else:
+		if not is_multiplayer_authority():
+			_net_set_target(new_transform)
+
+
+@rpc("any_peer", "unreliable")
+func _net_apply_state(new_transform: Transform3D) -> void:
+	if is_multiplayer_authority():
+		return
+	_net_set_target(new_transform)
+
+
+func _net_set_target(new_transform: Transform3D) -> void:
+	_net_target_transform = new_transform
+	_net_has_target = true
+
+
+func _play_footstep_audio() -> void:
+	footstep.pitch_scale = randf_range(0.85, 1.25)
 	footstep.play()
-	
+
+
 # =========================
 #       HELPER METHODS
 # =========================
 func _rotate_look(delta_rel: Vector2) -> void:
-	# Vertical (pitch) on the head
 	look_rotation.x -= delta_rel.y * look_speed
 	look_rotation.x = clamp(look_rotation.x, deg_to_rad(-85.0), deg_to_rad(85.0))
 
-	# Horizontal (yaw) on the body
 	look_rotation.y -= delta_rel.x * look_speed
 
-	# Reset bases so rotations don't accumulate weirdly
 	transform.basis = Basis()
 	rotate_y(look_rotation.y)
 
@@ -260,7 +319,6 @@ func _disable_freefly() -> void:
 
 
 func _check_input_mappings() -> void:
-	# Safety checks so missing input actions don’t silently break movement
 	if can_move and not InputMap.has_action(input_left):
 		push_error("Missing action: " + input_left); can_move = false
 	if can_move and not InputMap.has_action(input_right):
@@ -282,20 +340,10 @@ func _check_input_mappings() -> void:
 # =========================
 #   BRIDGE CALLED BY RAY
 # =========================
-# These are what the RayCast3D script calls when you press "interact".
-
 func request_pickup_rpc(item_path: NodePath) -> void:
-	# Called by the RayCast on THIS local player.
-	# The server should always be the authority that decides
-	# who actually picks up the item (even with Steam).
-
 	if multiplayer.is_server():
-		# If this is the host/server, we can call request_pickup()
-		# directly (no rpc), but request_pickup uses remote_sender_id,
-		# so the host case is handled inside request_pickup.
 		request_pickup(item_path)
 	else:
-		# Clients send an RPC to the server (peer 1).
 		rpc_id(SERVER_ID, "request_pickup", item_path)
 
 
@@ -306,101 +354,67 @@ func request_drop_rpc() -> void:
 	var item_path: NodePath = picked_object.get_path()
 
 	if multiplayer.is_server():
-		# Host just calls request_drop directly
 		request_drop(item_path)
 	else:
-		# Clients ask server to process the drop
 		rpc_id(SERVER_ID, "request_drop", item_path)
 
 
 # =========================
 #   SERVER-AUTH PICKUP/DROP
 # =========================
-# The server is the only peer that modifies the game state
-# (who holds what). Changes are then broadcast via apply_* RPCs.
-
 @rpc("any_peer", "reliable")
 func request_pickup(item_path: NodePath) -> void:
-	# This runs ONLY on the server.
 	if not multiplayer.is_server():
 		return
 
-	# Who sent this RPC?
-	var sender := multiplayer.get_remote_sender_id()
-
-	# If this was called locally (host path via request_pickup_rpc),
-	# remote_sender_id == 0. In that case, treat the sender
-	# as the server's own peer id.
+	var sender: int = multiplayer.get_remote_sender_id()
 	if sender == 0:
 		sender = multiplayer.get_unique_id()
 
-	# Look up the item node in the scene tree
 	var item := get_tree().root.get_node_or_null(item_path)
 	if item == null:
 		return
 	if not item.is_in_group("pickup"):
 		return
 
-	# Prevent double-pickups on the server
 	if item.has_meta("locked") and bool(item.get_meta("locked")):
 		return
 	item.set_meta("locked", true)
 
-	# Find the Player node for that peer id
 	var p := _player_for_peer(sender)
 	if p == null:
 		item.set_meta("locked", false)
 		return
 
-	# Tell everyone to apply the pickup for this item + player
-	# apply_pickup is marked call_local so it runs on all peers.
 	rpc("apply_pickup", item_path, p.get_path(), sender)
 
 
 @rpc("any_peer", "call_local", "reliable")
 func apply_pickup(item_path: NodePath, player_path: NodePath, new_owner_id: int) -> void:
-	# This runs on ALL peers (server + all clients).
-	# It actually moves the item under the correct player/marker
-	# so everyone sees the same thing.
-
 	var item := get_tree().root.get_node_or_null(item_path)
 	var player := get_tree().root.get_node_or_null(player_path)
 	if item == null or player == null:
 		return
 
-	# Transfer network authority to the new owner
 	item.set_multiplayer_authority(new_owner_id)
 
-	# Try to attach directly to that player's CarryObjectMarker
 	var marker := player.get_node_or_null("Head/CarryObjectMarker")
-
 	if marker != null and marker is Node3D:
 		var marker3d := marker as Node3D
-
-		# Reparent under the marker so local (0,0,0) == marker position.
-		# This guarantees the same relative position for EVERY peer.
 		item.reparent(marker3d)
-		# Reset local transform so it snaps exactly to the marker.
 		item.transform = Transform3D.IDENTITY
 	else:
-		# Fallback: if marker is missing for some reason, reparent
-		# under the player and match global transform roughly.
 		item.reparent(player)
-		# Optional: you could keep previous global transform or
-		# set it based on some default offset.
 
-	# Let the item know it's now held (disables collision, hides outline, etc.)
 	if "set_held" in item:
 		item.call_deferred("set_held", true)
 
-	# Only the owning peer remembers "picked_object"
 	if multiplayer.get_unique_id() == new_owner_id:
 		picked_object = item
 
 
 @rpc("any_peer", "reliable")
 func request_drop(item_path: NodePath) -> void:
-	# Only server responds to drop requests
 	if not multiplayer.is_server():
 		return
 
@@ -408,30 +422,21 @@ func request_drop(item_path: NodePath) -> void:
 	if item == null:
 		return
 
-	# Unlock the item so it can be picked up again later
 	item.set_meta("locked", false)
-
-	# Broadcast the drop to all peers (apply_drop is call_local)
 	rpc("apply_drop", item_path)
 
 
 @rpc("any_peer", "call_local", "reliable")
 func apply_drop(item_path: NodePath) -> void:
-	# Runs on all peers. Puts the item back in the world.
-
 	var item := get_tree().root.get_node_or_null(item_path)
 	if item == null:
 		return
 
-	# Reparent to the current scene root (or some world node)
-	# Global transform is preserved, so it drops where it was.
 	item.reparent(get_tree().current_scene)
 
-	# Restore item behavior (outline, collider, gravity) via set_held(false)
 	if "set_held" in item:
 		item.call_deferred("set_held", false)
 
-	# If THIS peer thought we were holding this object, clear reference
 	if picked_object == item and is_multiplayer_authority():
 		picked_object = null
 
@@ -440,7 +445,6 @@ func apply_drop(item_path: NodePath) -> void:
 #      PLAYER LOOKUP
 # =========================
 func _player_for_peer(peer_id: int) -> Node3D:
-	# Find the Player node whose multiplayer authority matches peer_id
 	var players := get_tree().get_nodes_in_group("player")
 	for n in players:
 		if n is Node3D:
