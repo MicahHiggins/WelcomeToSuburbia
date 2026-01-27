@@ -52,6 +52,7 @@ dof_blur_near_distance = 0.01
 auto_exposure_min_sensitivity = 8.01
 
 [node name="Level1" type="Node3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 28.366493, 0, 0)
 script = ExtResource("1_oh3op")
 player_scene = ExtResource("2_jvlpr")
 
@@ -65,7 +66,6 @@ spawn_path = NodePath("..")
 spawn_limit = 5
 
 [node name="gen" type="Node3D" parent="."]
-visible = false
 
 [node name="Items" type="Node" parent="."]
 
@@ -108,7 +108,7 @@ offset_right = 507.0
 offset_bottom = 287.0
 
 [node name="PCGAttempt" parent="." instance=ExtResource("13_grjf3")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17.782766, -0.83148956, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17.782766, 0.47683716, 0)
 
 [connection signal="pressed" from="Menu/CanvasLayer/Host" to="." method="_on_host_pressed"]
 [connection signal="pressed" from="Menu/CanvasLayer/Join" to="." method="_on_join_pressed"]
