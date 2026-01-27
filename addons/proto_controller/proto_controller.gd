@@ -35,7 +35,7 @@ extends CharacterBody3D
 @export var input_interact := "interact"
 
 # Server peer ID for SceneMultiplayer (ENet, Steam, etc.)
-const SERVER_ID := 1
+const SERVER_ID: int = 1
 
 # =========================
 #         RUNTIME STATE
@@ -47,6 +47,21 @@ var freeflying: bool = false
 
 # Item currently held by THIS local player
 var picked_object: Node = null
+
+# =========================
+#      SANITY / TETHER
+# =========================
+var sanity: float = 100.0
+var sanity_fx_intensity: float = 0.0
+
+# Tether state (set by server)
+var tether_partner_pos: Vector3 = Vector3.ZERO
+var tether_distance: float = 0.0
+var tether_speed_mult: float = 1.0
+var tether_hard_lock: bool = false
+
+var _sanity_fx_rect: ColorRect
+var _sanity_fx_mat: ShaderMaterial
 
 # =========================
 #    NETWORK SYNC CONFIG
@@ -96,6 +111,7 @@ func _ready() -> void:
 
 	_setup_hint_ui()
 	_check_input_mappings()
+	_setup_sanity_fx_ui()
 
 
 # =========================
@@ -112,7 +128,7 @@ func _setup_hint_ui() -> void:
 	if h == null:
 		h = Label.new()
 		h.name = "Hint"
-		h.text = "Press E to interact"
+		h.text = "Press F to interact" # your project.godot binds interact to F
 		h.visible = false
 		h.add_theme_color_override("font_color", Color(1, 1, 1))
 		h.add_theme_color_override("font_outline_color", Color(0, 0, 0))
@@ -125,6 +141,70 @@ func _setup_hint_ui() -> void:
 		ui.add_child(h)
 
 	hint_label = h
+
+
+# =========================
+#     SANITY SCREEN FX UI
+# =========================
+func _setup_sanity_fx_ui() -> void:
+	# Only build FX UI for the locally-controlled player
+	if not is_multiplayer_authority():
+		return
+
+	var ui := $UI if has_node("UI") else null
+	if ui == null:
+		ui = CanvasLayer.new()
+		ui.name = "UI"
+		add_child(ui)
+
+	_sanity_fx_rect = ui.get_node_or_null("SanityFX")
+	if _sanity_fx_rect == null:
+		_sanity_fx_rect = ColorRect.new()
+		_sanity_fx_rect.name = "SanityFX"
+		_sanity_fx_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		_sanity_fx_rect.anchor_left = 0.0
+		_sanity_fx_rect.anchor_top = 0.0
+		_sanity_fx_rect.anchor_right = 1.0
+		_sanity_fx_rect.anchor_bottom = 1.0
+		_sanity_fx_rect.offset_left = 0.0
+		_sanity_fx_rect.offset_top = 0.0
+		_sanity_fx_rect.offset_right = 0.0
+		_sanity_fx_rect.offset_bottom = 0.0
+		_sanity_fx_rect.z_index = 999
+		ui.add_child(_sanity_fx_rect)
+
+		var sh := Shader.new()
+		sh.code = """
+shader_type canvas_item;
+render_mode unshaded;
+
+uniform float intensity : hint_range(0.0, 1.0) = 0.0;
+uniform sampler2D screen_tex : hint_screen_texture, filter_linear_mipmap;
+
+void fragment() {
+	vec2 uv = SCREEN_UV;
+	float t = TIME;
+
+	// Wobble
+	float w = sin((uv.y * 14.0 + t * 2.0)) * cos((uv.x * 10.0 - t * 1.7));
+	vec2 offs = vec2(w, -w) * (0.012 * intensity);
+
+	vec4 col = texture(screen_tex, uv + offs);
+
+	// Color warp + vignette
+	col.rgb += vec3(0.08, -0.03, 0.06) * intensity * sin(t + uv.x * 6.0);
+	vec2 p = uv - 0.5;
+	float v = 1.0 - smoothstep(0.15, 0.70, dot(p, p));
+	col.rgb *= mix(1.0, v, 0.9 * intensity);
+
+	COLOR = col;
+}
+"""
+		_sanity_fx_mat = ShaderMaterial.new()
+		_sanity_fx_mat.shader = sh
+		_sanity_fx_rect.material = _sanity_fx_mat
+
+	_sanity_fx_rect.visible = false
 
 
 # =========================
@@ -161,8 +241,13 @@ func _unhandled_input(event: InputEvent) -> void:
 #      FRAME / PHYSICS
 # =========================
 func _process(_dt: float) -> void:
-	# Hover + hint visibility driven from RayCast; nothing special here now.
-	pass
+	# Apply sanity screen FX only on the local player
+	if not is_multiplayer_authority():
+		return
+
+	if _sanity_fx_mat != null and _sanity_fx_rect != null:
+		_sanity_fx_rect.visible = sanity_fx_intensity > 0.01
+		_sanity_fx_mat.set_shader_parameter("intensity", sanity_fx_intensity)
 
 
 func _physics_process(delta: float) -> void:
@@ -203,10 +288,26 @@ func _physics_authority(delta: float) -> void:
 	else:
 		move_speed = base_speed
 
+	# Tether speed scaling
+	move_speed *= tether_speed_mult
+
 	# --- Directional WASD movement ---
 	if can_move:
 		var input_dir := Input.get_vector(input_left, input_right, input_forward, input_back)
 		var move_dir := (transform.basis * Vector3(input_dir.x, 0.0, input_dir.y)).normalized()
+
+		# Hard-lock: only allow movement that has a component TOWARD partner
+		if tether_hard_lock and move_dir != Vector3.ZERO:
+			var to_partner: Vector3 = tether_partner_pos - global_position
+			to_partner.y = 0.0
+			if to_partner.length() > 0.001:
+				var toward_dir: Vector3 = to_partner.normalized()
+				var toward_amt: float = move_dir.dot(toward_dir)
+				if toward_amt <= 0.0:
+					move_dir = Vector3.ZERO
+				else:
+					move_dir = toward_dir * toward_amt
+
 		if move_dir != Vector3.ZERO:
 			velocity.x = move_dir.x * move_speed
 			velocity.z = move_dir.z * move_speed
@@ -236,7 +337,7 @@ func _net_maybe_send_state() -> void:
 
 	# Throttle to net_send_rate_hz
 	var now: float = float(Time.get_ticks_msec()) / 1000.0
-	var min_interval: float = 1.0 / max(net_send_rate_hz, 1.0)
+	var min_interval: float = 1.0 / maxf(net_send_rate_hz, 1.0)
 	if now - _net_last_send_time < min_interval:
 		return
 
@@ -335,6 +436,37 @@ func _check_input_mappings() -> void:
 		push_error("Missing action: " + input_freefly); can_freefly = false
 	if not InputMap.has_action(input_interact):
 		push_error("Missing action: " + input_interact)
+
+
+# =========================
+#  SERVER -> CLIENT RPCs
+# =========================
+@rpc("any_peer", "call_local", "unreliable")
+func server_set_tether_state(
+	partner_pos: Vector3,
+	distance: float,
+	speed_mult: float,
+	hard_lock: bool,
+	new_sanity: float,
+	fx_intensity: float
+) -> void:
+	var sender: int = multiplayer.get_remote_sender_id()
+
+	# Accept only if:
+	# - came from server (sender == 1), OR
+	# - call_local on server (sender == 0 and we are server)
+	if sender != 0 and sender != SERVER_ID:
+		return
+	if sender == 0 and not multiplayer.is_server():
+		return
+
+	tether_partner_pos = partner_pos
+	tether_distance = distance
+	tether_speed_mult = clamp(speed_mult, 0.0, 1.0)
+	tether_hard_lock = hard_lock
+
+	sanity = clamp(new_sanity, 0.0, 100.0)
+	sanity_fx_intensity = clamp(fx_intensity, 0.0, 1.0)
 
 
 # =========================
