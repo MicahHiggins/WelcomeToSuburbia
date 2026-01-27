@@ -3,15 +3,8 @@
 [ext_resource type="Script" uid="uid://dppcbcba5rvbf" path="res://GameLevelsETC/level_1.gd" id="1_oh3op"]
 [ext_resource type="PackedScene" uid="uid://bs72ogkvdd7d6" path="res://addons/proto_controller/proto_controller.tscn" id="2_jvlpr"]
 [ext_resource type="PackedScene" uid="uid://bs2jm62cmkbrk" path="res://addons/instant-realistic-light/light_scene.tscn" id="3_jo2a5"]
-[ext_resource type="Script" uid="uid://b21nuxj38irda" path="res://GameLevelsETC/static_body_3d.gd" id="4_jo2a5"]
-[ext_resource type="Script" uid="uid://d0eg3nbgyu7ok" path="res://GameLevelsETC/gen.gd" id="5_ucqbr"]
-[ext_resource type="PackedScene" uid="uid://dfguvb1nu28sf" path="res://Assets/kenney_city-kit-suburban_20/Models/GLB format/building-type-j.glb" id="6_tpdji"]
-[ext_resource type="PackedScene" uid="uid://brsi4anrynt4t" path="res://Assets/kenney_city-kit-suburban_20/Models/GLB format/driveway-long.glb" id="6_ucj8g"]
-[ext_resource type="PackedScene" uid="uid://dh0b8f7cd4ho5" path="res://Assets/kenney_city-kit-suburban_20/Models/GLB format/tree-large.glb" id="7_buyxr"]
-[ext_resource type="PackedScene" uid="uid://dgw5onf5n5dtq" path="res://Assets/kenney_city-kit-suburban_20/Models/GLB format/building-type-n.glb" id="8_tpdji"]
-[ext_resource type="PackedScene" uid="uid://c3xn6otd7y75" path="res://Assets/kenney_city-kit-suburban_20/Models/GLB format/building-type-a.glb" id="8_wxf7o"]
-[ext_resource type="PackedScene" uid="uid://7rf6k7dglhi5" path="res://Assets/kenney_city-kit-suburban_20/Models/GLB format/building-type-d.glb" id="9_wjimw"]
 [ext_resource type="PackedScene" uid="uid://b36mjwh3wwi6m" path="res://GameLevelsETC/Items/bat_clean.tscn" id="12_wjimw"]
+[ext_resource type="PackedScene" uid="uid://cg04msv62ujdu" path="res://Max's Folder (do not touch!!!)/pcg_attempt.tscn" id="13_grjf3"]
 [ext_resource type="Texture2D" uid="uid://3i53ybhtpc0f" path="res://Assets/—Pngtree—vector copy icon_4013516.png" id="13_grjf3"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_jo2a5"]
@@ -63,16 +56,9 @@ dof_blur_near_distance = 0.01
 auto_exposure_min_sensitivity = 8.01
 
 [node name="Level1" type="Node3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 28.366493, 0, 0)
 script = ExtResource("1_oh3op")
 player_scene = ExtResource("2_jvlpr")
-
-[node name="StaticBody3D" type="StaticBody3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.2982402, 0)
-script = ExtResource("4_jo2a5")
-terrain_height_offset = 0.0
-terrain_material = SubResource("StandardMaterial3D_jo2a5")
-town_road_spacing = 90.0
-house_offset_from_road = 30.0
 
 [node name="WorldEnvironment" parent="." instance=ExtResource("3_jo2a5")]
 environment = SubResource("Environment_f8w8m")
@@ -84,10 +70,6 @@ spawn_path = NodePath("..")
 spawn_limit = 5
 
 [node name="gen" type="Node3D" parent="."]
-script = ExtResource("5_ucqbr")
-house_scenes = Array[PackedScene]([ExtResource("6_tpdji"), ExtResource("8_tpdji"), ExtResource("8_wxf7o"), ExtResource("9_wjimw")])
-road_straight_scene = ExtResource("6_ucj8g")
-tree_scene = ExtResource("7_buyxr")
 
 [node name="Items" type="Node" parent="."]
 
@@ -129,40 +111,8 @@ offset_top = 247.0
 offset_right = 507.0
 offset_bottom = 287.0
 
-[node name="InGameMenu" type="Node" parent="."]
-
-[node name="CanvasLayer" type="CanvasLayer" parent="InGameMenu"]
-
-[node name="quit" type="Button" parent="InGameMenu/CanvasLayer"]
-offset_left = 14.0
-offset_top = 32.0
-offset_right = 60.0
-offset_bottom = 63.0
-text = "quit
-"
-
-[node name="main" type="Button" parent="InGameMenu/CanvasLayer"]
-offset_left = 14.0
-offset_top = 63.0
-offset_right = 22.0
-offset_bottom = 71.0
-text = "main
-"
-
-[node name="lobbycode" type="Label" parent="InGameMenu/CanvasLayer"]
-offset_left = 115.0
-offset_top = 32.0
-offset_right = 206.0
-offset_bottom = 55.0
-text = "Lobby Code"
-
-[node name="Button" type="Button" parent="InGameMenu/CanvasLayer"]
-offset_left = 130.0
-offset_top = 56.0
-offset_right = 1162.0
-offset_bottom = 1088.0
-scale = Vector2(0.05, 0.05)
-icon = ExtResource("13_grjf3")
+[node name="PCGAttempt" parent="." instance=ExtResource("13_grjf3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17.782766, 0.47683716, 0)
 
 [connection signal="pressed" from="Menu/CanvasLayer/Host" to="." method="_on_host_pressed"]
 [connection signal="pressed" from="Menu/CanvasLayer/Join" to="." method="_on_join_pressed"]

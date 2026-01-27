@@ -1,4 +1,4 @@
-[gd_scene load_steps=6 format=4 uid="uid://b36mjwh3wwi6m"]
+[gd_scene load_steps=9 format=4 uid="uid://b36mjwh3wwi6m"]
 
 [ext_resource type="Script" uid="uid://31cy13qp4njk" path="res://GameLevelsETC/Items/bat_clean.gd" id="1_5ksxd"]
 [ext_resource type="PackedScene" uid="uid://nvfvkwfniq80" path="res://Assets/RandomObjects/batclean_low.glb" id="1_gd4uu"]
@@ -22,6 +22,115 @@ _surfaces = [{
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_hhpfs"]
 albedo_color = Color(0.82379335, 0.3135042, 2.0214915e-05, 1)
 
+[sub_resource type="Animation" id="Animation_osd2w"]
+resource_name = "swing"
+step = 0.041666668
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Area3D:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.3341682, 0.4441992, 0.5416667, 0.99842936),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1),
+"update": 0,
+"values": [Vector3(0, 0, 0), Vector3(0.3575572, 0, -0.11557959), Vector3(0, 0, -0.71625054), Vector3(-0.35800007, 0, -0.59), Vector3(0, 0, 0)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Area3D:rotation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.3341682, 0.4441992, 0.5416667, 0.99842936),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1),
+"update": 0,
+"values": [Vector3(0, 0, 0), Vector3(-4.2073445e-08, -0.38632867, -0.5471258), Vector3(1.730385e-08, 1.5707964, -0.86428696), Vector3(1.7244757e-08, 3.1179, -0.71229255), Vector3(0, 0, 0)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("batclean_low2:position")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 0.3341682, 0.4441992, 0.5416667, 0.99842936),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1),
+"update": 0,
+"values": [Vector3(0, 0, 0), Vector3(0.3575572, 0, -0.11557959), Vector3(0, 0, -0.71625054), Vector3(-0.35800007, 0, -0.59), Vector3(0, 0, 0)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("batclean_low2:rotation")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0, 0.3341682, 0.4441992, 0.5416667, 0.99842936),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1),
+"update": 0,
+"values": [Vector3(0, 0, 0), Vector3(-4.2073445e-08, -0.38632867, -0.5471258), Vector3(1.730385e-08, 1.5707964, -0.86428696), Vector3(1.7244757e-08, 3.1179, -0.71229255), Vector3(0, 0, 0)]
+}
+
+[sub_resource type="Animation" id="Animation_2svy8"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Area3D:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(0, 0, 0)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Area3D:rotation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(0, 0, 0)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("batclean_low2:position")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(0, 0, 0)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("batclean_low2:rotation")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(0, 0, 0)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_2svy8"]
+_data = {
+&"RESET": SubResource("Animation_2svy8"),
+&"swing": SubResource("Animation_osd2w")
+}
+
 [node name="BatClean" type="CharacterBody3D" groups=["pickup"]]
 transform = Transform3D(0.2, 0, 0, 0, 0.2, 0, 0, 0, 0.2, 0, 0, 0)
 collision_layer = 9
@@ -32,6 +141,7 @@ script = ExtResource("1_5ksxd")
 shape = SubResource("ConvexPolygonShape3D_5ksxd")
 
 [node name="batclean_low2" parent="." instance=ExtResource("1_gd4uu")]
+transform = Transform3D(1.0000002, 0, 0, 0, 1.0000002, 0, 0, 0, 1.0000001, 0, 0, 0)
 
 [node name="batclean_low" parent="batclean_low2" index="0"]
 layers = 9
@@ -41,8 +151,14 @@ mesh = SubResource("ArrayMesh_hg5e5")
 surface_material_override/0 = SubResource("StandardMaterial3D_hhpfs")
 
 [node name="Area3D" type="Area3D" parent="." groups=["pickup"]]
+transform = Transform3D(1.0000001, 0, 0, 0, 1.0000001, 0, 0, 0, 1.0000001, 0, 0, 0)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Area3D" groups=["pickup"]]
 shape = SubResource("ConvexPolygonShape3D_5ksxd")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+&"": SubResource("AnimationLibrary_2svy8")
+}
 
 [editable path="batclean_low2"]
