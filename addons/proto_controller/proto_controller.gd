@@ -54,6 +54,12 @@ var picked_object: Node = null
 var sanity: float = 100.0
 var sanity_fx_intensity: float = 0.0
 
+# Tether state (set by server)
+var tether_partner_pos: Vector3 = Vector3.ZERO
+var tether_distance: float = 0.0
+var tether_speed_mult: float = 1.0
+var tether_hard_lock: bool = false
+
 var _sanity_fx_rect: ColorRect
 var _sanity_fx_mat: ShaderMaterial
 
@@ -282,10 +288,26 @@ func _physics_authority(delta: float) -> void:
 	else:
 		move_speed = base_speed
 
+	# Tether speed scaling
+	move_speed *= tether_speed_mult
+
 	# --- Directional WASD movement ---
 	if can_move:
 		var input_dir := Input.get_vector(input_left, input_right, input_forward, input_back)
 		var move_dir := (transform.basis * Vector3(input_dir.x, 0.0, input_dir.y)).normalized()
+
+		# Hard-lock: only allow movement that has a component TOWARD partner
+		if tether_hard_lock and move_dir != Vector3.ZERO:
+			var to_partner: Vector3 = tether_partner_pos - global_position
+			to_partner.y = 0.0
+			if to_partner.length() > 0.001:
+				var toward_dir: Vector3 = to_partner.normalized()
+				var toward_amt: float = move_dir.dot(toward_dir)
+				if toward_amt <= 0.0:
+					move_dir = Vector3.ZERO
+				else:
+					move_dir = toward_dir * toward_amt
+
 		if move_dir != Vector3.ZERO:
 			velocity.x = move_dir.x * move_speed
 			velocity.z = move_dir.z * move_speed
@@ -419,30 +441,32 @@ func _check_input_mappings() -> void:
 # =========================
 #  SERVER -> CLIENT RPCs
 # =========================
-@rpc("any_peer", "unreliable")
-func server_set_sanity(new_sanity: float, intensity: float) -> void:
-	if multiplayer.get_remote_sender_id() != SERVER_ID:
+@rpc("any_peer", "call_local", "unreliable")
+func server_set_tether_state(
+	partner_pos: Vector3,
+	distance: float,
+	speed_mult: float,
+	hard_lock: bool,
+	new_sanity: float,
+	fx_intensity: float
+) -> void:
+	var sender: int = multiplayer.get_remote_sender_id()
+
+	# Accept only if:
+	# - came from server (sender == 1), OR
+	# - call_local on server (sender == 0 and we are server)
+	if sender != 0 and sender != SERVER_ID:
 		return
+	if sender == 0 and not multiplayer.is_server():
+		return
+
+	tether_partner_pos = partner_pos
+	tether_distance = distance
+	tether_speed_mult = clamp(speed_mult, 0.0, 1.0)
+	tether_hard_lock = hard_lock
+
 	sanity = clamp(new_sanity, 0.0, 100.0)
-	sanity_fx_intensity = clamp(intensity, 0.0, 1.0)
-
-
-@rpc("any_peer", "reliable")
-func server_force_teleport(new_pos: Vector3, new_yaw: float) -> void:
-	if multiplayer.get_remote_sender_id() != SERVER_ID:
-		return
-
-	global_position = new_pos
-	velocity = Vector3.ZERO
-
-	# Align root yaw with the anchor (keep your current pitch)
-	look_rotation.y = new_yaw
-	transform.basis = Basis()
-	rotate_y(look_rotation.y)
-
-	# Stop remote interpolation from “snapping back”
-	_net_target_transform = global_transform
-	_net_has_target = true
+	sanity_fx_intensity = clamp(fx_intensity, 0.0, 1.0)
 
 
 # =========================
