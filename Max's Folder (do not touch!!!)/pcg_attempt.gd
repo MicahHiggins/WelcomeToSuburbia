@@ -9,7 +9,8 @@ extends Node3D
 var prevWB
 var worldBlocks2: Array[Node3D]
 
-const DISPLACEMENT = 32
+const DISPLACEMENT = 144
+
 
 ## Called when the node enters the scene tree for the first time.
 func _ready() -> void:
