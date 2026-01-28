@@ -1,9 +1,8 @@
-[gd_scene load_steps=13 format=3 uid="uid://d1ibgfwne281y"]
+[gd_scene load_steps=12 format=3 uid="uid://d1ibgfwne281y"]
 
 [ext_resource type="Script" uid="uid://dppcbcba5rvbf" path="res://GameLevelsETC/level_1.gd" id="1_oh3op"]
 [ext_resource type="PackedScene" uid="uid://bs72ogkvdd7d6" path="res://addons/proto_controller/proto_controller.tscn" id="2_jvlpr"]
 [ext_resource type="PackedScene" uid="uid://bs2jm62cmkbrk" path="res://addons/instant-realistic-light/light_scene.tscn" id="3_jo2a5"]
-[ext_resource type="Script" uid="uid://bkb35cbdsgdbh" path="res://addons/instant-realistic-light/light_scene.gd" id="4_d084q"]
 [ext_resource type="PackedScene" uid="uid://cg04msv62ujdu" path="res://Max's Folder (do not touch!!!)/pcg_attempt.tscn" id="5_ytqdj"]
 [ext_resource type="Script" uid="uid://c5qchfyao7ahn" path="res://GameLevelsETC/tether_system.gd" id="7_ki0f2"]
 [ext_resource type="PackedScene" uid="uid://b36mjwh3wwi6m" path="res://GameLevelsETC/Items/bat_clean.tscn" id="12_wjimw"]
@@ -72,13 +71,9 @@ transform = Transform3D(-1, -8.742278e-08, 0, 5.2612343e-08, -0.60181504, 0.7986
 visible = false
 light_energy = 0.0
 
-[node name="WorldEnvironment" parent="." node_paths=PackedStringArray("sun_ref") instance=ExtResource("3_jo2a5")]
+[node name="WorldEnvironment" parent="." instance=ExtResource("3_jo2a5")]
 environment = SubResource("Environment_f8w8m")
 camera_attributes = SubResource("CameraAttributesPractical_qo5hu")
-script = ExtResource("4_d084q")
-sun_ref = NodePath("../DirectionalLight3D")
-response_speed = 0.6
-min_fog_multiplier = 0.0
 
 [node name="gen" type="Node3D" parent="."]
 
