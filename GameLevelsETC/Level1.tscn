@@ -71,7 +71,7 @@ spawn_limit = 5
 
 [node name="Items" type="Node" parent="."]
 
-[node name="BatClean" parent="Items" instance=ExtResource("12_wjimw")]
+[node name="Bat" parent="Items" instance=ExtResource("12_wjimw")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5201786, 3.1837187, -3.0952702)
 
 [node name="Menu" type="Node" parent="."]
