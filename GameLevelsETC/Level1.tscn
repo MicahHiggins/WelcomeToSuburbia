@@ -5,7 +5,7 @@
 [ext_resource type="PackedScene" uid="uid://bs2jm62cmkbrk" path="res://addons/instant-realistic-light/light_scene.tscn" id="3_jo2a5"]
 [ext_resource type="Script" uid="uid://bkb35cbdsgdbh" path="res://addons/instant-realistic-light/light_scene.gd" id="4_d084q"]
 [ext_resource type="PackedScene" uid="uid://cg04msv62ujdu" path="res://Max's Folder (do not touch!!!)/pcg_attempt.tscn" id="5_ytqdj"]
-[ext_resource type="Script" uid="uid://c5qchfyao7ahn" path="res://GameLevelsETC/tether_system.gd" id="7_ki0f2"]
+[ext_resource type="Script" path="res://GameLevelsETC/tether_system.gd" id="7_ki0f2"]
 [ext_resource type="PackedScene" uid="uid://b36mjwh3wwi6m" path="res://GameLevelsETC/Items/bat_clean.tscn" id="12_wjimw"]
 [ext_resource type="Texture2D" uid="uid://3i53ybhtpc0f" path="res://Assets/—Pngtree—vector copy icon_4013516.png" id="13_grjf3"]
 
@@ -89,7 +89,7 @@ spawn_limit = 5
 
 [node name="Items" type="Node" parent="."]
 
-[node name="BatClean" parent="Items" instance=ExtResource("12_wjimw")]
+[node name="Bat" parent="Items" instance=ExtResource("12_wjimw")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5201786, 3.1837187, -3.0952702)
 
 [node name="Menu" type="Node" parent="."]

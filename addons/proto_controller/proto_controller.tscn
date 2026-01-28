@@ -1,8 +1,9 @@
-[gd_scene load_steps=11 format=3 uid="uid://bs72ogkvdd7d6"]
+[gd_scene load_steps=12 format=3 uid="uid://bs72ogkvdd7d6"]
 
 [ext_resource type="Script" uid="uid://psbmqqwxvny5" path="res://addons/proto_controller/proto_controller.gd" id="1_ucva2"]
 [ext_resource type="Script" uid="uid://boitue63820b1" path="res://addons/proto_controller/ray_cast_3d.gd" id="2_wr06p"]
 [ext_resource type="AudioStream" uid="uid://77vhd06aou5i" path="res://Audio/SFX/Steps_gravel-006.ogg" id="3_5hfox"]
+[ext_resource type="PackedScene" uid="uid://dwgaejjewy8s5" path="res://aidan_stuff/ui.tscn" id="4_6dqce"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_iof21"]
 albedo_color = Color(0.91806, 0.575202, 0.222449, 1)
@@ -113,3 +114,5 @@ unique_name_in_owner = true
 libraries = {
 &"": SubResource("AnimationLibrary_0rk7u")
 }
+
+[node name="UI" parent="." instance=ExtResource("4_6dqce")]
