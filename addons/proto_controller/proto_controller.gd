@@ -47,7 +47,7 @@ var freeflying: bool = false
 
 # Item currently held by THIS local player
 var picked_object: Node = null
-var inventory = []
+@export var inventory: Array
 
 # =========================
 #      SANITY / TETHER
@@ -542,6 +542,7 @@ func apply_pickup(item_path: NodePath, player_path: NodePath, new_owner_id: int)
 	if "set_held" in item:
 		item.call_deferred("set_held", true)
 		inventory.append(item.name)
+		print(inventory)
 
 	if multiplayer.get_unique_id() == new_owner_id:
 		picked_object = item
@@ -570,7 +571,7 @@ func apply_drop(item_path: NodePath) -> void:
 
 	if "set_held" in item:
 		item.call_deferred("set_held", false)
-		#inventory.remove_at(0)
+		inventory.remove_at(0)
 
 	if picked_object == item and is_multiplayer_authority():
 		picked_object = null
