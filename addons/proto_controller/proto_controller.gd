@@ -542,7 +542,6 @@ func apply_pickup(item_path: NodePath, player_path: NodePath, new_owner_id: int)
 	if "set_held" in item:
 		item.call_deferred("set_held", true)
 		inventory.append(item.name)
-		print(inventory)
 
 	if multiplayer.get_unique_id() == new_owner_id:
 		picked_object = item
