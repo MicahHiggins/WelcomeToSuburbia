@@ -1,0 +1,70 @@
+[gd_scene load_steps=4 format=3 uid="uid://bst3bb8d7vieb"]
+
+[ext_resource type="Script" uid="uid://nuorgg7ktq8" path="res://Max's Folder (do not touch!!!)/pcg_attempt.gd" id="1_v771g"]
+[ext_resource type="PackedScene" uid="uid://r8vqf0qcnkdn" path="res://aidan_stuff/block_design.tscn" id="2_1i87g"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_2e1xa"]
+
+[node name="PCGAttempt" type="Node3D"]
+script = ExtResource("1_v771g")
+
+[node name="worldBlock1" parent="." instance=ExtResource("2_1i87g")]
+transform = Transform3D(4.5, 0, 0, 0, 4.5, 0, 0, 0, 4.5, 0, 0, 0)
+
+[node name="loadZone1" type="Area3D" parent="worldBlock1"]
+collision_layer = 0
+collision_mask = 8
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="worldBlock1/loadZone1"]
+transform = Transform3D(24, 0, 0, 0, 24, 0, 0, 0, 24, 0, 1.1961625, 0)
+shape = SubResource("BoxShape3D_2e1xa")
+
+[node name="worldBlock2" parent="." instance=ExtResource("2_1i87g")]
+transform = Transform3D(4.5, 0, 0, 0, 4.5, 0, 0, 0, 4.5, 144, 0, 0)
+
+[node name="loadZone2" type="Area3D" parent="worldBlock2"]
+collision_layer = 0
+collision_mask = 8
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="worldBlock2/loadZone2"]
+transform = Transform3D(24, 0, 0, 0, 24, 0, 0, 0, 24, 0, 1.1961625, 0)
+shape = SubResource("BoxShape3D_2e1xa")
+
+[node name="worldBlock3" parent="." instance=ExtResource("2_1i87g")]
+transform = Transform3D(4.5, 0, 0, 0, 4.5, 0, 0, 0, 4.5, -144, 0, 0)
+
+[node name="loadZone3" type="Area3D" parent="worldBlock3"]
+collision_layer = 0
+collision_mask = 8
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="worldBlock3/loadZone3"]
+transform = Transform3D(24, 0, 0, 0, 24, 0, 0, 0, 24, 0, 0, 0)
+shape = SubResource("BoxShape3D_2e1xa")
+
+[node name="worldBlock4" parent="." instance=ExtResource("2_1i87g")]
+transform = Transform3D(4.5, 0, 0, 0, 4.5, 0, 0, 0, 4.5, 0, 0, 144)
+
+[node name="loadZone4" type="Area3D" parent="worldBlock4"]
+collision_layer = 0
+collision_mask = 8
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="worldBlock4/loadZone4"]
+transform = Transform3D(24, 0, 0, 0, 24, 0, 0, 0, 24, 0, 0, 0)
+shape = SubResource("BoxShape3D_2e1xa")
+
+[node name="worldBlock5" parent="." instance=ExtResource("2_1i87g")]
+transform = Transform3D(4.5, 0, 0, 0, 4.5, 0, 0, 0, 4.5, 0, 0, -144)
+
+[node name="loadZone5" type="Area3D" parent="worldBlock5"]
+collision_layer = 0
+collision_mask = 8
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="worldBlock5/loadZone5"]
+transform = Transform3D(24, 0, 0, 0, 24, 0, 0, 0, 24, 0, 1.1961625, 0)
+shape = SubResource("BoxShape3D_2e1xa")
+
+[connection signal="body_entered" from="worldBlock1/loadZone1" to="." method="_on_load_zone_1_body_entered"]
+[connection signal="body_entered" from="worldBlock2/loadZone2" to="." method="_on_load_zone_2_body_entered"]
+[connection signal="body_entered" from="worldBlock3/loadZone3" to="." method="_on_load_zone_3_body_entered"]
+[connection signal="body_entered" from="worldBlock4/loadZone4" to="." method="_on_load_zone_4_body_entered"]
+[connection signal="body_entered" from="worldBlock5/loadZone5" to="." method="_on_load_zone_5_body_entered"]

@@ -4,7 +4,7 @@
 [ext_resource type="PackedScene" uid="uid://bs72ogkvdd7d6" path="res://addons/proto_controller/proto_controller.tscn" id="2_jvlpr"]
 [ext_resource type="PackedScene" uid="uid://bs2jm62cmkbrk" path="res://addons/instant-realistic-light/light_scene.tscn" id="3_jo2a5"]
 [ext_resource type="Script" uid="uid://bkb35cbdsgdbh" path="res://addons/instant-realistic-light/light_scene.gd" id="4_d084q"]
-[ext_resource type="PackedScene" uid="uid://cg04msv62ujdu" path="res://Max's Folder (do not touch!!!)/pcg_attempt.tscn" id="5_ytqdj"]
+[ext_resource type="PackedScene" uid="uid://bst3bb8d7vieb" path="res://Max's Folder (do not touch!!!)/pcgRescaled.tscn" id="7_d084q"]
 [ext_resource type="Script" uid="uid://c5qchfyao7ahn" path="res://GameLevelsETC/tether_system.gd" id="7_ki0f2"]
 [ext_resource type="PackedScene" uid="uid://b36mjwh3wwi6m" path="res://GameLevelsETC/Items/bat_clean.tscn" id="12_wjimw"]
 [ext_resource type="Texture2D" uid="uid://3i53ybhtpc0f" path="res://Assets/—Pngtree—vector copy icon_4013516.png" id="13_grjf3"]
@@ -66,6 +66,8 @@ auto_exposure_min_sensitivity = 8.01
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 28.366493, 0, 0)
 script = ExtResource("1_oh3op")
 player_scene = ExtResource("2_jvlpr")
+
+[node name="PCGAttempt" parent="." instance=ExtResource("7_d084q")]
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(-1, -8.742278e-08, 0, 5.2612343e-08, -0.60181504, 0.79863554, -6.981894e-08, 0.79863554, 0.60181504, 0, 0, 0)
@@ -153,8 +155,6 @@ offset_right = 1129.0
 offset_bottom = 1264.0
 scale = Vector2(0.05, 0.05)
 icon = ExtResource("13_grjf3")
-
-[node name="PCGAttempt2" parent="." instance=ExtResource("5_ytqdj")]
 
 [node name="TetherSystem" type="Node" parent="."]
 script = ExtResource("7_ki0f2")
