@@ -58,9 +58,21 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 28.366493, 0, 0)
 script = ExtResource("1_oh3op")
 player_scene = ExtResource("2_jvlpr")
 
+
 [node name="WorldEnvironment" parent="." instance=ExtResource("3_jo2a5")]
 environment = SubResource("Environment_f8w8m")
 camera_attributes = SubResource("CameraAttributesPractical_qo5hu")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(-1, -8.742278e-08, 0, 5.2612343e-08, -0.60181504, 0.79863554, -6.981894e-08, 0.79863554, 0.60181504, 0, 0, 0)
+visible = false
+light_energy = 0.0
+
+[node name="WorldEnvironment" parent="." instance=ExtResource("3_jo2a5")]
+environment = SubResource("Environment_f8w8m")
+camera_attributes = SubResource("CameraAttributesPractical_qo5hu")
+script = ExtResource("4_d084q")
+
 
 [node name="gen" type="Node3D" parent="."]
 
