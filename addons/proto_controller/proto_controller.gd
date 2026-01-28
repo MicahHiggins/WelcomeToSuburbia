@@ -45,9 +45,13 @@ var look_rotation: Vector2 = Vector2.ZERO
 var move_speed: float = 0.0
 var freeflying: bool = false
 
-# Item currently held by THIS local player
+# Item currently held by THIS local player (world object parenting)
 var picked_object: Node = null
-@export var inventory: Array
+
+# Inventory is per-player, runtime-only, typed (2-slot UI can just read this)
+var inventory: Array[StringName] = []
+
+signal inventory_changed(inv: Array[StringName])
 
 # =========================
 #      SANITY / TETHER
@@ -63,6 +67,9 @@ var tether_hard_lock: bool = false
 
 var _sanity_fx_rect: ColorRect
 var _sanity_fx_mat: ShaderMaterial
+
+# Hint timer (for temporary messages like "Inventory full")
+var _hint_timer: Timer
 
 # =========================
 #    NETWORK SYNC CONFIG
@@ -90,14 +97,12 @@ var hint_label: Label
 
 signal interact_object(target: Node)
 
-
 # =========================
 #       MULTIPLAYER SETUP
 # =========================
 func _enter_tree() -> void:
 	# Name of Player node is expected to be the peer ID as string.
 	set_multiplayer_authority(name.to_int())
-
 
 func _ready() -> void:
 	add_to_group("player")
@@ -113,7 +118,6 @@ func _ready() -> void:
 	_setup_hint_ui()
 	_check_input_mappings()
 	_setup_sanity_fx_ui()
-
 
 # =========================
 #        UI HINT SETUP
@@ -143,6 +147,30 @@ func _setup_hint_ui() -> void:
 
 	hint_label = h
 
+	# Local-only timer for temporary hint messages
+	_hint_timer = ui.get_node_or_null("HintTimer") as Timer
+	if _hint_timer == null:
+		_hint_timer = Timer.new()
+		_hint_timer.name = "HintTimer"
+		_hint_timer.one_shot = true
+		ui.add_child(_hint_timer)
+	_hint_timer.timeout.connect(_on_hint_timeout)
+
+func _on_hint_timeout() -> void:
+	# Don't hide the default interaction hint if RayCast is using it;
+	# we only hide messages we explicitly set.
+	# So: do nothing here unless you want auto-hide.
+	pass
+
+func _show_hint_temp(msg: String, seconds: float = 1.25) -> void:
+	if hint_label == null:
+		return
+	hint_label.text = msg
+	hint_label.visible = true
+	if _hint_timer != null:
+		_hint_timer.stop()
+		_hint_timer.wait_time = seconds
+		_hint_timer.start()
 
 # =========================
 #     SANITY SCREEN FX UI
@@ -186,13 +214,11 @@ void fragment() {
 	vec2 uv = SCREEN_UV;
 	float t = TIME;
 
-	// Wobble
 	float w = sin((uv.y * 14.0 + t * 2.0)) * cos((uv.x * 10.0 - t * 1.7));
 	vec2 offs = vec2(w, -w) * (0.012 * intensity);
 
 	vec4 col = texture(screen_tex, uv + offs);
 
-	// Color warp + vignette
 	col.rgb += vec3(0.08, -0.03, 0.06) * intensity * sin(t + uv.x * 6.0);
 	vec2 p = uv - 0.5;
 	float v = 1.0 - smoothstep(0.15, 0.70, dot(p, p));
@@ -207,7 +233,6 @@ void fragment() {
 
 	_sanity_fx_rect.visible = false
 
-
 # =========================
 #         INPUT HANDLING
 # =========================
@@ -217,8 +242,6 @@ func _input(event: InputEvent) -> void:
 
 	if event.is_action_pressed("ui_cancel"):
 		_release_mouse()
-	# "interact" is handled by the RayCast script.
-
 
 func _unhandled_input(event: InputEvent) -> void:
 	if not is_multiplayer_authority():
@@ -237,12 +260,10 @@ func _unhandled_input(event: InputEvent) -> void:
 		else:
 			_enable_freefly()
 
-
 # =========================
 #      FRAME / PHYSICS
 # =========================
 func _process(_dt: float) -> void:
-	# Apply sanity screen FX only on the local player
 	if not is_multiplayer_authority():
 		return
 
@@ -250,54 +271,41 @@ func _process(_dt: float) -> void:
 		_sanity_fx_rect.visible = sanity_fx_intensity > 0.01
 		_sanity_fx_mat.set_shader_parameter("intensity", sanity_fx_intensity)
 
-
 func _physics_process(delta: float) -> void:
-	# If we’re back at main menu and there is no multiplayer peer,
-	# skip all networked-player logic (prevents "no peer" errors).
 	if not multiplayer.has_multiplayer_peer():
 		return
 
-	# AUTHORITY: simulate full movement and send state
 	if is_multiplayer_authority():
 		_physics_authority(delta)
 		_net_maybe_send_state()
 		return
 
-	# NON-AUTHORITY: just interpolate toward last received state
 	_net_interpolate_remote()
 
-
 func _physics_authority(delta: float) -> void:
-	# --- Freefly mode (noclip) ---
 	if can_freefly and freeflying:
 		var input_dir := Input.get_vector(input_left, input_right, input_forward, input_back)
 		var motion := (head.global_basis * Vector3(input_dir.x, 0.0, input_dir.y)).normalized() * freefly_speed * delta
 		move_and_collide(motion)
 		return
 
-	# --- Gravity ---
 	if has_gravity and not is_on_floor():
 		velocity += get_gravity() * delta
 
-	# --- Jump ---
 	if can_jump and Input.is_action_just_pressed(input_jump) and is_on_floor():
 		velocity.y = jump_velocity
 
-	# --- Sprint vs walk ---
 	if can_sprint and Input.is_action_pressed(input_sprint):
 		move_speed = sprint_speed
 	else:
 		move_speed = base_speed
 
-	# Tether speed scaling
 	move_speed *= tether_speed_mult
 
-	# --- Directional WASD movement ---
 	if can_move:
 		var input_dir := Input.get_vector(input_left, input_right, input_forward, input_back)
 		var move_dir := (transform.basis * Vector3(input_dir.x, 0.0, input_dir.y)).normalized()
 
-		# Hard-lock: only allow movement that has a component TOWARD partner
 		if tether_hard_lock and move_dir != Vector3.ZERO:
 			var to_partner: Vector3 = tether_partner_pos - global_position
 			to_partner.y = 0.0
@@ -324,9 +332,10 @@ func _physics_authority(delta: float) -> void:
 
 	move_and_slide()
 
-
+# =========================
+#        NET MOVEMENT
+# =========================
 func _net_maybe_send_state() -> void:
-	# Only send if we actually have a connected peer
 	if not multiplayer.has_multiplayer_peer():
 		return
 
@@ -336,24 +345,18 @@ func _net_maybe_send_state() -> void:
 	if mp.get_connection_status() != MultiplayerPeer.CONNECTION_CONNECTED:
 		return
 
-	# Throttle to net_send_rate_hz
 	var now: float = float(Time.get_ticks_msec()) / 1000.0
 	var min_interval: float = 1.0 / maxf(net_send_rate_hz, 1.0)
 	if now - _net_last_send_time < min_interval:
 		return
 
 	_net_last_send_time = now
-
-	# Everyone (host + clients) calls this; server will rebroadcast.
 	rpc("_net_state_from_client", global_transform)
-
 
 func _net_interpolate_remote() -> void:
 	if not _net_has_target:
 		return
-	# Simple lerp toward target transform
 	global_transform = global_transform.interpolate_with(_net_target_transform, net_lerp_alpha)
-
 
 @rpc("any_peer", "call_local", "unreliable")
 func _net_state_from_client(new_transform: Transform3D) -> void:
@@ -365,23 +368,19 @@ func _net_state_from_client(new_transform: Transform3D) -> void:
 		if not is_multiplayer_authority():
 			_net_set_target(new_transform)
 
-
 @rpc("any_peer", "unreliable")
 func _net_apply_state(new_transform: Transform3D) -> void:
 	if is_multiplayer_authority():
 		return
 	_net_set_target(new_transform)
 
-
 func _net_set_target(new_transform: Transform3D) -> void:
 	_net_target_transform = new_transform
 	_net_has_target = true
 
-
 func _play_footstep_audio() -> void:
 	footstep.pitch_scale = randf_range(0.85, 1.25)
 	footstep.play()
-
 
 # =========================
 #       HELPER METHODS
@@ -398,27 +397,22 @@ func _rotate_look(delta_rel: Vector2) -> void:
 	head.transform.basis = Basis()
 	head.rotate_x(look_rotation.x)
 
-
 func _capture_mouse() -> void:
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	mouse_captured = true
 
-
 func _release_mouse() -> void:
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 	mouse_captured = false
-
 
 func _enable_freefly() -> void:
 	collider.disabled = true
 	freeflying = true
 	velocity = Vector3.ZERO
 
-
 func _disable_freefly() -> void:
 	collider.disabled = false
 	freeflying = false
-
 
 func _check_input_mappings() -> void:
 	if can_move and not InputMap.has_action(input_left):
@@ -438,7 +432,6 @@ func _check_input_mappings() -> void:
 	if not InputMap.has_action(input_interact):
 		push_error("Missing action: " + input_interact)
 
-
 # =========================
 #  SERVER -> CLIENT RPCs
 # =========================
@@ -452,10 +445,6 @@ func server_set_tether_state(
 	fx_intensity: float
 ) -> void:
 	var sender: int = multiplayer.get_remote_sender_id()
-
-	# Accept only if:
-	# - came from server (sender == 1), OR
-	# - call_local on server (sender == 0 and we are server)
 	if sender != 0 and sender != SERVER_ID:
 		return
 	if sender == 0 and not multiplayer.is_server():
@@ -469,6 +458,29 @@ func server_set_tether_state(
 	sanity = clamp(new_sanity, 0.0, 100.0)
 	sanity_fx_intensity = clamp(fx_intensity, 0.0, 1.0)
 
+# Inventory update: server tells ONLY the owning client (and host via call_local)
+@rpc("any_peer", "call_local", "reliable")
+func server_set_inventory(new_inventory: Array[StringName]) -> void:
+	var sender: int = multiplayer.get_remote_sender_id()
+	if sender != 0 and sender != SERVER_ID:
+		return
+	if sender == 0 and not multiplayer.is_server():
+		return
+
+	inventory = new_inventory.duplicate()
+	inventory_changed.emit(inventory)
+
+# Server can tell client "inventory full", etc.
+@rpc("any_peer", "call_local", "unreliable")
+func server_show_hint(msg: String, seconds: float = 1.25) -> void:
+	var sender: int = multiplayer.get_remote_sender_id()
+	if sender != 0 and sender != SERVER_ID:
+		return
+	if sender == 0 and not multiplayer.is_server():
+		return
+	if not is_multiplayer_authority():
+		return
+	_show_hint_temp(msg, seconds)
 
 # =========================
 #   BRIDGE CALLED BY RAY
@@ -479,18 +491,14 @@ func request_pickup_rpc(item_path: NodePath) -> void:
 	else:
 		rpc_id(SERVER_ID, "request_pickup", item_path)
 
-
 func request_drop_rpc() -> void:
 	if picked_object == null:
 		return
-
 	var item_path: NodePath = picked_object.get_path()
-
 	if multiplayer.is_server():
 		request_drop(item_path)
 	else:
 		rpc_id(SERVER_ID, "request_drop", item_path)
-
 
 # =========================
 #   SERVER-AUTH PICKUP/DROP
@@ -510,17 +518,29 @@ func request_pickup(item_path: NodePath) -> void:
 	if not item.is_in_group("pickup"):
 		return
 
+	var p := _player_for_peer(sender)
+	if p == null:
+		return
+
+	# 2-slot inventory rule (server side)
+	if p.inventory.size() >= 2:
+		# Tell ONLY that player that inventory is full
+		p.rpc_id(sender, "server_show_hint", "Inventory Full", 1.25)
+		return
+
 	if item.has_meta("locked") and bool(item.get_meta("locked")):
 		return
 	item.set_meta("locked", true)
 
-	var p := _player_for_peer(sender)
-	if p == null:
-		item.set_meta("locked", false)
-		return
-
+	# Everyone reparents visually
 	rpc("apply_pickup", item_path, p.get_path(), sender)
 
+	# Server updates only the owner's inventory state
+	var item_id: StringName = StringName(item.name)
+	var new_inv: Array[StringName] = p.inventory.duplicate()
+	new_inv.append(item_id)
+
+	p.rpc_id(sender, "server_set_inventory", new_inv)
 
 @rpc("any_peer", "call_local", "reliable")
 func apply_pickup(item_path: NodePath, player_path: NodePath, new_owner_id: int) -> void:
@@ -541,25 +561,37 @@ func apply_pickup(item_path: NodePath, player_path: NodePath, new_owner_id: int)
 
 	if "set_held" in item:
 		item.call_deferred("set_held", true)
-		inventory.append(item.name)
-		print(inventory)
 
 	if multiplayer.get_unique_id() == new_owner_id:
 		picked_object = item
-
 
 @rpc("any_peer", "reliable")
 func request_drop(item_path: NodePath) -> void:
 	if not multiplayer.is_server():
 		return
 
+	var sender: int = multiplayer.get_remote_sender_id()
+	if sender == 0:
+		sender = multiplayer.get_unique_id()
+
 	var item := get_tree().root.get_node_or_null(item_path)
 	if item == null:
+		return
+
+	var p := _player_for_peer(sender)
+	if p == null:
 		return
 
 	item.set_meta("locked", false)
 	rpc("apply_drop", item_path)
 
+	var id_to_remove: StringName = StringName(item.name)
+	var new_inv: Array[StringName] = p.inventory.duplicate()
+	var idx := new_inv.find(id_to_remove)
+	if idx != -1:
+		new_inv.remove_at(idx)
+
+	p.rpc_id(sender, "server_set_inventory", new_inv)
 
 @rpc("any_peer", "call_local", "reliable")
 func apply_drop(item_path: NodePath) -> void:
@@ -571,11 +603,9 @@ func apply_drop(item_path: NodePath) -> void:
 
 	if "set_held" in item:
 		item.call_deferred("set_held", false)
-		inventory.remove_at(0)
 
 	if picked_object == item and is_multiplayer_authority():
 		picked_object = null
-
 
 # =========================
 #      PLAYER LOOKUP

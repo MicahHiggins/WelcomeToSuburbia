@@ -33,3 +33,7 @@ offset_left = 498.0
 offset_top = 570.0
 offset_right = 538.0
 offset_bottom = 593.0
+
+[node name="Item2Lable" type="Label" parent="."]
+offset_right = 40.0
+offset_bottom = 23.0
