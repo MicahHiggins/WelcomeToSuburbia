@@ -1,18 +1,26 @@
-[gd_scene load_steps=12 format=3 uid="uid://d1ibgfwne281y"]
+[gd_scene load_steps=13 format=3 uid="uid://d1ibgfwne281y"]
 
 [ext_resource type="Script" uid="uid://dppcbcba5rvbf" path="res://GameLevelsETC/level_1.gd" id="1_oh3op"]
 [ext_resource type="PackedScene" uid="uid://bs72ogkvdd7d6" path="res://addons/proto_controller/proto_controller.tscn" id="2_jvlpr"]
 [ext_resource type="PackedScene" uid="uid://bs2jm62cmkbrk" path="res://addons/instant-realistic-light/light_scene.tscn" id="3_jo2a5"]
+[ext_resource type="Script" uid="uid://bkb35cbdsgdbh" path="res://addons/instant-realistic-light/light_scene.gd" id="4_d084q"]
 [ext_resource type="PackedScene" uid="uid://cg04msv62ujdu" path="res://Max's Folder (do not touch!!!)/pcg_attempt.tscn" id="5_ytqdj"]
 [ext_resource type="Script" uid="uid://c5qchfyao7ahn" path="res://GameLevelsETC/tether_system.gd" id="7_ki0f2"]
 [ext_resource type="PackedScene" uid="uid://b36mjwh3wwi6m" path="res://GameLevelsETC/Items/bat_clean.tscn" id="12_wjimw"]
 [ext_resource type="Texture2D" uid="uid://3i53ybhtpc0f" path="res://Assets/—Pngtree—vector copy icon_4013516.png" id="13_grjf3"]
 
-[sub_resource type="PhysicalSkyMaterial" id="PhysicalSkyMaterial_gn88m"]
-ground_color = Color(0, 0, 0, 1)
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_ki0f2"]
+sky_top_color = Color(1, 0.92156863, 0.26666668, 1)
+sky_horizon_color = Color(0.76312476, 0.6242516, 0.5129601, 1)
+sky_curve = 0.026516547
+sky_energy_multiplier = 0.4
+ground_bottom_color = Color(0.16964138, 0.17850074, 0.15653285, 1)
+ground_horizon_color = Color(0, 0.73333335, 0.99215686, 1)
+sun_angle_max = 100.0
+sun_curve = 0.058843866
 
 [sub_resource type="Sky" id="Sky_tyhie"]
-sky_material = SubResource("PhysicalSkyMaterial_gn88m")
+sky_material = SubResource("ProceduralSkyMaterial_ki0f2")
 radiance_size = 2
 
 [sub_resource type="Environment" id="Environment_f8w8m"]
@@ -30,12 +38,13 @@ glow_normalized = true
 glow_bloom = 0.2
 fog_enabled = true
 fog_mode = 1
-fog_light_color = Color(9.241105e-06, 0.7351877, 0.99128824, 1)
+fog_light_color = Color(0, 0.6039216, 0.99215686, 1)
 fog_density = 1.0
+fog_sky_affect = 0.99
 fog_height_density = 1.0
-fog_depth_curve = 0.00929068
-fog_depth_begin = 40.0
-fog_depth_end = 45.0
+fog_depth_curve = 0.00023582489
+fog_depth_begin = 30.0
+fog_depth_end = 60.0
 volumetric_fog_density = 1.0
 volumetric_fog_albedo = Color(0.4862745, 1, 0.95686275, 1)
 volumetric_fog_emission = Color(1, 1, 0.5647059, 1)
@@ -58,9 +67,18 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 28.366493, 0, 0)
 script = ExtResource("1_oh3op")
 player_scene = ExtResource("2_jvlpr")
 
-[node name="WorldEnvironment" parent="." instance=ExtResource("3_jo2a5")]
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(-1, -8.742278e-08, 0, 5.2612343e-08, -0.60181504, 0.79863554, -6.981894e-08, 0.79863554, 0.60181504, 0, 0, 0)
+visible = false
+light_energy = 0.0
+
+[node name="WorldEnvironment" parent="." node_paths=PackedStringArray("sun_ref") instance=ExtResource("3_jo2a5")]
 environment = SubResource("Environment_f8w8m")
 camera_attributes = SubResource("CameraAttributesPractical_qo5hu")
+script = ExtResource("4_d084q")
+sun_ref = NodePath("../DirectionalLight3D")
+response_speed = 0.6
+min_fog_multiplier = 0.0
 
 [node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="."]
 _spawnable_scenes = PackedStringArray("uid://bs72ogkvdd7d6")
