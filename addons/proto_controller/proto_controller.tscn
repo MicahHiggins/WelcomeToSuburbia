@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3 uid="uid://bs72ogkvdd7d6"]
+[gd_scene load_steps=13 format=3 uid="uid://bs72ogkvdd7d6"]
 
 [ext_resource type="Script" uid="uid://psbmqqwxvny5" path="res://addons/proto_controller/proto_controller.gd" id="1_ucva2"]
 [ext_resource type="Script" uid="uid://boitue63820b1" path="res://addons/proto_controller/ray_cast_3d.gd" id="2_wr06p"]
@@ -62,15 +62,44 @@ tracks/1/interp = 1
 tracks/1/loop_wrap = true
 tracks/1/keys = PackedFloat32Array(0, 1, 0, 0, 0, 0.1, 1, 0, 0.09, 0, 0.3, 1, 0, 0, 0)
 
+[sub_resource type="Animation" id="Animation_0rk7u"]
+resource_name = "run"
+length = 0.26
+tracks/0/type = "method"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("..")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0.56666666),
+"transitions": PackedFloat32Array(1),
+"values": [{
+"args": [],
+"method": &"_play_footstep_audio"
+}]
+}
+tracks/1/type = "position_3d"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("../Head/Camera3D")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = PackedFloat32Array(0, 1, 0, 0, 0, 0.1, 1, 0, 0.09, 0, 0.23333335, 1, 0, 0, 0)
+
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_0rk7u"]
 _data = {
 &"RESET": SubResource("Animation_5hfox"),
+&"run": SubResource("Animation_0rk7u"),
 &"walk": SubResource("Animation_6dqce")
 }
 
 [node name="ProtoController" type="CharacterBody3D"]
 collision_layer = 9
 script = ExtResource("1_ucva2")
+base_speed = 3.2
+jump_velocity = 3.5
+sprint_speed = 5.0
 
 [node name="Mesh" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)

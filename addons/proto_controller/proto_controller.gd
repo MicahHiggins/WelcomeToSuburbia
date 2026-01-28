@@ -347,9 +347,10 @@ func _physics_authority(delta: float) -> void:
 		velocity.x = 0.0
 		velocity.y = 0.0
 
-	if is_on_floor() and velocity != Vector3.ZERO:
+	if is_on_floor() and velocity != Vector3.ZERO and move_speed == sprint_speed:
+		%FootstepAnimation.play("run")
+	elif is_on_floor() and velocity != Vector3.ZERO and move_speed == base_speed:
 		%FootstepAnimation.play("walk")
-
 	move_and_slide()
 
 # =========================
