@@ -710,3 +710,15 @@ func _player_for_peer(peer_id: int) -> Node3D:
 			if nd.get_multiplayer_authority() == peer_id:
 				return nd
 	return null
+
+func use_item(event):
+	if inventory.size() == 0:
+		return
+	
+	var item_using = inventory[0]
+	var item_animation = item_using.get_node("AnimationPlayer")
+	
+	if event is InputEventMouseButton:
+		#Make it so that the animation played correlates to each item
+		item_animation.play("swing")
+	
