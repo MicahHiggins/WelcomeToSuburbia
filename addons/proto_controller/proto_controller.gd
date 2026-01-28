@@ -20,9 +20,11 @@ extends CharacterBody3D
 
 # Movement speeds
 @export var look_speed := 0.002
-@export var base_speed := 7.0
+@export var base_speed := 0.5
+@export var max_base_speed := 7.0
 @export var jump_velocity := 4.5
-@export var sprint_speed := 10.0
+@export var sprint_speed := 1.0
+@export var max_sprint_speed := 10.0
 @export var freefly_speed := 25.0
 
 # Input action names (must exist in InputMap)
@@ -316,9 +318,11 @@ func _physics_authority(delta: float) -> void:
 		velocity.y = jump_velocity
 
 	if can_sprint and Input.is_action_pressed(input_sprint):
-		move_speed = sprint_speed
+		if move_speed < max_sprint_speed:
+			move_speed += sprint_speed
 	else:
-		move_speed = base_speed
+		if move_speed < max_base_speed:
+			move_speed += base_speed
 
 	move_speed *= tether_speed_mult
 
