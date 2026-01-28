@@ -5,12 +5,13 @@ extends CharacterBody3D
 # - Carry marker for pickup items
 # - Server-authoritative pickup/drop
 # - Transport-agnostic (ENet, SteamMultiplayerPeer, etc.)
+# - Multiplayer-safe inventory + pickup (scene-relative NodePaths)
+# - Multiplayer audible footsteps (proximity-based)
 # --------------------------------------------
 
 # =========================
 #        CONFIG / TOGGLES
 # =========================
-
 @export var can_move := true
 @export var has_gravity := true
 @export var can_jump := true
@@ -34,6 +35,10 @@ extends CharacterBody3D
 @export var input_freefly := "freefly"
 @export var input_interact := "interact"
 
+# Multiplayer footsteps (audible to nearby players)
+@export var footstep_hear_radius: float = 18.0      # distance within which other players hear steps
+@export var footstep_min_interval: float = 0.12     # anti-spam (seconds)
+
 # Server peer ID for SceneMultiplayer (ENet, Steam, etc.)
 const SERVER_ID: int = 1
 
@@ -50,7 +55,6 @@ var picked_object: Node = null
 
 # Inventory is per-player, runtime-only, typed (2-slot UI can just read this)
 var inventory: Array[StringName] = []
-
 signal inventory_changed(inv: Array[StringName])
 
 # =========================
@@ -70,6 +74,9 @@ var _sanity_fx_mat: ShaderMaterial
 
 # Hint timer (for temporary messages like "Inventory full")
 var _hint_timer: Timer
+
+# Footstep spam guard
+var _last_footstep_time: float = -9999.0
 
 # =========================
 #    NETWORK SYNC CONFIG
@@ -94,7 +101,6 @@ var _net_has_target: bool = false
 )
 
 var hint_label: Label
-
 signal interact_object(target: Node)
 
 # =========================
@@ -108,16 +114,35 @@ func _ready() -> void:
 	add_to_group("player")
 
 	# Only the local authority owns its camera
-	if is_multiplayer_authority():
-		cam.current = true
-	else:
-		cam.current = false
+	cam.current = is_multiplayer_authority()
 
 	_net_target_transform = global_transform
 
 	_setup_hint_ui()
 	_check_input_mappings()
 	_setup_sanity_fx_ui()
+
+# =========================
+#        PATH HELPERS
+# =========================
+func _scene_root() -> Node:
+	return get_tree().current_scene
+
+func _resolve_path(path: NodePath) -> Node:
+	# Prefer resolving relative to current_scene (multiplayer-safe).
+	var scene := _scene_root()
+	if scene != null:
+		var n := scene.get_node_or_null(path)
+		if n != null:
+			return n
+	# Fallback for any old absolute paths still floating around.
+	return get_tree().root.get_node_or_null(path)
+
+func _to_scene_path(n: Node) -> NodePath:
+	var scene := _scene_root()
+	if scene == null or n == null:
+		return NodePath("")
+	return scene.get_path_to(n)
 
 # =========================
 #        UI HINT SETUP
@@ -157,9 +182,6 @@ func _setup_hint_ui() -> void:
 	_hint_timer.timeout.connect(_on_hint_timeout)
 
 func _on_hint_timeout() -> void:
-	# Don't hide the default interaction hint if RayCast is using it;
-	# we only hide messages we explicitly set.
-	# So: do nothing here unless you want auto-hide.
 	pass
 
 func _show_hint_temp(msg: String, seconds: float = 1.25) -> void:
@@ -239,7 +261,6 @@ void fragment() {
 func _input(event: InputEvent) -> void:
 	if not is_multiplayer_authority():
 		return
-
 	if event.is_action_pressed("ui_cancel"):
 		_release_mouse()
 
@@ -266,7 +287,6 @@ func _unhandled_input(event: InputEvent) -> void:
 func _process(_dt: float) -> void:
 	if not is_multiplayer_authority():
 		return
-
 	if _sanity_fx_mat != null and _sanity_fx_rect != null:
 		_sanity_fx_rect.visible = sanity_fx_intensity > 0.01
 		_sanity_fx_mat.set_shader_parameter("intensity", sanity_fx_intensity)
@@ -378,9 +398,62 @@ func _net_set_target(new_transform: Transform3D) -> void:
 	_net_target_transform = new_transform
 	_net_has_target = true
 
+# =========================
+#   MULTIPLAYER FOOTSTEPS
+# =========================
+func _get_local_player() -> Node3D:
+	# Returns the player node THIS client controls.
+	var players := get_tree().get_nodes_in_group("player")
+	var my_id: int = multiplayer.get_unique_id()
+	for p in players:
+		if p is Node3D:
+			var p3d := p as Node3D
+			if p3d.get_multiplayer_authority() == my_id:
+				return p3d
+	return null
+
 func _play_footstep_audio() -> void:
+	# Called from AnimationPlayer method track(s).
+	# Owner plays immediately; event is broadcast so nearby peers can hear it.
+
+	if footstep == null:
+		return
+
+	var now: float = Time.get_ticks_msec() * 0.001
+	if now - _last_footstep_time < footstep_min_interval:
+		return
+	_last_footstep_time = now
+
+	# Play instantly for the owning player.
+	if is_multiplayer_authority():
+		footstep.pitch_scale = randf_range(0.85, 1.25)
+		footstep.play()
+
+	# Broadcast step event to all peers (including host via call_local).
+	rpc("_rpc_footstep_event", global_position)
+
+@rpc("any_peer", "call_local", "unreliable")
+func _rpc_footstep_event(step_pos: Vector3) -> void:
+	# Owner already played locally; skip to avoid double-play.
+	if is_multiplayer_authority():
+		return
+	if footstep == null:
+		return
+
+	var local_player := _get_local_player()
+	if local_player == null:
+		return
+
+	var dist := local_player.global_position.distance_to(step_pos)
+	if dist > footstep_hear_radius:
+		return
+
+	# Spatialize by playing at the step position.
+	var prev_pos := footstep.global_position
+	footstep.global_position = step_pos
 	footstep.pitch_scale = randf_range(0.85, 1.25)
 	footstep.play()
+	footstep.global_position = prev_pos
 
 # =========================
 #       HELPER METHODS
@@ -458,7 +531,6 @@ func server_set_tether_state(
 	sanity = clamp(new_sanity, 0.0, 100.0)
 	sanity_fx_intensity = clamp(fx_intensity, 0.0, 1.0)
 
-# Inventory update: server tells ONLY the owning client (and host via call_local)
 @rpc("any_peer", "call_local", "reliable")
 func server_set_inventory(new_inventory: Array[StringName]) -> void:
 	var sender: int = multiplayer.get_remote_sender_id()
@@ -470,7 +542,6 @@ func server_set_inventory(new_inventory: Array[StringName]) -> void:
 	inventory = new_inventory.duplicate()
 	inventory_changed.emit(inventory)
 
-# Server can tell client "inventory full", etc.
 @rpc("any_peer", "call_local", "unreliable")
 func server_show_hint(msg: String, seconds: float = 1.25) -> void:
 	var sender: int = multiplayer.get_remote_sender_id()
@@ -486,6 +557,7 @@ func server_show_hint(msg: String, seconds: float = 1.25) -> void:
 #   BRIDGE CALLED BY RAY
 # =========================
 func request_pickup_rpc(item_path: NodePath) -> void:
+	# item_path should be relative to current_scene (RayCast should send it that way)
 	if multiplayer.is_server():
 		request_pickup(item_path)
 	else:
@@ -494,11 +566,16 @@ func request_pickup_rpc(item_path: NodePath) -> void:
 func request_drop_rpc() -> void:
 	if picked_object == null:
 		return
-	var item_path: NodePath = picked_object.get_path()
+
+	# IMPORTANT: send a path that resolves on server too (scene-relative)
+	var rel_path: NodePath = _to_scene_path(picked_object)
+	if String(rel_path) == "":
+		return
+
 	if multiplayer.is_server():
-		request_drop(item_path)
+		request_drop(rel_path)
 	else:
-		rpc_id(SERVER_ID, "request_drop", item_path)
+		rpc_id(SERVER_ID, "request_drop", rel_path)
 
 # =========================
 #   SERVER-AUTH PICKUP/DROP
@@ -512,7 +589,7 @@ func request_pickup(item_path: NodePath) -> void:
 	if sender == 0:
 		sender = multiplayer.get_unique_id()
 
-	var item := get_tree().root.get_node_or_null(item_path)
+	var item := _resolve_path(item_path)
 	if item == null:
 		return
 	if not item.is_in_group("pickup"):
@@ -524,7 +601,6 @@ func request_pickup(item_path: NodePath) -> void:
 
 	# 2-slot inventory rule (server side)
 	if p.inventory.size() >= 2:
-		# Tell ONLY that player that inventory is full
 		p.rpc_id(sender, "server_show_hint", "Inventory Full", 1.25)
 		return
 
@@ -532,20 +608,27 @@ func request_pickup(item_path: NodePath) -> void:
 		return
 	item.set_meta("locked", true)
 
+	# Use scene-relative paths for both item and player for all peers
+	var item_rel: NodePath = _to_scene_path(item)
+	var player_rel: NodePath = _to_scene_path(p)
+
+	if String(item_rel) == "" or String(player_rel) == "":
+		item.set_meta("locked", false)
+		return
+
 	# Everyone reparents visually
-	rpc("apply_pickup", item_path, p.get_path(), sender)
+	rpc("apply_pickup", item_rel, player_rel, sender)
 
 	# Server updates only the owner's inventory state
 	var item_id: StringName = StringName(item.name)
 	var new_inv: Array[StringName] = p.inventory.duplicate()
 	new_inv.append(item_id)
-
 	p.rpc_id(sender, "server_set_inventory", new_inv)
 
 @rpc("any_peer", "call_local", "reliable")
 func apply_pickup(item_path: NodePath, player_path: NodePath, new_owner_id: int) -> void:
-	var item := get_tree().root.get_node_or_null(item_path)
-	var player := get_tree().root.get_node_or_null(player_path)
+	var item := _resolve_path(item_path)
+	var player := _resolve_path(player_path)
 	if item == null or player == null:
 		return
 
@@ -574,7 +657,7 @@ func request_drop(item_path: NodePath) -> void:
 	if sender == 0:
 		sender = multiplayer.get_unique_id()
 
-	var item := get_tree().root.get_node_or_null(item_path)
+	var item := _resolve_path(item_path)
 	if item == null:
 		return
 
@@ -583,7 +666,12 @@ func request_drop(item_path: NodePath) -> void:
 		return
 
 	item.set_meta("locked", false)
-	rpc("apply_drop", item_path)
+
+	var item_rel: NodePath = _to_scene_path(item)
+	if String(item_rel) == "":
+		return
+
+	rpc("apply_drop", item_rel)
 
 	var id_to_remove: StringName = StringName(item.name)
 	var new_inv: Array[StringName] = p.inventory.duplicate()
@@ -595,11 +683,15 @@ func request_drop(item_path: NodePath) -> void:
 
 @rpc("any_peer", "call_local", "reliable")
 func apply_drop(item_path: NodePath) -> void:
-	var item := get_tree().root.get_node_or_null(item_path)
+	var item := _resolve_path(item_path)
 	if item == null:
 		return
 
-	item.reparent(get_tree().current_scene)
+	var scene := _scene_root()
+	if scene != null:
+		item.reparent(scene)
+	else:
+		item.reparent(get_tree().root)
 
 	if "set_held" in item:
 		item.call_deferred("set_held", false)
