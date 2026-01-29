@@ -3,10 +3,9 @@ extends CharacterBody3D
 # Networked first-person player controller:
 # - Local movement + camera look
 # - Multiplayer-safe inventory (server tells owner)
-# - Pickup/drop routed through ItemManager (single source of truth)
-# - Drop is its own input action: "drop" (bind to G)
-# - Use/Attack is its own input action: "use-attack" (plays "swing")
-# - Multiplayer audible footsteps (proximity-based)
+# - Pickup/drop/use routed through ItemManager ONLY
+# - Drop is "drop" (bind to G)
+# - Use/Attack is "use-attack" (plays "swing" locally + server broadcasts via ItemManager)
 # --------------------------------------------
 
 # =========================
@@ -41,13 +40,16 @@ extends CharacterBody3D
 @export var attack_anim_name: StringName = &"swing"
 @export var attack_cooldown: float = 0.35
 
-# OPTIONAL: If your swing AnimationPlayer is not directly under the player,
-# set this to the correct NodePath in the Inspector (e.g. "Head/Arms/AnimationPlayer").
+# OPTIONAL: If your swing AnimationPlayer is on the player somewhere, set this.
+# (But you said the AnimationPlayer is on the BAT, so the held-item fallback will usually be used.)
 @export var swing_animplayer_path: NodePath = NodePath("AnimationPlayer")
 
 # Multiplayer footsteps (audible to nearby players)
 @export var footstep_hear_radius: float = 18.0
 @export var footstep_min_interval: float = 0.12
+
+# If your ItemManager is not at the scene root, this finds it anyway.
+@export var item_manager_name: StringName = &"ItemManager"
 
 # Server peer ID for SceneMultiplayer (ENet, Steam, etc.)
 const SERVER_ID: int = 1
@@ -70,6 +72,9 @@ signal inventory_changed(inv: Array[StringName])
 # Attack spam guard
 var _last_attack_time: float = -9999.0
 
+# Cached ItemManager reference (resolved lazily + refreshed if invalid)
+var _item_manager_cached: Node = null
+
 # =========================
 #      SANITY / TETHER
 # =========================
@@ -86,6 +91,7 @@ var _sanity_fx_mat: ShaderMaterial
 
 # Hint timer
 var _hint_timer: Timer
+var hint_label: Label
 
 # Footstep spam guard
 var _last_footstep_time: float = -9999.0
@@ -115,7 +121,6 @@ var _net_has_target: bool = false
 # Optional animation player for swing (resolved in _ready)
 var _swing_anim: AnimationPlayer = null
 
-var hint_label: Label
 signal interact_object(target: Node)
 
 # =========================
@@ -129,11 +134,7 @@ func _ready() -> void:
 	cam.current = is_multiplayer_authority()
 	_net_target_transform = global_transform
 
-	# Resolve swing anim player if present (safe even if missing)
 	_swing_anim = get_node_or_null(swing_animplayer_path) as AnimationPlayer
-	if _swing_anim == null:
-		# Not an error; we also support swing on held item (see _play_attack_local()).
-		pass
 
 	_setup_hint_ui()
 	_check_input_mappings()
@@ -145,25 +146,36 @@ func _ready() -> void:
 func _scene_root() -> Node:
 	return get_tree().current_scene
 
-func _to_scene_path(n: Node) -> NodePath:
-	var scene := _scene_root()
-	if scene == null or n == null:
-		return NodePath("")
-	return scene.get_path_to(n)
-
 # =========================
 #      ITEM MANAGER HOOK
 # =========================
 func _get_item_manager() -> Node:
-	var scene := _scene_root()
+	# Return cached if still valid
+	if _item_manager_cached != null and is_instance_valid(_item_manager_cached):
+		return _item_manager_cached
+
+	var scene: Node = _scene_root()
 	if scene == null:
 		return null
-	return scene.get_node_or_null("ItemManager") # must be named exactly "ItemManager"
+
+	# 1) Direct child lookup (fast path)
+	var direct: Node = scene.get_node_or_null(String(item_manager_name))
+	if direct != null:
+		_item_manager_cached = direct
+		return _item_manager_cached
+
+	# 2) Recursive find (fixes "ItemManager not at scene root" problems)
+	var found: Node = scene.find_child(String(item_manager_name), true, false)
+	if found != null:
+		_item_manager_cached = found
+		return _item_manager_cached
+
+	return null
 
 func _get_held_node() -> Node:
 	# Prefer carry marker child (because ItemManager reparents items there)
 	if carry_marker != null and carry_marker.get_child_count() > 0:
-		var child := carry_marker.get_child(0)
+		var child: Node = carry_marker.get_child(0)
 		if child != null and is_instance_valid(child):
 			return child
 
@@ -175,6 +187,20 @@ func _get_held_node() -> Node:
 
 func _is_holding_item() -> bool:
 	return _get_held_node() != null
+
+func _get_held_item_key() -> NodePath:
+	var held: Node = _get_held_node()
+	if held == null:
+		return NodePath("")
+
+	if not held.has_meta("item_key"):
+		return NodePath("")
+
+	var key_str: String = String(held.get_meta("item_key"))
+	if key_str == "":
+		return NodePath("")
+
+	return NodePath(key_str)
 
 # =========================
 #        UI HINT SETUP
@@ -305,17 +331,19 @@ func _unhandled_input(event: InputEvent) -> void:
 		var mm := event as InputEventMouseMotion
 		_rotate_look(mm.relative)
 
+	# Freefly toggle
 	if can_freefly and event.is_action_pressed(input_freefly):
+		freeflying = not freeflying
 		if freeflying:
-			_disable_freefly()
-		else:
 			_enable_freefly()
+		else:
+			_disable_freefly()
 
-	# ✅ DROP INPUT (G)
+	# DROP
 	if event.is_action_pressed(input_drop):
 		request_drop_rpc()
 
-	# ✅ USE/ATTACK INPUT (server-authoritative via ItemManager)
+	# USE/ATTACK (server-authoritative via ItemManager)
 	if event.is_action_pressed(input_use_attack):
 		_try_use_attack()
 
@@ -328,10 +356,10 @@ func _try_use_attack() -> void:
 		return
 	_last_attack_time = now
 
-	# Optional: local instant feedback (will ALSO be broadcast by ItemManager)
+	# Local feel (optional). The real "everyone sees it" comes from ItemManager.apply_use_attack.
 	_play_attack_local()
 
-	# Server-authoritative broadcast to everyone
+	# Tell server to broadcast animation on the held item.
 	request_use_attack_rpc()
 
 func _play_attack_local() -> void:
@@ -341,14 +369,13 @@ func _play_attack_local() -> void:
 		_swing_anim.play(String(attack_anim_name))
 		return
 
-	# Fallback: try AnimationPlayer on the HELD ITEM (common if bat owns "swing")
-	var held := _get_held_node()
+	# Fallback: AnimationPlayer on the held item (your bat case)
+	var held: Node = _get_held_node()
 	if held != null:
-		var held_anim := held.get_node_or_null("AnimationPlayer") as AnimationPlayer
+		var held_anim: AnimationPlayer = held.get_node_or_null("AnimationPlayer") as AnimationPlayer
 		if held_anim != null and held_anim.has_animation(String(attack_anim_name)):
 			held_anim.stop()
 			held_anim.play(String(attack_anim_name))
-			return
 
 # =========================
 #      FRAME / PHYSICS
@@ -605,12 +632,12 @@ func server_show_hint(msg: String, seconds: float = 1.25) -> void:
 	_show_hint_temp(msg, seconds)
 
 # =========================
-#   PICKUP/DROP ROUTED THROUGH ItemManager
+#   PICKUP/DROP/USE ROUTED THROUGH ItemManager
 # =========================
 func request_pickup_rpc(item_path: NodePath) -> void:
 	var im := _get_item_manager()
 	if im == null:
-		push_error("ItemManager not found under current_scene. Name it exactly 'ItemManager'.")
+		push_error("ItemManager not found in current_scene (direct or nested). Check its name and that clients load it too.")
 		return
 
 	if multiplayer.is_server():
@@ -621,23 +648,12 @@ func request_pickup_rpc(item_path: NodePath) -> void:
 func request_drop_rpc() -> void:
 	var im := _get_item_manager()
 	if im == null:
-		push_error("ItemManager not found under current_scene. Name it exactly 'ItemManager'.")
+		push_error("ItemManager not found in current_scene (direct or nested).")
 		return
 
-	var held := _get_held_node()
-	if held == null:
+	var item_key: NodePath = _get_held_item_key()
+	if String(item_key) == "":
 		return
-
-	# Must use stable key stamped by ItemManager.apply_pickup()
-	if not held.has_meta("item_key"):
-		push_error("Held item missing meta 'item_key'. (Did ItemManager.apply_pickup stamp it?)")
-		return
-
-	var key_str: String = String(held.get_meta("item_key"))
-	if key_str == "":
-		return
-
-	var item_key: NodePath = NodePath(key_str)
 
 	if multiplayer.is_server():
 		im.request_drop(item_key)
@@ -647,22 +663,12 @@ func request_drop_rpc() -> void:
 func request_use_attack_rpc() -> void:
 	var im := _get_item_manager()
 	if im == null:
-		push_error("ItemManager not found under current_scene. Name it exactly 'ItemManager'.")
+		push_error("ItemManager not found in current_scene (direct or nested).")
 		return
 
-	var held := _get_held_node()
-	if held == null:
+	var item_key: NodePath = _get_held_item_key()
+	if String(item_key) == "":
 		return
-
-	# Must use stable key stamped by ItemManager.apply_pickup()
-	if not held.has_meta("item_key"):
-		return
-
-	var key_str: String = String(held.get_meta("item_key"))
-	if key_str == "":
-		return
-
-	var item_key: NodePath = NodePath(key_str)
 
 	if multiplayer.is_server():
 		im.request_use_attack(item_key)

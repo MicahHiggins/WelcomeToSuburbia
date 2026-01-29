@@ -5,6 +5,7 @@ extends Node
 # - Broadcasts pickup/drop reparenting to ALL peers
 # - Uses a STABLE per-item key ("item_key") so drop works after reparenting
 # - Forces physics/collision state so dropped items don't stay frozen / un-pickupable
+# - NEW: Late-join sync so joining players get correct dropped/held state
 # - NEW: Server-authoritative Use/Attack that plays item animation ("swing") for ALL peers
 # ------------------------------------------------------------
 
@@ -38,6 +39,111 @@ const SERVER_ID: int = 1
 var _held_by: Dictionary = {}           # NodePath -> int (peer_id), -1 = free
 var _original_parent: Dictionary = {}   # NodePath -> NodePath (scene-relative parent path)
 
+# NEW: last known world transform for late-join reconstruction
+var _last_world_xform: Dictionary = {}  # NodePath -> Transform3D
+
+# =========================
+#      READY / LATE JOIN
+# =========================
+func _ready() -> void:
+	# Ensure every peer stamps item_key + caches original parent so stable lookup works everywhere.
+	_register_scene_items()
+
+	# Server: push full state snapshot to new peers
+	if multiplayer.has_multiplayer_peer() and multiplayer.is_server():
+		multiplayer.peer_connected.connect(_on_peer_connected)
+
+func _on_peer_connected(peer_id: int) -> void:
+	# Defer 1 frame so the joining peer finishes spawning their player/items.
+	call_deferred("_send_full_state_to_peer", peer_id)
+
+func _register_scene_items() -> void:
+	# Runs on ALL peers. Makes sure items have item_key meta and original parent recorded.
+	var pickups: Array = get_tree().get_nodes_in_group("pickup")
+	for obj in pickups:
+		var item: Node = obj as Node
+		if item == null:
+			continue
+
+		var key: NodePath = _stable_key_for_item(item)
+		if String(key) == "":
+			continue
+
+		# Stamp stable key everywhere
+		item.set_meta("item_key", String(key))
+
+		# Record original parent once
+		if not _original_parent.has(key):
+			var parent_path: NodePath = _to_scene_path(item.get_parent())
+			_original_parent[key] = parent_path
+
+		# Remember last transform baseline
+		if item is Node3D and not _last_world_xform.has(key):
+			_last_world_xform[key] = (item as Node3D).global_transform
+
+func _send_full_state_to_peer(peer_id: int) -> void:
+	if not multiplayer.is_server():
+		return
+
+	# Ensure we include ALL pickup items, even never-picked-up ones
+	var payload: Array = []
+	var pickups: Array = get_tree().get_nodes_in_group("pickup")
+
+	for obj in pickups:
+		var item: Node = obj as Node
+		if item == null:
+			continue
+
+		var key: NodePath = _stable_key_for_item(item)
+		if String(key) == "":
+			continue
+
+		if not _held_by.has(key):
+			_held_by[key] = -1
+
+		var xform: Transform3D = Transform3D.IDENTITY
+		if item is Node3D:
+			xform = (item as Node3D).global_transform
+		elif _last_world_xform.has(key):
+			xform = _last_world_xform[key]
+
+		_last_world_xform[key] = xform
+
+		var entry: Dictionary = {
+			"key": String(key),
+			"held_by": int(_held_by[key]),
+			"xform": xform
+		}
+		payload.append(entry)
+
+	rpc_id(peer_id, "sync_full_state", payload)
+
+@rpc("any_peer", "call_local", "reliable")
+func sync_full_state(payload: Array) -> void:
+	# Runs on the JOINING peer. Reconstructs held/dropped state locally (fixes hovering & pickup).
+	for v in payload:
+		if typeof(v) != TYPE_DICTIONARY:
+			continue
+		var d: Dictionary = v
+
+		if not d.has("key") or not d.has("held_by") or not d.has("xform"):
+			continue
+
+		var item_key: NodePath = NodePath(String(d["key"]))
+		var holder_id: int = int(d["held_by"])
+		var world_xform: Transform3D = d["xform"]
+
+		_last_world_xform[item_key] = world_xform
+		_held_by[item_key] = holder_id
+
+		if holder_id != -1:
+			var p: Node3D = _player_for_peer(holder_id)
+			if p != null:
+				var p_path: NodePath = _to_scene_path(p)
+				apply_pickup(item_key, p_path, holder_id)
+		else:
+			apply_drop(item_key, world_xform, Vector3.ZERO)
+
 # =========================
 #      PATH HELPERS
 # =========================
@@ -62,12 +168,12 @@ func _to_scene_path(n: Node) -> NodePath:
 #   STABLE ITEM LOOKUP
 # =========================
 func _resolve_item_anywhere(item_key: NodePath) -> Node:
-	# 1) Try resolve by the key path (works when item is still under Items/)
+	# 1) Try resolve by key path (works when under Items/)
 	var direct: Node = _resolve_scene_path(item_key)
 	if direct != null:
 		return direct
 
-	# 2) Fallback: scan pickup group for meta match (works while item is held)
+	# 2) Fallback: scan pickup group for item_key meta match (works while held)
 	var key_str: String = String(item_key)
 	var pickups: Array = get_tree().get_nodes_in_group("pickup")
 	for obj in pickups:
@@ -103,7 +209,6 @@ func _player_for_peer(peer_id: int) -> Node3D:
 #   COLLISION HELPERS
 # =========================
 func _set_collision_shapes_enabled(root: Node, enabled: bool) -> void:
-	# pop_back() returns Variant -> must cast to Node to avoid Variant inference warnings.
 	var stack: Array[Node] = [root]
 	while stack.size() > 0:
 		var n: Node = stack.pop_back() as Node
@@ -158,9 +263,11 @@ func _unfreeze_for_drop(item: Node, impulse_dir: Vector3) -> void:
 
 		_apply_slow_fall(rb)
 
+		# Always nudge it so it wakes up on all peers (prevents hover)
 		var impulse: Vector3 = impulse_dir * drop_impulse_strength + Vector3.DOWN * drop_downward_impulse
-		if impulse.length() > 0.0001:
-			rb.apply_central_impulse(impulse)
+		if impulse.length() < 0.0001:
+			impulse = Vector3.DOWN * 0.01
+		rb.apply_central_impulse(impulse)
 
 func _deferred_finalize_drop(item_key: NodePath) -> void:
 	var item: Node = _resolve_item_anywhere(item_key)
@@ -177,18 +284,16 @@ func _deferred_finalize_drop(item_key: NodePath) -> void:
 		_apply_slow_fall(rb)
 
 # =========================
-#   ANIMATION HELPERS (NEW)
+#   ANIMATION HELPERS
 # =========================
 func _find_item_anim_player(item: Node) -> AnimationPlayer:
 	if item == null:
 		return null
 
-	# Common case: AnimationPlayer is a direct child named "AnimationPlayer"
 	var ap: AnimationPlayer = item.get_node_or_null("AnimationPlayer") as AnimationPlayer
 	if ap != null:
 		return ap
 
-	# Fallback: search anywhere under the item
 	var found: Node = item.find_child("AnimationPlayer", true, false)
 	return found as AnimationPlayer
 
@@ -217,6 +322,9 @@ func request_pickup(item_path: NodePath) -> void:
 	if not _original_parent.has(item_key):
 		var parent_path: NodePath = _to_scene_path(item.get_parent())
 		_original_parent[item_key] = parent_path
+
+	if not _held_by.has(item_key):
+		_held_by[item_key] = -1
 
 	if _held_by.has(item_key) and int(_held_by[item_key]) != -1:
 		return
@@ -267,6 +375,7 @@ func apply_pickup(item_key: NodePath, player_path: NodePath, new_owner_id: int) 
 
 	_freeze_for_hold(item)
 
+	# While held, holder owns authority
 	item.set_multiplayer_authority(new_owner_id)
 
 	var marker: Node = player.get_node_or_null("Head/CarryObjectMarker")
@@ -312,6 +421,11 @@ func request_drop(item_key: NodePath) -> void:
 	var drop_pos: Vector3 = p.global_position + forward * drop_forward_distance + Vector3.UP * drop_up_offset
 	var drop_xform: Transform3D = Transform3D(item.global_transform.basis, drop_pos)
 
+	# IMPORTANT: dropped items should be server-authoritative
+	item.set_multiplayer_authority(SERVER_ID)
+
+	_last_world_xform[item_key] = drop_xform
+
 	rpc("apply_drop", item_key, drop_xform, forward)
 
 	if "inventory" in p and p.has_method("server_set_inventory"):
@@ -332,6 +446,7 @@ func apply_drop(item_key: NodePath, world_xform: Transform3D, impulse_forward: V
 		return
 
 	item.set_meta("item_key", String(item_key))
+	_last_world_xform[item_key] = world_xform
 
 	var scene: Node = _scene_root()
 	var parent_node: Node = null
@@ -346,6 +461,9 @@ func apply_drop(item_key: NodePath, world_xform: Transform3D, impulse_forward: V
 	item.reparent(parent_node)
 	item.global_transform = world_xform
 
+	# IMPORTANT: dropped items should be server-authoritative on all peers too
+	item.set_multiplayer_authority(SERVER_ID)
+
 	_unfreeze_for_drop(item, impulse_forward)
 
 	if "set_held" in item:
@@ -354,11 +472,10 @@ func apply_drop(item_key: NodePath, world_xform: Transform3D, impulse_forward: V
 	call_deferred("_deferred_finalize_drop", item_key)
 
 # =========================
-#   SERVER: USE/ATTACK (NEW)
+#   SERVER: USE/ATTACK
 # =========================
 @rpc("any_peer", "reliable")
 func request_use_attack(item_key: NodePath) -> void:
-	# Client tells server: "I want to use/attack with the thing I'm holding"
 	if not multiplayer.is_server():
 		return
 
@@ -372,16 +489,11 @@ func request_use_attack(item_key: NodePath) -> void:
 	if int(_held_by[item_key]) != sender:
 		return
 
-	# Resolve item even if held
-	var item: Node = _resolve_item_anywhere(item_key)
-	if item == null:
-		return
-
 	# Broadcast to ALL peers so everyone sees the swing
 	rpc("apply_use_attack", item_key)
 
 # =========================
-#  ALL PEERS: PLAY SWING (NEW)
+#  ALL PEERS: PLAY SWING
 # =========================
 @rpc("any_peer", "call_local", "reliable")
 func apply_use_attack(item_key: NodePath) -> void:
@@ -396,7 +508,6 @@ func apply_use_attack(item_key: NodePath) -> void:
 	if not ap.has_animation(attack_animation_name):
 		return
 
-	# Restart so repeated clicks still swing
 	if attack_restart_if_playing and ap.is_playing():
 		ap.stop()
 
