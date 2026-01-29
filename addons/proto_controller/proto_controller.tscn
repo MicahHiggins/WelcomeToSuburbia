@@ -87,7 +87,7 @@ shape = SubResource("CapsuleShape3D_iof21")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.7, 0)
 
 [node name="CarryObjectMarker" type="Marker3D" parent="Head"]
-transform = Transform3D(-1, -5.0642367e-08, -7.1260736e-08, 0, 0.8151278, -0.57928115, 8.742278e-08, -0.57928115, -0.8151278, 0, -0.06419265, -1.5326061)
+transform = Transform3D(1, 0, 0, 0, 0.98183954, 0.18971238, 0, -0.18971238, 0.98183954, 0, -0.29213274, -0.9141203)
 
 [node name="Camera3D" type="Camera3D" parent="Head"]
 
