@@ -609,6 +609,28 @@ func _check_input_mappings() -> void:
 # =========================
 #  SERVER -> CLIENT RPCs
 # =========================
+@rpc("any_peer", "call_local", "unreliable")
+func server_set_tether_state(
+	partner_pos: Vector3,
+	dist: float,
+	speed_mult: float,
+	hard_lock: bool,
+	new_sanity: float,
+	fx_intensity: float
+) -> void:
+	# Only the owning client should apply tether state to THEIR local controller.
+	# (Remote puppet players don't need these values to drive movement/input.)
+	if not is_multiplayer_authority():
+		return
+
+	tether_partner_pos = partner_pos
+	tether_distance = dist
+	tether_speed_mult = speed_mult
+	tether_hard_lock = hard_lock
+
+	sanity = new_sanity
+	sanity_fx_intensity = fx_intensity
+
 @rpc("any_peer", "call_local", "reliable")
 func server_set_inventory(new_inventory: Array[StringName]) -> void:
 	var sender: int = multiplayer.get_remote_sender_id()

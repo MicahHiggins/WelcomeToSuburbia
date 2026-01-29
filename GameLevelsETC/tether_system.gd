@@ -9,8 +9,13 @@ extends Node
 @export var drain_per_sec: float = 10.0
 @export var recover_per_sec: float = 4.0
 
+# Optional debug
+@export var debug_print: bool = false
+@export var debug_print_every_sec: float = 1.0
+
 var _sanity: Dictionary[int, float] = {}  # peer_id -> 0..100
 var _accum: float = 0.0
+var _dbg_accum: float = 0.0
 
 func _process(delta: float) -> void:
 	if not multiplayer.has_multiplayer_peer():
@@ -34,8 +39,9 @@ func _server_tick(dt: float) -> void:
 
 	var by_id: Dictionary[int, Node3D] = {}
 
+	# Build id -> player map and init sanity
 	for p in players:
-		var p3d := p as Node3D
+		var p3d: Node3D = p as Node3D
 		if p3d == null:
 			continue
 
@@ -47,6 +53,7 @@ func _server_tick(dt: float) -> void:
 		if not _sanity.has(id):
 			_sanity[id] = 100.0
 
+	# Compute tether effects per player
 	for id: int in by_id.keys():
 		var me: Node3D = by_id[id]
 
@@ -70,7 +77,7 @@ func _server_tick(dt: float) -> void:
 		var denom: float = maxf(hard_lock_distance - effect_start_distance, 0.001)
 		var dist_factor: float = clamp((nearest_dist - effect_start_distance) / denom, 0.0, 1.0)
 
-		var s: float = _sanity[id]
+		var s: float = float(_sanity[id])
 		if nearest_dist > effect_start_distance:
 			s = maxf(0.0, s - drain_per_sec * dist_factor * dt)
 		else:
@@ -83,34 +90,42 @@ func _server_tick(dt: float) -> void:
 		var speed_mult: float = lerpf(1.0, min_speed_multiplier, dist_factor)
 		var hard_lock: bool = nearest_dist >= hard_lock_distance
 
+		# If the player script doesn't have this RPC, tether can't apply
 		if not me.has_method("server_set_tether_state"):
+			if debug_print:
+				push_warning("Player missing server_set_tether_state(): " + String(me.get_path()))
 			continue
 
-		# IMPORTANT: call directly on host, rpc for everyone else
-		if id == multiplayer.get_unique_id():
-			me.call(
-				"server_set_tether_state",
-				partner.global_position,
-				nearest_dist,
-				speed_mult,
-				hard_lock,
-				s,
-				fx_intensity
-			)
-		else:
-			me.rpc_id(
-				id,
-				"server_set_tether_state",
-				partner.global_position,
-				nearest_dist,
-				speed_mult,
-				hard_lock,
-				s,
-				fx_intensity
-			)
+		# ✅ IMPORTANT CHANGE:
+		# Always RPC to the owning client (works for host and joiners consistently).
+		me.rpc_id(
+			id,
+			"server_set_tether_state",
+			partner.global_position,
+			nearest_dist,
+			speed_mult,
+			hard_lock,
+			s,
+			fx_intensity
+		)
+
+	# Optional debug print throttled
+	if debug_print:
+		_dbg_accum += dt
+		if _dbg_accum >= maxf(debug_print_every_sec, 0.1):
+			_dbg_accum = 0.0
+			for id2: int in by_id.keys():
+				print("[Tether] id=", id2, " sanity=", _sanity[id2])
 
 func _player_id_from_node(p: Node) -> int:
+	# Prefer multiplayer authority (most reliable).
+	var auth: int = int((p as Node).get_multiplayer_authority())
+	if auth > 0:
+		return auth
+
+	# Fallback: if node name is numeric.
 	var n: String = String(p.name)
 	if n.is_valid_int():
 		return int(n)
-	return int(p.get_multiplayer_authority())
+
+	return -1

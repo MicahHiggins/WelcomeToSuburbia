@@ -44,6 +44,9 @@ func _ready() -> void:
 	# Make HUD NOT steal the mouse (pause menu buttons need this)
 	_make_hud_ignore_mouse()
 
+	# NEW: rotate around the CENTER of the PNG (not the corner)
+	call_deferred("_fix_arrow_pivot")
+
 	_update_labels()
 
 func _make_hud_ignore_mouse() -> void:
@@ -53,6 +56,15 @@ func _make_hud_ignore_mouse() -> void:
 		partner_arrow.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	if distance_label != null:
 		distance_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+
+# NEW: pivot/rotation center fix
+func _fix_arrow_pivot() -> void:
+	if partner_arrow == null:
+		return
+	# In case a container sets size later, one more frame guarantees correct sizing.
+	# (If you don't use containers, this still works fine.)
+	await get_tree().process_frame
+	partner_arrow.pivot_offset = partner_arrow.size * 0.5
 
 func _process(_delta: float) -> void:
 	_update_labels()
@@ -145,6 +157,7 @@ func _update_partner_arrow() -> void:
 
 	# Camera forward/right on horizontal plane
 	var cam_basis: Basis = cam.global_transform.basis
+
 	var cam_forward: Vector3 = -cam_basis.z
 	cam_forward.y = 0.0
 	cam_forward = cam_forward.normalized()
@@ -158,8 +171,7 @@ func _update_partner_arrow() -> void:
 	var x: float = dir.dot(cam_right)
 	var y: float = dir.dot(cam_forward)
 
-	# IMPORTANT FIX:
-	# Godot 2D rotation is clockwise (because +Y is down), so we invert y.
+	# Godot 2D rotation is clockwise (+Y down), so invert y.
 	# Arrow art points RIGHT at rotation = 0.
 	var angle: float = atan2(-y, x)
 	partner_arrow.rotation = angle
