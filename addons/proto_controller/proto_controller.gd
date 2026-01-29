@@ -5,6 +5,7 @@ extends CharacterBody3D
 # - Multiplayer-safe inventory (server tells owner)
 # - Pickup/drop routed through ItemManager (single source of truth)
 # - Drop is its own input action: "drop" (bind to G)
+# - Use/Attack is its own input action: "use-attack" (plays "swing")
 # - Multiplayer audible footsteps (proximity-based)
 # --------------------------------------------
 
@@ -33,7 +34,16 @@ extends CharacterBody3D
 @export var input_sprint := "sprint"
 @export var input_freefly := "freefly"
 @export var input_interact := "interact"
-@export var input_drop := "drop" # <-- bind this to G in Project Settings
+@export var input_drop := "drop"               # bind to G
+@export var input_use_attack := "use-attack"   # bind to whatever you want
+
+# Attack animation config
+@export var attack_anim_name: StringName = &"swing"
+@export var attack_cooldown: float = 0.35
+
+# OPTIONAL: If your swing AnimationPlayer is not directly under the player,
+# set this to the correct NodePath in the Inspector (e.g. "Head/Arms/AnimationPlayer").
+@export var swing_animplayer_path: NodePath = NodePath("AnimationPlayer")
 
 # Multiplayer footsteps (audible to nearby players)
 @export var footstep_hear_radius: float = 18.0
@@ -56,6 +66,9 @@ var picked_object: Node = null
 # Inventory is per-player, runtime-only
 var inventory: Array[StringName] = []
 signal inventory_changed(inv: Array[StringName])
+
+# Attack spam guard
+var _last_attack_time: float = -9999.0
 
 # =========================
 #      SANITY / TETHER
@@ -99,6 +112,9 @@ var _net_has_target: bool = false
 	$Head/CarryObjectMarker if $Head.has_node("CarryObjectMarker") else null
 )
 
+# Optional animation player for swing (resolved in _ready)
+var _swing_anim: AnimationPlayer = null
+
 var hint_label: Label
 signal interact_object(target: Node)
 
@@ -112,6 +128,12 @@ func _ready() -> void:
 	add_to_group("player")
 	cam.current = is_multiplayer_authority()
 	_net_target_transform = global_transform
+
+	# Resolve swing anim player if present (safe even if missing)
+	_swing_anim = get_node_or_null(swing_animplayer_path) as AnimationPlayer
+	if _swing_anim == null:
+		# Not an error; we also support swing on held item (see _play_attack_local()).
+		pass
 
 	_setup_hint_ui()
 	_check_input_mappings()
@@ -151,6 +173,9 @@ func _get_held_node() -> Node:
 
 	return null
 
+func _is_holding_item() -> bool:
+	return _get_held_node() != null
+
 # =========================
 #        UI HINT SETUP
 # =========================
@@ -165,7 +190,7 @@ func _setup_hint_ui() -> void:
 	if h == null:
 		h = Label.new()
 		h.name = "Hint"
-		h.text = "F = interact | G = drop"
+		h.text = "F = interact | G = drop | use-attack = swing"
 		h.visible = false
 		h.add_theme_color_override("font_color", Color(1, 1, 1))
 		h.add_theme_color_override("font_outline_color", Color(0, 0, 0))
@@ -289,6 +314,41 @@ func _unhandled_input(event: InputEvent) -> void:
 	# ✅ DROP INPUT (G)
 	if event.is_action_pressed(input_drop):
 		request_drop_rpc()
+
+	# ✅ USE/ATTACK INPUT (server-authoritative via ItemManager)
+	if event.is_action_pressed(input_use_attack):
+		_try_use_attack()
+
+func _try_use_attack() -> void:
+	if not _is_holding_item():
+		return
+
+	var now: float = Time.get_ticks_msec() * 0.001
+	if now - _last_attack_time < attack_cooldown:
+		return
+	_last_attack_time = now
+
+	# Optional: local instant feedback (will ALSO be broadcast by ItemManager)
+	_play_attack_local()
+
+	# Server-authoritative broadcast to everyone
+	request_use_attack_rpc()
+
+func _play_attack_local() -> void:
+	# Prefer player's AnimationPlayer if configured
+	if _swing_anim != null and _swing_anim.has_animation(String(attack_anim_name)):
+		_swing_anim.stop()
+		_swing_anim.play(String(attack_anim_name))
+		return
+
+	# Fallback: try AnimationPlayer on the HELD ITEM (common if bat owns "swing")
+	var held := _get_held_node()
+	if held != null:
+		var held_anim := held.get_node_or_null("AnimationPlayer") as AnimationPlayer
+		if held_anim != null and held_anim.has_animation(String(attack_anim_name)):
+			held_anim.stop()
+			held_anim.play(String(attack_anim_name))
+			return
 
 # =========================
 #      FRAME / PHYSICS
@@ -516,6 +576,8 @@ func _check_input_mappings() -> void:
 		push_error("Missing action: " + input_interact)
 	if not InputMap.has_action(input_drop):
 		push_error("Missing action: " + input_drop + " (bind it to G)")
+	if not InputMap.has_action(input_use_attack):
+		push_error("Missing action: " + input_use_attack + " (bind it in InputMap)")
 
 # =========================
 #  SERVER -> CLIENT RPCs
@@ -566,12 +628,12 @@ func request_drop_rpc() -> void:
 	if held == null:
 		return
 
-	# ✅ must use stable key stamped by ItemManager.apply_pickup()
+	# Must use stable key stamped by ItemManager.apply_pickup()
 	if not held.has_meta("item_key"):
 		push_error("Held item missing meta 'item_key'. (Did ItemManager.apply_pickup stamp it?)")
 		return
 
-	var key_str := String(held.get_meta("item_key"))
+	var key_str: String = String(held.get_meta("item_key"))
 	if key_str == "":
 		return
 
@@ -581,3 +643,28 @@ func request_drop_rpc() -> void:
 		im.request_drop(item_key)
 	else:
 		im.rpc_id(SERVER_ID, "request_drop", item_key)
+
+func request_use_attack_rpc() -> void:
+	var im := _get_item_manager()
+	if im == null:
+		push_error("ItemManager not found under current_scene. Name it exactly 'ItemManager'.")
+		return
+
+	var held := _get_held_node()
+	if held == null:
+		return
+
+	# Must use stable key stamped by ItemManager.apply_pickup()
+	if not held.has_meta("item_key"):
+		return
+
+	var key_str: String = String(held.get_meta("item_key"))
+	if key_str == "":
+		return
+
+	var item_key: NodePath = NodePath(key_str)
+
+	if multiplayer.is_server():
+		im.request_use_attack(item_key)
+	else:
+		im.rpc_id(SERVER_ID, "request_use_attack", item_key)
