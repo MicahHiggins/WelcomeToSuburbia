@@ -1,0 +1,58 @@
+[gd_scene load_steps=6 format=3 uid="uid://gxwo5ybv7v7s"]
+
+[ext_resource type="Texture2D" uid="uid://cau8lt38qehe4" path="res://Max's Folder (do not touch!!!)/DialogueManager/9patchDM.png" id="1_jfmrp"]
+[ext_resource type="Script" uid="uid://cmhpm8r2sm0qp" path="res://Max's Folder (do not touch!!!)/DialogueManager/dialogue_manager.gd" id="2_80amd"]
+[ext_resource type="Texture2D" uid="uid://wfqaj1cp28lj" path="res://Max's Folder (do not touch!!!)/DialogueManager/CreepyManDM.jpg" id="3_70lt2"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_hy1f0"]
+atlas = ExtResource("3_70lt2")
+region = Rect2(0, 0, 720, 574)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_im15s"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_hy1f0")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
+[node name="DialogueManager" type="NinePatchRect"]
+offset_right = 135.0
+offset_bottom = 40.0
+scale = Vector2(4.5921836, 4.5921836)
+texture = ExtResource("1_jfmrp")
+patch_margin_left = 10
+patch_margin_top = 10
+patch_margin_right = 10
+patch_margin_bottom = 10
+script = ExtResource("2_80amd")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+position = Vector2(25.000002, 23)
+scale = Vector2(0.042125292, 0.042125292)
+sprite_frames = SubResource("SpriteFrames_im15s")
+
+[node name="Name" type="Label" parent="."]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 3.9999998
+offset_right = 205.0
+offset_bottom = 141.0
+scale = Vector2(0.05, 0.05)
+theme_override_colors/font_color = Color(0.0253638, 0.0253638, 0.025363795, 1)
+theme_override_font_sizes/font_size = 100
+text = "test"
+
+[node name="Text" type="Label" parent="."]
+layout_mode = 0
+offset_left = 43.0
+offset_top = 21.0
+offset_right = 228.0
+offset_bottom = 158.0
+scale = Vector2(0.05, 0.05)
+theme_override_colors/font_color = Color(0.0253638, 0.0253638, 0.025363795, 1)
+theme_override_font_sizes/font_size = 100
+text = "test"

@@ -1,7 +1,8 @@
-[gd_scene load_steps=6 format=3 uid="uid://r8vqf0qcnkdn"]
+[gd_scene load_steps=7 format=3 uid="uid://r8vqf0qcnkdn"]
 
 [ext_resource type="ArrayMesh" uid="uid://1gdxilugbc4i" path="res://Assets/kenney_city-kit-suburban_20/Models/OBJ format/building-type-a.obj" id="1_7yfhi"]
 [ext_resource type="ArrayMesh" uid="uid://dgv4eih41bu3t" path="res://Assets/kenney_city-kit-suburban_20/Models/OBJ format/driveway-long.obj" id="2_ypk4p"]
+[ext_resource type="PackedScene" uid="uid://cicb2n05yr5lp" path="res://Max's Folder (do not touch!!!)/DialogueManager/NPC dial-test/NPCPrototypes.tscn" id="3_2eoyn"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_oxdg3"]
 
@@ -443,3 +444,8 @@ mesh = ExtResource("2_ypk4p")
 skeleton = NodePath("../..")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+
+[node name="NPCPrototype" type="Node3D" parent="."]
+
+[node name="NPCProto1" parent="NPCPrototype" instance=ExtResource("3_2eoyn")]
+transform = Transform3D(0.25, 0, 0, 0, 0.25, 0, 0, 0, 0.25, 0, 0.44347453, 9.806808)
