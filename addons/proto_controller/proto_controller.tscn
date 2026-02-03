@@ -100,7 +100,7 @@ script = ExtResource("1_ucva2")
 base_speed = 3.2
 jump_velocity = 3.5
 sprint_speed = 5.0
-stamina_drain_per_sec = 6.0
+stamina_drain_per_sec = 14.0
 stamina_regen_per_sec = 8.0
 
 [node name="Mesh" type="MeshInstance3D" parent="."]
