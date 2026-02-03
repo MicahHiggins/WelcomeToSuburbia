@@ -443,13 +443,15 @@ func _physics_authority(delta: float) -> void:
 		is_sprinting = false
 
 		# --- Breathing logic (stamina-based) ---
-	var stamina_ratio := stamina_current / stamina_max
-	var should_breathe := is_sprinting and stamina_ratio <= BREATHING_THRESHOLD
+	const BREATH_START := 0.5  # start breathing at 50% or lower
+	const BREATH_STOP  := 0.6  # stop breathing at 60% or higher
 
-	if should_breathe and not breathing_active:
+	var stamina_ratio := stamina_current / stamina_max
+
+	if not breathing_active and stamina_ratio <= BREATH_START:
 		AudioManager.playBreathing()
 		breathing_active = true
-	elif not should_breathe and breathing_active:
+	elif breathing_active and stamina_ratio >= BREATH_STOP:
 		AudioManager.StopBreathing()
 		breathing_active = false
 
