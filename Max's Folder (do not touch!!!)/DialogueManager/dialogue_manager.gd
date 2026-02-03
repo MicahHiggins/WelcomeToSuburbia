@@ -27,5 +27,4 @@ func _process(delta: float) -> void:
 	if toggle == true:
 		visible = true
 	else:
-		visible = false
-		
+		visible = false;

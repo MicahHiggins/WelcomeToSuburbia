@@ -1,4 +1,4 @@
 extends Node
 
 
-var iterations = 0
+var iterations = -2
