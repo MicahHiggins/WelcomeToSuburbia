@@ -1,9 +1,11 @@
-[gd_scene load_steps=4 format=3 uid="uid://bst3bb8d7vieb"]
+[gd_scene load_steps=5 format=3 uid="uid://bst3bb8d7vieb"]
 
 [ext_resource type="Script" uid="uid://nuorgg7ktq8" path="res://Max's Folder (do not touch!!!)/pcg_attempt.gd" id="1_v771g"]
 [ext_resource type="PackedScene" uid="uid://r8vqf0qcnkdn" path="res://aidan_stuff/block_design.tscn" id="2_1i87g"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_2e1xa"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_v771g"]
 
 [node name="PCGAttempt" type="Node3D"]
 script = ExtResource("1_v771g")
@@ -62,6 +64,15 @@ collision_mask = 8
 [node name="CollisionShape3D" type="CollisionShape3D" parent="worldBlock5/loadZone5"]
 transform = Transform3D(24, 0, 0, 0, 24, 0, 0, 0, 24, 0, 1.1961625, 0)
 shape = SubResource("BoxShape3D_2e1xa")
+
+[node name="IterationCollision" type="Area3D" parent="."]
+visible = false
+collision_layer = 0
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="IterationCollision"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 95, 0, -62)
+shape = SubResource("BoxShape3D_v771g")
 
 [connection signal="body_entered" from="worldBlock1/loadZone1" to="." method="_on_load_zone_1_body_entered"]
 [connection signal="body_entered" from="worldBlock2/loadZone2" to="." method="_on_load_zone_2_body_entered"]
