@@ -65,7 +65,7 @@ func algoForIterations(worldBlocks):
 
 func _on_load_zone_1_body_entered(body: Node3D) -> void:
 	algoForIterations(0)
-	print(GlobalVariables)
+	#print(GlobalVariables)
 	GlobalVariables.iterations += 1
 	print("numba 0")
 
