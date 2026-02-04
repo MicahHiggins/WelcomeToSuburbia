@@ -47,7 +47,10 @@ tracks/0/path = NodePath("..")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
+
 "times": PackedFloat32Array(0.56666666),
+
+
 "transitions": PackedFloat32Array(1),
 "values": [{
 "args": [],
@@ -100,6 +103,10 @@ script = ExtResource("1_ucva2")
 base_speed = 3.2
 jump_velocity = 3.5
 sprint_speed = 5.0
+
+stamina_drain_per_sec = 14.0
+stamina_regen_per_sec = 15.0
+
 attack_cooldown = 5.0
 
 [node name="Mesh" type="MeshInstance3D" parent="."]

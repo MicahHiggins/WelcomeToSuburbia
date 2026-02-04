@@ -23,6 +23,15 @@ extends CharacterBody3D
 @export var jump_velocity := 4.5
 @export var sprint_speed := 10.0
 @export var freefly_speed := 25.0
+@export var stamina_max: float = 100.0
+@export var stamina_drain_per_sec: float = 18.0
+@export var stamina_regen_per_sec: float = 12.0
+@export var stamina_regen_delay: float = 0.75 # seconds after sprint stops before regen starts
+
+var stamina_current: float
+var stamina_regen_cd: float = 0.0
+var is_sprinting: bool = false
+
 
 # Input action names (must exist in InputMap)
 @export var input_left := "ui_left"
@@ -53,6 +62,11 @@ extends CharacterBody3D
 
 # Server peer ID for SceneMultiplayer (ENet, Steam, etc.)
 const SERVER_ID: int = 1
+
+#Breathing Audio
+const BREATHING_THRESHOLD := 0.5  # 50%
+var breathing_active := false
+
 
 # =========================
 #         RUNTIME STATE
@@ -85,6 +99,8 @@ var tether_partner_pos: Vector3 = Vector3.ZERO
 var tether_distance: float = 0.0
 var tether_speed_mult: float = 1.0
 var tether_hard_lock: bool = false
+
+var stamina_bar: ProgressBar
 
 var _sanity_fx_rect: ColorRect
 var _sanity_fx_mat: ShaderMaterial
@@ -139,7 +155,9 @@ func _ready() -> void:
 	_setup_hint_ui()
 	_check_input_mappings()
 	_setup_sanity_fx_ui()
-
+	stamina_current = stamina_max
+	_setup_stamina_ui()
+	
 # =========================
 #        PATH HELPERS
 # =========================
@@ -250,6 +268,83 @@ func _show_hint_temp(msg: String, seconds: float = 1.25) -> void:
 		_hint_timer.stop()
 		_hint_timer.wait_time = seconds
 		_hint_timer.start()
+# =========================
+#     STAMINA BAR UI
+# =========================
+func _setup_stamina_ui() -> void:
+	if not is_multiplayer_authority():
+		return
+
+	# Ensure UI layer exists
+	var ui := $UI if has_node("UI") else null
+	if ui == null:
+		ui = CanvasLayer.new()
+		ui.name = "UI"
+		add_child(ui)
+
+	# --- Frame (border) ---
+	var frame := ui.get_node_or_null("StaminaFrame") as Panel
+	if frame == null:
+		frame = Panel.new()
+		frame.name = "StaminaFrame"
+
+		frame.anchor_left = 0.5
+		frame.anchor_right = 0.5
+		frame.anchor_top = 1.0
+		frame.anchor_bottom = 1.0
+		frame.position = Vector2(-500, -62)
+		frame.size = Vector2(304, 22)
+
+		ui.add_child(frame)
+
+	var frame_style := StyleBoxFlat.new()
+	frame_style.bg_color = Color(0.05, 0.05, 0.05, 0.8)
+	frame_style.border_color = Color(0, 0, 0, 0.95)
+	frame_style.set_border_width_all(2)
+	frame_style.corner_radius_top_left = 4
+	frame_style.corner_radius_top_right = 4
+	frame_style.corner_radius_bottom_left = 4
+	frame_style.corner_radius_bottom_right = 4
+	frame.add_theme_stylebox_override("panel", frame_style)
+
+	# --- Stamina bar ---
+	stamina_bar = frame.get_node_or_null("StaminaBar") as ProgressBar
+	if stamina_bar == null:
+		stamina_bar = ProgressBar.new()
+		stamina_bar.name = "StaminaBar"
+		stamina_bar.show_percentage = false
+
+		stamina_bar.anchor_left = 0
+		stamina_bar.anchor_right = 1
+		stamina_bar.anchor_top = 0
+		stamina_bar.anchor_bottom = 1
+		stamina_bar.offset_left = 4
+		stamina_bar.offset_right = -4
+		stamina_bar.offset_top = 4
+		stamina_bar.offset_bottom = -4
+
+		frame.add_child(stamina_bar)
+
+		# Transparent background (frame provides border)
+		var bg := StyleBoxFlat.new()
+		bg.bg_color = Color(0, 0, 0, 0)
+		stamina_bar.add_theme_stylebox_override("bg", bg)
+
+		# Sky-blue fill
+		var fill := StyleBoxFlat.new()
+		fill.bg_color = Color(0.53, 0.81, 0.92)
+		fill.corner_radius_top_left = 3
+		fill.corner_radius_top_right = 3
+		fill.corner_radius_bottom_left = 3
+		fill.corner_radius_bottom_right = 3
+		stamina_bar.add_theme_stylebox_override("fill", fill)
+
+		stamina_bar.min_value = 0
+		stamina_bar.max_value = stamina_max
+		stamina_bar.value = stamina_current
+
+
+		#ui.add_child(stamina_bar)
 
 # =========================
 #     SANITY SCREEN FX UI
@@ -386,6 +481,13 @@ func _process(_dt: float) -> void:
 	if _sanity_fx_mat != null and _sanity_fx_rect != null:
 		_sanity_fx_rect.visible = sanity_fx_intensity > 0.01
 		_sanity_fx_mat.set_shader_parameter("intensity", sanity_fx_intensity)
+	
+	if stamina_bar != null:
+		stamina_bar.max_value = stamina_max
+		stamina_bar.value = stamina_current
+		stamina_bar.get_parent().visible = stamina_current < stamina_max
+
+
 
 func _physics_process(delta: float) -> void:
 	if not multiplayer.has_multiplayer_peer():
@@ -411,7 +513,45 @@ func _physics_authority(delta: float) -> void:
 	if can_jump and Input.is_action_just_pressed(input_jump) and is_on_floor():
 		velocity.y = jump_velocity
 
-	move_speed = sprint_speed if (can_sprint and Input.is_action_pressed(input_sprint)) else base_speed
+	# --- SPRINT + STAMINA (authoritative) ---
+	var input_vec := Input.get_vector(input_left, input_right, input_forward, input_back)
+	var wants_to_sprint := can_sprint and Input.is_action_pressed(input_sprint)
+	var is_moving := input_vec != Vector2.ZERO
+
+# Decide sprint FIRST (do NOT use move_speed == sprint_speed later)
+	is_sprinting = wants_to_sprint and is_moving and stamina_current > 0.0
+
+	if is_sprinting:
+		move_speed = sprint_speed
+		stamina_current -= stamina_drain_per_sec * delta
+		stamina_regen_cd = stamina_regen_delay
+	else:
+		move_speed = base_speed
+		if stamina_regen_cd > 0.0:
+			stamina_regen_cd -= delta
+		else:
+			stamina_current += stamina_regen_per_sec * delta
+
+	stamina_current = clamp(stamina_current, 0.0, stamina_max)
+
+# If you hit zero stamina, force sprint off (prevents “infinite sprint feel”)
+	if stamina_current <= 0.0:
+		is_sprinting = false
+
+		# --- Breathing logic (stamina-based) ---
+	const BREATH_START := 0.5  # start breathing at 50% or lower
+	const BREATH_STOP  := 0.6  # stop breathing at 60% or higher
+
+	var stamina_ratio := stamina_current / stamina_max
+
+	if not breathing_active and stamina_ratio <= BREATH_START:
+		AudioManager.playBreathing()
+		breathing_active = true
+	elif breathing_active and stamina_ratio >= BREATH_STOP:
+		AudioManager.StopBreathing()
+		breathing_active = false
+
+	
 	move_speed *= tether_speed_mult
 
 	if can_move:
@@ -439,10 +579,16 @@ func _physics_authority(delta: float) -> void:
 		velocity.x = 0.0
 		velocity.y = 0.0
 
-	if is_on_floor() and velocity != Vector3.ZERO and move_speed == sprint_speed:
-		%FootstepAnimation.play("run")
-	elif is_on_floor() and velocity != Vector3.ZERO and move_speed == base_speed:
-		%FootstepAnimation.play("walk")
+	if is_on_floor() and velocity != Vector3.ZERO:
+		if is_sprinting:
+			%FootstepAnimation.play("run")
+			
+		else:
+			%FootstepAnimation.play("walk")
+			
+
+
+		
 	move_and_slide()
 
 # =========================
