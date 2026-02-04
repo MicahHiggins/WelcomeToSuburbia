@@ -211,3 +211,7 @@ func _net_interpolate_remote() -> void:
 
 	# Otherwise smooth
 	global_transform = global_transform.interpolate_with(_net_target_transform, net_lerp_alpha)
+
+
+func _on_interact_body_entered(body: Node3D) -> void:
+	dialogue.toggle = true
