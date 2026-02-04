@@ -1,0 +1,38 @@
+[gd_scene load_steps=8 format=3 uid="uid://bplv7bwoubl0j"]
+
+[ext_resource type="Script" uid="uid://csc5bob5s77t" path="res://Scripts/npc_bob.gd" id="1_g4ita"]
+[ext_resource type="Script" uid="uid://cicakuq5a1gle" path="res://Scripts/state_machine.gd" id="2_jur1b"]
+[ext_resource type="Script" uid="uid://dtisy2wdio7v" path="res://Scripts/patrol_state.gd" id="3_oknps"]
+[ext_resource type="Script" uid="uid://cvv6jryec78f3" path="res://Scripts/talk_state.gd" id="4_0uuot"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_r41f0"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_5x2h4"]
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_fo4fv"]
+
+[node name="NPC_bob" type="CharacterBody3D"]
+script = ExtResource("1_g4ita")
+
+[node name="interact" type="Area3D" parent="."]
+
+[node name="interact_shape" type="CollisionShape3D" parent="interact"]
+shape = SubResource("CapsuleShape3D_r41f0")
+
+[node name="body" type="CollisionShape3D" parent="."]
+shape = SubResource("CapsuleShape3D_5x2h4")
+debug_color = Color(0.65632045, 0.5013817, 0.35583058, 0.41960785)
+
+[node name="StateMachine" type="Node" parent="."]
+script = ExtResource("2_jur1b")
+
+[node name="PatrolState" type="Node" parent="StateMachine"]
+script = ExtResource("3_oknps")
+
+[node name="TalkState" type="Node" parent="StateMachine"]
+script = ExtResource("4_0uuot")
+
+[node name="NavigationAgent3D" type="NavigationAgent3D" parent="."]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+mesh = SubResource("CapsuleMesh_fo4fv")
