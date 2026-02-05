@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3 uid="uid://bav2p20t1bubr"]
+[gd_scene load_steps=9 format=3 uid="uid://bav2p20t1bubr"]
 
 [ext_resource type="Script" uid="uid://csc5bob5s77t" path="res://Scripts/npc_bob.gd" id="1_g4ita"]
 [ext_resource type="Script" uid="uid://cicakuq5a1gle" path="res://Scripts/state_machine.gd" id="2_jur1b"]
@@ -11,7 +11,11 @@
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_fo4fv"]
 
-[node name="NPC_bob" type="CharacterBody3D"]
+[sub_resource type="SphereShape3D" id="SphereShape3D_g4ita"]
+radius = 2.0
+
+[node name="NPC_bob" type="CharacterBody3D" groups=["NPC"]]
+collision_mask = 3
 script = ExtResource("1_g4ita")
 
 [node name="interact" type="Area3D" parent="."]
@@ -26,13 +30,21 @@ debug_color = Color(0.65632045, 0.5013817, 0.35583058, 0.41960785)
 [node name="StateMachine" type="Node" parent="."]
 script = ExtResource("2_jur1b")
 
-[node name="PatrolState" type="Node" parent="StateMachine"]
+[node name="PatrolState" type="Node" parent="StateMachine" node_paths=PackedStringArray("talk_range")]
 script = ExtResource("3_oknps")
+talk_range = NodePath("../../TalkDetection")
 
-[node name="TalkState" type="Node" parent="StateMachine"]
+[node name="TalkState" type="Node" parent="StateMachine" node_paths=PackedStringArray("talk_detection")]
 script = ExtResource("4_0uuot")
+talk_detection = NodePath("../../TalkDetection")
 
 [node name="NavigationAgent3D" type="NavigationAgent3D" parent="."]
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
 mesh = SubResource("CapsuleMesh_fo4fv")
+
+[node name="TalkDetection" type="Area3D" parent="."]
+collision_mask = 8
+
+[node name="TalkDetectionShape" type="CollisionShape3D" parent="TalkDetection"]
+shape = SubResource("SphereShape3D_g4ita")
