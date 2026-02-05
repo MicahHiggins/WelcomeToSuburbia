@@ -41,3 +41,4 @@ script = ExtResource("4_0uuot")
 mesh = SubResource("CapsuleMesh_fo4fv")
 
 [connection signal="body_entered" from="interact" to="." method="_on_interact_body_entered"]
+[connection signal="body_exited" from="interact" to="." method="_on_interact_body_exited"]

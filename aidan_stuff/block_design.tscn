@@ -1,6 +1,7 @@
-[gd_scene load_steps=6 format=3 uid="uid://r8vqf0qcnkdn"]
+[gd_scene load_steps=8 format=3 uid="uid://r8vqf0qcnkdn"]
 
 [ext_resource type="ArrayMesh" uid="uid://1gdxilugbc4i" path="res://Assets/kenney_city-kit-suburban_20/Models/OBJ format/building-type-a.obj" id="1_7yfhi"]
+[ext_resource type="Script" uid="uid://4p6bc6ac8elf" path="res://aidan_stuff/block_design.gd" id="1_jmv40"]
 [ext_resource type="ArrayMesh" uid="uid://dgv4eih41bu3t" path="res://Assets/kenney_city-kit-suburban_20/Models/OBJ format/driveway-long.obj" id="2_ypk4p"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_oxdg3"]
@@ -11,7 +12,11 @@ albedo_color = Color(0.078431375, 0.43529412, 0.06666667, 1)
 [sub_resource type="BoxShape3D" id="BoxShape3D_ko78g"]
 size = Vector3(16.164581, 0.58447266, 16.030792)
 
+[sub_resource type="BoxShape3D" id="BoxShape3D_x2lvk"]
+size = Vector3(40, 10, 40)
+
 [node name="Block Design" type="Node3D"]
+script = ExtResource("1_jmv40")
 
 [node name="Ground" type="StaticBody3D" parent="."]
 transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0)
@@ -443,3 +448,13 @@ mesh = ExtResource("2_ypk4p")
 skeleton = NodePath("../..")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+
+[node name="Area3D" type="Area3D" parent="."]
+collision_layer = 0
+collision_mask = 8
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Area3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.8517437, 0)
+shape = SubResource("BoxShape3D_x2lvk")
+
+[connection signal="body_entered" from="Area3D" to="." method="_on_area_3d_body_entered"]
