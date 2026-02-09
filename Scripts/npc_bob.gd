@@ -211,3 +211,40 @@ func _net_interpolate_remote() -> void:
 
 	# Otherwise smooth
 	global_transform = global_transform.interpolate_with(_net_target_transform, net_lerp_alpha)
+
+
+var in_bob_area = false
+var bob_talking = false
+signal dialogueSig
+
+
+
+func _input(event: InputEvent) -> void:
+	if event.is_action_pressed("interact"):
+		dialogueSig.emit()
+		
+	if in_bob_area == true && Input.is_action_just_pressed("interact"):
+		enter_bob_dialogue()
+		
+		
+		
+func enter_bob_dialogue():
+	if bob_talking == false:
+		bob_talking = true
+		dialogue.toggle = true
+		dialogue.uniqueName= "DAVE"
+		await dialogueSig
+		dialogue.uniqueName= "HI"
+		await dialogueSig
+		dialogue.toggle = false
+		await get_tree().create_timer(1).timeout
+		bob_talking = false
+	
+func _on_interact_body_entered(body: Node3D) -> void:
+	in_bob_area = true
+	print("TRUE")
+	
+	
+func _on_interact_body_exited(body: Node3D) -> void:
+	in_bob_area = false
+	print("FALSE")
