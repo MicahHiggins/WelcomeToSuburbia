@@ -450,541 +450,543 @@ transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, 5, 0.11, -5.689648)
 mesh = ExtResource("2_ypk4p")
 skeleton = NodePath("../..")
 
-[node name="Fences + Paths" type="Node3D" parent="."]
+[node name="Paths" type="Node3D" parent="."]
 
-[node name="PathStonesMessy" type="MeshInstance3D" parent="Fences + Paths"]
+[node name="PathStonesMessy" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(-9.8350625e-08, 0, 2.25, 0, 2.25, 0, -2.25, 0, -9.8350625e-08, -13.207827, 0.15713501, 6.00558)
 mesh = ExtResource("3_2eoyn")
 skeleton = NodePath("../..")
 
-[node name="PathStonesMessy2" type="MeshInstance3D" parent="Fences + Paths"]
+[node name="PathStonesMessy2" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(-9.8350625e-08, 0, 2.25, 0, 2.25, 0, -2.25, 0, -9.8350625e-08, -12.360626, 0.15713501, 6.00558)
 mesh = ExtResource("3_2eoyn")
 skeleton = NodePath("../..")
 
-[node name="PathStonesMessy3" type="MeshInstance3D" parent="Fences + Paths"]
+[node name="PathStonesMessy3" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(-9.8350625e-08, 0, 2.25, 0, 2.25, 0, -2.25, 0, -9.8350625e-08, -11.5238, 0.15713501, 6.00558)
 mesh = ExtResource("3_2eoyn")
 skeleton = NodePath("../..")
 
-[node name="PathStonesMessy4" type="MeshInstance3D" parent="Fences + Paths"]
+[node name="PathStonesMessy4" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(-9.8350625e-08, 0, 2.25, 0, 2.25, 0, -2.25, 0, -9.8350625e-08, -13.207827, 0.15713501, 1.9934244)
 mesh = ExtResource("3_2eoyn")
 skeleton = NodePath("../..")
 
-[node name="PathStonesMessy5" type="MeshInstance3D" parent="Fences + Paths"]
+[node name="PathStonesMessy5" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(-9.8350625e-08, 0, 2.25, 0, 2.25, 0, -2.25, 0, -9.8350625e-08, -12.360626, 0.15713501, 1.9934244)
 mesh = ExtResource("3_2eoyn")
 skeleton = NodePath("../..")
 
-[node name="PathStonesMessy6" type="MeshInstance3D" parent="Fences + Paths"]
+[node name="PathStonesMessy6" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(-9.8350625e-08, 0, 2.25, 0, 2.25, 0, -2.25, 0, -9.8350625e-08, -11.5238, 0.15713501, 1.9934244)
 mesh = ExtResource("3_2eoyn")
 skeleton = NodePath("../..")
 
-[node name="PathStonesMessy7" type="MeshInstance3D" parent="Fences + Paths"]
+[node name="PathStonesMessy7" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(-9.8350625e-08, 0, 2.25, 0, 2.25, 0, -2.25, 0, -9.8350625e-08, -13.207827, 0.15713501, -2.0086994)
 mesh = ExtResource("3_2eoyn")
 skeleton = NodePath("../..")
 
-[node name="PathStonesMessy8" type="MeshInstance3D" parent="Fences + Paths"]
+[node name="PathStonesMessy8" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(-9.8350625e-08, 0, 2.25, 0, 2.25, 0, -2.25, 0, -9.8350625e-08, -12.360626, 0.15713501, -2.0086994)
 mesh = ExtResource("3_2eoyn")
 skeleton = NodePath("../..")
 
-[node name="PathStonesMessy9" type="MeshInstance3D" parent="Fences + Paths"]
+[node name="PathStonesMessy9" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(-9.8350625e-08, 0, 2.25, 0, 2.25, 0, -2.25, 0, -9.8350625e-08, -11.5238, 0.15713501, -2.0086994)
 mesh = ExtResource("3_2eoyn")
 skeleton = NodePath("../..")
 
-[node name="PathStonesMessy10" type="MeshInstance3D" parent="Fences + Paths"]
+[node name="PathStonesMessy10" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(-9.8350625e-08, 0, 2.25, 0, 2.25, 0, -2.25, 0, -9.8350625e-08, -13.207827, 0.15713501, -6.005549)
 mesh = ExtResource("3_2eoyn")
 skeleton = NodePath("../..")
 
-[node name="PathStonesMessy11" type="MeshInstance3D" parent="Fences + Paths"]
+[node name="PathStonesMessy11" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(-9.8350625e-08, 0, 2.25, 0, 2.25, 0, -2.25, 0, -9.8350625e-08, -12.360626, 0.15713501, -6.005549)
 mesh = ExtResource("3_2eoyn")
 skeleton = NodePath("../..")
 
-[node name="PathStonesMessy12" type="MeshInstance3D" parent="Fences + Paths"]
+[node name="PathStonesMessy12" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(-9.8350625e-08, 0, 2.25, 0, 2.25, 0, -2.25, 0, -9.8350625e-08, -11.5238, 0.15713501, -6.005549)
 mesh = ExtResource("3_2eoyn")
 skeleton = NodePath("../..")
 
-[node name="PathStonesMessy13" type="MeshInstance3D" parent="Fences + Paths"]
+[node name="PathStonesMessy13" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(-9.8350625e-08, 0, 2.25, 0, 2.25, 0, -2.25, 0, -9.8350625e-08, 11.537638, 0.15713501, 6.00558)
 mesh = ExtResource("3_2eoyn")
 skeleton = NodePath("../..")
 
-[node name="PathStonesMessy14" type="MeshInstance3D" parent="Fences + Paths"]
+[node name="PathStonesMessy14" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(-9.8350625e-08, 0, 2.25, 0, 2.25, 0, -2.25, 0, -9.8350625e-08, 12.384838, 0.15713501, 6.00558)
 mesh = ExtResource("3_2eoyn")
 skeleton = NodePath("../..")
 
-[node name="PathStonesMessy15" type="MeshInstance3D" parent="Fences + Paths"]
+[node name="PathStonesMessy15" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(-9.8350625e-08, 0, 2.25, 0, 2.25, 0, -2.25, 0, -9.8350625e-08, 13.221664, 0.15713501, 6.00558)
 mesh = ExtResource("3_2eoyn")
 skeleton = NodePath("../..")
 
-[node name="PathStonesMessy16" type="MeshInstance3D" parent="Fences + Paths"]
+[node name="PathStonesMessy16" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(-9.8350625e-08, 0, 2.25, 0, 2.25, 0, -2.25, 0, -9.8350625e-08, 11.537638, 0.15713501, 1.9530077)
 mesh = ExtResource("3_2eoyn")
 skeleton = NodePath("../..")
 
-[node name="PathStonesMessy17" type="MeshInstance3D" parent="Fences + Paths"]
+[node name="PathStonesMessy17" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(-9.8350625e-08, 0, 2.25, 0, 2.25, 0, -2.25, 0, -9.8350625e-08, 12.384838, 0.15713501, 1.9530077)
 mesh = ExtResource("3_2eoyn")
 skeleton = NodePath("../..")
 
-[node name="PathStonesMessy18" type="MeshInstance3D" parent="Fences + Paths"]
+[node name="PathStonesMessy18" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(-9.8350625e-08, 0, 2.25, 0, 2.25, 0, -2.25, 0, -9.8350625e-08, 13.221664, 0.15713501, 1.9530077)
 mesh = ExtResource("3_2eoyn")
 skeleton = NodePath("../..")
 
-[node name="PathStonesMessy19" type="MeshInstance3D" parent="Fences + Paths"]
+[node name="PathStonesMessy19" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(-9.8350625e-08, 0, 2.25, 0, 2.25, 0, -2.25, 0, -9.8350625e-08, 11.537638, 0.15713501, 6.00558)
 mesh = ExtResource("3_2eoyn")
 skeleton = NodePath("../..")
 
-[node name="PathStonesMessy20" type="MeshInstance3D" parent="Fences + Paths"]
+[node name="PathStonesMessy20" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(-9.8350625e-08, 0, 2.25, 0, 2.25, 0, -2.25, 0, -9.8350625e-08, 12.384838, 0.15713501, 6.00558)
 mesh = ExtResource("3_2eoyn")
 skeleton = NodePath("../..")
 
-[node name="PathStonesMessy21" type="MeshInstance3D" parent="Fences + Paths"]
+[node name="PathStonesMessy21" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(-9.8350625e-08, 0, 2.25, 0, 2.25, 0, -2.25, 0, -9.8350625e-08, 13.221664, 0.15713501, 6.00558)
 mesh = ExtResource("3_2eoyn")
 skeleton = NodePath("../..")
 
-[node name="PathStonesMessy22" type="MeshInstance3D" parent="Fences + Paths"]
+[node name="PathStonesMessy22" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(-9.8350625e-08, 0, 2.25, 0, 2.25, 0, -2.25, 0, -9.8350625e-08, 11.537638, 0.15713501, -2.0413408)
 mesh = ExtResource("3_2eoyn")
 skeleton = NodePath("../..")
 
-[node name="PathStonesMessy23" type="MeshInstance3D" parent="Fences + Paths"]
+[node name="PathStonesMessy23" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(-9.8350625e-08, 0, 2.25, 0, 2.25, 0, -2.25, 0, -9.8350625e-08, 12.384838, 0.15713501, -2.0413408)
 mesh = ExtResource("3_2eoyn")
 skeleton = NodePath("../..")
 
-[node name="PathStonesMessy24" type="MeshInstance3D" parent="Fences + Paths"]
+[node name="PathStonesMessy24" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(-9.8350625e-08, 0, 2.25, 0, 2.25, 0, -2.25, 0, -9.8350625e-08, 13.221664, 0.15713501, -2.0413408)
 mesh = ExtResource("3_2eoyn")
 skeleton = NodePath("../..")
 
-[node name="PathStonesMessy25" type="MeshInstance3D" parent="Fences + Paths"]
+[node name="PathStonesMessy25" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(-9.8350625e-08, 0, 2.25, 0, 2.25, 0, -2.25, 0, -9.8350625e-08, 11.537638, 0.15713501, -6.0071545)
 mesh = ExtResource("3_2eoyn")
 skeleton = NodePath("../..")
 
-[node name="PathStonesMessy26" type="MeshInstance3D" parent="Fences + Paths"]
+[node name="PathStonesMessy26" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(-9.8350625e-08, 0, 2.25, 0, 2.25, 0, -2.25, 0, -9.8350625e-08, 12.384838, 0.15713501, -6.0071545)
 mesh = ExtResource("3_2eoyn")
 skeleton = NodePath("../..")
 
-[node name="PathStonesMessy27" type="MeshInstance3D" parent="Fences + Paths"]
+[node name="PathStonesMessy27" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(-9.8350625e-08, 0, 2.25, 0, 2.25, 0, -2.25, 0, -9.8350625e-08, 13.221664, 0.15713501, -6.0071545)
 mesh = ExtResource("3_2eoyn")
 skeleton = NodePath("../..")
 
-[node name="PathStonesMessy28" type="MeshInstance3D" parent="Fences + Paths"]
+[node name="PathStonesMessy28" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(-2.2499998, 0, -1.9670122e-07, 0, 2.2500002, 0, 1.9670122e-07, 0, -2.2499998, -5.9747267, 0.15713501, 13.191291)
 mesh = ExtResource("3_2eoyn")
 skeleton = NodePath("../..")
 
-[node name="PathStonesMessy29" type="MeshInstance3D" parent="Fences + Paths"]
+[node name="PathStonesMessy29" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(-2.2499998, 0, -1.9670122e-07, 0, 2.2500002, 0, 1.9670122e-07, 0, -2.2499998, -5.9473467, 0.15713501, 12.344533)
 mesh = ExtResource("3_2eoyn")
 skeleton = NodePath("../..")
 
-[node name="PathStonesMessy30" type="MeshInstance3D" parent="Fences + Paths"]
+[node name="PathStonesMessy30" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(-2.2499998, 0, -1.9670122e-07, 0, 2.2500002, 0, 1.9670122e-07, 0, -2.2499998, -5.9203024, 0.15713501, 11.508143)
 mesh = ExtResource("3_2eoyn")
 skeleton = NodePath("../..")
 
-[node name="PathStonesMessy31" type="MeshInstance3D" parent="Fences + Paths"]
+[node name="PathStonesMessy31" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(-2.2499998, 0, -1.9670122e-07, 0, 2.2500002, 0, 1.9670122e-07, 0, -2.2499998, -1.9702177, 0.15713501, 13.191291)
 mesh = ExtResource("3_2eoyn")
 skeleton = NodePath("../..")
 
-[node name="PathStonesMessy32" type="MeshInstance3D" parent="Fences + Paths"]
+[node name="PathStonesMessy32" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(-2.2499998, 0, -1.9670122e-07, 0, 2.2500002, 0, 1.9670122e-07, 0, -2.2499998, -1.9428377, 0.15713501, 12.344533)
 mesh = ExtResource("3_2eoyn")
 skeleton = NodePath("../..")
 
-[node name="PathStonesMessy33" type="MeshInstance3D" parent="Fences + Paths"]
+[node name="PathStonesMessy33" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(-2.2499998, 0, -1.9670122e-07, 0, 2.2500002, 0, 1.9670122e-07, 0, -2.2499998, -1.9157934, 0.15713501, 11.508143)
 mesh = ExtResource("3_2eoyn")
 skeleton = NodePath("../..")
 
-[node name="PathStonesMessy34" type="MeshInstance3D" parent="Fences + Paths"]
+[node name="PathStonesMessy34" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(-2.2499998, 0, -1.9670122e-07, 0, 2.2500002, 0, 1.9670122e-07, 0, -2.2499998, 2.0311327, 0.15713501, 13.191291)
 mesh = ExtResource("3_2eoyn")
 skeleton = NodePath("../..")
 
-[node name="PathStonesMessy35" type="MeshInstance3D" parent="Fences + Paths"]
+[node name="PathStonesMessy35" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(-2.2499998, 0, -1.9670122e-07, 0, 2.2500002, 0, 1.9670122e-07, 0, -2.2499998, 2.0585127, 0.15713501, 12.344533)
 mesh = ExtResource("3_2eoyn")
 skeleton = NodePath("../..")
 
-[node name="PathStonesMessy36" type="MeshInstance3D" parent="Fences + Paths"]
+[node name="PathStonesMessy36" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(-2.2499998, 0, -1.9670122e-07, 0, 2.2500002, 0, 1.9670122e-07, 0, -2.2499998, 2.085557, 0.15713501, 11.508143)
 mesh = ExtResource("3_2eoyn")
 skeleton = NodePath("../..")
 
-[node name="PathStonesMessy37" type="MeshInstance3D" parent="Fences + Paths"]
+[node name="PathStonesMessy37" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(-2.2499998, 0, -1.9670122e-07, 0, 2.2500002, 0, 1.9670122e-07, 0, -2.2499998, 5.9756093, 0.15713501, 13.191291)
 mesh = ExtResource("3_2eoyn")
 skeleton = NodePath("../..")
 
-[node name="PathStonesMessy38" type="MeshInstance3D" parent="Fences + Paths"]
+[node name="PathStonesMessy38" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(-2.2499998, 0, -1.9670122e-07, 0, 2.2500002, 0, 1.9670122e-07, 0, -2.2499998, 6.0029893, 0.15713501, 12.344533)
 mesh = ExtResource("3_2eoyn")
 skeleton = NodePath("../..")
 
-[node name="PathStonesMessy39" type="MeshInstance3D" parent="Fences + Paths"]
+[node name="PathStonesMessy39" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(-2.2499998, 0, -1.9670122e-07, 0, 2.2500002, 0, 1.9670122e-07, 0, -2.2499998, 6.0300336, 0.15713501, 11.508143)
 mesh = ExtResource("3_2eoyn")
 skeleton = NodePath("../..")
 
-[node name="PathStonesMessy40" type="MeshInstance3D" parent="Fences + Paths"]
+[node name="PathStonesMessy40" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(-2.2499998, 0, -1.9670122e-07, 0, 2.2500002, 0, 1.9670122e-07, 0, -2.2499998, -2.0027242, 0.15713501, -11.536587)
 mesh = ExtResource("3_2eoyn")
 skeleton = NodePath("../..")
 
-[node name="PathStonesMessy41" type="MeshInstance3D" parent="Fences + Paths"]
+[node name="PathStonesMessy41" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(-2.2499998, 0, -1.9670122e-07, 0, 2.2500002, 0, 1.9670122e-07, 0, -2.2499998, -1.9753443, 0.15713501, -12.383345)
 mesh = ExtResource("3_2eoyn")
 skeleton = NodePath("../..")
 
-[node name="PathStonesMessy42" type="MeshInstance3D" parent="Fences + Paths"]
+[node name="PathStonesMessy42" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(-2.2499998, 0, -1.9670122e-07, 0, 2.2500002, 0, 1.9670122e-07, 0, -2.2499998, -1.9483, 0.15713501, -13.219734)
 mesh = ExtResource("3_2eoyn")
 skeleton = NodePath("../..")
 
-[node name="PathStonesMessy43" type="MeshInstance3D" parent="Fences + Paths"]
+[node name="PathStonesMessy43" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(-2.2499998, 0, -1.9670122e-07, 0, 2.2500002, 0, 1.9670122e-07, 0, -2.2499998, -6.069556, 0.15713501, -11.536587)
 mesh = ExtResource("3_2eoyn")
 skeleton = NodePath("../..")
 
-[node name="PathStonesMessy44" type="MeshInstance3D" parent="Fences + Paths"]
+[node name="PathStonesMessy44" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(-2.2499998, 0, -1.9670122e-07, 0, 2.2500002, 0, 1.9670122e-07, 0, -2.2499998, -6.0421762, 0.15713501, -12.383345)
 mesh = ExtResource("3_2eoyn")
 skeleton = NodePath("../..")
 
-[node name="PathStonesMessy45" type="MeshInstance3D" parent="Fences + Paths"]
+[node name="PathStonesMessy45" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(-2.2499998, 0, -1.9670122e-07, 0, 2.2500002, 0, 1.9670122e-07, 0, -2.2499998, -6.015132, 0.15713501, -13.219734)
 mesh = ExtResource("3_2eoyn")
 skeleton = NodePath("../..")
 
-[node name="PathStonesMessy46" type="MeshInstance3D" parent="Fences + Paths"]
+[node name="PathStonesMessy46" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(-2.2499998, 0, -1.9670122e-07, 0, 2.2500002, 0, 1.9670122e-07, 0, -2.2499998, 1.9777846, 0.15713501, -11.536587)
 mesh = ExtResource("3_2eoyn")
 skeleton = NodePath("../..")
 
-[node name="PathStonesMessy47" type="MeshInstance3D" parent="Fences + Paths"]
+[node name="PathStonesMessy47" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(-2.2499998, 0, -1.9670122e-07, 0, 2.2500002, 0, 1.9670122e-07, 0, -2.2499998, 2.0051646, 0.15713501, -12.383345)
 mesh = ExtResource("3_2eoyn")
 skeleton = NodePath("../..")
 
-[node name="PathStonesMessy48" type="MeshInstance3D" parent="Fences + Paths"]
+[node name="PathStonesMessy48" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(-2.2499998, 0, -1.9670122e-07, 0, 2.2500002, 0, 1.9670122e-07, 0, -2.2499998, 2.032209, 0.15713501, -13.219734)
 mesh = ExtResource("3_2eoyn")
 skeleton = NodePath("../..")
 
-[node name="PathStonesMessy49" type="MeshInstance3D" parent="Fences + Paths"]
+[node name="PathStonesMessy49" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(-2.2499998, 0, -1.9670122e-07, 0, 2.2500002, 0, 1.9670122e-07, 0, -2.2499998, 5.984237, 0.15713501, -11.536587)
 mesh = ExtResource("3_2eoyn")
 skeleton = NodePath("../..")
 
-[node name="PathStonesMessy50" type="MeshInstance3D" parent="Fences + Paths"]
+[node name="PathStonesMessy50" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(-2.2499998, 0, -1.9670122e-07, 0, 2.2500002, 0, 1.9670122e-07, 0, -2.2499998, 6.011617, 0.15713501, -12.383345)
 mesh = ExtResource("3_2eoyn")
 skeleton = NodePath("../..")
 
-[node name="PathStonesMessy51" type="MeshInstance3D" parent="Fences + Paths"]
+[node name="PathStonesMessy51" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(-2.2499998, 0, -1.9670122e-07, 0, 2.2500002, 0, 1.9670122e-07, 0, -2.2499998, 6.0386615, 0.15713501, -13.219734)
 mesh = ExtResource("3_2eoyn")
 skeleton = NodePath("../..")
 
-[node name="PathStonesMessy52" type="MeshInstance3D" parent="Fences + Paths"]
+[node name="PathStonesMessy52" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(-2.2499998, 0, -1.9670122e-07, 0, 2.2500002, 0, 1.9670122e-07, 0, -2.2499998, 5.984237, 0.15713501, -3.3110247)
 mesh = ExtResource("3_2eoyn")
 skeleton = NodePath("../..")
 
-[node name="PathStonesMessy53" type="MeshInstance3D" parent="Fences + Paths"]
+[node name="PathStonesMessy53" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(-2.2499998, 0, -1.9670122e-07, 0, 2.2500002, 0, 1.9670122e-07, 0, -2.2499998, 6.011617, 0.15713501, -4.1577826)
 mesh = ExtResource("3_2eoyn")
 skeleton = NodePath("../..")
 
-[node name="PathStonesMessy54" type="MeshInstance3D" parent="Fences + Paths"]
+[node name="PathStonesMessy54" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(-2.2499998, 0, -1.9670122e-07, 0, 2.2500002, 0, 1.9670122e-07, 0, -2.2499998, 6.0386615, 0.15713501, -4.994172)
 mesh = ExtResource("3_2eoyn")
 skeleton = NodePath("../..")
 
-[node name="PathStonesMessy55" type="MeshInstance3D" parent="Fences + Paths"]
+[node name="PathStonesMessy55" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(-2.2499998, 0, -1.9670122e-07, 0, 2.2500002, 0, 1.9670122e-07, 0, -2.2499998, 5.984237, 0.15713501, -5.8533707)
 mesh = ExtResource("3_2eoyn")
 skeleton = NodePath("../..")
 
-[node name="PathStonesMessy56" type="MeshInstance3D" parent="Fences + Paths"]
+[node name="PathStonesMessy56" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(-2.2499998, 0, -1.9670122e-07, 0, 2.2500002, 0, 1.9670122e-07, 0, -2.2499998, 6.011617, 0.15713501, -6.7001286)
 mesh = ExtResource("3_2eoyn")
 skeleton = NodePath("../..")
 
-[node name="PathStonesMessy57" type="MeshInstance3D" parent="Fences + Paths"]
+[node name="PathStonesMessy57" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(-2.2499998, 0, -1.9670122e-07, 0, 2.2500002, 0, 1.9670122e-07, 0, -2.2499998, 6.0386615, 0.15713501, -7.536518)
 mesh = ExtResource("3_2eoyn")
 skeleton = NodePath("../..")
 
-[node name="PathStonesMessy58" type="MeshInstance3D" parent="Fences + Paths"]
+[node name="PathStonesMessy58" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(-2.2499998, 0, -1.9670122e-07, 0, 2.2500002, 0, 1.9670122e-07, 0, -2.2499998, 6.0386615, 0.15713501, -8.415236)
 mesh = ExtResource("3_2eoyn")
 skeleton = NodePath("../..")
 
-[node name="PathStonesMessy59" type="MeshInstance3D" parent="Fences + Paths"]
+[node name="PathStonesMessy59" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(-2.2499998, 0, -1.9670122e-07, 0, 2.2500002, 0, 1.9670122e-07, 0, -2.2499998, 2.0142503, 0.15713501, -3.3110247)
 mesh = ExtResource("3_2eoyn")
 skeleton = NodePath("../..")
 
-[node name="PathStonesMessy60" type="MeshInstance3D" parent="Fences + Paths"]
+[node name="PathStonesMessy60" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(-2.2499998, 0, -1.9670122e-07, 0, 2.2500002, 0, 1.9670122e-07, 0, -2.2499998, 2.0416303, 0.15713501, -4.1577826)
 mesh = ExtResource("3_2eoyn")
 skeleton = NodePath("../..")
 
-[node name="PathStonesMessy61" type="MeshInstance3D" parent="Fences + Paths"]
+[node name="PathStonesMessy61" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(-2.2499998, 0, -1.9670122e-07, 0, 2.2500002, 0, 1.9670122e-07, 0, -2.2499998, 2.0686746, 0.15713501, -4.994172)
 mesh = ExtResource("3_2eoyn")
 skeleton = NodePath("../..")
 
-[node name="PathStonesMessy62" type="MeshInstance3D" parent="Fences + Paths"]
+[node name="PathStonesMessy62" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(-2.2499998, 0, -1.9670122e-07, 0, 2.2500002, 0, 1.9670122e-07, 0, -2.2499998, 2.0142503, 0.15713501, -5.8533707)
 mesh = ExtResource("3_2eoyn")
 skeleton = NodePath("../..")
 
-[node name="PathStonesMessy63" type="MeshInstance3D" parent="Fences + Paths"]
+[node name="PathStonesMessy63" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(-2.2499998, 0, -1.9670122e-07, 0, 2.2500002, 0, 1.9670122e-07, 0, -2.2499998, 2.0416303, 0.15713501, -6.7001286)
 mesh = ExtResource("3_2eoyn")
 skeleton = NodePath("../..")
 
-[node name="PathStonesMessy64" type="MeshInstance3D" parent="Fences + Paths"]
+[node name="PathStonesMessy64" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(-2.2499998, 0, -1.9670122e-07, 0, 2.2500002, 0, 1.9670122e-07, 0, -2.2499998, 2.0686746, 0.15713501, -7.536518)
 mesh = ExtResource("3_2eoyn")
 skeleton = NodePath("../..")
 
-[node name="PathStonesMessy65" type="MeshInstance3D" parent="Fences + Paths"]
+[node name="PathStonesMessy65" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(-2.2499998, 0, -1.9670122e-07, 0, 2.2500002, 0, 1.9670122e-07, 0, -2.2499998, 2.0686746, 0.15713501, -8.415236)
 mesh = ExtResource("3_2eoyn")
 skeleton = NodePath("../..")
 
-[node name="PathStonesMessy66" type="MeshInstance3D" parent="Fences + Paths"]
+[node name="PathStonesMessy66" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(-2.2499998, 0, -1.9670122e-07, 0, 2.2500002, 0, 1.9670122e-07, 0, -2.2499998, -2.0239139, 0.15713501, -3.3110247)
 mesh = ExtResource("3_2eoyn")
 skeleton = NodePath("../..")
 
-[node name="PathStonesMessy67" type="MeshInstance3D" parent="Fences + Paths"]
+[node name="PathStonesMessy67" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(-2.2499998, 0, -1.9670122e-07, 0, 2.2500002, 0, 1.9670122e-07, 0, -2.2499998, -1.9965339, 0.15713501, -4.1577826)
 mesh = ExtResource("3_2eoyn")
 skeleton = NodePath("../..")
 
-[node name="PathStonesMessy68" type="MeshInstance3D" parent="Fences + Paths"]
+[node name="PathStonesMessy68" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(-2.2499998, 0, -1.9670122e-07, 0, 2.2500002, 0, 1.9670122e-07, 0, -2.2499998, -1.9694896, 0.15713501, -4.994172)
 mesh = ExtResource("3_2eoyn")
 skeleton = NodePath("../..")
 
-[node name="PathStonesMessy69" type="MeshInstance3D" parent="Fences + Paths"]
+[node name="PathStonesMessy69" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(-2.2499998, 0, -1.9670122e-07, 0, 2.2500002, 0, 1.9670122e-07, 0, -2.2499998, -2.0239139, 0.15713501, -5.8533707)
 mesh = ExtResource("3_2eoyn")
 skeleton = NodePath("../..")
 
-[node name="PathStonesMessy70" type="MeshInstance3D" parent="Fences + Paths"]
+[node name="PathStonesMessy70" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(-2.2499998, 0, -1.9670122e-07, 0, 2.2500002, 0, 1.9670122e-07, 0, -2.2499998, -1.9965339, 0.15713501, -6.7001286)
 mesh = ExtResource("3_2eoyn")
 skeleton = NodePath("../..")
 
-[node name="PathStonesMessy71" type="MeshInstance3D" parent="Fences + Paths"]
+[node name="PathStonesMessy71" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(-2.2499998, 0, -1.9670122e-07, 0, 2.2500002, 0, 1.9670122e-07, 0, -2.2499998, -1.9694896, 0.15713501, -7.536518)
 mesh = ExtResource("3_2eoyn")
 skeleton = NodePath("../..")
 
-[node name="PathStonesMessy72" type="MeshInstance3D" parent="Fences + Paths"]
+[node name="PathStonesMessy72" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(-2.2499998, 0, -1.9670122e-07, 0, 2.2500002, 0, 1.9670122e-07, 0, -2.2499998, -1.9694896, 0.15713501, -8.415236)
 mesh = ExtResource("3_2eoyn")
 skeleton = NodePath("../..")
 
-[node name="PathStonesMessy73" type="MeshInstance3D" parent="Fences + Paths"]
+[node name="PathStonesMessy73" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(-2.2499998, 0, -1.9670122e-07, 0, 2.2500002, 0, 1.9670122e-07, 0, -2.2499998, -5.974676, 0.15713501, -3.3110247)
 mesh = ExtResource("3_2eoyn")
 skeleton = NodePath("../..")
 
-[node name="PathStonesMessy74" type="MeshInstance3D" parent="Fences + Paths"]
+[node name="PathStonesMessy74" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(-2.2499998, 0, -1.9670122e-07, 0, 2.2500002, 0, 1.9670122e-07, 0, -2.2499998, -5.947296, 0.15713501, -4.1577826)
 mesh = ExtResource("3_2eoyn")
 skeleton = NodePath("../..")
 
-[node name="PathStonesMessy75" type="MeshInstance3D" parent="Fences + Paths"]
+[node name="PathStonesMessy75" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(-2.2499998, 0, -1.9670122e-07, 0, 2.2500002, 0, 1.9670122e-07, 0, -2.2499998, -5.920252, 0.15713501, -4.994172)
 mesh = ExtResource("3_2eoyn")
 skeleton = NodePath("../..")
 
-[node name="PathStonesMessy76" type="MeshInstance3D" parent="Fences + Paths"]
+[node name="PathStonesMessy76" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(-2.2499998, 0, -1.9670122e-07, 0, 2.2500002, 0, 1.9670122e-07, 0, -2.2499998, -5.974676, 0.15713501, -5.8533707)
 mesh = ExtResource("3_2eoyn")
 skeleton = NodePath("../..")
 
-[node name="PathStonesMessy77" type="MeshInstance3D" parent="Fences + Paths"]
+[node name="PathStonesMessy77" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(-2.2499998, 0, -1.9670122e-07, 0, 2.2500002, 0, 1.9670122e-07, 0, -2.2499998, -5.947296, 0.15713501, -6.7001286)
 mesh = ExtResource("3_2eoyn")
 skeleton = NodePath("../..")
 
-[node name="PathStonesMessy78" type="MeshInstance3D" parent="Fences + Paths"]
+[node name="PathStonesMessy78" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(-2.2499998, 0, -1.9670122e-07, 0, 2.2500002, 0, 1.9670122e-07, 0, -2.2499998, -5.920252, 0.15713501, -7.536518)
 mesh = ExtResource("3_2eoyn")
 skeleton = NodePath("../..")
 
-[node name="PathStonesMessy79" type="MeshInstance3D" parent="Fences + Paths"]
+[node name="PathStonesMessy79" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(-2.2499998, 0, -1.9670122e-07, 0, 2.2500002, 0, 1.9670122e-07, 0, -2.2499998, -5.920252, 0.15713501, -8.415236)
 mesh = ExtResource("3_2eoyn")
 skeleton = NodePath("../..")
 
-[node name="PathStonesMessy80" type="MeshInstance3D" parent="Fences + Paths"]
+[node name="PathStonesMessy80" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(-2.2499998, 0, -1.9670122e-07, 0, 2.2500002, 0, 1.9670122e-07, 0, -2.2499998, 5.984237, 0.15713501, 8.502877)
 mesh = ExtResource("3_2eoyn")
 skeleton = NodePath("../..")
 
-[node name="PathStonesMessy81" type="MeshInstance3D" parent="Fences + Paths"]
+[node name="PathStonesMessy81" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(-2.2499998, 0, -1.9670122e-07, 0, 2.2500002, 0, 1.9670122e-07, 0, -2.2499998, 6.011617, 0.15713501, 7.6561193)
 mesh = ExtResource("3_2eoyn")
 skeleton = NodePath("../..")
 
-[node name="PathStonesMessy82" type="MeshInstance3D" parent="Fences + Paths"]
+[node name="PathStonesMessy82" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(-2.2499998, 0, -1.9670122e-07, 0, 2.2500002, 0, 1.9670122e-07, 0, -2.2499998, 6.0386615, 0.15713501, 6.81973)
 mesh = ExtResource("3_2eoyn")
 skeleton = NodePath("../..")
 
-[node name="PathStonesMessy83" type="MeshInstance3D" parent="Fences + Paths"]
+[node name="PathStonesMessy83" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(-2.2499998, 0, -1.9670122e-07, 0, 2.2500002, 0, 1.9670122e-07, 0, -2.2499998, 5.984237, 0.15713501, 5.960531)
 mesh = ExtResource("3_2eoyn")
 skeleton = NodePath("../..")
 
-[node name="PathStonesMessy84" type="MeshInstance3D" parent="Fences + Paths"]
+[node name="PathStonesMessy84" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(-2.2499998, 0, -1.9670122e-07, 0, 2.2500002, 0, 1.9670122e-07, 0, -2.2499998, 6.011617, 0.15713501, 5.1137733)
 mesh = ExtResource("3_2eoyn")
 skeleton = NodePath("../..")
 
-[node name="PathStonesMessy85" type="MeshInstance3D" parent="Fences + Paths"]
+[node name="PathStonesMessy85" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(-2.2499998, 0, -1.9670122e-07, 0, 2.2500002, 0, 1.9670122e-07, 0, -2.2499998, 6.0386615, 0.15713501, 4.277384)
 mesh = ExtResource("3_2eoyn")
 skeleton = NodePath("../..")
 
-[node name="PathStonesMessy86" type="MeshInstance3D" parent="Fences + Paths"]
+[node name="PathStonesMessy86" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(-2.2499998, 0, -1.9670122e-07, 0, 2.2500002, 0, 1.9670122e-07, 0, -2.2499998, 6.0386615, 0.15713501, 3.3986654)
 mesh = ExtResource("3_2eoyn")
 skeleton = NodePath("../..")
 
-[node name="PathStonesMessy87" type="MeshInstance3D" parent="Fences + Paths"]
+[node name="PathStonesMessy87" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(-2.2499998, 0, -1.9670122e-07, 0, 2.2500002, 0, 1.9670122e-07, 0, -2.2499998, 1.8257861, 0.15713501, 8.502877)
 mesh = ExtResource("3_2eoyn")
 skeleton = NodePath("../..")
 
-[node name="PathStonesMessy88" type="MeshInstance3D" parent="Fences + Paths"]
+[node name="PathStonesMessy88" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(-2.2499998, 0, -1.9670122e-07, 0, 2.2500002, 0, 1.9670122e-07, 0, -2.2499998, 1.8531661, 0.15713501, 7.6561193)
 mesh = ExtResource("3_2eoyn")
 skeleton = NodePath("../..")
 
-[node name="PathStonesMessy89" type="MeshInstance3D" parent="Fences + Paths"]
+[node name="PathStonesMessy89" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(-2.2499998, 0, -1.9670122e-07, 0, 2.2500002, 0, 1.9670122e-07, 0, -2.2499998, 1.8802104, 0.15713501, 6.81973)
 mesh = ExtResource("3_2eoyn")
 skeleton = NodePath("../..")
 
-[node name="PathStonesMessy90" type="MeshInstance3D" parent="Fences + Paths"]
+[node name="PathStonesMessy90" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(-2.2499998, 0, -1.9670122e-07, 0, 2.2500002, 0, 1.9670122e-07, 0, -2.2499998, 1.8257861, 0.15713501, 5.960531)
 mesh = ExtResource("3_2eoyn")
 skeleton = NodePath("../..")
 
-[node name="PathStonesMessy91" type="MeshInstance3D" parent="Fences + Paths"]
+[node name="PathStonesMessy91" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(-2.2499998, 0, -1.9670122e-07, 0, 2.2500002, 0, 1.9670122e-07, 0, -2.2499998, 1.8531661, 0.15713501, 5.1137733)
 mesh = ExtResource("3_2eoyn")
 skeleton = NodePath("../..")
 
-[node name="PathStonesMessy92" type="MeshInstance3D" parent="Fences + Paths"]
+[node name="PathStonesMessy92" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(-2.2499998, 0, -1.9670122e-07, 0, 2.2500002, 0, 1.9670122e-07, 0, -2.2499998, 1.8802104, 0.15713501, 4.277384)
 mesh = ExtResource("3_2eoyn")
 skeleton = NodePath("../..")
 
-[node name="PathStonesMessy93" type="MeshInstance3D" parent="Fences + Paths"]
+[node name="PathStonesMessy93" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(-2.2499998, 0, -1.9670122e-07, 0, 2.2500002, 0, 1.9670122e-07, 0, -2.2499998, 1.8802104, 0.15713501, 3.3986654)
 mesh = ExtResource("3_2eoyn")
 skeleton = NodePath("../..")
 
-[node name="PathStonesMessy94" type="MeshInstance3D" parent="Fences + Paths"]
+[node name="PathStonesMessy94" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(-2.2499998, 0, -1.9670122e-07, 0, 2.2500002, 0, 1.9670122e-07, 0, -2.2499998, -2.1126757, 0.15713501, 8.502877)
 mesh = ExtResource("3_2eoyn")
 skeleton = NodePath("../..")
 
-[node name="PathStonesMessy95" type="MeshInstance3D" parent="Fences + Paths"]
+[node name="PathStonesMessy95" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(-2.2499998, 0, -1.9670122e-07, 0, 2.2500002, 0, 1.9670122e-07, 0, -2.2499998, -2.0852957, 0.15713501, 7.6561193)
 mesh = ExtResource("3_2eoyn")
 skeleton = NodePath("../..")
 
-[node name="PathStonesMessy96" type="MeshInstance3D" parent="Fences + Paths"]
+[node name="PathStonesMessy96" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(-2.2499998, 0, -1.9670122e-07, 0, 2.2500002, 0, 1.9670122e-07, 0, -2.2499998, -2.0582514, 0.15713501, 6.81973)
 mesh = ExtResource("3_2eoyn")
 skeleton = NodePath("../..")
 
-[node name="PathStonesMessy97" type="MeshInstance3D" parent="Fences + Paths"]
+[node name="PathStonesMessy97" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(-2.2499998, 0, -1.9670122e-07, 0, 2.2500002, 0, 1.9670122e-07, 0, -2.2499998, -2.1126757, 0.15713501, 5.960531)
 mesh = ExtResource("3_2eoyn")
 skeleton = NodePath("../..")
 
-[node name="PathStonesMessy98" type="MeshInstance3D" parent="Fences + Paths"]
+[node name="PathStonesMessy98" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(-2.2499998, 0, -1.9670122e-07, 0, 2.2500002, 0, 1.9670122e-07, 0, -2.2499998, -2.0852957, 0.15713501, 5.1137733)
 mesh = ExtResource("3_2eoyn")
 skeleton = NodePath("../..")
 
-[node name="PathStonesMessy99" type="MeshInstance3D" parent="Fences + Paths"]
+[node name="PathStonesMessy99" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(-2.2499998, 0, -1.9670122e-07, 0, 2.2500002, 0, 1.9670122e-07, 0, -2.2499998, -2.0582514, 0.15713501, 4.277384)
 mesh = ExtResource("3_2eoyn")
 skeleton = NodePath("../..")
 
-[node name="PathStonesMessy100" type="MeshInstance3D" parent="Fences + Paths"]
+[node name="PathStonesMessy100" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(-2.2499998, 0, -1.9670122e-07, 0, 2.2500002, 0, 1.9670122e-07, 0, -2.2499998, -2.0582514, 0.15713501, 3.3986654)
 mesh = ExtResource("3_2eoyn")
 skeleton = NodePath("../..")
 
-[node name="PathStonesMessy101" type="MeshInstance3D" parent="Fences + Paths"]
+[node name="PathStonesMessy101" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(-2.2499998, 0, -1.9670122e-07, 0, 2.2500002, 0, 1.9670122e-07, 0, -2.2499998, -6.1158457, 0.15713501, 8.502877)
 mesh = ExtResource("3_2eoyn")
 skeleton = NodePath("../..")
 
-[node name="PathStonesMessy102" type="MeshInstance3D" parent="Fences + Paths"]
+[node name="PathStonesMessy102" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(-2.2499998, 0, -1.9670122e-07, 0, 2.2500002, 0, 1.9670122e-07, 0, -2.2499998, -6.0884657, 0.15713501, 7.6561193)
 mesh = ExtResource("3_2eoyn")
 skeleton = NodePath("../..")
 
-[node name="PathStonesMessy103" type="MeshInstance3D" parent="Fences + Paths"]
+[node name="PathStonesMessy103" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(-2.2499998, 0, -1.9670122e-07, 0, 2.2500002, 0, 1.9670122e-07, 0, -2.2499998, -6.0614214, 0.15713501, 6.81973)
 mesh = ExtResource("3_2eoyn")
 skeleton = NodePath("../..")
 
-[node name="PathStonesMessy104" type="MeshInstance3D" parent="Fences + Paths"]
+[node name="PathStonesMessy104" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(-2.2499998, 0, -1.9670122e-07, 0, 2.2500002, 0, 1.9670122e-07, 0, -2.2499998, -6.1158457, 0.15713501, 5.960531)
 mesh = ExtResource("3_2eoyn")
 skeleton = NodePath("../..")
 
-[node name="PathStonesMessy105" type="MeshInstance3D" parent="Fences + Paths"]
+[node name="PathStonesMessy105" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(-2.2499998, 0, -1.9670122e-07, 0, 2.2500002, 0, 1.9670122e-07, 0, -2.2499998, -6.0884657, 0.15713501, 5.1137733)
 mesh = ExtResource("3_2eoyn")
 skeleton = NodePath("../..")
 
-[node name="PathStonesMessy106" type="MeshInstance3D" parent="Fences + Paths"]
+[node name="PathStonesMessy106" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(-2.2499998, 0, -1.9670122e-07, 0, 2.2500002, 0, 1.9670122e-07, 0, -2.2499998, -6.0614214, 0.15713501, 4.277384)
 mesh = ExtResource("3_2eoyn")
 skeleton = NodePath("../..")
 
-[node name="PathStonesMessy107" type="MeshInstance3D" parent="Fences + Paths"]
+[node name="PathStonesMessy107" type="MeshInstance3D" parent="Paths"]
 transform = Transform3D(-2.2499998, 0, -1.9670122e-07, 0, 2.2500002, 0, 1.9670122e-07, 0, -2.2499998, -6.0614214, 0.15713501, 3.3986654)
 mesh = ExtResource("3_2eoyn")
 skeleton = NodePath("../..")
+
+[node name="Fences" type="Node3D" parent="."]
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
