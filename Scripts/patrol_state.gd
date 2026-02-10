@@ -17,6 +17,9 @@ var _loop: bool = true
 var _retry_t: float = 0.0
 var _retry_left: float = 0.0
 
+@export var talk_range : Area3D
+var potential_talk : Array
+
 func enter(_msg := {}) -> void:
 	_points = []
 	_idx = 0
@@ -64,6 +67,12 @@ func physics_update(delta: float) -> void:
 		if wait_at_waypoint > 0.0:
 			_wait_t = wait_at_waypoint
 		_advance()
+		
+	#For State Change
+	potential_talk = talk_range.get_overlapping_bodies()
+	if (not potential_talk.is_empty()):
+		#talk_state.target = get_parent().get_parent().get_parent().get_parent().get_node("ProtoController")
+		change_state.emit(&"TalkState")
 
 # -------------------------
 # NEW: helper that tries to acquire a PatrolPath and cache points
