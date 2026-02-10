@@ -5,7 +5,7 @@
 [ext_resource type="Script" uid="uid://dtisy2wdio7v" path="res://Scripts/patrol_state.gd" id="3_oknps"]
 [ext_resource type="Script" uid="uid://cvv6jryec78f3" path="res://Scripts/talk_state.gd" id="4_0uuot"]
 
-[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_r41f0"]
+[sub_resource type="SphereShape3D" id="SphereShape3D_g4ita"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_5x2h4"]
 
@@ -19,9 +19,12 @@ collision_mask = 3
 script = ExtResource("1_g4ita")
 
 [node name="interact" type="Area3D" parent="."]
+collision_layer = 0
+collision_mask = 8
 
 [node name="interact_shape" type="CollisionShape3D" parent="interact"]
-shape = SubResource("CapsuleShape3D_r41f0")
+transform = Transform3D(4, 0, 0, 0, 4, 0, 0, 0, 4, 0, 0, 0)
+shape = SubResource("SphereShape3D_g4ita")
 
 [node name="body" type="CollisionShape3D" parent="."]
 shape = SubResource("CapsuleShape3D_5x2h4")
@@ -48,3 +51,5 @@ collision_mask = 8
 
 [node name="TalkDetectionShape" type="CollisionShape3D" parent="TalkDetection"]
 shape = SubResource("SphereShape3D_g4ita")
+[connection signal="body_entered" from="interact" to="." method="_on_interact_body_entered"]
+[connection signal="body_exited" from="interact" to="." method="_on_interact_body_exited"]

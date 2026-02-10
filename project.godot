@@ -33,6 +33,7 @@ enabled=PackedStringArray("res://addons/infinite_heightmap_terrain/plugin.cfg", 
 pickup=""
 player=""
 NPC=""
+Bob=""
 
 [input]
 
