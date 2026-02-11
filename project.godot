@@ -19,6 +19,7 @@ config/icon="res://icon.svg"
 
 GlobalVariables="*res://GlobalAutoloads/GlobalVariables.gd"
 AudioManager="*res://Audio/audio_manager.tscn"
+NetSceneManager="*res://net_scene_manager.gd"
 
 [display]
 
@@ -34,6 +35,7 @@ pickup=""
 player=""
 NPC=""
 Bob=""
+interactable=""
 
 [input]
 
