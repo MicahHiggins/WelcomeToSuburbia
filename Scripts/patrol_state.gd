@@ -4,10 +4,13 @@ class_name PatrolState
 @export var arrive_dist: float = 0.6
 @export var wait_at_waypoint: float = 0.0
 
-# NEW: keep trying to auto-find a path for a short time after spawn
+# Keep trying to auto-find a path after spawn (useful for PCG timing)
 @export var retry_autofind: bool = true
 @export var retry_interval: float = 0.5
 @export var retry_max_seconds: float = 6.0
+
+
+@export var talk_range: Area3D
 
 var _points: Array[Vector3] = []
 var _idx: int = 0
@@ -17,12 +20,9 @@ var _loop: bool = true
 var _retry_t: float = 0.0
 var _retry_left: float = 0.0
 
-@export var talk_range : Area3D
-var potential_talk : Array
 
 func enter(_msg := {}) -> void:
 	_points = []
-	_idx = 0
 	_wait_t = 0.0
 
 	_retry_t = 0.0
@@ -32,15 +32,27 @@ func enter(_msg := {}) -> void:
 		push_warning("[PatrolState] npc is null")
 		return
 
-	# Attempt to build path immediately
 	_try_build_path()
+
 
 func physics_update(delta: float) -> void:
 	var npc3d := npc as NPC
 	if npc3d == null:
 		return
 
-	# If have no points yet, keep retrying auto-find for a bit
+	# 1) TALK CHECK FIRST (POLLING, NO SIGNALS)
+	# If player is in range, switch to TalkState and remember our current waypoint index.
+	if _is_player_in_talk_range():
+		npc3d.set_meta("patrol_resume_idx", _idx)
+
+		# Stop immediately this frame
+		npc3d.velocity.x = 0.0
+		npc3d.velocity.z = 0.0
+
+		change_state.emit(&"TalkState")
+		return
+
+	# 2) If have no points yet, keep retrying (PCG spawn timing)
 	if _points.size() == 0:
 		if retry_autofind and _retry_left > 0.0:
 			_retry_left -= delta
@@ -50,16 +62,16 @@ func physics_update(delta: float) -> void:
 				_try_build_path()
 		return
 
+	# 3) Optional wait at waypoint
 	if _wait_t > 0.0:
 		_wait_t -= delta
 		return
 
+	# 4) Move toward current waypoint
 	var target: Vector3 = _points[_idx]
-
-	# Move
 	npc3d.move_toward_world(target, delta)
 
-	# Arrive?
+	# 5) Arrive?
 	var flat_dist := Vector3(npc3d.global_position.x, 0.0, npc3d.global_position.z) \
 		.distance_to(Vector3(target.x, 0.0, target.z))
 
@@ -67,15 +79,25 @@ func physics_update(delta: float) -> void:
 		if wait_at_waypoint > 0.0:
 			_wait_t = wait_at_waypoint
 		_advance()
-		
-	#For State Change
-	potential_talk = talk_range.get_overlapping_bodies()
-	if (not potential_talk.is_empty()):
-		#talk_state.target = get_parent().get_parent().get_parent().get_parent().get_node("ProtoController")
-		change_state.emit(&"TalkState")
+
 
 # -------------------------
-# NEW: helper that tries to acquire a PatrolPath and cache points
+# Player-in-range check (robust, no signals)
+# -------------------------
+func _is_player_in_talk_range() -> bool:
+	if talk_range == null or not is_instance_valid(talk_range):
+		return false
+
+	var bodies := talk_range.get_overlapping_bodies()
+	for b in bodies:
+		if b != null and b.is_in_group("player"):
+			return true
+
+	return false
+
+
+# -------------------------
+# Path building + resume
 # -------------------------
 func _try_build_path() -> void:
 	var npc3d := npc as NPC
@@ -95,15 +117,21 @@ func _try_build_path() -> void:
 	_points = path.get_points_world()
 	_loop = path.loop
 
-	print("[PatrolState] points:", _points.size(), " loop:", _loop)
+	if _points.size() == 0:
+		return
 
-	if _points.size() > 0:
+	# Resume from saved idx if we have it (so we don't restart at WP_1)
+	if npc3d.has_meta("patrol_resume_idx"):
+		_idx = clampi(int(npc3d.get_meta("patrol_resume_idx")), 0, _points.size() - 1)
+	else:
 		_idx = _closest_index(npc3d.global_position, _points)
+
 
 func _advance() -> void:
 	_idx += 1
 	if _idx >= _points.size():
 		_idx = 0 if _loop else (_points.size() - 1)
+
 
 func _closest_index(pos: Vector3, pts: Array[Vector3]) -> int:
 	var best_i := 0

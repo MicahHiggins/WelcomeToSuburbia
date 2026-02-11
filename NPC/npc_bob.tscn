@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://bav2p20t1bubr"]
+[gd_scene load_steps=8 format=3 uid="uid://bav2p20t1bubr"]
 
 [ext_resource type="Script" uid="uid://csc5bob5s77t" path="res://Scripts/npc_bob.gd" id="1_g4ita"]
 [ext_resource type="Script" uid="uid://cicakuq5a1gle" path="res://Scripts/state_machine.gd" id="2_jur1b"]
@@ -6,13 +6,11 @@
 [ext_resource type="Script" uid="uid://cvv6jryec78f3" path="res://Scripts/talk_state.gd" id="4_0uuot"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_g4ita"]
+radius = 2.0
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_5x2h4"]
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_fo4fv"]
-
-[sub_resource type="SphereShape3D" id="SphereShape3D_g4ita"]
-radius = 2.0
 
 [node name="NPC_bob" type="CharacterBody3D" groups=["NPC"]]
 collision_mask = 3
@@ -50,6 +48,8 @@ mesh = SubResource("CapsuleMesh_fo4fv")
 collision_mask = 8
 
 [node name="TalkDetectionShape" type="CollisionShape3D" parent="TalkDetection"]
+transform = Transform3D(1.25, 0, 0, 0, 1.25, 0, 0, 0, 1.25, 0, 0, 0)
 shape = SubResource("SphereShape3D_g4ita")
+
 [connection signal="body_entered" from="interact" to="." method="_on_interact_body_entered"]
 [connection signal="body_exited" from="interact" to="." method="_on_interact_body_exited"]

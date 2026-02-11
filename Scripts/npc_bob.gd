@@ -33,6 +33,29 @@ var _net_last_send_time: float = 0.0
 var _net_target_transform: Transform3D = Transform3D.IDENTITY
 var _net_has_target: bool = false
 
+# --------------------------------------------
+# NEW: PATROL RESUME CACHE (states can resume patrol mid-path)
+# --------------------------------------------
+var patrol_resume_has_data: bool = false
+var patrol_resume_idx: int = 0
+var patrol_resume_wait_t: float = 0.0
+
+func save_patrol_resume(idx: int, wait_t: float) -> void:
+	patrol_resume_has_data = true
+	patrol_resume_idx = idx
+	patrol_resume_wait_t = wait_t
+
+func consume_patrol_resume() -> Dictionary:
+	# One-time consume (PatrolState reads this in enter(), then it clears)
+	var d := {
+		"has_data": patrol_resume_has_data,
+		"idx": patrol_resume_idx,
+		"wait_t": patrol_resume_wait_t
+	}
+	patrol_resume_has_data = false
+	patrol_resume_wait_t = 0.0
+	return d
+
 
 func _enter_tree() -> void:
 	# HARD FORCE: server always owns NPC authority
