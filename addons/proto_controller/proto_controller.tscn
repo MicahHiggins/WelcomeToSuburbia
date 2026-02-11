@@ -96,7 +96,7 @@ _data = {
 
 [node name="ProtoController" type="CharacterBody3D" groups=["player"]]
 collision_layer = 8
-collision_mask = 3
+collision_mask = 7
 script = ExtResource("1_ucva2")
 base_speed = 3.2
 jump_velocity = 3.5

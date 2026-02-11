@@ -104,6 +104,7 @@ use-attack={
 
 3d_physics/layer_1="NPC"
 3d_physics/layer_2="Environment"
+3d_physics/layer_3="Items"
 3d_physics/layer_4="Player"
 
 [rendering]
