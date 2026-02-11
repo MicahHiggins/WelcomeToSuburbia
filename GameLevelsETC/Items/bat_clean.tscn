@@ -133,13 +133,13 @@ _data = {
 }
 
 [node name="Bat" type="CharacterBody3D" groups=["pickup"]]
-transform = Transform3D(0.2, 0, 0, 0, 0.2, 0, 0, 0, 0.2, 0, 0, 0)
+transform = Transform3D(0.2, 0, 0, 0, 0.2, 0, 0, 0, 0.2, 0, 0.07747479, 0)
 collision_layer = 4
 collision_mask = 8
 script = ExtResource("1_5ksxd")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="." groups=["pickup"]]
-transform = Transform3D(0.6122571, 0, 0, 0, 0.694738, 0, 0, 0, 0.5239852, 0.021507926, 0.5421238, -0.002642572)
+transform = Transform3D(0.6122571, 0, 0, 0, 0.694738, 0, 0, 0, 0.5239852, 0.021507926, 0.40673786, -0.002642572)
 shape = SubResource("CapsuleShape3D_osd2w")
 
 [node name="batclean_low2" parent="." instance=ExtResource("1_gd4uu")]
