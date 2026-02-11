@@ -994,8 +994,6 @@ skeleton = NodePath("../..")
 
 [node name="Fences" type="Node3D" parent="."]
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
-
 [node name="Area3D" type="Area3D" parent="."]
 collision_layer = 0
 collision_mask = 8
