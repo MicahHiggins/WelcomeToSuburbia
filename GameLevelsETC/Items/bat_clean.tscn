@@ -134,7 +134,7 @@ _data = {
 [node name="Bat" type="CharacterBody3D" groups=["pickup"]]
 transform = Transform3D(0.2, 0, 0, 0, 0.2, 0, 0, 0, 0.2, 0, 0, 0)
 collision_layer = 4
-collision_mask = 9
+collision_mask = 8
 script = ExtResource("1_5ksxd")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="." groups=["pickup"]]
