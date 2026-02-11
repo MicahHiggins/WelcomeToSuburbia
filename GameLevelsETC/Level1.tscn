@@ -101,7 +101,7 @@ script = ExtResource("6_gsr76")
 
 [node name="Bat" parent="ItemManager" instance=ExtResource("12_wjimw")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5201786, 3.1837187, -3.0952702)
-collision_layer = 1
+collision_mask = 11
 
 [node name="Menu" type="Node" parent="."]
 
