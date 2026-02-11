@@ -11,7 +11,7 @@
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_fo4fv"]
 
-[node name="NPC_bob" type="CharacterBody3D"]
+[node name="NPC_bob" type="CharacterBody3D" groups=["Bob"]]
 script = ExtResource("1_g4ita")
 
 [node name="interact" type="Area3D" parent="."]
