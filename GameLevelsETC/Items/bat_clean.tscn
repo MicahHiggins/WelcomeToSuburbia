@@ -134,7 +134,7 @@ _data = {
 [node name="Bat" type="CharacterBody3D" groups=["pickup"]]
 transform = Transform3D(0.2, 0, 0, 0, 0.2, 0, 0, 0, 0.2, 0, 0, 0)
 collision_layer = 4
-collision_mask = 9
+collision_mask = 8
 script = ExtResource("1_5ksxd")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="." groups=["pickup"]]
@@ -152,6 +152,8 @@ surface_material_override/0 = SubResource("StandardMaterial3D_hhpfs")
 
 [node name="Area3D" type="Area3D" parent="." groups=["pickup"]]
 transform = Transform3D(1.0000001, 0, 0, 0, 1.0000001, 0, 0, 0, 1.0000001, 0, 0, 0)
+collision_layer = 4
+collision_mask = 8
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Area3D" groups=["pickup"]]
 shape = SubResource("ConvexPolygonShape3D_5ksxd")
