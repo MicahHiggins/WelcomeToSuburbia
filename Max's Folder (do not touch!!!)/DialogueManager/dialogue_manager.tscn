@@ -1,8 +1,9 @@
-[gd_scene load_steps=6 format=3 uid="uid://gxwo5ybv7v7s"]
+[gd_scene load_steps=7 format=3 uid="uid://gxwo5ybv7v7s"]
 
 [ext_resource type="Texture2D" uid="uid://cau8lt38qehe4" path="res://Max's Folder (do not touch!!!)/DialogueManager/9patchDM.png" id="1_jfmrp"]
 [ext_resource type="Script" uid="uid://cmhpm8r2sm0qp" path="res://Max's Folder (do not touch!!!)/DialogueManager/dialogue_manager.gd" id="2_80amd"]
 [ext_resource type="Texture2D" uid="uid://wfqaj1cp28lj" path="res://Max's Folder (do not touch!!!)/DialogueManager/CreepyManDM.jpg" id="3_70lt2"]
+[ext_resource type="FontFile" uid="uid://b4k5477byebqx" path="res://addons/Font/School River.otf" id="4_80amd"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_hy1f0"]
 atlas = ExtResource("3_70lt2")
@@ -43,16 +44,18 @@ offset_right = 205.0
 offset_bottom = 141.0
 scale = Vector2(0.05, 0.05)
 theme_override_colors/font_color = Color(0.0253638, 0.0253638, 0.025363795, 1)
+theme_override_fonts/font = ExtResource("4_80amd")
 theme_override_font_sizes/font_size = 100
 text = "test"
 
 [node name="Text" type="Label" parent="."]
 layout_mode = 0
-offset_left = 43.0
-offset_top = 21.0
-offset_right = 228.0
-offset_bottom = 158.0
+offset_left = 42.898983
+offset_top = 18.945236
+offset_right = 227.89899
+offset_bottom = 155.94524
 scale = Vector2(0.05, 0.05)
 theme_override_colors/font_color = Color(0.0253638, 0.0253638, 0.025363795, 1)
+theme_override_fonts/font = ExtResource("4_80amd")
 theme_override_font_sizes/font_size = 100
 text = "test"
