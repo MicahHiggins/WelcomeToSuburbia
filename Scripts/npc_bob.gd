@@ -8,10 +8,14 @@ class_name NPC
 @export var gravity_multiplier: float = 1.0
 @export var stop_y_when_grounded: bool = true
 
-# Optional: manually assign a PatrolPath. If blank, we auto-find nearest.
+# : manually assign a PatrolPath. If blank, we auto-find nearest.
 @export var patrol_path: PatrolPath
 @export var auto_find_patrol_path: bool = true
 @export var auto_find_max_dist: float = 800.0
+
+# local patrol binding for spawned patrol-bundle scenes
+# 
+@export var patrol_path_node: NodePath = NodePath("../PatrolPath")
 
 @onready var sm: NPCStateMachine = $StateMachine
 
@@ -62,12 +66,28 @@ func _enter_tree() -> void:
 	if multiplayer.has_multiplayer_peer() and multiplayer.is_server():
 		set_multiplayer_authority(1)
 
+	# bind to LOCAL PatrolPath before StateMachine _ready() runs
+	_bind_local_patrol_path()
+
+
+func _bind_local_patrol_path() -> void:
+	# Only override if the local node exists (bundle scene case).
+	
+	if patrol_path_node == NodePath(""):
+		return
+
+	var local_path := get_node_or_null(patrol_path_node) as PatrolPath
+	if local_path != null and is_instance_valid(local_path):
+		patrol_path = local_path
+		# Prevent global stealing in bundle mode:
+		auto_find_patrol_path = false
+
 
 func _ready() -> void:
 	add_to_group("npc")
 	print("[NPC] ready:", name)
 
-	# Auto-find patrol path
+	# Auto-find patrol path ONLY if we didn't bind a local one
 	if patrol_path == null and auto_find_patrol_path:
 		patrol_path = find_nearest_patrol_path(auto_find_max_dist)
 		print("[NPC] auto-found patrol_path:", patrol_path)
@@ -226,7 +246,6 @@ func _net_interpolate_remote() -> void:
 	if not _net_has_target:
 		return
 
-	# HARD CORRECTION: if we are far off, snap instead of lerp
 	var dist := global_position.distance_to(_net_target_transform.origin)
 	if dist >= snap_distance_m:
 		global_transform = _net_target_transform
@@ -236,21 +255,20 @@ func _net_interpolate_remote() -> void:
 	global_transform = global_transform.interpolate_with(_net_target_transform, net_lerp_alpha)
 
 
+# -------------------------------------------------
+# DIALOGUE 
+# -------------------------------------------------
 var in_bob_area = false
 var bob_talking = false
 signal dialogueSig
 
-
-
 func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("interact"):
 		dialogueSig.emit()
-		
+
 	if in_bob_area == true && Input.is_action_just_pressed("interact"):
 		enter_bob_dialogue()
-		
-		
-		
+
 func enter_bob_dialogue():
 	if bob_talking == false:
 		bob_talking = true
@@ -262,21 +280,17 @@ func enter_bob_dialogue():
 		dialogue.toggle = false
 		await get_tree().create_timer(1).timeout
 		bob_talking = false
-	
+
 func _on_interact_body_entered(body: Node3D) -> void:
 	pass
 
-	
-	
 func _on_interact_body_exited(body: Node3D) -> void:
 	pass
-
 
 func _on_talk_detection_body_entered(body: Node3D) -> void:
 	GlobalVariables.interact.emit()
 	in_bob_area = true
 	print("TRUE")
-
 
 func _on_talk_detection_body_exited(body: Node3D) -> void:
 	GlobalVariables.interact.emit()
