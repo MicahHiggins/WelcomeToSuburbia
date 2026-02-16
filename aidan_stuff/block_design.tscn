@@ -18,6 +18,7 @@ size = Vector3(16.164581, 0.58447266, 16.030792)
 size = Vector3(40, 10, 40)
 
 [node name="Block Design" type="Node3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.043141365)
 script = ExtResource("1_jmv40")
 
 [node name="Ground" type="StaticBody3D" parent="."]
