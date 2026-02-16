@@ -53,3 +53,5 @@ shape = SubResource("SphereShape3D_g4ita")
 
 [connection signal="body_entered" from="interact" to="." method="_on_interact_body_entered"]
 [connection signal="body_exited" from="interact" to="." method="_on_interact_body_exited"]
+[connection signal="body_entered" from="TalkDetection" to="." method="_on_talk_detection_body_entered"]
+[connection signal="body_exited" from="TalkDetection" to="." method="_on_talk_detection_body_exited"]

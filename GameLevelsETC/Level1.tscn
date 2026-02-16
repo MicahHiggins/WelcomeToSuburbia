@@ -1,4 +1,4 @@
-[gd_scene load_steps=21 format=3 uid="uid://d1ibgfwne281y"]
+[gd_scene load_steps=23 format=3 uid="uid://d1ibgfwne281y"]
 
 [ext_resource type="Script" uid="uid://dppcbcba5rvbf" path="res://GameLevelsETC/level_1.gd" id="1_oh3op"]
 [ext_resource type="PackedScene" uid="uid://bs72ogkvdd7d6" path="res://addons/proto_controller/proto_controller.tscn" id="2_jvlpr"]
@@ -9,6 +9,8 @@
 [ext_resource type="Script" uid="uid://c5qchfyao7ahn" path="res://GameLevelsETC/tether_system.gd" id="7_ki0f2"]
 [ext_resource type="Texture2D" uid="uid://bh8hkhotm6bbc" path="res://Assets/Suburbia1.jpg" id="8_5owxm"]
 [ext_resource type="PackedScene" uid="uid://gxwo5ybv7v7s" path="res://Max's Folder (do not touch!!!)/DialogueManager/dialogue_manager.tscn" id="10_pyrst"]
+[ext_resource type="FontFile" uid="uid://g7ve53wy4c3c" path="res://addons/Font/MADE TOMMY Medium_PERSONAL USE.otf" id="10_vlwaf"]
+[ext_resource type="Script" uid="uid://cnfd8g3v8lobu" path="res://GameLevelsETC/pop_up.gd" id="12_dx4jt"]
 [ext_resource type="Script" uid="uid://wufby810baua" path="res://GameLevelsETC/cellar_door.gd" id="12_o8227"]
 [ext_resource type="PackedScene" uid="uid://b36mjwh3wwi6m" path="res://GameLevelsETC/Items/bat_clean.tscn" id="12_wjimw"]
 [ext_resource type="Texture2D" uid="uid://3i53ybhtpc0f" path="res://Assets/—Pngtree—vector copy icon_4013516.png" id="13_grjf3"]
@@ -116,32 +118,30 @@ theme_override_styles/panel = SubResource("StyleBoxTexture_pyrst")
 anchors_preset = -1
 anchor_right = 0.2560764
 anchor_bottom = 0.10185185
-offset_left = 253.0
-offset_top = 28.0
-offset_right = 297.0
-offset_bottom = 59.0
+offset_left = 738.0
+offset_top = 358.0
+offset_right = 782.0
+offset_bottom = 389.0
 text = "Host
 "
-metadata/_edit_use_anchors_ = true
 
 [node name="Join" type="Button" parent="Menu/CanvasLayer"]
 anchors_preset = -1
 anchor_left = -0.0034722222
 anchor_right = 0.2560764
 anchor_bottom = 0.12808642
-offset_left = 258.0
-offset_top = 131.0
-offset_right = 296.0
-offset_bottom = 162.0
+offset_left = 743.0
+offset_top = 461.0
+offset_right = 781.0
+offset_bottom = 492.0
 text = "Join
 "
-metadata/_edit_use_anchors_ = true
 
 [node name="joinCode" type="LineEdit" parent="Menu/CanvasLayer"]
-offset_left = 330.0
-offset_top = 247.0
-offset_right = 507.0
-offset_bottom = 287.0
+offset_left = 815.0
+offset_top = 577.0
+offset_right = 992.0
+offset_bottom = 617.0
 
 [node name="pause" type="CanvasLayer" parent="Menu"]
 
@@ -176,10 +176,15 @@ scale = Vector2(0.05, 0.05)
 icon = ExtResource("13_grjf3")
 
 [node name="tutorial" type="Label" parent="Menu/pause"]
-offset_left = 36.0
-offset_top = 298.0
-offset_right = 206.0
-offset_bottom = 425.0
+offset_left = 39.0
+offset_top = 293.0
+offset_right = 344.0
+offset_bottom = 536.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 6
+theme_override_fonts/font = ExtResource("10_vlwaf")
+theme_override_font_sizes/font_size = 30
 text = "WASD: Move
 F: Pick up Item
 G: Drop Item
@@ -187,13 +192,42 @@ Mouse Click: Use Item
 Tab: Switch Item
 E: Interact with NPCs"
 
+[node name="Interact" type="CanvasLayer" parent="Menu"]
+
+[node name="popUp" type="Label" parent="Menu/Interact"]
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -977.0
+offset_top = 152.0
+offset_right = -526.0
+offset_bottom = 214.0
+grow_horizontal = 0
+grow_vertical = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_constants/outline_size = 6
+theme_override_fonts/font = ExtResource("10_vlwaf")
+theme_override_font_sizes/font_size = 30
+text = "Press \"f\" to interact"
+script = ExtResource("12_dx4jt")
+
 [node name="NPCDialogue" type="CanvasLayer" parent="Menu"]
 
 [node name="DialogueManager" parent="Menu/NPCDialogue" instance=ExtResource("10_pyrst")]
-offset_left = 29.999985
-offset_top = 443.0
-offset_right = 164.99998
-offset_bottom = 483.0
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -499.99997
+offset_top = -230.0
+offset_right = -365.0
+offset_bottom = -190.0
+grow_horizontal = 2
+grow_vertical = 0
+size_flags_horizontal = 4
 
 [node name="TetherSystem" type="Node" parent="."]
 script = ExtResource("7_ki0f2")

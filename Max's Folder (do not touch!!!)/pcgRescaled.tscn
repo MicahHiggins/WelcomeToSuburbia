@@ -16,7 +16,7 @@ collision_layer = 0
 collision_mask = 8
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="worldBlock1/loadZone1"]
-transform = Transform3D(32, 0, 0, 0, 32, 0, 0, 0, 32, 0, 1.1961625, 0)
+transform = Transform3D(30, 0, 0, 0, 30, 0, 0, 0, 30, 0, 1.1961625, 0)
 shape = SubResource("BoxShape3D_2e1xa")
 
 [node name="worldBlock2" parent="." instance=ExtResource("2_1i87g")]
@@ -27,7 +27,7 @@ collision_layer = 0
 collision_mask = 8
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="worldBlock2/loadZone2"]
-transform = Transform3D(32, 0, 0, 0, 32, 0, 0, 0, 32, 0, 1.1961625, 0)
+transform = Transform3D(30, 0, 0, 0, 30, 0, 0, 0, 30, 0, 1.1961625, 0)
 shape = SubResource("BoxShape3D_2e1xa")
 
 [node name="worldBlock3" parent="." instance=ExtResource("2_1i87g")]
@@ -38,7 +38,7 @@ collision_layer = 0
 collision_mask = 8
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="worldBlock3/loadZone3"]
-transform = Transform3D(32, 0, 0, 0, 32, 0, 0, 0, 32, 0, 0, 0)
+transform = Transform3D(30, 0, 0, 0, 30, 0, 0, 0, 30, 0, 0, 0)
 shape = SubResource("BoxShape3D_2e1xa")
 
 [node name="worldBlock4" parent="." instance=ExtResource("2_1i87g")]
@@ -49,7 +49,7 @@ collision_layer = 0
 collision_mask = 8
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="worldBlock4/loadZone4"]
-transform = Transform3D(32, 0, 0, 0, 32, 0, 0, 0, 32, 0, 0, 0)
+transform = Transform3D(30, 0, 0, 0, 30, 0, 0, 0, 30, 0, 0, 0)
 shape = SubResource("BoxShape3D_2e1xa")
 
 [node name="worldBlock5" parent="." instance=ExtResource("2_1i87g")]
@@ -60,7 +60,7 @@ collision_layer = 0
 collision_mask = 8
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="worldBlock5/loadZone5"]
-transform = Transform3D(32, 0, 0, 0, 32, 0, 0, 0, 32, 0, 1.1961625, 0)
+transform = Transform3D(30, 0, 0, 0, 30, 0, 0, 0, 30, 0, 1.1961625, 0)
 shape = SubResource("BoxShape3D_2e1xa")
 
 [connection signal="body_entered" from="worldBlock1/loadZone1" to="." method="_on_load_zone_1_body_entered"]
