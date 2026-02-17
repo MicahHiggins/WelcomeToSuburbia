@@ -4,12 +4,12 @@
 [ext_resource type="ArrayMesh" uid="uid://dgv4eih41bu3t" path="res://Assets/kenney_city-kit-suburban_20/Models/OBJ format/driveway-long.obj" id="2_ypk4p"]
 [ext_resource type="ArrayMesh" uid="uid://dcbboo0ncpiq4" path="res://Assets/kenney_city-kit-suburban_20/Models/OBJ format/path-stones-messy.obj" id="3_2eoyn"]
 [ext_resource type="PackedScene" uid="uid://dn665rot4v6b8" path="res://Assets/whitefence1.glb" id="5_jmv40"]
-[ext_resource type="PackedScene" uid="uid://ct3ke1hun3kql" path="res://HouseModel/surb_house_v_1.tscn" id="5_x2lvk"]
+[ext_resource type="PackedScene" uid="uid://c4o2j15yoqaln" path="res://HouseModel/surb_house_v_1.tscn" id="5_x2lvk"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_oxdg3"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_0kqub"]
-albedo_color = Color(0.078431375, 0.43529412, 0.06666667, 1)
+albedo_color = Color(0.023529412, 0.20392157, 0.019607844, 1)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_ko78g"]
 size = Vector3(16.164581, 0.58447266, 16.030792)
