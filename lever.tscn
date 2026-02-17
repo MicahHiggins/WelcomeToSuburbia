@@ -1,0 +1,29 @@
+[gd_scene load_steps=5 format=3 uid="uid://d3xq1filnfjnq"]
+
+[ext_resource type="Script" uid="uid://dolwb5mc35lqf" path="res://GameLevelsETC/lever.gd" id="1_0ohsc"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_1btnt"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_7uavd"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_soi7j"]
+
+[node name="Lever" type="Node3D"]
+script = ExtResource("1_0ohsc")
+
+[node name="Area3D" type="Area3D" parent="." groups=["interactable"]]
+collision_layer = 9
+collision_mask = 9
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Area3D" groups=["interactable"]]
+shape = SubResource("BoxShape3D_1btnt")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+mesh = SubResource("BoxMesh_7uavd")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="MeshInstance3D"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MeshInstance3D/StaticBody3D" groups=["interactable"]]
+shape = SubResource("BoxShape3D_soi7j")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
