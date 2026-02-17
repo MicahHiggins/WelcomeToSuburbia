@@ -1,6 +1,21 @@
-[gd_scene load_steps=14 format=4 uid="uid://ct3ke1hun3kql"]
+[gd_scene load_steps=18 format=4 uid="uid://ct3ke1hun3kql"]
 
 [ext_resource type="PackedScene" uid="uid://dyyrgnslnmmi4" path="res://HouseModel/SurbHouseV1.glb" id="1_aprdc"]
+[ext_resource type="Texture2D" uid="uid://c7lydt1u4e8ku" path="res://HouseTextures/FloorAlbedo.png" id="2_8qxbv"]
+[ext_resource type="Texture2D" uid="uid://ccjwhe4fg4cnv" path="res://HouseTextures/FloorHeight.png" id="3_en3fx"]
+[ext_resource type="Texture2D" uid="uid://d018ykgvs32bg" path="res://HouseTextures/FloorNormal.png" id="4_6xo08"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_2xvnv"]
+albedo_color = Color(0.7628212, 0.86207384, 0.890773, 1)
+albedo_texture = ExtResource("2_8qxbv")
+normal_enabled = true
+normal_scale = -1.09
+normal_texture = ExtResource("4_6xo08")
+heightmap_enabled = true
+heightmap_scale = 9.665
+heightmap_texture = ExtResource("3_en3fx")
+uv1_scale = Vector3(15, 15, 15)
+uv2_scale = Vector3(10, 10, 10)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_jditv"]
 
@@ -145,6 +160,9 @@ shadow_mesh = SubResource("ArrayMesh_luwrq")
 
 [node name="SurbHouseV1" instance=ExtResource("1_aprdc")]
 transform = Transform3D(1.1501669, 0, 0, 0, 1.2312917, 0, 0, 0, 1.2312917, 0, 0.004610896, -0.00031781197)
+
+[node name="housebase" parent="." index="1"]
+surface_material_override/0 = SubResource("StandardMaterial3D_2xvnv")
 
 [node name="Window_005" type="MeshInstance3D" parent="." index="11"]
 transform = Transform3D(1, 0, 0, 0, 2, 0, 0, 0, 2, -0.567598, -0.024406947, -0.006349329)
