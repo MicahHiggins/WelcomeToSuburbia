@@ -144,7 +144,7 @@ blend_shape_mode = 0
 shadow_mesh = SubResource("ArrayMesh_luwrq")
 
 [node name="SurbHouseV1" instance=ExtResource("1_aprdc")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.004610896, -0.00031781197)
+transform = Transform3D(1.1501669, 0, 0, 0, 1.2312917, 0, 0, 0, 1.2312917, 0, 0.004610896, -0.00031781197)
 
 [node name="Window_005" type="MeshInstance3D" parent="." index="11"]
 transform = Transform3D(1, 0, 0, 0, 2, 0, 0, 0, 2, -0.567598, -0.024406947, -0.006349329)
