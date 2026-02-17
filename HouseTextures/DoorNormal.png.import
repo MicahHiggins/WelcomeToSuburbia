@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://c16mybqih2c72"
-path.s3tc="res://.godot/imported/FloorHeight.png-3c5a43a5ab6e52828d00c8edfeee3834.s3tc.ctex"
+uid="uid://d018ykgvs32bg"
+path.s3tc="res://.godot/imported/DoorNormal.png-3d3cb9691b85f06b09517b82221b5909.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
@@ -11,8 +11,8 @@ metadata={
 
 [deps]
 
-source_file="res://HouseTextures/FloorHeight.png"
-dest_files=["res://.godot/imported/FloorHeight.png-3c5a43a5ab6e52828d00c8edfeee3834.s3tc.ctex"]
+source_file="res://HouseTextures/DoorNormal.png"
+dest_files=["res://.godot/imported/DoorNormal.png-3d3cb9691b85f06b09517b82221b5909.s3tc.ctex"]
 
 [params]
 
@@ -26,7 +26,7 @@ compress/normal_map=1
 compress/channel_pack=0
 mipmaps/generate=true
 mipmaps/limit=-1
-roughness/mode=7
+roughness/mode=1
 roughness/src_normal="res://HouseTextures/FloorNormal.png"
 process/channel_remap/red=0
 process/channel_remap/green=1

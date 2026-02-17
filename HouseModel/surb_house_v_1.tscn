@@ -1,21 +1,9 @@
-[gd_scene load_steps=18 format=4 uid="uid://ct3ke1hun3kql"]
+[gd_scene load_steps=21 format=4 uid="uid://c4o2j15yoqaln"]
 
 [ext_resource type="PackedScene" uid="uid://dyyrgnslnmmi4" path="res://HouseModel/SurbHouseV1.glb" id="1_aprdc"]
-[ext_resource type="Texture2D" uid="uid://c7lydt1u4e8ku" path="res://HouseTextures/FloorAlbedo.png" id="2_8qxbv"]
-[ext_resource type="Texture2D" uid="uid://ccjwhe4fg4cnv" path="res://HouseTextures/FloorHeight.png" id="3_en3fx"]
-[ext_resource type="Texture2D" uid="uid://d018ykgvs32bg" path="res://HouseTextures/FloorNormal.png" id="4_6xo08"]
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_2xvnv"]
-albedo_color = Color(0.7628212, 0.86207384, 0.890773, 1)
-albedo_texture = ExtResource("2_8qxbv")
-normal_enabled = true
-normal_scale = -1.09
-normal_texture = ExtResource("4_6xo08")
-heightmap_enabled = true
-heightmap_scale = 9.665
-heightmap_texture = ExtResource("3_en3fx")
-uv1_scale = Vector3(15, 15, 15)
-uv2_scale = Vector3(10, 10, 10)
+[ext_resource type="Material" uid="uid://c00wwgi5uhgyp" path="res://Max's Folder (do not touch!!!)/Resources/Wood3.tres" id="2_8qxbv"]
+[ext_resource type="Material" uid="uid://ce44l02bt2unf" path="res://Max's Folder (do not touch!!!)/Resources/Wood1.tres" id="3_en3fx"]
+[ext_resource type="Material" uid="uid://crnq6uoajxiq0" path="res://Max's Folder (do not touch!!!)/Resources/Wood2.tres" id="4_6xo08"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_jditv"]
 
@@ -158,33 +146,133 @@ _surfaces = [{
 blend_shape_mode = 0
 shadow_mesh = SubResource("ArrayMesh_luwrq")
 
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_lfror"]
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_lfror"]
+_surfaces = [{
+"aabb": AABB(-1.886055, -1, -1.886055, 3.77211, 2.399934, 3.77211),
+"format": 34359742465,
+"index_count": 126,
+"index_data": PackedByteArray("AAABAAIAAAADAAEABAAAAAIAAwAFAAEAAwAGAAUABgAEAAcABAACAAcABgAHAAUAAQAIAAIAAgAJAAcAAgAIAAkABwAKAAUABwAJAAoABQALAAEAAQALAAgABQAKAAsACAAMAAkACQANAAoACQAMAA0ACgAOAAsACgANAA4ACwAPAAgACAAPAAwACwAOAA8AEAANAAwAEQAOAA0AEQANABAAEgAPAA4AEgAOABEAEwAMAA8AEwAPABIAEAAMABMAEQAUABIAEwAVABAAEAAWABEAEQAWABQAEAAVABYAEgAUABcAEgAXABMAFgAXABQAEwAXABUAFgAVABcA"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 24,
+"vertex_data": PackedByteArray("AACAvwAAgL8AAIA/AACAvwAAgD8AAIC/AACAvwAAgD8AAIA/AACAvwAAgL8AAIC/AACAPwAAgL8AAIA/AACAPwAAgD8AAIC/AACAPwAAgL8AAIC/AACAPwAAgD8AAIA/QGrxPwAAgD9AavE/QGrxPwAAgD9AavG/QGrxvwAAgD9AavG/QGrxvwAAgD9AavE/QGrxPwoxsz9AavG/QGrxvwoxsz9AavG/QGrxvwoxsz9AavE/QGrxPwoxsz9AavE/7Iatvwoxsz/shq2/7Iatvwoxsz/shq0/7IatPwoxsz/shq0/7IatPwoxsz/shq2/7IatP3bAlz/shq0/7Iatv3bAlz/shq2/7Iatv3bAlz/shq0/7IatP3bAlz/shq2/")
+}]
+blend_shape_mode = 0
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_jb11d"]
+resource_name = "SurbHouseV1_Cube_002"
+_surfaces = [{
+"aabb": AABB(-0.30000007, -2.3000002, -1.5, 0.60000014, 4.6000004, 3),
+"format": 34896613377,
+"index_count": 66,
+"index_data": PackedByteArray("AAABAAIAAAADAAEAAQAEAAIABQABAAMABQADAAYAAQAHAAQACAAEAAcACAAJAAQACgAIAAcACwAHAAEACgAHAAsACwABAAUACwAMAAoABgANAAUABQAOAAsACwAOAAwABQANAA4ACgAMAA8ACgAPAAYADwAMAA4ABgAPAA0ADwAOAA0A"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 16,
+"vertex_data": PackedByteArray("AAAAAAAAAAD/////AAAAAAAA//8AAAAA//8AAAAAAAAAAP////8AAP//BPfEDQAA//8AAMQNAAD///////8AAP//AAD//wAAAAAAAP//AAD//wAAOvIAAP//BPc68gAAaogAADryAABqiAT3xA0AAGqIBPc68gAAaogAAMQNAAA=")
+}]
+blend_shape_mode = 0
+shadow_mesh = SubResource("ArrayMesh_lfror")
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_2fw1m"]
+resource_name = "SurbHouseV1_Cube_007"
+_surfaces = [{
+"aabb": AABB(-0.30000007, -2.3000002, -1.5, 0.60000014, 4.6000004, 3),
+"attribute_data": PackedByteArray("/1//v/+f/3//n/+//1//f8CdcEP/X3BD/19wQ8CdcEP/X/8//58AAP+f/z//XwAA/5//f//f/z//3/9//5//P8Cdjnz/X/9//1+OfP+f/3/AnXBD/5//P/9fcEP/X/8//1+OfMCdcEPAnY58/19wQ/9fjnzAnY58wJ2OfP9fjnzAnY58wJ1wQ8CdcEPAnY58AAD//wAA//8AAP//AAD//w=="),
+"format": 34896613399,
+"index_count": 66,
+"index_data": PackedByteArray("AAABAAIAAAADAAEABAAFAAYABAAHAAUACAAJAAoACAALAAkADAANAA4ADAAPAA0AEAARABIAEAATABEAFAATABAAFAAVABMAFgAVABQAFgAXABUAGAAZABoAGAAbABkAHAAdAB4AHAAfAB0AIAAhACIAIAAjACEAJAAlACYAJAAnACUA"),
+"material": SubResource("StandardMaterial3D_lfror"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 40,
+"vertex_data": PackedByteArray("AAAAAAAA////////AAD//wAA//8AAP////8AAAAA/////wT3OvL//2qIAAA68v////8AADry//9qiAT3OvL/////AAD///+/AAD//////7//////////vwAAAAD///+//////wAA//8AAP///////wAA//8AAP///////////////wT3xA1U1f//AAAAAFTV//8AAMQNVNX/////AABU1f//BPc68lTV////////VNX//wAAOvJU1f//AAD//1TVaogAAMQNVNVqiAT3OvJU1WqIBPfEDVTVaogAADryVNX//wAAxA3+f2qIBPfEDf5///8E98QN/n9qiAAAxA3+f///BPfEDf+/aogE9zry/7///wT3OvL/v2qIBPfEDf+///8AADry/79qiAAAxA3/v///AADEDf+/aogAADry/7//v/+//7//v/+//7//v/+/////f////3////9/////f///////////////////////f/+//3//v/9//7//f/+/qiqqKqoqqiqqKqoqqiqqKqoqqiqqKqoqqiqqKqoqqiqqKqoqqiqqKqoqqiqqKqoq/3////9/////f////3///wAA/38AAP9/AAD/fwAA/3////9/////f////3////9/")
+}]
+blend_shape_mode = 0
+shadow_mesh = SubResource("ArrayMesh_jb11d")
+
 [node name="SurbHouseV1" instance=ExtResource("1_aprdc")]
-transform = Transform3D(1.1501669, 0, 0, 0, 1.2312917, 0, 0, 0, 1.2312917, 0, 0.004610896, -0.00031781197)
+transform = Transform3D(1.1501669, 0, 0, 0, 1.9063168, 0, 0, 0, 1.9063168, 0, 0.004610896, -0.00031781197)
+
+[node name="Chimney_001" parent="." index="0"]
+transform = Transform3D(1.0000001, 0, 0, 0, 2.486495, 0, 0, 0, 1, 3.1261752, 16.463322, -5.4709244)
+material_override = ExtResource("2_8qxbv")
 
 [node name="housebase" parent="." index="1"]
-surface_material_override/0 = SubResource("StandardMaterial3D_2xvnv")
+transform = Transform3D(1.0000001, 0, 0, 0, 1, 0, 0, 0, 1, 6.000159, 7.329922, 4.576308)
+material_override = ExtResource("3_en3fx")
+surface_material_override/0 = ExtResource("4_6xo08")
+
+[node name="Roof_001" parent="." index="2"]
+transform = Transform3D(6, 0, 0, 0, 5.9999995, 0, 0, 0, 10.3, 0, 6.0000005, 0)
+material_override = ExtResource("4_6xo08")
+surface_material_override/0 = ExtResource("4_6xo08")
+
+[node name="Door_001" parent="." index="3"]
+transform = Transform3D(1.0000001, 0, 0, 0, 1, 0, 0, 0, 1, 5.8734055, 3.974283, 0)
+material_override = ExtResource("4_6xo08")
+
+[node name="Cylinder" parent="." index="4"]
+transform = Transform3D(0, 0.114784285, 0, -0.13621062, 0, 0, 0, 0, 0.13621062, 5.9869246, 3.6491618, -0.82449925)
+material_override = ExtResource("4_6xo08")
+
+[node name="Window_001" parent="." index="5"]
+transform = Transform3D(1.0000001, 0, 0, 0, 2, 0, 0, 0, 2, -0.56759804, -0.024406949, -0.006349329)
+material_override = ExtResource("4_6xo08")
+
+[node name="Window_002" parent="." index="6"]
+transform = Transform3D(-1.0000001, 0, -1.7484557e-07, 0, 2, 0, 8.742278e-08, 0, -2, 0.47925907, -0.024406949, -0.05801167)
+material_override = ExtResource("4_6xo08")
+
+[node name="Window_003" parent="." index="7"]
+transform = Transform3D(-1.0000001, 0, -1.7484557e-07, 0, 2, 0, 8.742278e-08, 0, -2, 0.65058964, 4.284812, -0.059078842)
+material_override = ExtResource("2_8qxbv")
+
+[node name="Window_004" parent="." index="8"]
+transform = Transform3D(1.0000001, 0, 0, 0, 2, 0, 0, 0, 2, -0.56759804, 4.284812, -0.059078842)
+material_override = ExtResource("4_6xo08")
+
+[node name="Door_002" parent="." index="9"]
+transform = Transform3D(-1.0000001, 0, -8.7422784e-08, 0, 1, 0, 8.742278e-08, 0, -1, -5.956925, 3.974283, 0)
+material_override = ExtResource("2_8qxbv")
+
+[node name="Cylinder_001" parent="." index="10"]
+transform = Transform3D(0, -0.114784285, -5.9539556e-09, -0.13621062, 2.1931666e-16, -5.9539556e-09, 5.9539556e-09, 5.0173807e-09, -0.13621062, -6.2322717, 3.6491618, 0.75450265)
+material_override = ExtResource("4_6xo08")
 
 [node name="Window_005" type="MeshInstance3D" parent="." index="11"]
-transform = Transform3D(1, 0, 0, 0, 2, 0, 0, 0, 2, -0.567598, -0.024406947, -0.006349329)
+transform = Transform3D(1.0000001, 0, 0, 0, 2, 0, 0, 0, 2, -0.56759804, -0.024406949, -0.006349329)
 mesh = SubResource("ArrayMesh_1xru8")
 skeleton = NodePath("")
 
 [node name="Window_006" type="MeshInstance3D" parent="." index="12"]
-transform = Transform3D(-1, 0, -1.7484555e-07, 0, 2, 0, 8.742278e-08, 0, -2, 0.479259, -0.024406947, 9.300362)
+transform = Transform3D(-1.0000001, 0, -1.7484557e-07, 0, 2, 0, 8.742278e-08, 0, -2, 0.47925907, -0.024406949, 9.300363)
+material_override = ExtResource("2_8qxbv")
 mesh = SubResource("ArrayMesh_x0min")
 skeleton = NodePath("")
 
 [node name="Window_007" type="MeshInstance3D" parent="." index="13"]
-transform = Transform3D(-1, 0, -1.7484555e-07, 0, 2, 0, 8.742278e-08, 0, -2, 0.479259, 4.3421917, 9.300362)
+transform = Transform3D(-1.0000001, 0, -1.7484557e-07, 0, 2, 0, 8.742278e-08, 0, -2, 0.47925907, 4.342192, 9.300363)
+material_override = ExtResource("2_8qxbv")
 mesh = SubResource("ArrayMesh_x0min")
 skeleton = NodePath("")
 
 [node name="Window_008" type="MeshInstance3D" parent="." index="14"]
-transform = Transform3D(1, 0, 0, 0, 2, 0, 0, 0, 2, -0.567598, 4.2848115, -9.446655)
+transform = Transform3D(1.0000001, 0, 0, 0, 2, 0, 0, 0, 2, -0.56759804, 4.284812, -9.446655)
+material_override = ExtResource("4_6xo08")
 mesh = SubResource("ArrayMesh_hnhm3")
 skeleton = NodePath("")
 
 [node name="Window_009" type="MeshInstance3D" parent="." index="15"]
-transform = Transform3D(1, 0, 0, 0, 2, 0, 0, 0, 2, -0.567598, -0.024406947, -9.33408)
+transform = Transform3D(1.0000001, 0, 0, 0, 2, 0, 0, 0, 2, -0.56759804, -0.024406949, -9.33408)
+material_override = ExtResource("4_6xo08")
 mesh = SubResource("ArrayMesh_1xru8")
+skeleton = NodePath("")
+
+[node name="Door_003" type="MeshInstance3D" parent="." index="16"]
+transform = Transform3D(-1.0000002, 0, -8.742279e-08, 0, 1, 0, 8.7422805e-08, 0, -1, -6.166137, 3.974283, 0)
+material_override = ExtResource("4_6xo08")
+mesh = SubResource("ArrayMesh_2fw1m")
 skeleton = NodePath("")
