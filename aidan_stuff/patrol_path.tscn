@@ -9,13 +9,13 @@
 script = ExtResource("1_bs2y1")
 
 [node name="WP_1" type="Marker3D" parent="patrol_path" groups=["patrol_path"]]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10.464976, 0.6372285, -4.088055)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10.464976, 0.6372285, -1.4137874)
 
 [node name="WP_2" type="Marker3D" parent="patrol_path" groups=["patrol_path"]]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10.4496355, 0.6372285, -7.4469013)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10.4496355, 0.6372285, -2.9999022)
 
 [node name="WP_3" type="Marker3D" parent="patrol_path"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.570545, 0.48744488, -8.799584)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10.448002, 0.48744488, -4.7939754)
 
 [node name="NPC_bob" parent="." node_paths=PackedStringArray("patrol_path") instance=ExtResource("2_smt5i")]
 transform = Transform3D(0.25, 0, 0, 0, 0.25, 0, 0, 0, 0.25, -10.424732, 0.80088663, 0)
