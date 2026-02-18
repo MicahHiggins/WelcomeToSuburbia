@@ -1,4 +1,4 @@
-[gd_scene load_steps=21 format=4 uid="uid://c4o2j15yoqaln"]
+[gd_scene load_steps=22 format=4 uid="uid://c4o2j15yoqaln"]
 
 [ext_resource type="PackedScene" uid="uid://dyyrgnslnmmi4" path="res://HouseModel/SurbHouseV1.glb" id="1_aprdc"]
 [ext_resource type="Material" uid="uid://c00wwgi5uhgyp" path="res://Max's Folder (do not touch!!!)/Resources/Wood3.tres" id="2_8qxbv"]
@@ -193,6 +193,9 @@ _surfaces = [{
 blend_shape_mode = 0
 shadow_mesh = SubResource("ArrayMesh_jb11d")
 
+[sub_resource type="BoxShape3D" id="BoxShape3D_8qxbv"]
+size = Vector3(12.883652, 7.5253296, 18.191895)
+
 [node name="SurbHouseV1" instance=ExtResource("1_aprdc")]
 transform = Transform3D(1.1501669, 0, 0, 0, 1.9063168, 0, 0, 0, 1.9063168, 0, 0.004610896, -0.00031781197)
 
@@ -276,3 +279,9 @@ transform = Transform3D(-1.0000002, 0, -8.742279e-08, 0, 1, 0, 8.7422805e-08, 0,
 material_override = ExtResource("4_6xo08")
 mesh = SubResource("ArrayMesh_2fw1m")
 skeleton = NodePath("")
+
+[node name="HouseCollision" type="StaticBody3D" parent="." index="17"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="HouseCollision" index="0"]
+transform = Transform3D(1, 0, 0, 0, 0.99999934, 0, 0, 0, 0.99999934, 0.085655, 3.6225517, -0.05883773)
+shape = SubResource("BoxShape3D_8qxbv")
