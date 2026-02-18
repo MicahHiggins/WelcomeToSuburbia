@@ -39,6 +39,7 @@ var _net_has_target: bool = false
 
 func _ready() -> void:
 	# Add this node to the "pickup" group so Player/RayCast code
+	print("IM IN")
 	# can identify it as an interactable object.
 	add_to_group("pickup")
 

@@ -83,6 +83,7 @@ script = ExtResource("1_oh3op")
 player_scene = ExtResource("2_jvlpr")
 
 [node name="PCGAttempt" parent="." instance=ExtResource("7_d084q")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.1072845, 9.536743e-07, -0.011600018)
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(-1, -8.742278e-08, 0, 5.2612343e-08, -0.60181504, 0.79863554, -6.981894e-08, 0.79863554, 0.60181504, 0, 0, 0)
@@ -103,6 +104,10 @@ script = ExtResource("6_gsr76")
 
 [node name="Bat" parent="ItemManager" instance=ExtResource("12_wjimw")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5201786, 3.1837187, -3.0952702)
+collision_mask = 11
+
+[node name="Bat2" parent="ItemManager" instance=ExtResource("12_wjimw")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.4119205, 3.8536096, -2.444654)
 collision_mask = 11
 
 [node name="Menu" type="Node" parent="."]

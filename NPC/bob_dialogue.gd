@@ -9,9 +9,9 @@ signal dialogueSig
 
 
 var dialogueArray = [
-	["What are you doing walking in my\n yard, kids?", "Oh, good morning to you two", "My neighbors are weird as hell, you two seem\n fine though"],
-	["I tried going to work but I can’t get out\n of this damn neighborhood", "My neighbors keep staring at me. Be careful\n around these creeps.", "Something feels weird."],
-	["I dont think its safe here. But I don’t\n think i can leave", "The new HOA rules are really\n strange.", "Don’t let them get you"]
+	["What are you doing walking in my\n yard, kids?", "Oh, good morning to you two", "My neighbors are weird as hell,\n you two seem fine though"],
+	["I tried going to work but\n I can’t get out of this damn\n neighborhood", "My neighbors keep staring at me.\n Be careful around these creeps.", "Something feels weird."],
+	["I dont think its safe here.\n But I don’t think i can leave", "The new HOA rules are really\n strange.", "Don’t let them get you"]
 ]
 var local_dial := 0
 func _input(event: InputEvent) -> void:
@@ -30,7 +30,10 @@ func enter_bob_dialogue():
 		bob_talking = true
 		dialogue.toggle = true
 		print(GlobalVariables.iterations)
-		dialogue.uniqueName = dialogueArray[GlobalVariables.iterations][local_dial]
+		if (GlobalVariables.iterations >= 3):
+			dialogue.uniqueName = dialogueArray[2][local_dial]
+		else:
+			dialogue.uniqueName = dialogueArray[GlobalVariables.iterations][local_dial]
 		await dialogueSig
 		dialogue.toggle = false
 		local_dial = local_dial + 1
