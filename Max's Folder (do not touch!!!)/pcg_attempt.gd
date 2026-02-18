@@ -9,6 +9,12 @@ extends Node3D
 var prevWB
 var worldBlocks2: Array[Node3D]
 
+var iteration1 = 0
+var iteration2 = 0
+var iteration3 = 0
+var iteration4 = 0
+var iteration5 = 0
+
 var player
 
 const DISPLACEMENT = 144
@@ -66,36 +72,46 @@ func algoForIterations(worldBlocks):
 
 
 func _on_load_zone_1_body_entered(body: Node3D) -> void:
-	player = get_tree().get_node_count_in_group("player")
-	if player == 2:
+	iteration1 = iteration1 + 1
+	
+	print(player)
+	if iteration1 == 2:
 		algoForIterations(0)
+		iteration1 = 0
 	#print(GlobalVariables)
 	print("numba 0")
 
 
 func _on_load_zone_2_body_entered(body: Node3D) -> void:
-	player = get_tree().get_node_count_in_group("player")
-	if player == 2:
+	iteration2 = iteration2 + 1
+	print(player)
+	if iteration2 == 2:
 		algoForIterations(1)
+		iteration2 = 0
 	print("numba 1")
 
 
 func _on_load_zone_3_body_entered(body: Node3D) -> void:
-	player = get_tree().get_node_count_in_group("player")
-	if player == 2:
+	iteration3 = iteration3 + 1
+	print(player)
+	if iteration3 == 2:
 		algoForIterations(2)
+		iteration3 = 0
 	print("numba 2")
 
 
 func _on_load_zone_4_body_entered(body: Node3D) -> void:
-	player = get_tree().get_node_count_in_group("player")
-	if player == 2:
+	iteration4 = iteration4 + 1
+	print(player)
+	if iteration4 == 2:
 		algoForIterations(3)
+		iteration4 = 0
 	print("numba 3")
 
 
 func _on_load_zone_5_body_entered(body: Node3D) -> void:
-	player = get_tree().get_node_count_in_group("player")
+	iteration5 = iteration5 + 1
 	if player == 2:
 		algoForIterations(4)
+		iteration4 = 0
 	print("numba 4")
