@@ -5,10 +5,12 @@ extends Node3D
 
 const PATROL_BUNDLE: PackedScene = preload("res://aidan_stuff/patrol_path.tscn")
 const PATROL_BUNDLE_ABIGAIL: PackedScene = preload("res://NPC/patrol_bundel_abigail.tscn")
+const PATROL_BUNDLE_CAMPBELL: PackedScene = preload("res://NPC/patrol_bundle_campbells.tscn")
 
-# we want both npcs to spawn on this block, so we keep two instances
+# we want all npcs to spawn on this block, so we keep separate instances
 var patrol_instance_bob: Node3D = null
 var patrol_instance_abigail: Node3D = null
+var patrol_instance_campbell: Node3D = null
 
 var entered := false
 
@@ -44,6 +46,14 @@ func _on_area_3d_body_entered(body: Node3D) -> void:
 		# Move the entire bundle (NPC + PatrolPath + markers) with this block
 		patrol_instance_abigail.global_transform = global_transform
 
+	# Spawn Campbell bundle
+	if patrol_instance_campbell == null or not is_instance_valid(patrol_instance_campbell):
+		patrol_instance_campbell = PATROL_BUNDLE_CAMPBELL.instantiate() as Node3D
+		add_child(patrol_instance_campbell)
+
+		# Move the entire bundle (NPC + PatrolPath + markers) with this block
+		patrol_instance_campbell.global_transform = global_transform
+
 func _on_area_3d_body_exited(body: Node3D) -> void:
 	if body == null or not body.is_in_group("player"):
 		return
@@ -63,3 +73,8 @@ func _on_area_3d_body_exited(body: Node3D) -> void:
 	if patrol_instance_abigail != null and is_instance_valid(patrol_instance_abigail):
 		patrol_instance_abigail.queue_free()
 	patrol_instance_abigail = null
+
+	# Despawn Campbell bundle
+	if patrol_instance_campbell != null and is_instance_valid(patrol_instance_campbell):
+		patrol_instance_campbell.queue_free()
+	patrol_instance_campbell = null
