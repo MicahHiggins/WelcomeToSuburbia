@@ -1,16 +1,17 @@
 [gd_scene load_steps=9 format=3 uid="uid://bf38tvkrxj6ds"]
 
-[ext_resource type="Script" uid="uid://crreogl6xdvw3" path="res://GameLevelsETC/generator.gd" id="1_720kl"]
-[ext_resource type="Script" uid="uid://myxnml1boirr" path="res://GameLevelsETC/rule_1.gd" id="1_tmgbf"]
+[ext_resource type="Script" uid="uid://dqvoninhsiala" path="res://GameLevelsETC/cellar_3_door_hallway.gd" id="1_tmgbf"]
 [ext_resource type="PackedScene" uid="uid://dqbgiq51e15mw" path="res://stone_block.tscn" id="2_3njtq"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_720kl"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_4a1gr"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_fljmn"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_3njtq"]
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_720kl"]
-
-[sub_resource type="BoxShape3D" id="BoxShape3D_4a1gr"]
+[sub_resource type="BoxShape3D" id="BoxShape3D_f1x8v"]
 
 [sub_resource type="Environment" id="Environment_720kl"]
 ambient_light_source = 2
@@ -19,51 +20,67 @@ ambient_light_energy = 7.11
 
 [node name="CellarLevel" type="Node3D"]
 
-[node name="Generator" type="Node3D" parent="."]
-script = ExtResource("1_720kl")
-world_root_path = NodePath("../world")
-trigger_areas_path = NodePath("../TriggerArea")
-block_scene = ExtResource("2_3njtq")
-
-[node name="RuleArea" type="Node3D" parent="."]
-
-[node name="Rule1" type="Area3D" parent="RuleArea"]
-collision_layer = 9
-collision_mask = 9
+[node name="HallwayGen" type="Node3D" parent="."]
 script = ExtResource("1_tmgbf")
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="RuleArea/Rule1"]
-shape = SubResource("BoxShape3D_fljmn")
-
-[node name="Rule2" type="Area3D" parent="RuleArea"]
-collision_layer = 9
-collision_mask = 9
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="RuleArea/Rule2"]
-shape = SubResource("BoxShape3D_3njtq")
+block_scene = ExtResource("2_3njtq")
 
 [node name="TriggerArea" type="Node3D" parent="."]
 
-[node name="Progress1" type="Area3D" parent="TriggerArea"]
+[node name="Door1" type="Area3D" parent="TriggerArea"]
 collision_layer = 9
 collision_mask = 9
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="TriggerArea/Progress1"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="TriggerArea/Door1"]
 transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0)
 shape = SubResource("BoxShape3D_720kl")
 
-[node name="Progress2" type="Area3D" parent="TriggerArea"]
+[node name="Door2" type="Area3D" parent="TriggerArea"]
 collision_layer = 9
 collision_mask = 9
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="TriggerArea/Progress2"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="TriggerArea/Door2"]
 transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0)
 shape = SubResource("BoxShape3D_4a1gr")
+
+[node name="Door3" type="Area3D" parent="TriggerArea"]
+collision_layer = 9
+collision_mask = 9
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="TriggerArea/Door3"]
+shape = SubResource("BoxShape3D_fljmn")
+
+[node name="Progress" type="Area3D" parent="TriggerArea"]
+collision_layer = 9
+collision_mask = 9
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="TriggerArea/Progress"]
+shape = SubResource("BoxShape3D_3njtq")
+
+[node name="Reveal1" type="Area3D" parent="TriggerArea"]
+collision_layer = 9
+collision_mask = 9
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="TriggerArea/Reveal1"]
+shape = SubResource("BoxShape3D_f1x8v")
+
+[node name="Reveal2" type="Area3D" parent="TriggerArea"]
+collision_layer = 9
+collision_mask = 9
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="TriggerArea/Reveal2"]
+shape = SubResource("BoxShape3D_f1x8v")
+
+[node name="Reveal3" type="Area3D" parent="TriggerArea"]
+collision_layer = 9
+collision_mask = 9
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="TriggerArea/Reveal3"]
+shape = SubResource("BoxShape3D_f1x8v")
 
 [node name="SpawnPoints" type="Node3D" parent="."]
 
 [node name="Spawn" type="Marker3D" parent="SpawnPoints"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9601532, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 7.7513123, 0)
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_720kl")
