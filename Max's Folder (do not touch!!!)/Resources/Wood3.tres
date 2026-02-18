@@ -1,0 +1,18 @@
+[gd_resource type="StandardMaterial3D" load_steps=4 format=3 uid="uid://c00wwgi5uhgyp"]
+
+[ext_resource type="Texture2D" uid="uid://c7lydt1u4e8ku" path="res://HouseTextures/DoorAlbedo.png" id="1_qkgkp"]
+[ext_resource type="Texture2D" uid="uid://ccjwhe4fg4cnv" path="res://HouseTextures/DoorHeight.png" id="2_5glyf"]
+[ext_resource type="Texture2D" uid="uid://d018ykgvs32bg" path="res://HouseTextures/DoorNormal.png" id="3_nj5f0"]
+
+[resource]
+cull_mode = 2
+albedo_color = Color(0.5226049, 0.5226072, 0.50664425, 1)
+albedo_texture = ExtResource("1_qkgkp")
+normal_enabled = true
+normal_scale = 4.5
+normal_texture = ExtResource("3_nj5f0")
+heightmap_enabled = true
+heightmap_scale = -0.99
+heightmap_texture = ExtResource("2_5glyf")
+uv1_scale = Vector3(40, 40, 40)
+uv2_scale = Vector3(5, 5, 5)
