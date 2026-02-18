@@ -73,8 +73,8 @@ func algoForIterations(worldBlocks):
 
 func _on_load_zone_1_body_entered(body: Node3D) -> void:
 	iteration1 = iteration1 + 1
-	
-	print(player)
+	print(iteration1)
+	#print(player)
 	if iteration1 == 2:
 		algoForIterations(0)
 		iteration1 = 0
@@ -85,6 +85,7 @@ func _on_load_zone_1_body_entered(body: Node3D) -> void:
 func _on_load_zone_2_body_entered(body: Node3D) -> void:
 	iteration2 = iteration2 + 1
 	print(player)
+	print(iteration2)
 	if iteration2 == 2:
 		algoForIterations(1)
 		iteration2 = 0
@@ -94,6 +95,7 @@ func _on_load_zone_2_body_entered(body: Node3D) -> void:
 func _on_load_zone_3_body_entered(body: Node3D) -> void:
 	iteration3 = iteration3 + 1
 	print(player)
+	print(iteration3)
 	if iteration3 == 2:
 		algoForIterations(2)
 		iteration3 = 0
@@ -103,6 +105,7 @@ func _on_load_zone_3_body_entered(body: Node3D) -> void:
 func _on_load_zone_4_body_entered(body: Node3D) -> void:
 	iteration4 = iteration4 + 1
 	print(player)
+	print(iteration4)
 	if iteration4 == 2:
 		algoForIterations(3)
 		iteration4 = 0
@@ -111,7 +114,8 @@ func _on_load_zone_4_body_entered(body: Node3D) -> void:
 
 func _on_load_zone_5_body_entered(body: Node3D) -> void:
 	iteration5 = iteration5 + 1
-	if player == 2:
+	print(iteration5)
+	if iteration5 == 2:
 		algoForIterations(4)
-		iteration4 = 0
+		iteration5 = 0
 	print("numba 4")
