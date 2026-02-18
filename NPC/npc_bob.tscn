@@ -1,9 +1,10 @@
-[gd_scene load_steps=8 format=3 uid="uid://bav2p20t1bubr"]
+[gd_scene load_steps=9 format=3 uid="uid://bav2p20t1bubr"]
 
 [ext_resource type="Script" uid="uid://csc5bob5s77t" path="res://Scripts/npc_bob.gd" id="1_g4ita"]
 [ext_resource type="Script" uid="uid://cicakuq5a1gle" path="res://Scripts/state_machine.gd" id="2_jur1b"]
 [ext_resource type="Script" uid="uid://dtisy2wdio7v" path="res://Scripts/patrol_state.gd" id="3_oknps"]
 [ext_resource type="Script" uid="uid://cvv6jryec78f3" path="res://Scripts/talk_state.gd" id="4_0uuot"]
+[ext_resource type="Script" uid="uid://bt6ay0umr8ggq" path="res://NPC/bob_dialogue.gd" id="5_jur1b"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_g4ita"]
 radius = 2.0
@@ -51,7 +52,12 @@ collision_mask = 8
 transform = Transform3D(1.25, 0, 0, 0, 1.25, 0, 0, 0, 1.25, 0, 0, 0)
 shape = SubResource("SphereShape3D_g4ita")
 
+[node name="bobDialogue" type="Node3D" parent="."]
+script = ExtResource("5_jur1b")
+
 [connection signal="body_entered" from="interact" to="." method="_on_interact_body_entered"]
 [connection signal="body_exited" from="interact" to="." method="_on_interact_body_exited"]
 [connection signal="body_entered" from="TalkDetection" to="." method="_on_talk_detection_body_entered"]
+[connection signal="body_entered" from="TalkDetection" to="bobDialogue" method="_on_talk_detection_body_entered"]
 [connection signal="body_exited" from="TalkDetection" to="." method="_on_talk_detection_body_exited"]
+[connection signal="body_exited" from="TalkDetection" to="bobDialogue" method="_on_talk_detection_body_exited"]

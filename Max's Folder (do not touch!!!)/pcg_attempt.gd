@@ -66,29 +66,24 @@ func algoForIterations(worldBlocks):
 func _on_load_zone_1_body_entered(body: Node3D) -> void:
 	algoForIterations(0)
 	#print(GlobalVariables)
-	GlobalVariables.iterations += 1
 	print("numba 0")
 
 
 func _on_load_zone_2_body_entered(body: Node3D) -> void:
 	algoForIterations(1)
-	GlobalVariables.iterations += 1
 	print("numba 1")
 
 
 func _on_load_zone_3_body_entered(body: Node3D) -> void:
 	algoForIterations(2)
-	GlobalVariables.iterations += 1
 	print("numba 2")
 
 
 func _on_load_zone_4_body_entered(body: Node3D) -> void:
 	algoForIterations(3)
-	GlobalVariables.iterations += 1
 	print("numba 3")
 
 
 func _on_load_zone_5_body_entered(body: Node3D) -> void:
 	algoForIterations(4)
-	GlobalVariables.iterations += 1
 	print("numba 4")

@@ -39,9 +39,9 @@ sprite_frames = SubResource("SpriteFrames_im15s")
 [node name="Text" type="Label" parent="."]
 layout_mode = 0
 offset_left = 42.898983
-offset_top = 18.945236
-offset_right = 227.89899
-offset_bottom = 155.94524
+offset_top = 14.838108
+offset_right = 1574.6354
+offset_bottom = 384.48917
 scale = Vector2(0.05, 0.05)
 theme_override_colors/font_color = Color(0, 0, 0, 1)
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
