@@ -4,7 +4,7 @@
 [ext_resource type="ArrayMesh" uid="uid://dgv4eih41bu3t" path="res://Assets/kenney_city-kit-suburban_20/Models/OBJ format/driveway-long.obj" id="2_ypk4p"]
 [ext_resource type="ArrayMesh" uid="uid://dcbboo0ncpiq4" path="res://Assets/kenney_city-kit-suburban_20/Models/OBJ format/path-stones-messy.obj" id="3_2eoyn"]
 [ext_resource type="PackedScene" uid="uid://dn665rot4v6b8" path="res://Assets/whitefence1.glb" id="5_jmv40"]
-[ext_resource type="PackedScene" uid="uid://c4o2j15yoqaln" path="res://HouseModel/surb_house_v_1.tscn" id="5_x2lvk"]
+[ext_resource type="PackedScene" path="res://HouseModel/surb_house_v_1.tscn" id="5_x2lvk"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_oxdg3"]
 

@@ -35,6 +35,9 @@ func _enter_tree() -> void:
 
 
 func _ready() -> void:
+	# Add this node to the "pickup" group so Player/RayCast code
+	print("IM IN")
+	# can identify it as an interactable object.
 	add_to_group("pickup")
 
 	if outline_mesh:

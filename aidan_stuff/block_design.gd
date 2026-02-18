@@ -21,6 +21,8 @@ func _on_area_3d_body_entered(body: Node3D) -> void:
 
 	houses.visible = true
 	roads.visible = true
+	
+	GlobalVariables.iterations = GlobalVariables.iterations + 1
 
 	if patrol_instance == null or not is_instance_valid(patrol_instance):
 		patrol_instance = PATROL_BUNDLE.instantiate() as Node3D

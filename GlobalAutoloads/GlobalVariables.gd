@@ -1,7 +1,8 @@
 extends Node
 
 
-var iterations = -2
+var iterations = -1
+var conversations = 0
 
 
 
