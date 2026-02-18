@@ -9,6 +9,8 @@ extends Node3D
 var prevWB
 var worldBlocks2: Array[Node3D]
 
+var player
+
 const DISPLACEMENT = 144
 
 
@@ -64,26 +66,36 @@ func algoForIterations(worldBlocks):
 
 
 func _on_load_zone_1_body_entered(body: Node3D) -> void:
-	algoForIterations(0)
+	player = get_tree().get_node_count_in_group("player")
+	if player == 2:
+		algoForIterations(0)
 	#print(GlobalVariables)
 	print("numba 0")
 
 
 func _on_load_zone_2_body_entered(body: Node3D) -> void:
-	algoForIterations(1)
+	player = get_tree().get_node_count_in_group("player")
+	if player == 2:
+		algoForIterations(1)
 	print("numba 1")
 
 
 func _on_load_zone_3_body_entered(body: Node3D) -> void:
-	algoForIterations(2)
+	player = get_tree().get_node_count_in_group("player")
+	if player == 2:
+		algoForIterations(2)
 	print("numba 2")
 
 
 func _on_load_zone_4_body_entered(body: Node3D) -> void:
-	algoForIterations(3)
+	player = get_tree().get_node_count_in_group("player")
+	if player == 2:
+		algoForIterations(3)
 	print("numba 3")
 
 
 func _on_load_zone_5_body_entered(body: Node3D) -> void:
-	algoForIterations(4)
+	player = get_tree().get_node_count_in_group("player")
+	if player == 2:
+		algoForIterations(4)
 	print("numba 4")
