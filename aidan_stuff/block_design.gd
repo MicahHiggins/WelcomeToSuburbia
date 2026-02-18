@@ -4,8 +4,12 @@ extends Node3D
 @onready var roads: Node3D = $Roads
 
 const PATROL_BUNDLE: PackedScene = preload("res://aidan_stuff/patrol_path.tscn")
+const PATROL_BUNDLE_ABIGAIL: PackedScene = preload("res://NPC/patrol_bundel_abigail.tscn")
 
-var patrol_instance: Node3D = null
+# we want both npcs to spawn on this block, so we keep two instances
+var patrol_instance_bob: Node3D = null
+var patrol_instance_abigail: Node3D = null
+
 var entered := false
 
 func _ready() -> void:
@@ -24,12 +28,21 @@ func _on_area_3d_body_entered(body: Node3D) -> void:
 	
 	GlobalVariables.iterations = GlobalVariables.iterations + 1
 
-	if patrol_instance == null or not is_instance_valid(patrol_instance):
-		patrol_instance = PATROL_BUNDLE.instantiate() as Node3D
-		add_child(patrol_instance)
+	# Spawn Bob bundle
+	if patrol_instance_bob == null or not is_instance_valid(patrol_instance_bob):
+		patrol_instance_bob = PATROL_BUNDLE.instantiate() as Node3D
+		add_child(patrol_instance_bob)
 
 		# Move the entire bundle (NPC + PatrolPath + markers) with this block
-		patrol_instance.global_transform = global_transform
+		patrol_instance_bob.global_transform = global_transform
+
+	# Spawn Abigail bundle
+	if patrol_instance_abigail == null or not is_instance_valid(patrol_instance_abigail):
+		patrol_instance_abigail = PATROL_BUNDLE_ABIGAIL.instantiate() as Node3D
+		add_child(patrol_instance_abigail)
+
+		# Move the entire bundle (NPC + PatrolPath + markers) with this block
+		patrol_instance_abigail.global_transform = global_transform
 
 func _on_area_3d_body_exited(body: Node3D) -> void:
 	if body == null or not body.is_in_group("player"):
@@ -41,6 +54,12 @@ func _on_area_3d_body_exited(body: Node3D) -> void:
 	houses.visible = false
 	roads.visible = false
 
-	if patrol_instance != null and is_instance_valid(patrol_instance):
-		patrol_instance.queue_free()
-	patrol_instance = null
+	# Despawn Bob bundle
+	if patrol_instance_bob != null and is_instance_valid(patrol_instance_bob):
+		patrol_instance_bob.queue_free()
+	patrol_instance_bob = null
+
+	# Despawn Abigail bundle
+	if patrol_instance_abigail != null and is_instance_valid(patrol_instance_abigail):
+		patrol_instance_abigail.queue_free()
+	patrol_instance_abigail = null
