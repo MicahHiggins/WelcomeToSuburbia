@@ -1,309 +1,190 @@
 extends Node3D
 class_name CellarThreeDoorHallway
 
-# -------------------------
-# scene hooks
-# -------------------------
 @export var world_root_path: NodePath = NodePath("../world")
 @export var triggers_root_path: NodePath = NodePath("../TriggerArea")
 @export var spawn_marker_path: NodePath = NodePath("../SpawnPoints/Spawn")
-
 @export var block_scene: PackedScene
-@export var lever_scene: PackedScene # drag your Lever.tscn here
 
-# -------------------------
-# block/grid settings
-# -------------------------
 @export var block_size_m: float = 2.0
 @export var y_offset_m: float = 1.0
 @export var wall_height_blocks: int = 2
 @export var build_ceiling: bool = false
 @export var use_generator_as_origin: bool = true
 
-# spawn (keep what worked)
-@export var spawn_height_above_floor: float = 10.0
+@export var spawn_height_above_floor: float = 7.0
 @export var spawn_cell_z: int = 2
 
-# -------------------------
-# hallway tuning
-# -------------------------
 @export var hall_width_cells: int = 7
-@export var hall_len_before_doors: int = 18
+@export var entry_len_before_doors: int = 10
 
-# three doors across the wall
 @export var door_x_offsets: Array[int] = [-2, 0, 2]
+@export var reveal_distance_cells: int = 2
 
-# doors look the same until you commit
-@export var branch_same_len: int = 7        # identical hallway behind every door
-@export var wrong_deadend_extra: int = 3    # wrong doors only go a little further (after the identical part)
-@export var correct_continue_len: int = 16  # correct door continues to the NEXT 3-door junction
+@export var required_correct_choices: int = 3
+@export var turn_chance_percent: int = 50
+@export var corner_len: int = 4
 
-# reveal areas sit IN FRONT of each door (this is the only “tell”)
-@export var reveal_offset_from_wall: int = 2 # how many cells before the door wall to place reveal triggers
-
-# lever spawns at the NEXT junction (after you chose correct)
-@export var lever_spawn_near_junction_z_offset: int = -3  # place lever a few cells before the new door wall
-@export var lever_spawn_side_x: int = 2                   # put it slightly to the side
-
-# small gate that blocks the next loop until lever pulled
-@export var gate_blocks_forward_cells: int = 2 # gate is a column in the hall a couple cells before the new doors
-
-# correct door selection
-@export var forced_correct_door_index: int = -1 # -1 random, else 0..2
-
-# multiplayer
-@export var authority_only_build: bool = true
 @export var debug_print: bool = true
 
-# -------------------------
-# cached nodes
-# -------------------------
 @onready var _world_root: Node3D = get_node_or_null(world_root_path) as Node3D
 @onready var _triggers_root: Node3D = get_node_or_null(triggers_root_path) as Node3D
 @onready var _spawn_marker: Node3D = get_node_or_null(spawn_marker_path) as Node3D
 
-# -------------------------
-# internal state
-# -------------------------
 var _rng: RandomNumberGenerator = RandomNumberGenerator.new()
 var _world_origin: Vector3 = Vector3.ZERO
-
 var _spawned: Dictionary = {} # String -> Node3D
-var _built: bool = false
+
 var _seed: int = 0
+var _built: bool = false
 
-# “loop” stage
-var _stage: int = 0
-var _stage_base_z: int = 0
-var _door_wall_z: int = 0
-var _correct_door: int = 0
+var _cursor: Vector2i = Vector2i(0, 0)
+var _forward: Vector2i = Vector2i(0, 1)
 
-# after choosing correct door, we unlock the NEXT junction with a lever
-var _next_junction_base_z: int = 0
-var _next_junction_wall_z: int = 0
-var _gate_cell: Vector2i = Vector2i.ZERO
-
-# lever runtime
-var _lever_enabled: bool = false
-var _local_in_lever: bool = false
-var _server_allowed_peers: Dictionary = {} # peer_id -> true
-var _lever_instance: Node3D = null
+var _correct_count: int = 0
+var _progress_door: int = 0
+var _revealed: Array[bool] = [false, false, false]
 
 const DOOR_NAMES: Array[String] = ["Door1", "Door2", "Door3"]
 const REVEAL_NAMES: Array[String] = ["Reveal1", "Reveal2", "Reveal3"]
 
-# ============================================================
-# READY
-# ============================================================
 func _ready() -> void:
 	_rng.randomize()
 
 	if _world_root == null:
-		push_error("[Cellar] World root not found. Fix world_root_path.")
+		push_error("[Cellar] world root not found. Fix world_root_path.")
 		return
 	if _triggers_root == null:
-		push_error("[Cellar] Trigger root not found. Fix triggers_root_path.")
+		push_error("[Cellar] TriggerArea root not found. Fix triggers_root_path.")
 		return
 	if block_scene == null:
 		push_error("[Cellar] block_scene not assigned.")
 		return
-	if lever_scene == null:
-		push_error("[Cellar] lever_scene not assigned (drag Lever.tscn in).")
-		return
 
 	_world_origin = global_position if use_generator_as_origin else Vector3.ZERO
 
+	# keep door offsets inside hall
+	_clamp_door_offsets()
+
 	_bind_trigger_signals()
 
-	if authority_only_build and multiplayer.has_multiplayer_peer():
+	# server picks seed, everyone builds the same
+	if multiplayer.has_multiplayer_peer():
 		if multiplayer.is_server():
-			if not multiplayer.peer_connected.is_connected(_on_peer_connected):
-				multiplayer.peer_connected.connect(_on_peer_connected)
-
 			_seed = int(Time.get_ticks_msec()) ^ randi()
-			_stage = 0
-			_stage_base_z = 0
-			_correct_door = _pick_correct_door(_stage)
-			rpc("_rpc_build_stage", _seed, _stage, _stage_base_z, _correct_door)
+			rpc("_rpc_build_initial", _seed)
 	else:
 		_seed = int(Time.get_ticks_msec()) ^ randi()
-		_stage = 0
-		_stage_base_z = 0
-		_correct_door = _pick_correct_door(_stage)
-		_build_stage(_seed, _stage, _stage_base_z, _correct_door)
+		_build_initial(_seed)
 
-func _on_peer_connected(peer_id: int) -> void:
-	# just send the current state so late joiners see the same world
-	rpc_id(peer_id, "_rpc_build_stage", _seed, _stage, _stage_base_z, _correct_door)
-	# if we already spawned lever/gate for next junction, sync that too
-	if _lever_enabled:
-		rpc_id(peer_id, "_rpc_sync_next_junction", _next_junction_base_z, _next_junction_wall_z, _gate_cell)
-
-# ============================================================
-# RPCS
-# ============================================================
-@rpc("any_peer", "call_local", "reliable")
-func _rpc_build_stage(seed: int, stage: int, base_z: int, correct_door: int) -> void:
-	_build_stage(seed, stage, base_z, correct_door)
+func _clamp_door_offsets() -> void:
+	var half_w: int = int(hall_width_cells / 2)
+	for i in range(min(door_x_offsets.size(), 3)):
+		# keep openings away from the side wall columns
+		door_x_offsets[i] = clampi(door_x_offsets[i], -half_w + 1, half_w - 1)
 
 @rpc("any_peer", "call_local", "reliable")
-func _rpc_sync_next_junction(next_base_z: int, next_wall_z: int, gate_cell: Vector2i) -> void:
-	_next_junction_base_z = next_base_z
-	_next_junction_wall_z = next_wall_z
-	_gate_cell = gate_cell
-	_lever_enabled = true
+func _rpc_build_initial(seed: int) -> void:
+	_build_initial(seed)
 
-	# spawn lever on all peers at the synced location
-	var lever_cell: Vector2i = Vector2i(lever_spawn_side_x, _next_junction_wall_z + lever_spawn_near_junction_z_offset)
-	_spawn_lever_at_cell(lever_cell)
-
-@rpc("any_peer", "call_local", "reliable")
-func _rpc_broadcast_message(text: String) -> void:
-	print(text)
-
-@rpc("any_peer", "call_local", "reliable")
-func _rpc_open_gate(gate_cell: Vector2i) -> void:
-	_remove_wall_column(gate_cell.x, gate_cell.y)
-
-@rpc("any_peer", "call_local", "reliable")
-func _rpc_disable_lever() -> void:
-	_lever_enabled = false
-	_local_in_lever = false
-	_server_allowed_peers.clear()
-
-@rpc("any_peer", "call_local", "reliable")
-func _rpc_play_lever_fx() -> void:
-	if _lever_instance == null or not is_instance_valid(_lever_instance):
+func _build_initial(seed: int) -> void:
+	if _built:
 		return
-	if _lever_instance.has_method("play_pull_fx"):
-		_lever_instance.call("play_pull_fx")
+	_built = true
 
-@rpc("any_peer", "reliable")
-func _rpc_request_pull_lever() -> void:
-	if not multiplayer.is_server():
-		return
-
-	var sender: int = multiplayer.get_remote_sender_id()
-
-	if not _lever_enabled:
-		return
-	if _server_allowed_peers.size() > 0 and not _server_allowed_peers.has(sender):
-		return
-
-	# fun feedback
-	rpc("_rpc_play_lever_fx")
-	rpc("_rpc_broadcast_message", "[Cellar] The cellar groans... the way opens.")
-
-	# open gate on all peers
-	rpc("_rpc_open_gate", _gate_cell)
-	rpc("_rpc_disable_lever")
-
-	# advance loop: next stage starts at the next junction base
-	_stage += 1
-	_stage_base_z = _next_junction_base_z
-	_correct_door = _pick_correct_door(_stage)
-
-	rpc("_rpc_build_stage", _seed, _stage, _stage_base_z, _correct_door)
-
-# ============================================================
-# INPUT (lever use)
-# ============================================================
-func _unhandled_input(event: InputEvent) -> void:
-	if not event.is_action_pressed("interact"):
-		return
-	if not _local_in_lever:
-		return
-	if not _lever_enabled:
-		return
-
-	if multiplayer.has_multiplayer_peer():
-		rpc_id(1, "_rpc_request_pull_lever")
-	else:
-		_rpc_play_lever_fx()
-		_rpc_broadcast_message("[Cellar] The cellar groans... the way opens.")
-		_rpc_open_gate(_gate_cell)
-		_rpc_disable_lever()
-		_stage += 1
-		_stage_base_z = _next_junction_base_z
-		_correct_door = _pick_correct_door(_stage)
-		_build_stage(_seed, _stage, _stage_base_z, _correct_door)
-
-# ============================================================
-# BUILD ONE LOOP STAGE
-# ============================================================
-func _build_stage(seed: int, stage: int, base_z: int, correct_door: int) -> void:
 	_seed = seed
-	_stage = stage
-	_stage_base_z = base_z
-	_correct_door = clampi(correct_door, 0, 2)
+	_rng.seed = seed
 
-	_rng.seed = int(_seed) ^ int(_stage * 7919)
+	_clear_world()
 
-	# only clear world on very first build (keeps it loop-y and continuous)
-	if not _built:
-		_built = true
-		_clear_world()
-		_destroy_lever()
-		_place_spawn_marker()
+	_cursor = Vector2i(0, 0)
+	_forward = Vector2i(0, 1)
+	_correct_count = 0
+	_revealed = [false, false, false]
 
-	# reset next-junction + lever state for this stage
-	_lever_enabled = false
-	_local_in_lever = false
-	_server_allowed_peers.clear()
-
-	# main hall for this stage
-	_door_wall_z = _stage_base_z + hall_len_before_doors
-	_build_main_hall(_stage_base_z, _door_wall_z)
-	_build_end_wall_with_three_doors(_door_wall_z)
-
-	# move door triggers + reveal triggers to this wall
-	_position_door_triggers(_door_wall_z)
-	_position_reveal_triggers(_door_wall_z)
+	_build_hub_geometry()
+	_move_triggers_to_hub()
+	_place_spawn_marker()
 
 	if debug_print:
-		print("[Cellar] Stage built:", _stage, " base_z=", _stage_base_z, " wall_z=", _door_wall_z, " correct=", _correct_door)
+		print("[Cellar] built initial. seed=", _seed)
 
-# ============================================================
-# DOOR + REVEAL SIGNALS
-# ============================================================
+func _pick_progress_door_for_current_hub() -> int:
+	var h: int = _seed ^ (_correct_count * 7919) ^ (_cursor.x * 101) ^ (_cursor.y * 10007)
+	var local_rng: RandomNumberGenerator = RandomNumberGenerator.new()
+	local_rng.seed = h
+	return local_rng.randi_range(0, 2)
+
+func _build_hub_geometry() -> void:
+	_progress_door = _pick_progress_door_for_current_hub()
+	_revealed = [false, false, false]
+
+	_build_hall_segment(_cursor, _forward, entry_len_before_doors)
+
+	var door_wall_cell: Vector2i = _cursor + _forward * entry_len_before_doors
+	_build_end_wall_with_three_doors(door_wall_cell, _forward)
+
+	# "single block doors": no corridor behind.
+	# cap 1 cell behind the doorway so it looks blocked until loop shifts.
+	for i in range(3):
+		var open_cell: Vector2i = _door_open_cell(door_wall_cell, _forward, door_x_offsets[i])
+		_place_cap_wall(open_cell)
+
 func _bind_trigger_signals() -> void:
-	# Door triggers (Area3D nodes under TriggerArea)
 	for i in range(3):
-		var a: Area3D = _triggers_root.get_node_or_null(DOOR_NAMES[i]) as Area3D
-		if a == null:
-			continue
-		a.set_meta("door_index", i)
-		if not a.body_entered.is_connected(_on_door_entered):
-			a.body_entered.connect(_on_door_entered.bind(a))
+		var d: Area3D = _triggers_root.get_node_or_null(DOOR_NAMES[i]) as Area3D
+		if d != null:
+			d.set_meta("door_index", i)
+			if not d.body_entered.is_connected(_on_door_entered):
+				d.body_entered.connect(_on_door_entered.bind(d))
 
-	# Reveal triggers (optional, same structure)
-	for i in range(3):
 		var r: Area3D = _triggers_root.get_node_or_null(REVEAL_NAMES[i]) as Area3D
-		if r == null:
-			continue
-		r.set_meta("door_index", i)
-		if not r.body_entered.is_connected(_on_reveal_entered):
-			r.body_entered.connect(_on_reveal_entered.bind(r))
+		if r != null:
+			r.set_meta("door_index", i)
+			if not r.body_entered.is_connected(_on_reveal_entered):
+				r.body_entered.connect(_on_reveal_entered.bind(r))
 
-func _on_reveal_entered(body: Node3D, reveal_area: Area3D) -> void:
+func _move_triggers_to_hub() -> void:
+	var y: float = _floor_top_y() + 0.8
+	var door_wall_cell: Vector2i = _cursor + _forward * entry_len_before_doors
+
+	for i in range(3):
+		var door_cell: Vector2i = door_wall_cell + _right_vec(_forward) * door_x_offsets[i]
+
+		var door_area: Area3D = _triggers_root.get_node_or_null(DOOR_NAMES[i]) as Area3D
+		if door_area != null:
+			var p: Vector3 = _cell_to_world(door_cell)
+			p.y = y
+			door_area.global_position = p
+
+		var reveal_cell: Vector2i = door_cell - _forward * reveal_distance_cells
+		var reveal_area: Area3D = _triggers_root.get_node_or_null(REVEAL_NAMES[i]) as Area3D
+		if reveal_area != null:
+			var rp: Vector3 = _cell_to_world(reveal_cell)
+			rp.y = y
+			reveal_area.global_position = rp
+
+# -------------------------
+# Reveal + door entered
+# -------------------------
+func _on_reveal_entered(body: Node3D, area: Area3D) -> void:
 	if body == null or not body.is_in_group("player"):
 		return
-	if reveal_area == null:
+	if area == null:
 		return
 
-	# server decides the “truth”
-	if multiplayer.has_multiplayer_peer() and authority_only_build and not multiplayer.is_server():
+	var idx: int = int(area.get_meta("door_index", -1))
+	if idx < 0 or idx > 2:
 		return
 
-	var idx: int = int(reveal_area.get_meta("door_index", -1))
-	if idx < 0:
-		return
-
-	# ONLY this zone exposes it
-	if idx == _correct_door:
-		rpc("_rpc_broadcast_message", "[Cellar] Something feels *right* here.")
+	# ✅ FIX: if we are the server, call directly (don’t rpc to ourselves)
+	if multiplayer.has_multiplayer_peer():
+		if multiplayer.is_server():
+			_server_like_reveal(idx)
+		else:
+			rpc_id(1, "_rpc_request_reveal", idx)
 	else:
-		rpc("_rpc_broadcast_message", "[Cellar] Your skin crawls. Bad door.")
+		_server_like_reveal(idx)
 
 func _on_door_entered(body: Node3D, door_area: Area3D) -> void:
 	if body == null or not body.is_in_group("player"):
@@ -311,207 +192,198 @@ func _on_door_entered(body: Node3D, door_area: Area3D) -> void:
 	if door_area == null:
 		return
 
-	# server decides geometry effects
-	if multiplayer.has_multiplayer_peer() and authority_only_build and not multiplayer.is_server():
-		return
-
 	var idx: int = int(door_area.get_meta("door_index", -1))
-	if idx < 0:
+	if idx < 0 or idx > 2:
 		return
 
-	var door_x: int = door_x_offsets[idx]
-	var door_start_z: int = _door_wall_z + 1
+	var owner_id: int = body.get_multiplayer_authority()
 
-	# build identical hallway behind every door first
-	_build_branch_identical(door_x, door_start_z, branch_same_len)
-
-	# then diverge after that identical part
-	var after_same_z: int = door_start_z + branch_same_len
-
-	if idx == _correct_door:
-		# correct continues to next junction
-		_build_branch_corridor(door_x, after_same_z, correct_continue_len)
-
-		# next junction will start at the end of this continuation
-		_next_junction_base_z = after_same_z + correct_continue_len
-		_next_junction_wall_z = _next_junction_base_z + hall_len_before_doors
-
-		# put a gate in the hall before the next wall (blocks progress until lever)
-		_gate_cell = Vector2i(0, _next_junction_wall_z - gate_blocks_forward_cells)
-		_place_gate_column(_gate_cell)
-
-		# spawn lever near that next junction (not in the main line)
-		var lever_cell: Vector2i = Vector2i(lever_spawn_side_x, _next_junction_wall_z + lever_spawn_near_junction_z_offset)
-
-		# tell everyone to sync that next junction + lever state
-		rpc("_rpc_sync_next_junction", _next_junction_base_z, _next_junction_wall_z, _gate_cell)
-		rpc("_rpc_broadcast_message", "[Cellar] The hallway keeps going... but something blocks it.")
-
-	else:
-		# wrong branch dead-ends a bit later (after identical part)
-		_build_branch_corridor(door_x, after_same_z, wrong_deadend_extra)
-		_cap_dead_end(door_x, after_same_z + wrong_deadend_extra)
-
-# ============================================================
-# LEVER AREA ENTER/EXIT
-# ============================================================
-func _on_lever_body_entered(body: Node3D, _lever_area: Area3D) -> void:
-	if body == null or not body.is_in_group("player"):
-		return
-	if not _lever_enabled:
-		return
-
-	_local_in_lever = true
-
+	# ✅ FIX: if we are the server, call directly (don’t rpc to ourselves)
 	if multiplayer.has_multiplayer_peer():
-		rpc("_rpc_broadcast_message", "[Cellar] Press Interact to pull the lever.")
+		if multiplayer.is_server():
+			_server_like_enter_door(idx, owner_id)
+		else:
+			rpc_id(1, "_rpc_request_enter_door", idx, owner_id)
 	else:
-		print("[Cellar] Press Interact to pull the lever.")
+		_server_like_enter_door(idx, owner_id)
 
-	if multiplayer.has_multiplayer_peer() and multiplayer.is_server():
-		var peer_id: int = body.get_multiplayer_authority()
-		_server_allowed_peers[peer_id] = true
+@rpc("any_peer", "reliable")
+func _rpc_request_reveal(door_idx: int) -> void:
+	if not multiplayer.is_server():
+		return
+	_server_like_reveal(door_idx)
 
-func _on_lever_body_exited(body: Node3D, _lever_area: Area3D) -> void:
-	if body == null or not body.is_in_group("player"):
+func _server_like_reveal(door_idx: int) -> void:
+	if door_idx < 0 or door_idx > 2:
+		return
+	if _revealed[door_idx]:
 		return
 
-	_local_in_lever = false
+	_revealed[door_idx] = true
 
-	if multiplayer.has_multiplayer_peer() and multiplayer.is_server():
-		var peer_id: int = body.get_multiplayer_authority()
-		if _server_allowed_peers.has(peer_id):
-			_server_allowed_peers.erase(peer_id)
+	if door_idx == _progress_door:
+		rpc("_rpc_broadcast_message", "[Cellar] ...this one feels warmer. like the air is moving.")
+	else:
+		rpc("_rpc_broadcast_message", "[Cellar] ...dead quiet. like it doesn’t want you in there.")
 
-# ============================================================
-# TRIGGER POSITIONING
-# ============================================================
-func _position_door_triggers(door_wall_z: int) -> void:
-	var trig_y: float = _floor_top_y() + 0.8
-	for i in range(3):
-		var a: Area3D = _triggers_root.get_node_or_null(DOOR_NAMES[i]) as Area3D
-		if a == null:
-			continue
-		var cell: Vector2i = Vector2i(door_x_offsets[i], door_wall_z)
-		var p: Vector3 = _cell_to_world(cell)
-		p.y = trig_y
-		a.global_position = p
+@rpc("any_peer", "reliable")
+func _rpc_request_enter_door(door_idx: int, player_owner_id: int) -> void:
+	if not multiplayer.is_server():
+		return
+	_server_like_enter_door(door_idx, player_owner_id)
 
-func _position_reveal_triggers(door_wall_z: int) -> void:
-	var trig_y: float = _floor_top_y() + 0.8
-	for i in range(3):
-		var r: Area3D = _triggers_root.get_node_or_null(REVEAL_NAMES[i]) as Area3D
-		if r == null:
-			continue
-		# reveal is in front of the door on the hall floor
-		var cell: Vector2i = Vector2i(door_x_offsets[i], door_wall_z - reveal_offset_from_wall)
-		var p: Vector3 = _cell_to_world(cell)
-		p.y = trig_y
-		r.global_position = p
+func _server_like_enter_door(door_idx: int, player_owner_id: int) -> void:
+	if door_idx < 0 or door_idx > 2:
+		return
 
-# ============================================================
-# GEOMETRY
-# ============================================================
-func _build_main_hall(z_start: int, z_end: int) -> void:
+	# must reveal first (they look identical until you check)
+	if not _revealed[door_idx]:
+		rpc("_rpc_broadcast_message", "[Cellar] all three look the same. get closer first.")
+		return
+
+	if _correct_count >= required_correct_choices:
+		rpc("_rpc_broadcast_message", "[Cellar] you already cleared it.")
+		return
+
+	var was_progress: bool = (door_idx == _progress_door)
+
+	if was_progress:
+		_correct_count += 1
+		rpc("_rpc_broadcast_message", "[Cellar] click. it lets you through.")
+	else:
+		rpc("_rpc_broadcast_message", "[Cellar] wrong. it loops back on itself.")
+
+	var turn_dir: int = 0
+	if was_progress:
+		var roll: int = _rng.randi_range(0, 99)
+		if roll < clampi(turn_chance_percent, 0, 100):
+			turn_dir = (-1 if _rng.randi_range(0, 1) == 0 else 1)
+
+	rpc("_rpc_apply_choice_and_extend", was_progress, turn_dir)
+
+	if _correct_count >= required_correct_choices:
+		rpc("_rpc_broadcast_message", "[Cellar] you made it. (end goes here later)")
+		return
+
+	# push chooser forward so they don’t backtrack
+	var safe_cell: Vector2i = _cursor + _forward * 2
+	_rpc_teleport_owner(player_owner_id, safe_cell)
+
+@rpc("any_peer", "call_local", "reliable")
+func _rpc_apply_choice_and_extend(was_progress: bool, turn_dir: int) -> void:
+	if was_progress and turn_dir != 0:
+		var old_f: Vector2i = _forward
+		var new_f: Vector2i = _turn_90(_forward, turn_dir)
+
+		var door_wall_cell: Vector2i = _cursor + _forward * entry_len_before_doors
+		var corner_start: Vector2i = door_wall_cell + _forward
+		_build_corner(corner_start, old_f, new_f, corner_len)
+
+		_forward = new_f
+		_cursor = corner_start + _forward * corner_len
+	else:
+		var door_wall_cell2: Vector2i = _cursor + _forward * entry_len_before_doors
+		_cursor = door_wall_cell2 + _forward * 2
+
+	_build_hub_geometry()
+	_move_triggers_to_hub()
+
+	if debug_print:
+		print("[Cellar] extended. progress=", was_progress, " turn_dir=", turn_dir, " cursor=", _cursor, " forward=", _forward, " correct_count=", _correct_count)
+
+func _rpc_teleport_owner(owner_id: int, cell: Vector2i) -> void:
+	var pos: Vector3 = _cell_to_world(cell)
+	pos.y = _floor_top_y() + 1.0
+
+	var players: Array = get_tree().get_nodes_in_group("player")
+	for n in players:
+		var p := n as Node3D
+		if p != null and p.get_multiplayer_authority() == owner_id:
+			if p.has_method("net_teleport"):
+				p.rpc_id(owner_id, "net_teleport", pos)
+			else:
+				p.global_position = pos
+			break
+
+@rpc("any_peer", "call_local", "reliable")
+func _rpc_broadcast_message(text: String) -> void:
+	print(text)
+
+# -------------------------
+# Geometry
+# -------------------------
+func _build_hall_segment(start: Vector2i, forward: Vector2i, length: int) -> void:
 	var half_w: int = int(hall_width_cells / 2)
+	var right: Vector2i = _right_vec(forward)
 
-	for z in range(z_start, z_end + 1):
-		for x in range(-half_w, half_w + 1):
-			_spawn_block(x, 0, z)
+	for i in range(0, length + 1):
+		var base: Vector2i = start + forward * i
 
-		var left_x: int = -half_w
-		var right_x: int = half_w
+		for w in range(-half_w, half_w + 1):
+			var c: Vector2i = base + right * w
+			_spawn_block(c.x, 0, c.y)
+
+		var left_edge: Vector2i = base + right * (-half_w)
+		var right_edge: Vector2i = base + right * (half_w)
 		for h in range(1, wall_height_blocks + 1):
-			_spawn_block(left_x, h, z)
-			_spawn_block(right_x, h, z)
+			_spawn_block(left_edge.x, h, left_edge.y)
+			_spawn_block(right_edge.x, h, right_edge.y)
 
 		if build_ceiling:
 			var ch: int = wall_height_blocks + 1
-			for x2 in range(-half_w, half_w + 1):
-				_spawn_block(x2, ch, z)
+			for w2 in range(-half_w, half_w + 1):
+				var c2: Vector2i = base + right * w2
+				_spawn_block(c2.x, ch, c2.y)
 
-func _build_end_wall_with_three_doors(door_z: int) -> void:
+func _build_end_wall_with_three_doors(door_wall_cell: Vector2i, forward: Vector2i) -> void:
 	var half_w: int = int(hall_width_cells / 2)
+	var right: Vector2i = _right_vec(forward)
 
-	# wall
-	for x in range(-half_w, half_w + 1):
+	for w in range(-half_w, half_w + 1):
+		var c: Vector2i = door_wall_cell + right * w
 		for h in range(1, wall_height_blocks + 1):
-			_spawn_block(x, h, door_z)
+			_spawn_block(c.x, h, c.y)
 
-	# carve the 3 door holes
-	for xoff in door_x_offsets:
-		_remove_wall_column(xoff, door_z)
+	for off in door_x_offsets:
+		var door_cell: Vector2i = door_wall_cell + right * off
+		_remove_wall_column(door_cell.x, door_cell.y)
 
-func _build_branch_identical(door_x: int, start_z: int, length: int) -> void:
-	# 1-wide corridor with walls on both sides
-	for i in range(0, length):
-		var z: int = start_z + i
-		_spawn_block(door_x, 0, z)
-		for h in range(1, wall_height_blocks + 1):
-			_spawn_block(door_x - 1, h, z)
-			_spawn_block(door_x + 1, h, z)
-		if build_ceiling:
-			var ch: int = wall_height_blocks + 1
-			_spawn_block(door_x, ch, z)
+func _door_open_cell(door_wall_cell: Vector2i, forward: Vector2i, door_offset: int) -> Vector2i:
+	var door_cell: Vector2i = door_wall_cell + _right_vec(forward) * door_offset
+	return door_cell + forward
 
-func _build_branch_corridor(door_x: int, start_z: int, length: int) -> void:
-	for i in range(0, length):
-		var z: int = start_z + i
-		_spawn_block(door_x, 0, z)
-		for h in range(1, wall_height_blocks + 1):
-			_spawn_block(door_x - 1, h, z)
-			_spawn_block(door_x + 1, h, z)
-		if build_ceiling:
-			var ch: int = wall_height_blocks + 1
-			_spawn_block(door_x, ch, z)
-
-func _cap_dead_end(x: int, z: int) -> void:
-	for h in range(1, wall_height_blocks + 1):
-		_spawn_block(x, h, z)
-
-func _place_gate_column(cell: Vector2i) -> void:
-	# full column blocks the main line until lever
+func _place_cap_wall(cell: Vector2i) -> void:
+	_spawn_block(cell.x, 0, cell.y)
 	for h in range(1, wall_height_blocks + 1):
 		_spawn_block(cell.x, h, cell.y)
+	if build_ceiling:
+		var ch: int = wall_height_blocks + 1
+		_spawn_block(cell.x, ch, cell.y)
 
-# ============================================================
-# LEVER SPAWN (scene instance)
-# ============================================================
-func _spawn_lever_at_cell(cell: Vector2i) -> void:
-	_destroy_lever()
+func _build_corner(start_cell: Vector2i, forward_a: Vector2i, forward_b: Vector2i, len_b: int) -> void:
+	_build_one_wide_corridor(start_cell, forward_a, 1)
+	_build_one_wide_corridor(start_cell + forward_a, forward_b, len_b)
 
-	_lever_instance = lever_scene.instantiate() as Node3D
-	if _lever_instance == null:
-		push_error("[Cellar] Lever scene did not instantiate.")
-		return
+func _build_one_wide_corridor(start_cell: Vector2i, forward: Vector2i, length: int) -> void:
+	var right: Vector2i = _right_vec(forward)
 
-	_triggers_root.add_child(_lever_instance)
+	for i in range(0, length):
+		var c: Vector2i = start_cell + forward * i
+		_spawn_block(c.x, 0, c.y)
 
-	var p: Vector3 = _cell_to_world(cell)
-	p.y = _floor_top_y() + 0.8
-	_lever_instance.global_position = p
-	_lever_instance.visible = true
+		for h in range(1, wall_height_blocks + 1):
+			var l: Vector2i = c + right
+			var r: Vector2i = c - right
+			_spawn_block(l.x, h, l.y)
+			_spawn_block(r.x, h, r.y)
 
-	var lever_area: Area3D = _lever_instance.get_node_or_null("Area3D") as Area3D
-	if lever_area == null:
-		push_error("[Cellar] Lever.tscn needs an Area3D child named 'Area3D'.")
-		return
+		if build_ceiling:
+			var ch: int = wall_height_blocks + 1
+			_spawn_block(c.x, ch, c.y)
 
-	lever_area.monitoring = true
-
-	if not lever_area.body_entered.is_connected(_on_lever_body_entered):
-		lever_area.body_entered.connect(_on_lever_body_entered.bind(lever_area))
-	if not lever_area.body_exited.is_connected(_on_lever_body_exited):
-		lever_area.body_exited.connect(_on_lever_body_exited.bind(lever_area))
-
-func _destroy_lever() -> void:
-	if _lever_instance != null and is_instance_valid(_lever_instance):
-		_lever_instance.queue_free()
-	_lever_instance = null
-
-# ============================================================
-# SPAWN MARKER
-# ============================================================
+# -------------------------
+# Spawn marker
+# -------------------------
 func _place_spawn_marker() -> void:
 	if _spawn_marker == null or not is_instance_valid(_spawn_marker):
 		return
@@ -521,16 +393,16 @@ func _place_spawn_marker() -> void:
 	p.y = _floor_top_y() + spawn_height_above_floor
 	_spawn_marker.global_position = p
 
-# ============================================================
-# HELPERS
-# ============================================================
-func _pick_correct_door(stage: int) -> int:
-	if forced_correct_door_index >= 0 and forced_correct_door_index <= 2:
-		return forced_correct_door_index
+# -------------------------
+# Helpers
+# -------------------------
+func _right_vec(forward: Vector2i) -> Vector2i:
+	return Vector2i(forward.y, -forward.x)
 
-	var r: RandomNumberGenerator = RandomNumberGenerator.new()
-	r.seed = int(_seed) ^ int(stage * 1337) ^ 0xCAFE
-	return r.randi_range(0, 2)
+func _turn_90(dir: Vector2i, turn_dir: int) -> Vector2i:
+	if turn_dir < 0:
+		return Vector2i(-dir.y, dir.x)
+	return Vector2i(dir.y, -dir.x)
 
 func _spawn_block(x: int, y_level_blocks: int, z: int) -> void:
 	var k: String = _key(x, y_level_blocks, z)
@@ -553,7 +425,7 @@ func _remove_wall_column(x: int, z: int) -> void:
 	for h in range(1, wall_height_blocks + 1):
 		var k: String = _key(x, h, z)
 		if _spawned.has(k):
-			var n: Node = _spawned[k] as Node
+			var n := _spawned[k] as Node
 			if n != null and is_instance_valid(n):
 				n.queue_free()
 			_spawned.erase(k)

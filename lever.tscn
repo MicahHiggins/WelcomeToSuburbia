@@ -15,7 +15,7 @@ script = ExtResource("1_0ohsc")
 collision_layer = 9
 collision_mask = 9
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Area3D" groups=["interactable"]]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Area3D"]
 shape = SubResource("BoxShape3D_1btnt")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
@@ -23,7 +23,7 @@ mesh = SubResource("BoxMesh_7uavd")
 
 [node name="StaticBody3D" type="StaticBody3D" parent="MeshInstance3D"]
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="MeshInstance3D/StaticBody3D" groups=["interactable"]]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MeshInstance3D/StaticBody3D"]
 shape = SubResource("BoxShape3D_soi7j")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]

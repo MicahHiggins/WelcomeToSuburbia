@@ -1,10 +1,10 @@
-[gd_scene load_steps=23 format=3 uid="uid://d1ibgfwne281y"]
+[gd_scene load_steps=25 format=3 uid="uid://d1ibgfwne281y"]
 
 [ext_resource type="Script" uid="uid://dppcbcba5rvbf" path="res://GameLevelsETC/level_1.gd" id="1_oh3op"]
 [ext_resource type="PackedScene" uid="uid://bs72ogkvdd7d6" path="res://addons/proto_controller/proto_controller.tscn" id="2_jvlpr"]
 [ext_resource type="PackedScene" uid="uid://bs2jm62cmkbrk" path="res://addons/instant-realistic-light/light_scene.tscn" id="3_jo2a5"]
 [ext_resource type="Script" uid="uid://bkb35cbdsgdbh" path="res://addons/instant-realistic-light/light_scene.gd" id="4_d084q"]
-[ext_resource type="Script" path="res://GameLevelsETC/item_manager.gd" id="6_gsr76"]
+[ext_resource type="Script" uid="uid://l6pyeyjgkntn" path="res://GameLevelsETC/item_manager.gd" id="6_gsr76"]
 [ext_resource type="PackedScene" uid="uid://bst3bb8d7vieb" path="res://Max's Folder (do not touch!!!)/pcgRescaled.tscn" id="7_d084q"]
 [ext_resource type="Script" uid="uid://c5qchfyao7ahn" path="res://GameLevelsETC/tether_system.gd" id="7_ki0f2"]
 [ext_resource type="Texture2D" uid="uid://bh8hkhotm6bbc" path="res://Assets/Suburbia1.jpg" id="8_5owxm"]
@@ -14,6 +14,8 @@
 [ext_resource type="Script" uid="uid://wufby810baua" path="res://GameLevelsETC/cellar_door.gd" id="12_o8227"]
 [ext_resource type="PackedScene" uid="uid://b36mjwh3wwi6m" path="res://GameLevelsETC/Items/bat_clean.tscn" id="12_wjimw"]
 [ext_resource type="Texture2D" uid="uid://3i53ybhtpc0f" path="res://Assets/—Pngtree—vector copy icon_4013516.png" id="13_grjf3"]
+[ext_resource type="Script" uid="uid://cjg7ws1b5cnm7" path="res://GameLevelsETC/telleport_manager.gd" id="15_vlwaf"]
+[ext_resource type="PackedScene" uid="uid://bf38tvkrxj6ds" path="res://GameLevelsETC/CellarLevel.tscn" id="16_17epn"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_ki0f2"]
 sky_top_color = Color(1, 0.92156863, 0.26666668, 1)
@@ -225,6 +227,7 @@ script = ExtResource("7_ki0f2")
 [node name="CellarDoor" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.322731, 1.8603764, 3)
 script = ExtResource("12_o8227")
+teleport_manager_path = NodePath("../TelleportManager")
 
 [node name="Area3D" type="Area3D" parent="CellarDoor" groups=["interactable"]]
 collision_layer = 8
@@ -243,6 +246,13 @@ collision_mask = 9
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="CellarDoor/MeshInstance3D/StaticBody3D"]
 shape = SubResource("BoxShape3D_o8227")
+
+[node name="CellarRoot" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -242.99564, 0)
+
+[node name="TelleportManager" type="Node3D" parent="."]
+script = ExtResource("15_vlwaf")
+cellar_scene = ExtResource("16_17epn")
 
 [connection signal="pressed" from="Menu/CanvasLayer/Host" to="." method="_on_host_pressed"]
 [connection signal="pressed" from="Menu/CanvasLayer/Join" to="." method="_on_join_pressed"]

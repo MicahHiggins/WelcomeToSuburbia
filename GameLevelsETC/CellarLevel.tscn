@@ -2,7 +2,6 @@
 
 [ext_resource type="Script" uid="uid://dqvoninhsiala" path="res://GameLevelsETC/cellar_3_door_hallway.gd" id="1_tmgbf"]
 [ext_resource type="PackedScene" uid="uid://dqbgiq51e15mw" path="res://stone_block.tscn" id="2_3njtq"]
-[ext_resource type="PackedScene" uid="uid://d3xq1filnfjnq" path="res://lever.tscn" id="3_3njtq"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_720kl"]
 
@@ -11,6 +10,8 @@
 [sub_resource type="BoxShape3D" id="BoxShape3D_fljmn"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_3njtq"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_f1x8v"]
 
 [sub_resource type="Environment" id="Environment_720kl"]
 ambient_light_source = 2
@@ -22,7 +23,6 @@ ambient_light_energy = 7.11
 [node name="HallwayGen" type="Node3D" parent="."]
 script = ExtResource("1_tmgbf")
 block_scene = ExtResource("2_3njtq")
-lever_scene = ExtResource("3_3njtq")
 
 [node name="TriggerArea" type="Node3D" parent="."]
 
@@ -43,14 +43,39 @@ transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0)
 shape = SubResource("BoxShape3D_4a1gr")
 
 [node name="Door3" type="Area3D" parent="TriggerArea"]
+collision_layer = 9
+collision_mask = 9
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="TriggerArea/Door3"]
 shape = SubResource("BoxShape3D_fljmn")
 
 [node name="Progress" type="Area3D" parent="TriggerArea"]
+collision_layer = 9
+collision_mask = 9
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="TriggerArea/Progress"]
 shape = SubResource("BoxShape3D_3njtq")
+
+[node name="Reveal1" type="Area3D" parent="TriggerArea"]
+collision_layer = 9
+collision_mask = 9
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="TriggerArea/Reveal1"]
+shape = SubResource("BoxShape3D_f1x8v")
+
+[node name="Reveal2" type="Area3D" parent="TriggerArea"]
+collision_layer = 9
+collision_mask = 9
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="TriggerArea/Reveal2"]
+shape = SubResource("BoxShape3D_f1x8v")
+
+[node name="Reveal3" type="Area3D" parent="TriggerArea"]
+collision_layer = 9
+collision_mask = 9
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="TriggerArea/Reveal3"]
+shape = SubResource("BoxShape3D_f1x8v")
 
 [node name="SpawnPoints" type="Node3D" parent="."]
 
