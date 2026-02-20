@@ -7,6 +7,7 @@
 [ext_resource type="PackedScene" uid="uid://c4o2j15yoqaln" path="res://HouseModel/surb_house_v_1.tscn" id="5_x2lvk"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_oxdg3"]
+size = Vector3(16, 5, 16)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_0kqub"]
 albedo_color = Color(0.023529412, 0.20392157, 0.019607844, 1)
@@ -28,7 +29,7 @@ collision_layer = 2
 collision_mask = 15
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Ground"]
-transform = Transform3D(16, 0, 0, 0, 5, 0, 0, 0, 16, 0, -2.423976, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -2.423976, 0)
 mesh = SubResource("BoxMesh_oxdg3")
 surface_material_override/0 = SubResource("StandardMaterial3D_0kqub")
 
