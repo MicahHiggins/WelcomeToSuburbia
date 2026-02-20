@@ -15,7 +15,7 @@ class_name NPC
 
 # local patrol binding for spawned patrol-bundle scenes
 # 
-@export var patrol_path_node: NodePath = NodePath("../PatrolPath")
+@export var patrol_path_node: NodePath = NodePath("../patrol_path")
 
 @onready var sm: NPCStateMachine = $StateMachine
 

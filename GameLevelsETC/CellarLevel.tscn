@@ -80,7 +80,7 @@ shape = SubResource("BoxShape3D_f1x8v")
 [node name="SpawnPoints" type="Node3D" parent="."]
 
 [node name="Spawn" type="Marker3D" parent="SpawnPoints"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 7.7513123, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.6968203, 0)
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_720kl")
