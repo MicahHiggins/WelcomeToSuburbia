@@ -1,10 +1,11 @@
-[gd_scene load_steps=12 format=3 uid="uid://c11d0ync6fj8o"]
+[gd_scene load_steps=13 format=3 uid="uid://c11d0ync6fj8o"]
 
 [ext_resource type="Script" uid="uid://csc5bob5s77t" path="res://Scripts/npc_bob.gd" id="1_k38it"]
 [ext_resource type="Script" uid="uid://cicakuq5a1gle" path="res://Scripts/state_machine.gd" id="2_76l8o"]
 [ext_resource type="Script" uid="uid://dtisy2wdio7v" path="res://Scripts/patrol_state.gd" id="3_u5i8w"]
 [ext_resource type="Script" uid="uid://cvv6jryec78f3" path="res://Scripts/talk_state.gd" id="4_2ka8d"]
 [ext_resource type="Script" uid="uid://cf1mlwqhuqkr7" path="res://NPC/campbells_dialogue.gd" id="5_76l8o"]
+[ext_resource type="PackedScene" uid="uid://bcggylgytgib6" path="res://Models/dog.tscn" id="6_u5i8w"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_g4ita"]
 radius = 2.0
@@ -74,17 +75,6 @@ surface_material_override/0 = SubResource("StandardMaterial3D_6ox88")
 shape = SubResource("CapsuleShape3D_5x2h4")
 debug_color = Color(0.65632045, 0.5013817, 0.35583058, 0.41960785)
 
-[node name="child1" type="MeshInstance3D" parent="."]
-transform = Transform3D(0.65, 0, 0, 0, 0.65, 0, 0, 0, 0.65, 0.49134994, -0.2974286, 1.3932059)
-mesh = SubResource("CapsuleMesh_fo4fv")
-surface_material_override/0 = SubResource("StandardMaterial3D_uktxq")
-
-[node name="body" type="StaticBody3D" parent="child1"]
-
-[node name="body" type="CollisionShape3D" parent="child1/body"]
-shape = SubResource("CapsuleShape3D_5x2h4")
-debug_color = Color(0.65632045, 0.5013817, 0.35583058, 0.41960785)
-
 [node name="child2" type="MeshInstance3D" parent="."]
 transform = Transform3D(0.65, 0, 0, 0, 0.65, 0, 0, 0, 0.65, 1.5979455, -0.2974286, 1.3932059)
 mesh = SubResource("CapsuleMesh_fo4fv")
@@ -98,6 +88,16 @@ debug_color = Color(0.65632045, 0.5013817, 0.35583058, 0.41960785)
 
 [node name="CampbellsDialogue" type="Node" parent="."]
 script = ExtResource("5_76l8o")
+
+[node name="Dog" parent="." instance=ExtResource("6_u5i8w")]
+transform = Transform3D(0.15, 0, 0, 0, 0.14940616, -0.013334145, 0, 0.013334145, 0.14940616, 0.08472967, -0.27691185, 1.3820553)
+
+[node name="body" type="StaticBody3D" parent="Dog"]
+transform = Transform3D(0.65, 0, 0, 0, 0.65, 0, 0, 0, 0.65, 0.49134994, -0.2974286, 1.3932059)
+
+[node name="body" type="CollisionShape3D" parent="Dog/body"]
+shape = SubResource("CapsuleShape3D_5x2h4")
+debug_color = Color(0.65632045, 0.5013817, 0.35583058, 0.41960785)
 
 [connection signal="body_entered" from="interact" to="." method="_on_interact_body_entered"]
 [connection signal="body_exited" from="interact" to="." method="_on_interact_body_exited"]

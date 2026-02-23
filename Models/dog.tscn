@@ -1,0 +1,51 @@
+[gd_scene load_steps=6 format=3 uid="uid://bcggylgytgib6"]
+
+[ext_resource type="PackedScene" uid="uid://dpo5irto5t3y1" path="res://Assets/Dog.glb" id="1_vfhc1"]
+[ext_resource type="Script" uid="uid://bdqgvamowd717" path="res://Models/dog.gd" id="2_pxqof"]
+
+[sub_resource type="Animation" id="Animation_0w15p"]
+resource_name = "DogWalk"
+length = 2.0
+loop_mode = 2
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 1, 2),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Vector3(0, 0, 0), Vector3(0.08726646, -3.2288592, 0), Vector3(-0.08726646, 3.2288592, 0)]
+}
+
+[sub_resource type="Animation" id="Animation_jgf7y"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(0.08901179, 0, 0)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_lqd0o"]
+_data = {
+&"DogWalk": SubResource("Animation_0w15p"),
+&"RESET": SubResource("Animation_jgf7y")
+}
+
+[node name="Dog" instance=ExtResource("1_vfhc1")]
+transform = Transform3D(1, 0, 0, 0, 0.99604094, -0.088894285, 0, 0.088894285, 0.99604094, 0, 0, 0)
+script = ExtResource("2_pxqof")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="." index="3"]
+libraries = {
+&"": SubResource("AnimationLibrary_lqd0o")
+}

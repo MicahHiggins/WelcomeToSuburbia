@@ -1,22 +1,48 @@
-[gd_scene load_steps=11 format=3 uid="uid://r8vqf0qcnkdn"]
+[gd_scene load_steps=17 format=3 uid="uid://r8vqf0qcnkdn"]
 
 [ext_resource type="Script" uid="uid://4p6bc6ac8elf" path="res://aidan_stuff/block_design.gd" id="1_jmv40"]
+[ext_resource type="Texture2D" uid="uid://but80wsucm4q2" path="res://textures/GrassTextures/GrassAlbedo.png" id="2_bkv0n"]
 [ext_resource type="ArrayMesh" uid="uid://dgv4eih41bu3t" path="res://Assets/kenney_city-kit-suburban_20/Models/OBJ format/driveway-long.obj" id="2_ypk4p"]
 [ext_resource type="ArrayMesh" uid="uid://dcbboo0ncpiq4" path="res://Assets/kenney_city-kit-suburban_20/Models/OBJ format/path-stones-messy.obj" id="3_2eoyn"]
+[ext_resource type="Texture2D" uid="uid://do7xmc15vdxif" path="res://textures/GrassTextures/GrassAO.png" id="3_x5kdk"]
+[ext_resource type="Texture2D" uid="uid://cgxv1p4pfa1ju" path="res://textures/GrassTextures/GrassTransluc.png" id="4_bcxsy"]
+[ext_resource type="Texture2D" uid="uid://btkv156gx2ymr" path="res://textures/GrassTextures/GrassNormal.png" id="5_milrp"]
 [ext_resource type="PackedScene" uid="uid://c4o2j15yoqaln" path="res://HouseModel/surb_house_v_1.tscn" id="5_x2lvk"]
+[ext_resource type="PackedScene" uid="uid://dggh2n0x6keit" path="res://Models/mailbox.tscn" id="6_hvq4h"]
+[ext_resource type="Texture2D" uid="uid://c37iickr58llo" path="res://textures/GrassTextures/GrassRoughness.png" id="6_v0qsu"]
 [ext_resource type="PackedScene" uid="uid://drk8i4p1of8ar" path="res://whitefence_1.tscn" id="6_x2lvk"]
 
-[sub_resource type="BoxMesh" id="BoxMesh_oxdg3"]
-size = Vector3(16, 5, 16)
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_rkcnq"]
+albedo_color = Color(0.60271376, 0.7674062, 0.73615, 1)
+albedo_texture = ExtResource("2_bkv0n")
+metallic = 0.69
+metallic_specular = 0.18
+metallic_texture = ExtResource("4_bcxsy")
+roughness = 0.7
+roughness_texture = ExtResource("6_v0qsu")
+roughness_texture_channel = 1
+normal_enabled = true
+normal_scale = -1.89
+normal_texture = ExtResource("5_milrp")
+ao_enabled = true
+ao_light_affect = 0.61
+ao_texture = ExtResource("3_x5kdk")
+ao_on_uv2 = true
+ao_texture_channel = 1
+heightmap_enabled = true
+heightmap_scale = 2.45
+uv1_scale = Vector3(25, 25, 25)
+uv2_scale = Vector3(15, 15, 15)
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_0kqub"]
-albedo_color = Color(0.023529412, 0.20392157, 0.019607844, 1)
+[sub_resource type="BoxMesh" id="BoxMesh_oxdg3"]
+material = SubResource("StandardMaterial3D_rkcnq")
+size = Vector3(16, 5, 16)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_ko78g"]
 size = Vector3(16.164581, 0.58447266, 16.030792)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_x2lvk"]
-size = Vector3(40, 10, 40)
+size = Vector3(60, 10, 60)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_jmv40"]
 size = Vector3(5.892517, 1.1880493, 5.880554)
@@ -34,7 +60,6 @@ collision_mask = 15
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Ground"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -2.423976, 0)
 mesh = SubResource("BoxMesh_oxdg3")
-surface_material_override/0 = SubResource("StandardMaterial3D_0kqub")
 metadata/_edit_lock_ = true
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Ground"]
@@ -2278,6 +2303,80 @@ shape = SubResource("BoxShape3D_jmv40")
 [node name="CornerBox4" type="CollisionShape3D" parent="CornerBoxes"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 13.022297, 0.65224063, 13.021181)
 shape = SubResource("BoxShape3D_jmv40")
+
+[node name="MailBoxes" type="Node3D" parent="."]
+
+[node name="Mailbox" parent="MailBoxes" instance=ExtResource("6_hvq4h")]
+transform = Transform3D(0.1, 0, 0, 0, 0.1, 0, 0, 0, 0.1, -2.353426, 0.49353266, 9.928844)
+
+[node name="Mailbox2" parent="MailBoxes" instance=ExtResource("6_hvq4h")]
+transform = Transform3D(0.1, 0, 0, 0, 0.1, 0, 0, 0, 0.1, 1.6077201, 0.49353266, 9.928844)
+
+[node name="Mailbox3" parent="MailBoxes" instance=ExtResource("6_hvq4h")]
+transform = Transform3D(0.1, 0, 0, 0, 0.1, 0, 0, 0, 0.1, 5.6007614, 0.49353266, 9.928844)
+
+[node name="Mailbox4" parent="MailBoxes" instance=ExtResource("6_hvq4h")]
+transform = Transform3D(0.1, 0, 0, 0, 0.1, 0, 0, 0, 0.1, -6.253403, 0.49353266, 9.928844)
+
+[node name="Mailbox5" parent="MailBoxes" instance=ExtResource("6_hvq4h")]
+transform = Transform3D(-0.1, 0, -8.742278e-09, 0, 0.1, 0, 8.742278e-09, 0, -0.1, -1.6206295, 0.49353266, 7.9538984)
+
+[node name="Mailbox6" parent="MailBoxes" instance=ExtResource("6_hvq4h")]
+transform = Transform3D(-0.1, 0, -8.742278e-09, 0, 0.1, 0, 8.742278e-09, 0, -0.1, 2.3143604, 0.49353266, 7.9538984)
+
+[node name="Mailbox7" parent="MailBoxes" instance=ExtResource("6_hvq4h")]
+transform = Transform3D(-0.1, 0, -8.742278e-09, 0, 0.1, 0, 8.742278e-09, 0, -0.1, 6.328641, 0.49353266, 7.9538984)
+
+[node name="Mailbox8" parent="MailBoxes" instance=ExtResource("6_hvq4h")]
+transform = Transform3D(-0.1, 0, -8.742278e-09, 0, 0.1, 0, 8.742278e-09, 0, -0.1, -5.5793896, 0.49353266, 7.9538984)
+
+[node name="Mailbox9" parent="MailBoxes" instance=ExtResource("6_hvq4h")]
+transform = Transform3D(0.1, 0, 0, 0, 0.1, 0, 0, 0, 0.1, -2.353426, 0.49353266, -8.07693)
+
+[node name="Mailbox10" parent="MailBoxes" instance=ExtResource("6_hvq4h")]
+transform = Transform3D(0.1, 0, 0, 0, 0.1, 0, 0, 0, 0.1, 1.6077201, 0.49353266, -8.07693)
+
+[node name="Mailbox11" parent="MailBoxes" instance=ExtResource("6_hvq4h")]
+transform = Transform3D(0.1, 0, 0, 0, 0.1, 0, 0, 0, 0.1, 5.6007614, 0.49353266, -8.07693)
+
+[node name="Mailbox12" parent="MailBoxes" instance=ExtResource("6_hvq4h")]
+transform = Transform3D(0.1, 0, 0, 0, 0.1, 0, 0, 0, 0.1, -6.253403, 0.49353266, -8.07693)
+
+[node name="Mailbox13" parent="MailBoxes" instance=ExtResource("6_hvq4h")]
+transform = Transform3D(-0.1, 0, -8.742278e-09, 0, 0.1, 0, 8.742278e-09, 0, -0.1, -1.6206295, 0.49353266, -10.051875)
+
+[node name="Mailbox14" parent="MailBoxes" instance=ExtResource("6_hvq4h")]
+transform = Transform3D(-0.1, 0, -8.742278e-09, 0, 0.1, 0, 8.742278e-09, 0, -0.1, 2.3143604, 0.49353266, -10.051875)
+
+[node name="Mailbox15" parent="MailBoxes" instance=ExtResource("6_hvq4h")]
+transform = Transform3D(-0.1, 0, -8.742278e-09, 0, 0.1, 0, 8.742278e-09, 0, -0.1, 6.328641, 0.49353266, -10.051875)
+
+[node name="Mailbox16" parent="MailBoxes" instance=ExtResource("6_hvq4h")]
+transform = Transform3D(-0.1, 0, -8.742278e-09, 0, 0.1, 0, 8.742278e-09, 0, -0.1, -5.5793896, 0.49353266, -10.051875)
+
+[node name="Mailbox17" parent="MailBoxes" instance=ExtResource("6_hvq4h")]
+transform = Transform3D(-4.371139e-09, 0, -0.1, 0, 0.1, 0, 0.1, 0, -4.371139e-09, -9.950823, 0.49353266, -6.3123765)
+
+[node name="Mailbox18" parent="MailBoxes" instance=ExtResource("6_hvq4h")]
+transform = Transform3D(-4.371139e-09, 0, -0.1, 0, 0.1, 0, 0.1, 0, -4.371139e-09, -9.950823, 0.49353266, -2.4293537)
+
+[node name="Mailbox19" parent="MailBoxes" instance=ExtResource("6_hvq4h")]
+transform = Transform3D(-4.371139e-09, 0, -0.1, 0, 0.1, 0, 0.1, 0, -4.371139e-09, -9.950823, 0.49353266, 1.5917082)
+
+[node name="Mailbox20" parent="MailBoxes" instance=ExtResource("6_hvq4h")]
+transform = Transform3D(-4.371139e-09, 0, -0.1, 0, 0.1, 0, 0.1, 0, -4.371139e-09, -9.950823, 0.49353266, 5.5535836)
+
+[node name="Mailbox21" parent="MailBoxes" instance=ExtResource("6_hvq4h")]
+transform = Transform3D(-4.371139e-09, 0, 0.1, 0, 0.1, 0, -0.1, 0, -4.371139e-09, 10.047797, 0.49353266, -5.5749383)
+
+[node name="Mailbox22" parent="MailBoxes" instance=ExtResource("6_hvq4h")]
+transform = Transform3D(-4.371139e-09, 0, 0.1, 0, 0.1, 0, -0.1, 0, -4.371139e-09, 10.047797, 0.49353266, -1.5821846)
+
+[node name="Mailbox23" parent="MailBoxes" instance=ExtResource("6_hvq4h")]
+transform = Transform3D(-4.371139e-09, 0, 0.1, 0, 0.1, 0, -0.1, 0, -4.371139e-09, 10.047797, 0.49353266, 2.4225235)
+
+[node name="Mailbox24" parent="MailBoxes" instance=ExtResource("6_hvq4h")]
+transform = Transform3D(-4.371139e-09, 0, 0.1, 0, 0.1, 0, -0.1, 0, -4.371139e-09, 10.047797, 0.49353266, 6.291022)
 
 [connection signal="body_entered" from="Area3D" to="." method="_on_area_3d_body_entered"]
 [connection signal="body_exited" from="Area3D" to="." method="_on_area_3d_body_exited"]

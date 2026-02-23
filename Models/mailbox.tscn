@@ -1,0 +1,17 @@
+[gd_scene load_steps=3 format=3 uid="uid://dggh2n0x6keit"]
+
+[ext_resource type="PackedScene" uid="uid://dkeq6crqg4wl7" path="res://Mailbox.glb" id="1_41uu1"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_41uu1"]
+size = Vector3(3, 3, 3)
+
+[node name="Mailbox" instance=ExtResource("1_41uu1")]
+
+[node name="Cube_002" parent="." index="0"]
+transform = Transform3D(0.009, 0, 0, 0, 0.05, 0, 0, 0, 0.25, 0, 0, 0)
+
+[node name="StaticBody3D" type="StaticBody3D" parent="." index="1"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D" index="0"]
+transform = Transform3D(0.39999998, 0, 0, 0, 1.2822149, 0, 0, 0, 0.67916715, 0.47364426, -1.3161273, 0.87747836)
+shape = SubResource("BoxShape3D_41uu1")
