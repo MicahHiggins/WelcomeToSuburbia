@@ -1,0 +1,53 @@
+[gd_scene load_steps=8 format=3 uid="uid://c5jxy2ugosnbe"]
+
+[ext_resource type="Script" uid="uid://bcvvh3m8odln1" path="res://symbol_puzzle.gd" id="1_eqr3m"]
+[ext_resource type="Script" uid="uid://blttmr17ocnya" path="res://test.gd" id="2_tkebk"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_uk3cl"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_t31mu"]
+albedo_color = Color(1, 0, 0, 1)
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_lcf58"]
+radius = 1.745
+
+[sub_resource type="BoxMesh" id="BoxMesh_eqr3m"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_tkebk"]
+albedo_color = Color(0.17265862, 0.44766235, 0.2977064, 1)
+
+[node name="Puzzle2" type="Node3D"]
+script = ExtResource("1_eqr3m")
+
+[node name="Observer" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.300502, 0, 0)
+mesh = SubResource("BoxMesh_uk3cl")
+surface_material_override/0 = SubResource("StandardMaterial3D_t31mu")
+
+[node name="ObsArea" type="Area3D" parent="Observer"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Observer/ObsArea"]
+shape = SubResource("SphereShape3D_lcf58")
+
+[node name="Doer" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.4903474, 0, 0)
+mesh = SubResource("BoxMesh_eqr3m")
+surface_material_override/0 = SubResource("StandardMaterial3D_tkebk")
+
+[node name="DoArea" type="Area3D" parent="Doer"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Doer/DoArea"]
+shape = SubResource("SphereShape3D_lcf58")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="Control" type="Control" parent="CanvasLayer"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="test" type="Node2D" parent="CanvasLayer/Control"]
+script = ExtResource("2_tkebk")
