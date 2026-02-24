@@ -46,12 +46,13 @@ func enter_bob_dialogue():
 
 
 func _on_talk_detection_body_entered(body: Node3D) -> void:
-	GlobalVariables.interact.emit()
+	tutorial.interact = true
 	in_bob_area = true
 	print("TRUE")
 
 
 func _on_talk_detection_body_exited(body: Node3D) -> void:
 	GlobalVariables.interact.emit()
+	tutorial.interact = false
 	in_bob_area = false
 	print("FALSE")
