@@ -1,4 +1,4 @@
-[gd_scene load_steps=17 format=3 uid="uid://r8vqf0qcnkdn"]
+[gd_scene load_steps=20 format=3 uid="uid://r8vqf0qcnkdn"]
 
 [ext_resource type="Script" uid="uid://4p6bc6ac8elf" path="res://aidan_stuff/block_design.gd" id="1_jmv40"]
 [ext_resource type="Texture2D" uid="uid://but80wsucm4q2" path="res://textures/GrassTextures/GrassAlbedo.png" id="2_bkv0n"]
@@ -11,6 +11,9 @@
 [ext_resource type="PackedScene" uid="uid://dggh2n0x6keit" path="res://Models/mailbox.tscn" id="6_hvq4h"]
 [ext_resource type="Texture2D" uid="uid://c37iickr58llo" path="res://textures/GrassTextures/GrassRoughness.png" id="6_v0qsu"]
 [ext_resource type="PackedScene" uid="uid://drk8i4p1of8ar" path="res://whitefence_1.tscn" id="6_x2lvk"]
+[ext_resource type="PackedScene" uid="uid://duxalja24m173" path="res://Assets/Road.glb" id="11_milrp"]
+[ext_resource type="PackedScene" uid="uid://dexa2pmw4ua8t" path="res://Bush.tscn" id="12_x5kdk"]
+[ext_resource type="PackedScene" uid="uid://cxnlf1qokkhee" path="res://street_light.tscn" id="13_bcxsy"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_rkcnq"]
 albedo_color = Color(0.60271376, 0.7674062, 0.73615, 1)
@@ -143,6 +146,7 @@ transform = Transform3D(-2.2791096e-09, 0, -0.06261343, 0, 0.06261343, 0, 0.0521
 
 [node name="Roads" type="Node3D" parent="."]
 transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, 0, -0.07, 0)
+visible = false
 
 [node name="DrivewayLong" type="MeshInstance3D" parent="Roads"]
 transform = Transform3D(-1.3113416e-07, 0, 3, 0, 3, 0, -3, 0, -1.3113416e-07, 7.3830404, 0.109850585, 4.5)
@@ -2406,6 +2410,8 @@ text = "124"
 
 [node name="Hedges" type="Node3D" parent="."]
 
+[node name="Road" parent="Hedges" instance=ExtResource("11_milrp")]
+
 [node name="CornerBoxes" type="StaticBody3D" parent="."]
 
 [node name="CornerBox" type="CollisionShape3D" parent="CornerBoxes"]
@@ -2497,6 +2503,106 @@ transform = Transform3D(-4.371139e-09, 0, 0.1, 0, 0.1, 0, -0.1, 0, -4.371139e-09
 
 [node name="Mailbox24" parent="MailBoxes" instance=ExtResource("6_hvq4h")]
 transform = Transform3D(-4.371139e-09, 0, 0.1, 0, 0.1, 0, -0.1, 0, -4.371139e-09, 10.047797, 0.49353266, 6.291022)
+
+[node name="Bushes" type="Node3D" parent="."]
+
+[node name="Bush2" parent="Bushes" instance=ExtResource("12_x5kdk")]
+transform = Transform3D(-1.1217062, 0, -8.742278e-08, 0, 1, 0, 9.806268e-08, 0, -1, -16.565393, 0.48610795, -11.122387)
+
+[node name="Bush3" parent="Bushes" instance=ExtResource("12_x5kdk")]
+transform = Transform3D(-1.1217062, 0, -8.742278e-08, 0, 1, 0, 9.806268e-08, 0, -1, -14.564133, 0.48610795, -11.122387)
+
+[node name="Bush4" parent="Bushes" instance=ExtResource("12_x5kdk")]
+transform = Transform3D(-1.1217062, 0, -8.742278e-08, 0, 1, 0, 9.806268e-08, 0, -1, -12.593444, 0.48610795, -11.122387)
+
+[node name="Bush5" parent="Bushes" instance=ExtResource("12_x5kdk")]
+transform = Transform3D(-4.8300727e-08, 0, 1, 0, 1, 0, -1.1049919, 0, -4.371139e-08, -9.777085, 0.48610795, -16.516918)
+
+[node name="Bush6" parent="Bushes" instance=ExtResource("12_x5kdk")]
+transform = Transform3D(-4.8300727e-08, 0, 1, 0, 1, 0, -1.1049919, 0, -4.371139e-08, -9.777085, 0.48610795, -14.5383835)
+
+[node name="Bush7" parent="Bushes" instance=ExtResource("12_x5kdk")]
+transform = Transform3D(-4.8300727e-08, 0, 1, 0, 1, 0, -1.1049919, 0, -4.371139e-08, -9.777085, 0.48610795, -12.563466)
+
+[node name="Bush8" parent="Bushes" instance=ExtResource("12_x5kdk")]
+transform = Transform3D(-4.903134e-08, 0, 1, 0, 1, 0, -1.1217062, 0, -4.371139e-08, 11.113635, 0.48610795, -16.55991)
+
+[node name="Bush9" parent="Bushes" instance=ExtResource("12_x5kdk")]
+transform = Transform3D(-4.903134e-08, 0, 1, 0, 1, 0, -1.1217062, 0, -4.371139e-08, 11.113635, 0.48610795, -14.558647)
+
+[node name="Bush10" parent="Bushes" instance=ExtResource("12_x5kdk")]
+transform = Transform3D(-4.903134e-08, 0, 1, 0, 1, 0, -1.1217062, 0, -4.371139e-08, 11.113635, 0.48610795, -12.587958)
+
+[node name="Bush11" parent="Bushes" instance=ExtResource("12_x5kdk")]
+transform = Transform3D(1.1049919, 0, 0, 0, 1, 0, 3.5527137e-15, 0, 1, 16.508167, 0.48610795, -9.7716)
+
+[node name="Bush12" parent="Bushes" instance=ExtResource("12_x5kdk")]
+transform = Transform3D(1.1049919, 0, 0, 0, 1, 0, 3.5527137e-15, 0, 1, 14.529632, 0.48610795, -9.7716)
+
+[node name="Bush13" parent="Bushes" instance=ExtResource("12_x5kdk")]
+transform = Transform3D(1.1049919, 0, 0, 0, 1, 0, 3.5527137e-15, 0, 1, 12.554714, 0.48610795, -9.7716)
+
+[node name="Bush14" parent="Bushes" instance=ExtResource("12_x5kdk")]
+transform = Transform3D(1.1217062, 0, 0, 0, 1, 0, 0, 0, 1, 16.60188, 0.48610795, 11.114492)
+
+[node name="Bush15" parent="Bushes" instance=ExtResource("12_x5kdk")]
+transform = Transform3D(1.1217062, 0, 0, 0, 1, 0, 0, 0, 1, 14.600615, 0.48610795, 11.114492)
+
+[node name="Bush16" parent="Bushes" instance=ExtResource("12_x5kdk")]
+transform = Transform3D(1.1217062, 0, 0, 0, 1, 0, 0, 0, 1, 12.629926, 0.48610795, 11.114492)
+
+[node name="Bush17" parent="Bushes" instance=ExtResource("12_x5kdk")]
+transform = Transform3D(-4.8300734e-08, 0, -1, 0, 1, 0, 1.1049919, 0, -4.371139e-08, 9.813567, 0.48610795, 16.509022)
+
+[node name="Bush18" parent="Bushes" instance=ExtResource("12_x5kdk")]
+transform = Transform3D(-4.8300734e-08, 0, -1, 0, 1, 0, 1.1049919, 0, -4.371139e-08, 9.813567, 0.48610795, 14.530489)
+
+[node name="Bush19" parent="Bushes" instance=ExtResource("12_x5kdk")]
+transform = Transform3D(-4.8300734e-08, 0, -1, 0, 1, 0, 1.1049919, 0, -4.371139e-08, 9.813567, 0.48610795, 12.555572)
+
+[node name="Bush20" parent="Bushes" instance=ExtResource("12_x5kdk")]
+transform = Transform3D(-4.903134e-08, 0, -1, 0, 1, 0, 1.1217062, 0, -4.371139e-08, -11.153512, 0.48610795, 16.569515)
+
+[node name="Bush21" parent="Bushes" instance=ExtResource("12_x5kdk")]
+transform = Transform3D(-4.903134e-08, 0, -1, 0, 1, 0, 1.1217062, 0, -4.371139e-08, -11.153512, 0.48610795, 14.568252)
+
+[node name="Bush22" parent="Bushes" instance=ExtResource("12_x5kdk")]
+transform = Transform3D(-4.903134e-08, 0, -1, 0, 1, 0, 1.1217062, 0, -4.371139e-08, -11.153512, 0.48610795, 12.597563)
+
+[node name="Bush23" parent="Bushes" instance=ExtResource("12_x5kdk")]
+transform = Transform3D(-1.1049919, 0, 8.742278e-08, 0, 1, 0, -9.660147e-08, 0, -1, -16.548042, 0.48610795, 9.781204)
+
+[node name="Bush24" parent="Bushes" instance=ExtResource("12_x5kdk")]
+transform = Transform3D(-1.1049919, 0, 8.742278e-08, 0, 1, 0, -9.660147e-08, 0, -1, -14.569509, 0.48610795, 9.781204)
+
+[node name="Bush25" parent="Bushes" instance=ExtResource("12_x5kdk")]
+transform = Transform3D(-1.1049919, 0, 8.742278e-08, 0, 1, 0, -9.660147e-08, 0, -1, -12.594591, 0.48610795, 9.781204)
+
+[node name="Streetlights" type="Node3D" parent="."]
+
+[node name="StreetLight" parent="Streetlights" instance=ExtResource("13_bcxsy")]
+transform = Transform3D(0.4, 0, 0, 0, 0.4, 0, 0, 0, 0.4, -9.963349, -0.16863859, 0.044979036)
+
+[node name="StreetLight2" parent="Streetlights" instance=ExtResource("13_bcxsy")]
+transform = Transform3D(0.4, 0, 0, 0, 0.4, 0, 0, 0, 0.4, -9.963349, -0.16863859, 9.915795)
+
+[node name="StreetLight3" parent="Streetlights" instance=ExtResource("13_bcxsy")]
+transform = Transform3D(0.4, 0, 0, 0, 0.4, 0, 0, 0, 0.4, 0.1052115, -0.16863859, 9.915795)
+
+[node name="StreetLight4" parent="Streetlights" instance=ExtResource("13_bcxsy")]
+transform = Transform3D(0.4, 0, 0, 0, 0.4, 0, 0, 0, 0.4, 9.97477, -0.16863859, 9.915795)
+
+[node name="StreetLight5" parent="Streetlights" instance=ExtResource("13_bcxsy")]
+transform = Transform3D(0.4, 0, 0, 0, 0.4, 0, 0, 0, 0.4, 9.97477, -0.16863859, -0.08211899)
+
+[node name="StreetLight6" parent="Streetlights" instance=ExtResource("13_bcxsy")]
+transform = Transform3D(0.4, 0, 0, 0, 0.4, 0, 0, 0, 0.4, 9.97477, -0.16863859, -9.929425)
+
+[node name="StreetLight7" parent="Streetlights" instance=ExtResource("13_bcxsy")]
+transform = Transform3D(0.4, 0, 0, 0, 0.4, 0, 0, 0, 0.4, -0.059417486, -0.16863859, -9.929425)
+
+[node name="StreetLight8" parent="Streetlights" instance=ExtResource("13_bcxsy")]
+transform = Transform3D(0.4, 0, 0, 0, 0.4, 0, 0, 0, 0.4, -9.93085, -0.16863859, -9.929425)
 
 [connection signal="body_entered" from="Area3D" to="." method="_on_area_3d_body_entered"]
 [connection signal="body_exited" from="Area3D" to="." method="_on_area_3d_body_exited"]

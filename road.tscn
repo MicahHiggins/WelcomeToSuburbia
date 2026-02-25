@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3 uid="uid://ret8ne1fmk7l"]
+
+[ext_resource type="PackedScene" uid="uid://duxalja24m173" path="res://Assets/Road.glb" id="1_x0d2t"]
+
+[node name="Road" instance=ExtResource("1_x0d2t")]
+
+[node name="Cube" parent="." index="0"]
+transform = Transform3D(0.14885885, 0, 0, 0, 0.03691415, 0, 0, 0, 0.42875597, -0.36082104, 0.004298715, -0.6171237)

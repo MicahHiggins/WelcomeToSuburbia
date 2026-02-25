@@ -1,0 +1,20 @@
+[gd_scene load_steps=3 format=3 uid="uid://cxnlf1qokkhee"]
+
+[ext_resource type="PackedScene" uid="uid://to7rkx03n3iy" path="res://Assets/StreetLight.glb" id="1_1gtoh"]
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_w8kyu"]
+radius = 0.001
+
+[node name="StreetLight" instance=ExtResource("1_1gtoh")]
+
+[node name="StaticBody3D" type="StaticBody3D" parent="." index="3"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D" index="0"]
+transform = Transform3D(1, 0, 0, 0, 1.695884, 0, 0, 0, 1, 0, 2.5135844, 0)
+shape = SubResource("CylinderShape3D_w8kyu")
+
+[node name="OmniLight3D" type="OmniLight3D" parent="." index="4"]
+transform = Transform3D(0.1, 0, 0, 0, 0.1, 0, 0, 0, 0.1, 0, 3.8378906, 0)
+light_color = Color(1, 1, 0.5058824, 1)
+light_energy = 0.2
+light_specular = 0.01
