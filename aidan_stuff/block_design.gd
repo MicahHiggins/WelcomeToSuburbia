@@ -18,13 +18,13 @@ func _ready() -> void:
 	houses.visible = false
 	roads.visible = false
 
-	# if someone joins late, server tells them the current state
+	# late joiners: if someone joins after we spawned, server tells them the current state
 	if multiplayer.has_multiplayer_peer() and multiplayer.is_server():
 		if not multiplayer.peer_connected.is_connected(_on_peer_connected):
 			multiplayer.peer_connected.connect(_on_peer_connected)
 
 func _on_peer_connected(peer_id: int) -> void:
-	# bring the new player up to date
+	# bring the new peer up to date
 	rpc_id(peer_id, "_rpc_set_active", entered, global_transform)
 
 func _on_area_3d_body_entered(body: Node3D) -> void:
@@ -34,7 +34,7 @@ func _on_area_3d_body_entered(body: Node3D) -> void:
 	if body == null or not body.is_in_group("player"):
 		return
 
-	# multiplayer: only the server decides to spawn/despawn
+	# multiplayer: ONLY server decides spawn/despawn
 	if multiplayer.has_multiplayer_peer() and not multiplayer.is_server():
 		return
 
@@ -42,11 +42,9 @@ func _on_area_3d_body_entered(body: Node3D) -> void:
 		return
 	entered = true
 
-	houses.visible = true
-	roads.visible = true
 	GlobalVariables.iterations = GlobalVariables.iterations + 1
 
-	# tell everyone (including server) to spawn this block's bundles in the same place
+	# tell everyone to show + spawn
 	if multiplayer.has_multiplayer_peer():
 		rpc("_rpc_set_active", true, global_transform)
 	else:
@@ -56,7 +54,7 @@ func _on_area_3d_body_exited(body: Node3D) -> void:
 	if body == null or not body.is_in_group("player"):
 		return
 
-	# multiplayer: only the server decides to spawn/despawn
+	# multiplayer: ONLY server decides spawn/despawn
 	if multiplayer.has_multiplayer_peer() and not multiplayer.is_server():
 		return
 
@@ -64,10 +62,7 @@ func _on_area_3d_body_exited(body: Node3D) -> void:
 		return
 	entered = false
 
-	houses.visible = false
-	roads.visible = false
-
-	# tell everyone to despawn
+	# tell everyone to hide + despawn
 	if multiplayer.has_multiplayer_peer():
 		rpc("_rpc_set_active", false, global_transform)
 	else:
@@ -79,45 +74,33 @@ func _rpc_set_active(active: bool, block_xform: Transform3D) -> void:
 	roads.visible = active
 
 	if active:
-		_spawn_bundles(block_xform)
+		_spawn_all(block_xform)
 	else:
-		_despawn_bundles()
+		_despawn_all()
 
-func _spawn_bundles(block_xform: Transform3D) -> void:
+func _spawn_all(block_xform: Transform3D) -> void:
 	# Spawn Bob bundle
 	if patrol_instance_bob == null or not is_instance_valid(patrol_instance_bob):
 		patrol_instance_bob = PATROL_BUNDLE.instantiate() as Node3D
 		add_child(patrol_instance_bob)
-
-		# IMPORTANT: stable name so RPC paths match across peers
-		patrol_instance_bob.name = "PatrolBundle"
-
-		# Move the entire bundle (NPC + PatrolPath + markers) with this block
+		patrol_instance_bob.name = "PatrolBundle" # force same name on all peers
 		patrol_instance_bob.global_transform = block_xform
 
 	# Spawn Abigail bundle
 	if patrol_instance_abigail == null or not is_instance_valid(patrol_instance_abigail):
 		patrol_instance_abigail = PATROL_BUNDLE_ABIGAIL.instantiate() as Node3D
 		add_child(patrol_instance_abigail)
-
-		# IMPORTANT: stable name so RPC paths match across peers
-		patrol_instance_abigail.name = "PatrolBundelAbigail"
-
-		# Move the entire bundle (NPC + PatrolPath + markers) with this block
+		patrol_instance_abigail.name = "PatrolBundelAbigail" # match your existing path spelling
 		patrol_instance_abigail.global_transform = block_xform
 
 	# Spawn Campbell bundle
 	if patrol_instance_campbell == null or not is_instance_valid(patrol_instance_campbell):
 		patrol_instance_campbell = PATROL_BUNDLE_CAMPBELL.instantiate() as Node3D
 		add_child(patrol_instance_campbell)
-
-		# IMPORTANT: stable name so RPC paths match across peers
 		patrol_instance_campbell.name = "PatrolBundleCampbells"
-
-		# Move the entire bundle (NPC + PatrolPath + markers) with this block
 		patrol_instance_campbell.global_transform = block_xform
 
-func _despawn_bundles() -> void:
+func _despawn_all() -> void:
 	# Despawn Bob bundle
 	if patrol_instance_bob != null and is_instance_valid(patrol_instance_bob):
 		patrol_instance_bob.queue_free()
