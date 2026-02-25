@@ -9,6 +9,10 @@ extends Node
 @export var drain_per_sec: float = 10.0
 @export var recover_per_sec: float = 4.0
 
+# ✅ NEW: FX tuning (client shader reads only fx_intensity, so we reshape it here)
+@export var vignette_boost: float = 0.35          # makes edge vignette feel heavier (0.0..~1.0)
+@export var close_recover_boost: float = 2.0      # makes FX fade faster when close (1.0 = unchanged)
+
 # Optional debug
 @export var debug_print: bool = false
 @export var debug_print_every_sec: float = 1.0
@@ -78,14 +82,26 @@ func _server_tick(dt: float) -> void:
 		var dist_factor: float = clamp((nearest_dist - effect_start_distance) / denom, 0.0, 1.0)
 
 		var s: float = float(_sanity[id])
+
+		# ✅ CHANGE: recover faster when close (and fade the effect faster too)
 		if nearest_dist > effect_start_distance:
 			s = maxf(0.0, s - drain_per_sec * dist_factor * dt)
 		else:
-			s = minf(100.0, s + recover_per_sec * dt)
+			# closer -> more recovery boost
+			var close_t: float = 1.0 - clamp(nearest_dist / maxf(effect_start_distance, 0.001), 0.0, 1.0)
+			var recover_mult: float = lerpf(1.0, close_recover_boost, close_t)
+			s = minf(100.0, s + recover_per_sec * recover_mult * dt)
+
 		_sanity[id] = s
 
 		var sanity_factor: float = 1.0 - (s / 100.0)
+
+		# Base intensity (same idea as before)
 		var fx_intensity: float = clamp(maxf(dist_factor, sanity_factor), 0.0, 1.0)
+
+		# ✅ CHANGE: push intensity up near the high end (stronger vignette feel)
+		# This makes edges feel more intense without needing to touch the shader yet.
+		fx_intensity = clamp(fx_intensity + vignette_boost * fx_intensity, 0.0, 1.0)
 
 		var speed_mult: float = lerpf(1.0, min_speed_multiplier, dist_factor)
 		var hard_lock: bool = nearest_dist >= hard_lock_distance
