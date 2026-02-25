@@ -83,14 +83,14 @@ func _spawn_all(block_xform: Transform3D) -> void:
 	if patrol_instance_bob == null or not is_instance_valid(patrol_instance_bob):
 		patrol_instance_bob = PATROL_BUNDLE.instantiate() as Node3D
 		add_child(patrol_instance_bob)
-		patrol_instance_bob.name = "PatrolBundle" # force same name on all peers
+		patrol_instance_bob.name = "PatrolBundle" 
 		patrol_instance_bob.global_transform = block_xform
 
 	# Spawn Abigail bundle
 	if patrol_instance_abigail == null or not is_instance_valid(patrol_instance_abigail):
 		patrol_instance_abigail = PATROL_BUNDLE_ABIGAIL.instantiate() as Node3D
 		add_child(patrol_instance_abigail)
-		patrol_instance_abigail.name = "PatrolBundelAbigail" # match your existing path spelling
+		patrol_instance_abigail.name = "PatrolBundelAbigail" 
 		patrol_instance_abigail.global_transform = block_xform
 
 	# Spawn Campbell bundle
