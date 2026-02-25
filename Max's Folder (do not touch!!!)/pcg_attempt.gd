@@ -17,7 +17,7 @@ var iteration5 = 0
 
 var player
 
-const DISPLACEMENT = 144
+const DISPLACEMENT = 192
 
 
 ## Called when the node enters the scene tree for the first time.
