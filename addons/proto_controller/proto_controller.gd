@@ -268,6 +268,7 @@ func _show_hint_temp(msg: String, seconds: float = 1.25) -> void:
 		_hint_timer.stop()
 		_hint_timer.wait_time = seconds
 		_hint_timer.start()
+
 # =========================
 #     STAMINA BAR UI
 # =========================
@@ -343,9 +344,6 @@ func _setup_stamina_ui() -> void:
 		stamina_bar.max_value = stamina_max
 		stamina_bar.value = stamina_current
 
-
-		#ui.add_child(stamina_bar)
-
 # =========================
 #     SANITY SCREEN FX UI
 # =========================
@@ -383,19 +381,61 @@ render_mode unshaded;
 uniform float intensity : hint_range(0.0, 1.0) = 0.0;
 uniform sampler2D screen_tex : hint_screen_texture, filter_linear_mipmap;
 
+// cheap moving static
+float hash(vec2 p) {
+	p = fract(p * vec2(123.34, 456.21));
+	p += dot(p, p + 34.345);
+	return fract(p.x * p.y);
+}
+
+float noise(vec2 p) {
+	vec2 i = floor(p);
+	vec2 f = fract(p);
+	float a = hash(i);
+	float b = hash(i + vec2(1.0, 0.0));
+	float c = hash(i + vec2(0.0, 1.0));
+	float d = hash(i + vec2(1.0, 1.0));
+	vec2 u = f * f * (3.0 - 2.0 * f);
+	return mix(a, b, u.x) + (c - a) * u.y * (1.0 - u.x) + (d - b) * u.x * u.y;
+}
+
 void fragment() {
 	vec2 uv = SCREEN_UV;
 	float t = TIME;
 
+	// keep your original wobble feel
 	float w = sin((uv.y * 14.0 + t * 2.0)) * cos((uv.x * 10.0 - t * 1.7));
 	vec2 offs = vec2(w, -w) * (0.012 * intensity);
 
 	vec4 col = texture(screen_tex, uv + offs);
 
-	col.rgb += vec3(0.08, -0.03, 0.06) * intensity * sin(t + uv.x * 6.0);
+	// more full-screen red shift (not just edges)
+	float red_amt = pow(intensity, 1.25);
+	col.rgb = mix(col.rgb, col.rgb * vec3(1.25, 0.70, 0.72), red_amt * 0.75);
+
+	// heavier tunnel vision vignette (stronger + tighter as intensity rises)
 	vec2 p = uv - 0.5;
-	float v = 1.0 - smoothstep(0.15, 0.70, dot(p, p));
-	col.rgb *= mix(1.0, v, 0.9 * intensity);
+	float r2 = dot(p, p);
+
+	float inner = mix(0.10, 0.04, intensity);
+	float outer = mix(0.55, 0.32, intensity);
+	float vig = 1.0 - smoothstep(inner, outer, r2);
+	col.rgb *= mix(1.0, vig, 0.92 * intensity);
+
+	// TV static that lives mostly on the edges, grows with intensity
+	float edge = smoothstep(0.18, 0.55, r2);
+	float edge_strength = edge * pow(intensity, 1.10);
+
+	vec2 n_uv = uv * vec2(320.0, 180.0) + vec2(t * 35.0, t * 22.0);
+	float n = noise(n_uv);
+	float snow = (n - 0.5) * 2.0;
+	snow = sign(snow) * pow(abs(snow), 0.65);
+
+	col.rgb += vec3(snow) * (0.22 * edge_strength);
+
+	// small scanline shimmer, mostly on the edges
+	float scan = sin((uv.y * 900.0) + t * 18.0) * 0.5 + 0.5;
+	col.rgb *= 1.0 - (0.10 * edge_strength * scan);
 
 	COLOR = col;
 }
@@ -451,20 +491,15 @@ func _try_use_attack() -> void:
 		return
 	_last_attack_time = now
 
-	# Local feel (optional). The real "everyone sees it" comes from ItemManager.apply_use_attack.
 	_play_attack_local()
-
-	# Tell server to broadcast animation on the held item.
 	request_use_attack_rpc()
 
 func _play_attack_local() -> void:
-	# Prefer player's AnimationPlayer if configured
 	if _swing_anim != null and _swing_anim.has_animation(String(attack_anim_name)):
 		_swing_anim.stop()
 		_swing_anim.play(String(attack_anim_name))
 		return
 
-	# Fallback: AnimationPlayer on the held item (your bat case)
 	var held: Node = _get_held_node()
 	if held != null:
 		var held_anim: AnimationPlayer = held.get_node_or_null("AnimationPlayer") as AnimationPlayer
@@ -486,8 +521,6 @@ func _process(_dt: float) -> void:
 		stamina_bar.max_value = stamina_max
 		stamina_bar.value = stamina_current
 		stamina_bar.get_parent().visible = stamina_current < stamina_max
-
-
 
 func _physics_process(delta: float) -> void:
 	if not multiplayer.has_multiplayer_peer():
@@ -518,7 +551,7 @@ func _physics_authority(delta: float) -> void:
 	var wants_to_sprint := can_sprint and Input.is_action_pressed(input_sprint)
 	var is_moving := input_vec != Vector2.ZERO
 
-# Decide sprint FIRST (do NOT use move_speed == sprint_speed later)
+	# Decide sprint FIRST (do NOT use move_speed == sprint_speed later)
 	is_sprinting = wants_to_sprint and is_moving and stamina_current > 0.0
 
 	if is_sprinting:
@@ -534,11 +567,11 @@ func _physics_authority(delta: float) -> void:
 
 	stamina_current = clamp(stamina_current, 0.0, stamina_max)
 
-# If you hit zero stamina, force sprint off (prevents “infinite sprint feel”)
+	# If you hit zero stamina, force sprint off (prevents “infinite sprint feel”)
 	if stamina_current <= 0.0:
 		is_sprinting = false
 
-		# --- Breathing logic (stamina-based) ---
+	# --- Breathing logic (stamina-based) ---
 	const BREATH_START := 0.5  # start breathing at 50% or lower
 	const BREATH_STOP  := 0.6  # stop breathing at 60% or higher
 
@@ -551,7 +584,6 @@ func _physics_authority(delta: float) -> void:
 		AudioManager.StopBreathing()
 		breathing_active = false
 
-	
 	move_speed *= tether_speed_mult
 
 	if can_move:
@@ -582,13 +614,9 @@ func _physics_authority(delta: float) -> void:
 	if is_on_floor() and velocity != Vector3.ZERO:
 		if is_sprinting:
 			%FootstepAnimation.play("run")
-			
 		else:
 			%FootstepAnimation.play("walk")
-			
 
-
-		
 	move_and_slide()
 
 # =========================
@@ -765,8 +793,6 @@ func server_set_tether_state(
 	new_sanity: float,
 	fx_intensity: float
 ) -> void:
-	# Only the owning client should apply tether state to THEIR local controller.
-	# (Remote puppet players don't need these values to drive movement/input.)
 	if not is_multiplayer_authority():
 		return
 
