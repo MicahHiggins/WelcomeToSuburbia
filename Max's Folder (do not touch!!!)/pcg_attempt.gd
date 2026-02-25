@@ -24,7 +24,7 @@ const DISPLACEMENT = 176
 func _ready() -> void:
 	worldBlocks2 = [world_block_1, world_block_2, world_block_3, 
 	world_block_4, world_block_5]
-	print(worldBlocks2[1])
+	#print(worldBlocks2[1])
 
 
 ## Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -32,8 +32,10 @@ func _ready() -> void:
 	#pass
 	
 func algoForIterations(worldBlocks):
-	print(worldBlocks2[1])
-	print("TESTESTES")
+	if GlobalVariables.algoDebug == true:
+		return
+	#print(worldBlocks2[1])
+	#print("TESTESTES")
 	var currentWorldBlockIteration = worldBlocks2[worldBlocks].global_position
 	var currentWorldBlockIterationZ = worldBlocks2[worldBlocks].global_position.z
 	var currentWorldBlockIterationX = worldBlocks2[worldBlocks].global_position.x
@@ -41,6 +43,7 @@ func algoForIterations(worldBlocks):
 	
 	
 	var counter = 0
+	print("TESTETSTSETETESRE")
 	for i in range(5):
 		
 		if i != worldBlocks:
@@ -66,16 +69,18 @@ func algoForIterations(worldBlocks):
 				counter = counter + 1
 				#print(displacement)
 				
-	
+	GlobalVariables.algoDebug = false
 
 	
 
 
 func _on_load_zone_1_body_entered(body: Node3D) -> void:
+	print(body)
 	iteration1 = iteration1 + 1
-	print(iteration1)
+	#print(iteration1)
 	#print(player)
 	if iteration1 == 2:
+		#GlobalVariables.algoDebug = true
 		algoForIterations(0)
 		iteration1 = 0
 	#print(GlobalVariables)
@@ -84,9 +89,10 @@ func _on_load_zone_1_body_entered(body: Node3D) -> void:
 
 func _on_load_zone_2_body_entered(body: Node3D) -> void:
 	iteration2 = iteration2 + 1
-	print(player)
-	print(iteration2)
+	#print(player)
+	#print(iteration2)
 	if iteration2 == 2:
+		#GlobalVariables.algoDebug = true
 		algoForIterations(1)
 		iteration2 = 0
 	print("numba 1")
@@ -94,9 +100,10 @@ func _on_load_zone_2_body_entered(body: Node3D) -> void:
 
 func _on_load_zone_3_body_entered(body: Node3D) -> void:
 	iteration3 = iteration3 + 1
-	print(player)
-	print(iteration3)
+	#print(player)
+	#print(iteration3)
 	if iteration3 == 2:
+		#GlobalVariables.algoDebug = true
 		algoForIterations(2)
 		iteration3 = 0
 	print("numba 2")
@@ -104,9 +111,10 @@ func _on_load_zone_3_body_entered(body: Node3D) -> void:
 
 func _on_load_zone_4_body_entered(body: Node3D) -> void:
 	iteration4 = iteration4 + 1
-	print(player)
-	print(iteration4)
+	#print(player)
+	#print(iteration4)
 	if iteration4 == 2:
+		#GlobalVariables.algoDebug = true
 		algoForIterations(3)
 		iteration4 = 0
 	print("numba 3")
@@ -114,8 +122,9 @@ func _on_load_zone_4_body_entered(body: Node3D) -> void:
 
 func _on_load_zone_5_body_entered(body: Node3D) -> void:
 	iteration5 = iteration5 + 1
-	print(iteration5)
+	#print(iteration5)
 	if iteration5 == 2:
+		#GlobalVariables.algoDebug = true
 		algoForIterations(4)
 		iteration5 = 0
 	print("numba 4")

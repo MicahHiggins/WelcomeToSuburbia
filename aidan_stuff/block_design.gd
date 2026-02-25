@@ -28,10 +28,10 @@ func _on_peer_connected(peer_id: int) -> void:
 	rpc_id(peer_id, "_rpc_set_active", entered, global_transform)
 
 func _on_area_3d_body_entered(body: Node3D) -> void:
-	print("WHAT!")
-	print("name: ", body.name)
-	
-	print("name: ", body)
+	#print("WHAT!")
+	#print("name: ", body.name)
+	#
+	#print("name: ", body)
 
 	if body == null or not body.is_in_group("player"):
 		return

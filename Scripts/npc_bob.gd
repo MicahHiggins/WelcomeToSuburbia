@@ -85,12 +85,12 @@ func _bind_local_patrol_path() -> void:
 
 func _ready() -> void:
 	add_to_group("npc")
-	print("[NPC] ready:", name)
+	#print("[NPC] ready:", name)
 
 	# Auto-find patrol path ONLY if we didn't bind a local one
 	if patrol_path == null and auto_find_patrol_path:
 		patrol_path = find_nearest_patrol_path(auto_find_max_dist)
-		print("[NPC] auto-found patrol_path:", patrol_path)
+		#print("[NPC] auto-found patrol_path:", patrol_path)
 
 	if sm == null:
 		push_error("[NPC] Missing StateMachine child node or wrong node name.")
@@ -124,7 +124,7 @@ func _physics_process(delta: float) -> void:
 	# Prove this script is actually running
 	if not _printed_once:
 		_printed_once = true
-		print("[NPC] physics tick OK:", name)
+		#print("[NPC] physics tick OK:", name)
 
 	var has_peer := multiplayer.has_multiplayer_peer()
 
