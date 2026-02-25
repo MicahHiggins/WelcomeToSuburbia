@@ -19,6 +19,9 @@ func _ready() -> void:
 	roads.visible = false
 
 func _on_area_3d_body_entered(body: Node3D) -> void:
+	print("WHAT!")
+	print("name: ", body)
+	
 	if body == null or not body.is_in_group("player"):
 		return
 	if entered:
@@ -27,8 +30,9 @@ func _on_area_3d_body_entered(body: Node3D) -> void:
 
 	houses.visible = true
 	roads.visible = true
-	
 	GlobalVariables.iterations = GlobalVariables.iterations + 1
+	
+	
 
 	# Spawn Bob bundle
 	if patrol_instance_bob == null or not is_instance_valid(patrol_instance_bob):

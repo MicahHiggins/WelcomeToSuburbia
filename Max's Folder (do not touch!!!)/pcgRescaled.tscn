@@ -11,9 +11,10 @@
 script = ExtResource("1_v771g")
 
 [node name="worldBlock1" parent="." instance=ExtResource("2_1i87g")]
-transform = Transform3D(5, 0, 0, 0, 5, 0, 0, 0, 5, 0, 0, 0)
+transform = Transform3D(5.5, 0, 0, 0, 5.5, 0, 0, 0, 5.5, 0, 0, 0)
 
 [node name="loadZone1" type="Area3D" parent="worldBlock1"]
+transform = Transform3D(5, 0, 0, 0, 5, 0, 0, 0, 5, 0, 0, 0)
 collision_layer = 0
 collision_mask = 8
 
@@ -28,7 +29,7 @@ script = ExtResource("3_061ep")
 transform = Transform3D(0.2, 0, 0, 0, 0.2, 0, 0, 0, 0.2, 1.3333334, 2.0774748, 0)
 
 [node name="worldBlock2" parent="." instance=ExtResource("2_1i87g")]
-transform = Transform3D(5, 0, 0, 0, 5, 0, 0, 0, 5, 144, 0, 0)
+transform = Transform3D(5.5, 0, 0, 0, 5.5, 0, 0, 0, 5.5, 144, 0, 0)
 
 [node name="loadZone2" type="Area3D" parent="worldBlock2"]
 collision_layer = 0
@@ -39,7 +40,7 @@ transform = Transform3D(30, 0, 0, 0, 30, 0, 0, 0, 30, 0, 1.1961625, 0)
 shape = SubResource("BoxShape3D_2e1xa")
 
 [node name="worldBlock3" parent="." instance=ExtResource("2_1i87g")]
-transform = Transform3D(5, 0, 0, 0, 5, 0, 0, 0, 5, -144, 0, 0)
+transform = Transform3D(5.5, 0, 0, 0, 5.5, 0, 0, 0, 5.5, -144, 0, 0)
 
 [node name="loadZone3" type="Area3D" parent="worldBlock3"]
 collision_layer = 0
@@ -50,7 +51,7 @@ transform = Transform3D(30, 0, 0, 0, 30, 0, 0, 0, 30, 0, 0, 0)
 shape = SubResource("BoxShape3D_2e1xa")
 
 [node name="worldBlock4" parent="." instance=ExtResource("2_1i87g")]
-transform = Transform3D(6, 0, 0, 0, 6, 0, 0, 0, 6, 0.10352898, 7.6293945e-06, 144.05821)
+transform = Transform3D(5.5, 0, 0, 0, 5.5, 0, 0, 0, 5.5, 0.10352898, 7.6293945e-06, 144.05821)
 
 [node name="loadZone4" type="Area3D" parent="worldBlock4"]
 collision_layer = 0
@@ -61,7 +62,7 @@ transform = Transform3D(30, 0, 0, 0, 30, 0, 0, 0, 30, 0, 0, 0)
 shape = SubResource("BoxShape3D_2e1xa")
 
 [node name="worldBlock5" parent="." instance=ExtResource("2_1i87g")]
-transform = Transform3D(5, 0, 0, 0, 5, 0, 0, 0, 5, 0, 0, -144)
+transform = Transform3D(5.5, 0, 0, 0, 5.5, 0, 0, 0, 5.5, 0, 0, -144)
 
 [node name="loadZone5" type="Area3D" parent="worldBlock5"]
 collision_layer = 0
