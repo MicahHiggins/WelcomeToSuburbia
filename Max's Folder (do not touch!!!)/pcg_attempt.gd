@@ -9,11 +9,11 @@ extends Node3D
 var prevWB
 var worldBlocks2: Array[Node3D]
 
-#var iteration1 = 0
-#var iteration2 = 0
-#var iteration3 = 0
-#var iteration4 = 0
-#var iteration5 = 0
+var iteration1 = 0
+var iteration2 = 0
+var iteration3 = 0
+var iteration4 = 0
+var iteration5 = 0
 
 var player
 
@@ -72,71 +72,70 @@ func algoForIterations(worldBlocks):
 
 
 func _on_load_zone_1_body_entered(body: Node3D) -> void:
-	GlobalVariables.iteration1 = GlobalVariables.iteration1 + 1
-	print("iterations", GlobalVariables.iteration1)
+	iteration1 = iteration1 + 1
+	print(iteration1)
 	#print(player)
-	if GlobalVariables.iteration1 == 2:
+	if iteration1 == 2:
 		algoForIterations(0)
-		GlobalVariables.iteration1 = 0
+		iteration1 = 0
 	#print(GlobalVariables)
 	print("numba 0")
 
 
 func _on_load_zone_2_body_entered(body: Node3D) -> void:
-	GlobalVariables.iteration2 = GlobalVariables.iteration2  + 1
+	iteration2 = iteration2 + 1
 	print(player)
-	print("GlobalVariables.iteration2" )
-	print("iterations", GlobalVariables.iteration2 )
-	if GlobalVariables.iteration2  == 2:
+	print(iteration2)
+	if iteration2 == 2:
 		algoForIterations(1)
-		GlobalVariables.iteration2  = 0
+		iteration2 = 0
 	print("numba 1")
 
 
 func _on_load_zone_3_body_entered(body: Node3D) -> void:
-	GlobalVariables.iteration3 = GlobalVariables.iteration3  + 1
+	iteration3 = iteration3 + 1
 	print(player)
-	print("iterations", GlobalVariables.iteration3 )
-	if GlobalVariables.iteration3  == 2:
+	print(iteration3)
+	if iteration3 == 2:
 		algoForIterations(2)
-		GlobalVariables.iteration3  = 0
+		iteration3 = 0
 	print("numba 2")
 
 
 func _on_load_zone_4_body_entered(body: Node3D) -> void:
-	GlobalVariables.iteration4 = GlobalVariables.iteration4 + 1
+	iteration4 = iteration4 + 1
 	print(player)
-	print("iterations", GlobalVariables.iteration4)
-	if GlobalVariables.iteration4 == 2:
+	print(iteration4)
+	if iteration4 == 2:
 		algoForIterations(3)
-		GlobalVariables.iteration4 = 0
+		iteration4 = 0
 	print("numba 3")
 
 
 func _on_load_zone_5_body_entered(body: Node3D) -> void:
-	GlobalVariables.iteration5 = GlobalVariables.iteration5 + 1
-	print("iterations", GlobalVariables.iteration5)
-	if GlobalVariables.iteration5 == 2:
+	iteration5 = iteration5 + 1
+	print(iteration5)
+	if iteration5 == 2:
 		algoForIterations(4)
-		GlobalVariables.iteration5 = 0
+		iteration5 = 0
 	print("numba 4")
 
 
 func _on_load_zone_1_body_exited(body: Node3D) -> void:
-	GlobalVariables.iteration1 = 0
+	iteration1 = 0
 
 
 func _on_load_zone_2_body_exited(body: Node3D) -> void:
-	GlobalVariables.iteration2 = 0
+	iteration2 = 0
 
 
 func _on_load_zone_3_body_exited(body: Node3D) -> void:
-	GlobalVariables.iteration3 = 0
+	iteration3 = 0
 
 
 func _on_load_zone_4_body_exited(body: Node3D) -> void:
-	GlobalVariables.iteration4 = 0
+	iteration4 = 0
 
 
 func _on_load_zone_5_body_exited(body: Node3D) -> void:
-	GlobalVariables.iteration5 = 0
+	iteration5 = 0
