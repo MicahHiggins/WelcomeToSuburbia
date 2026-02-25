@@ -20,7 +20,7 @@ func _ready() -> void:
 
 func _on_area_3d_body_entered(body: Node3D) -> void:
 	print("WHAT!")
-	print("name: ", body)
+	print("name: ", body.name)
 	
 	if body == null or not body.is_in_group("player"):
 		return

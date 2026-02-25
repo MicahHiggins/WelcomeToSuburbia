@@ -73,7 +73,12 @@ transform = Transform3D(30, 0, 0, 0, 30, 0, 0, 0, 30, 0, 1.1961625, 0)
 shape = SubResource("BoxShape3D_2e1xa")
 
 [connection signal="body_entered" from="worldBlock1/loadZone1" to="." method="_on_load_zone_1_body_entered"]
+[connection signal="body_exited" from="worldBlock1/loadZone1" to="." method="_on_load_zone_1_body_exited"]
 [connection signal="body_entered" from="worldBlock2/loadZone2" to="." method="_on_load_zone_2_body_entered"]
+[connection signal="body_exited" from="worldBlock2/loadZone2" to="." method="_on_load_zone_2_body_exited"]
 [connection signal="body_entered" from="worldBlock3/loadZone3" to="." method="_on_load_zone_3_body_entered"]
+[connection signal="body_exited" from="worldBlock3/loadZone3" to="." method="_on_load_zone_3_body_exited"]
 [connection signal="body_entered" from="worldBlock4/loadZone4" to="." method="_on_load_zone_4_body_entered"]
+[connection signal="body_exited" from="worldBlock4/loadZone4" to="." method="_on_load_zone_4_body_exited"]
 [connection signal="body_entered" from="worldBlock5/loadZone5" to="." method="_on_load_zone_5_body_entered"]
+[connection signal="body_exited" from="worldBlock5/loadZone5" to="." method="_on_load_zone_5_body_exited"]
