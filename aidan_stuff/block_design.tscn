@@ -1,8 +1,7 @@
-[gd_scene load_steps=20 format=3 uid="uid://r8vqf0qcnkdn"]
+[gd_scene load_steps=19 format=3 uid="uid://r8vqf0qcnkdn"]
 
 [ext_resource type="Script" uid="uid://4p6bc6ac8elf" path="res://aidan_stuff/block_design.gd" id="1_jmv40"]
 [ext_resource type="Texture2D" uid="uid://but80wsucm4q2" path="res://textures/GrassTextures/GrassAlbedo.png" id="2_bkv0n"]
-[ext_resource type="ArrayMesh" uid="uid://dgv4eih41bu3t" path="res://Assets/kenney_city-kit-suburban_20/Models/OBJ format/driveway-long.obj" id="2_ypk4p"]
 [ext_resource type="ArrayMesh" uid="uid://dcbboo0ncpiq4" path="res://Assets/kenney_city-kit-suburban_20/Models/OBJ format/path-stones-messy.obj" id="3_2eoyn"]
 [ext_resource type="Texture2D" uid="uid://do7xmc15vdxif" path="res://textures/GrassTextures/GrassAO.png" id="3_x5kdk"]
 [ext_resource type="Texture2D" uid="uid://cgxv1p4pfa1ju" path="res://textures/GrassTextures/GrassTransluc.png" id="4_bcxsy"]
@@ -11,7 +10,7 @@
 [ext_resource type="PackedScene" uid="uid://dggh2n0x6keit" path="res://Models/mailbox.tscn" id="6_hvq4h"]
 [ext_resource type="Texture2D" uid="uid://c37iickr58llo" path="res://textures/GrassTextures/GrassRoughness.png" id="6_v0qsu"]
 [ext_resource type="PackedScene" uid="uid://drk8i4p1of8ar" path="res://whitefence_1.tscn" id="6_x2lvk"]
-[ext_resource type="PackedScene" uid="uid://duxalja24m173" path="res://Assets/Road.glb" id="11_milrp"]
+[ext_resource type="PackedScene" uid="uid://ret8ne1fmk7l" path="res://road.tscn" id="9_milrp"]
 [ext_resource type="PackedScene" uid="uid://dexa2pmw4ua8t" path="res://Bush.tscn" id="12_x5kdk"]
 [ext_resource type="PackedScene" uid="uid://cxnlf1qokkhee" path="res://street_light.tscn" id="13_bcxsy"]
 
@@ -146,277 +145,9 @@ transform = Transform3D(-2.2791096e-09, 0, -0.06261343, 0, 0.06261343, 0, 0.0521
 
 [node name="Roads" type="Node3D" parent="."]
 transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, 0, -0.07, 0)
-visible = false
 
-[node name="DrivewayLong" type="MeshInstance3D" parent="Roads"]
-transform = Transform3D(-1.3113416e-07, 0, 3, 0, 3, 0, -3, 0, -1.3113416e-07, 7.3830404, 0.109850585, 4.5)
-mesh = ExtResource("2_ypk4p")
-skeleton = NodePath("../..")
-
-[node name="DrivewayLong2" type="MeshInstance3D" parent="Roads"]
-transform = Transform3D(-1.3113416e-07, 0, 3, 0, 3, 0, -3, 0, -1.3113416e-07, 6.2016487, 0.11, 4.5)
-mesh = ExtResource("2_ypk4p")
-skeleton = NodePath("../..")
-
-[node name="DrivewayLong3" type="MeshInstance3D" parent="Roads"]
-transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, 4.5, 0.11, 7.4062123)
-mesh = ExtResource("2_ypk4p")
-skeleton = NodePath("../..")
-
-[node name="DrivewayLong4" type="MeshInstance3D" parent="Roads"]
-transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, 4.5, 0.11, 6.2136083)
-mesh = ExtResource("2_ypk4p")
-skeleton = NodePath("../..")
-
-[node name="DrivewayLong6" type="MeshInstance3D" parent="Roads"]
-transform = Transform3D(-1.3113416e-07, 0, 3, 0, 3, 0, -3, 0, -1.3113416e-07, 3.951, 0.11, 4.5)
-mesh = ExtResource("2_ypk4p")
-skeleton = NodePath("../..")
-
-[node name="DrivewayLong7" type="MeshInstance3D" parent="Roads"]
-transform = Transform3D(-1.3113416e-07, 0, 3, 0, 3, 0, -3, 0, -1.3113416e-07, 2.752, 0.11, 4.5)
-mesh = ExtResource("2_ypk4p")
-skeleton = NodePath("../..")
-
-[node name="DrivewayLong8" type="MeshInstance3D" parent="Roads"]
-transform = Transform3D(-1.3113416e-07, 0, 3, 0, 3, 0, -3, 0, -1.3113416e-07, 1.5590065, 0.11, 4.5)
-mesh = ExtResource("2_ypk4p")
-skeleton = NodePath("../..")
-
-[node name="DrivewayLong9" type="MeshInstance3D" parent="Roads"]
-transform = Transform3D(-1.3113416e-07, 0, 3, 0, 3, 0, -3, 0, -1.3113416e-07, 0.358, 0.11, 4.5)
-mesh = ExtResource("2_ypk4p")
-skeleton = NodePath("../..")
-
-[node name="DrivewayLong10" type="MeshInstance3D" parent="Roads"]
-transform = Transform3D(-1.3113416e-07, 0, 3, 0, 3, 0, -3, 0, -1.3113416e-07, -0.836, 0.11, 4.5)
-mesh = ExtResource("2_ypk4p")
-skeleton = NodePath("../..")
-
-[node name="DrivewayLong11" type="MeshInstance3D" parent="Roads"]
-transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, -4.5, 0.11, 7.406)
-mesh = ExtResource("2_ypk4p")
-skeleton = NodePath("../..")
-
-[node name="DrivewayLong12" type="MeshInstance3D" parent="Roads"]
-transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, -4.5, 0.11, 6.2127113)
-mesh = ExtResource("2_ypk4p")
-skeleton = NodePath("../..")
-
-[node name="DrivewayLong14" type="MeshInstance3D" parent="Roads"]
-transform = Transform3D(-1.3113416e-07, 0, 3, 0, 3, 0, -3, 0, -1.3113416e-07, -2.026155, 0.11, 4.5)
-mesh = ExtResource("2_ypk4p")
-skeleton = NodePath("../..")
-
-[node name="DrivewayLong15" type="MeshInstance3D" parent="Roads"]
-transform = Transform3D(-1.3113416e-07, 0, 3, 0, 3, 0, -3, 0, -1.3113416e-07, -3.181, 0.11, 4.5)
-mesh = ExtResource("2_ypk4p")
-skeleton = NodePath("../..")
-
-[node name="DrivewayLong16" type="MeshInstance3D" parent="Roads"]
-transform = Transform3D(-1.3113416e-07, 0, 3, 0, 3, 0, -3, 0, -1.3113416e-07, -4.12, 0.11, 4.5)
-mesh = ExtResource("2_ypk4p")
-skeleton = NodePath("../..")
-
-[node name="DrivewayLong17" type="MeshInstance3D" parent="Roads"]
-transform = Transform3D(-1.3113416e-07, 0, 3, 0, 3, 0, -3, 0, -1.3113416e-07, -6.373438, 0.11, 4.5)
-mesh = ExtResource("2_ypk4p")
-skeleton = NodePath("../..")
-
-[node name="DrivewayLong18" type="MeshInstance3D" parent="Roads"]
-transform = Transform3D(-1.3113416e-07, 0, 3, 0, 3, 0, -3, 0, -1.3113416e-07, 5.8834877, 0.11, 4.5)
-mesh = ExtResource("2_ypk4p")
-skeleton = NodePath("../..")
-
-[node name="DrivewayLong19" type="MeshInstance3D" parent="Roads"]
-transform = Transform3D(-1.3113416e-07, 0, 3, 0, 3, 0, -3, 0, -1.3113416e-07, 4.115, 0.11, 4.5)
-mesh = ExtResource("2_ypk4p")
-skeleton = NodePath("../..")
-
-[node name="DrivewayLong21" type="MeshInstance3D" parent="Roads"]
-transform = Transform3D(-1.3113416e-07, 0, 3, 0, 3, 0, -3, 0, -1.3113416e-07, -7.4220986, 0.11, 4.5)
-mesh = ExtResource("2_ypk4p")
-skeleton = NodePath("../..")
-
-[node name="DrivewayLong22" type="MeshInstance3D" parent="Roads"]
-transform = Transform3D(-1.3113416e-07, 0, 3, 0, 3, 0, -3, 0, -1.3113416e-07, -7.422, 0.11, -4.5)
-mesh = ExtResource("2_ypk4p")
-skeleton = NodePath("../..")
-
-[node name="DrivewayLong23" type="MeshInstance3D" parent="Roads"]
-transform = Transform3D(-1.3113416e-07, 0, 3, 0, 3, 0, -3, 0, -1.3113416e-07, -6.227651, 0.11, -4.5)
-mesh = ExtResource("2_ypk4p")
-skeleton = NodePath("../..")
-
-[node name="DrivewayLong24" type="MeshInstance3D" parent="Roads"]
-transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, -4.5, 0.11, 3.8393383)
-mesh = ExtResource("2_ypk4p")
-skeleton = NodePath("../..")
-
-[node name="DrivewayLong25" type="MeshInstance3D" parent="Roads"]
-transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, -4.5, 0.11, 2.6523218)
-mesh = ExtResource("2_ypk4p")
-skeleton = NodePath("../..")
-
-[node name="DrivewayLong26" type="MeshInstance3D" parent="Roads"]
-transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, -4.5, 0.11, 1.4706359)
-mesh = ExtResource("2_ypk4p")
-skeleton = NodePath("../..")
-
-[node name="DrivewayLong27" type="MeshInstance3D" parent="Roads"]
-transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, -4.5, 0.11, 0.29972267)
-mesh = ExtResource("2_ypk4p")
-skeleton = NodePath("../..")
-
-[node name="DrivewayLong28" type="MeshInstance3D" parent="Roads"]
-transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, -4.5, 0.11, -0.9001446)
-mesh = ExtResource("2_ypk4p")
-skeleton = NodePath("../..")
-
-[node name="DrivewayLong29" type="MeshInstance3D" parent="Roads"]
-transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, -4.5, 0.11, -2.095565)
-mesh = ExtResource("2_ypk4p")
-skeleton = NodePath("../..")
-
-[node name="DrivewayLong30" type="MeshInstance3D" parent="Roads"]
-transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, -4.5, 0.11, -3.2814522)
-mesh = ExtResource("2_ypk4p")
-skeleton = NodePath("../..")
-
-[node name="DrivewayLong31" type="MeshInstance3D" parent="Roads"]
-transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, -4.5, 0.11, -4.465)
-mesh = ExtResource("2_ypk4p")
-skeleton = NodePath("../..")
-
-[node name="DrivewayLong32" type="MeshInstance3D" parent="Roads"]
-transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, -4.5, 0.11, -5.661288)
-mesh = ExtResource("2_ypk4p")
-skeleton = NodePath("../..")
-
-[node name="DrivewayLong33" type="MeshInstance3D" parent="Roads"]
-transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, -4.5, 0.11, -6.841844)
-mesh = ExtResource("2_ypk4p")
-skeleton = NodePath("../..")
-
-[node name="DrivewayLong34" type="MeshInstance3D" parent="Roads"]
-transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, -4.5, 0.11, -7.4137726)
-mesh = ExtResource("2_ypk4p")
-skeleton = NodePath("../..")
-
-[node name="DrivewayLong36" type="MeshInstance3D" parent="Roads"]
-transform = Transform3D(-1.3113416e-07, 0, 3, 0, 3, 0, -3, 0, -1.3113416e-07, -4.144844, 0.11, -4.5)
-mesh = ExtResource("2_ypk4p")
-skeleton = NodePath("../..")
-
-[node name="DrivewayLong37" type="MeshInstance3D" parent="Roads"]
-transform = Transform3D(-1.3113416e-07, 0, 3, 0, 3, 0, -3, 0, -1.3113416e-07, -2.953, 0.11, -4.5)
-mesh = ExtResource("2_ypk4p")
-skeleton = NodePath("../..")
-
-[node name="DrivewayLong38" type="MeshInstance3D" parent="Roads"]
-transform = Transform3D(-1.3113416e-07, 0, 3, 0, 3, 0, -3, 0, -1.3113416e-07, -1.8420556, 0.11, -4.5)
-mesh = ExtResource("2_ypk4p")
-skeleton = NodePath("../..")
-
-[node name="DrivewayLong39" type="MeshInstance3D" parent="Roads"]
-transform = Transform3D(-1.3113416e-07, 0, 3, 0, 3, 0, -3, 0, -1.3113416e-07, -0.647, 0.11, -4.5)
-mesh = ExtResource("2_ypk4p")
-skeleton = NodePath("../..")
-
-[node name="DrivewayLong40" type="MeshInstance3D" parent="Roads"]
-transform = Transform3D(-1.3113416e-07, 0, 3, 0, 3, 0, -3, 0, -1.3113416e-07, 0.522, 0.11, -4.5)
-mesh = ExtResource("2_ypk4p")
-skeleton = NodePath("../..")
-
-[node name="DrivewayLong41" type="MeshInstance3D" parent="Roads"]
-transform = Transform3D(-1.3113416e-07, 0, 3, 0, 3, 0, -3, 0, -1.3113416e-07, 1.6724067, 0.11, -4.5)
-mesh = ExtResource("2_ypk4p")
-skeleton = NodePath("../..")
-
-[node name="DrivewayLong42" type="MeshInstance3D" parent="Roads"]
-transform = Transform3D(-1.3113416e-07, 0, 3, 0, 3, 0, -3, 0, -1.3113416e-07, 2.852, 0.11, -4.5)
-mesh = ExtResource("2_ypk4p")
-skeleton = NodePath("../..")
-
-[node name="DrivewayLong43" type="MeshInstance3D" parent="Roads"]
-transform = Transform3D(-1.3113416e-07, 0, 3, 0, 3, 0, -3, 0, -1.3113416e-07, 3.9972167, 0.11, -4.5)
-mesh = ExtResource("2_ypk4p")
-skeleton = NodePath("../..")
-
-[node name="DrivewayLong44" type="MeshInstance3D" parent="Roads"]
-transform = Transform3D(-1.3113416e-07, 0, 3, 0, 3, 0, -3, 0, -1.3113416e-07, 5.164897, 0.11, -4.5)
-mesh = ExtResource("2_ypk4p")
-skeleton = NodePath("../..")
-
-[node name="DrivewayLong45" type="MeshInstance3D" parent="Roads"]
-transform = Transform3D(-1.3113416e-07, 0, 3, 0, 3, 0, -3, 0, -1.3113416e-07, 6.340837, 0.11, -4.5)
-mesh = ExtResource("2_ypk4p")
-skeleton = NodePath("../..")
-
-[node name="DrivewayLong46" type="MeshInstance3D" parent="Roads"]
-transform = Transform3D(-1.3113416e-07, 0, 3, 0, 3, 0, -3, 0, -1.3113416e-07, 7.3905616, 0.11, -4.5)
-mesh = ExtResource("2_ypk4p")
-skeleton = NodePath("../..")
-
-[node name="DrivewayLong47" type="MeshInstance3D" parent="Roads"]
-transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, 4.5, 0.11, 3.8805904)
-mesh = ExtResource("2_ypk4p")
-skeleton = NodePath("../..")
-
-[node name="DrivewayLong48" type="MeshInstance3D" parent="Roads"]
-transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, 4.5, 0.11, 2.724442)
-mesh = ExtResource("2_ypk4p")
-skeleton = NodePath("../..")
-
-[node name="DrivewayLong49" type="MeshInstance3D" parent="Roads"]
-transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, 4.5, 0.11, 1.5682716)
-mesh = ExtResource("2_ypk4p")
-skeleton = NodePath("../..")
-
-[node name="DrivewayLong50" type="MeshInstance3D" parent="Roads"]
-transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, 4.5, 0.11, 0.4313718)
-mesh = ExtResource("2_ypk4p")
-skeleton = NodePath("../..")
-
-[node name="DrivewayLong51" type="MeshInstance3D" parent="Roads"]
-transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, 4.5, 0.11, -0.67540026)
-mesh = ExtResource("2_ypk4p")
-skeleton = NodePath("../..")
-
-[node name="DrivewayLong52" type="MeshInstance3D" parent="Roads"]
-transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, 4.5, 0.11, -1.8227472)
-mesh = ExtResource("2_ypk4p")
-skeleton = NodePath("../..")
-
-[node name="DrivewayLong53" type="MeshInstance3D" parent="Roads"]
-transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, 4.5, 0.11, -3.0113912)
-mesh = ExtResource("2_ypk4p")
-skeleton = NodePath("../..")
-
-[node name="DrivewayLong54" type="MeshInstance3D" parent="Roads"]
-transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, 4.5, 0.11, -4.0702643)
-mesh = ExtResource("2_ypk4p")
-skeleton = NodePath("../..")
-
-[node name="DrivewayLong56" type="MeshInstance3D" parent="Roads"]
-transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, 4.5, 0.11, -6.459009)
-mesh = ExtResource("2_ypk4p")
-skeleton = NodePath("../..")
-
-[node name="DrivewayLong57" type="MeshInstance3D" parent="Roads"]
-transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, 4.5, 0.11, -7.396688)
-mesh = ExtResource("2_ypk4p")
-skeleton = NodePath("../..")
-
-[node name="DrivewayLong58" type="MeshInstance3D" parent="Roads"]
-transform = Transform3D(-1.3113416e-07, 0, 3, 0, 3, 0, -3, 0, -1.3113416e-07, -5.264194, 0.11, 4.5)
-mesh = ExtResource("2_ypk4p")
-skeleton = NodePath("../..")
-
-[node name="DrivewayLong59" type="MeshInstance3D" parent="Roads"]
-transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, 4.5, 0.11, -5.689648)
-mesh = ExtResource("2_ypk4p")
-skeleton = NodePath("../..")
+[node name="Road" parent="Roads" instance=ExtResource("9_milrp")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.162345, 0.11737779, -1.6107633)
 
 [node name="Paths" type="Node3D" parent="."]
 
@@ -2409,8 +2140,6 @@ pixel_size = 0.0015
 text = "124"
 
 [node name="Hedges" type="Node3D" parent="."]
-
-[node name="Road" parent="Hedges" instance=ExtResource("11_milrp")]
 
 [node name="CornerBoxes" type="StaticBody3D" parent="."]
 

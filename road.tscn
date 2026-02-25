@@ -1,8 +1,16 @@
-[gd_scene load_steps=2 format=3 uid="uid://ret8ne1fmk7l"]
+[gd_scene load_steps=4 format=3 uid="uid://ret8ne1fmk7l"]
 
 [ext_resource type="PackedScene" uid="uid://duxalja24m173" path="res://Assets/Road.glb" id="1_x0d2t"]
+[ext_resource type="Texture2D" uid="uid://xvg1cgf6hqt3" path="res://Assets/textures/AsphaltColor.jpg" id="2_3veuu"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_bpeel"]
+albedo_texture = ExtResource("2_3veuu")
+albedo_texture_force_srgb = true
+uv1_scale = Vector3(0.8, 0.8, 14)
+uv1_triplanar = true
 
 [node name="Road" instance=ExtResource("1_x0d2t")]
 
 [node name="Cube" parent="." index="0"]
-transform = Transform3D(0.14885885, 0, 0, 0, 0.03691415, 0, 0, 0, 0.42875597, -0.36082104, 0.004298715, -0.6171237)
+transform = Transform3D(0.2559856, 0, 0, 0, 0.037060205, 0, 0, 0, 6.069557, -0.36082104, 0.004298715, -0.6171237)
+surface_material_override/0 = SubResource("StandardMaterial3D_bpeel")
