@@ -124,7 +124,7 @@ transform = Transform3D(1, 0, 0, 0, 0.98183954, 0.18971238, 0, -0.18971238, 0.98
 [node name="Camera3D" type="Camera3D" parent="Head"]
 
 [node name="RayCast3D" type="RayCast3D" parent="Head/Camera3D"]
-transform = Transform3D(50, 0, 0, 0, 50, 0, 0, 0, 1, 0, 0, -0.5)
+transform = Transform3D(50, 0, 0, 0, 50, 0, 0, 0, 0.5, 0, 0, -0.5)
 enabled = false
 exclude_parent = false
 target_position = Vector3(0, 0, -5)
