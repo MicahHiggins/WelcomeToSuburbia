@@ -9,11 +9,15 @@ extends Node
 @export var drain_per_sec: float = 10.0
 @export var recover_per_sec: float = 4.0
 
-# ✅ NEW: FX tuning (client shader reads only fx_intensity, so we reshape it here)
-@export var vignette_boost: float = 0.35          # makes edge vignette feel heavier (0.0..~1.0)
-@export var close_recover_boost: float = 2.0      # makes FX fade faster when close (1.0 = unchanged)
+# FX shaping (still only sends fx_intensity; shader does the visuals)
+@export var vignette_boost: float = 0.35          # pushes intensity up toward the high end
+@export var close_recover_boost: float = 2.0      # >1.0 = effect fades faster when close
 
-# Optional debug
+# DEBUG: force the effect on (for testing the shader)
+@export var debug_force_fx: bool = false
+@export var debug_force_intensity: float = 1.0    # 0..1
+
+# Optional debug prints
 @export var debug_print: bool = false
 @export var debug_print_every_sec: float = 1.0
 
@@ -78,12 +82,26 @@ func _server_tick(dt: float) -> void:
 
 		var partner: Node3D = by_id[nearest_id]
 
+		# DEBUG FORCE (lets you see the shader regardless of distance)
+		if debug_force_fx:
+			_send_tether_to_owner(
+				id,
+				me,
+				partner.global_position,
+				nearest_dist,
+				1.0,                 # speed_mult
+				false,               # hard_lock
+				float(_sanity[id]),  # sanity
+				clamp(debug_force_intensity, 0.0, 1.0)
+			)
+			continue
+
 		var denom: float = maxf(hard_lock_distance - effect_start_distance, 0.001)
 		var dist_factor: float = clamp((nearest_dist - effect_start_distance) / denom, 0.0, 1.0)
 
 		var s: float = float(_sanity[id])
 
-		# ✅ CHANGE: recover faster when close (and fade the effect faster too)
+		# Drain far, recover close (with faster fade when close)
 		if nearest_dist > effect_start_distance:
 			s = maxf(0.0, s - drain_per_sec * dist_factor * dt)
 		else:
@@ -96,27 +114,18 @@ func _server_tick(dt: float) -> void:
 
 		var sanity_factor: float = 1.0 - (s / 100.0)
 
-		# Base intensity (same idea as before)
+		# Base intensity
 		var fx_intensity: float = clamp(maxf(dist_factor, sanity_factor), 0.0, 1.0)
 
-		# ✅ CHANGE: push intensity up near the high end (stronger vignette feel)
-		# This makes edges feel more intense without needing to touch the shader yet.
+		# Push intensity up near high end so vignette/static feels heavier
 		fx_intensity = clamp(fx_intensity + vignette_boost * fx_intensity, 0.0, 1.0)
 
 		var speed_mult: float = lerpf(1.0, min_speed_multiplier, dist_factor)
 		var hard_lock: bool = nearest_dist >= hard_lock_distance
 
-		# If the player script doesn't have this RPC, tether can't apply
-		if not me.has_method("server_set_tether_state"):
-			if debug_print:
-				push_warning("Player missing server_set_tether_state(): " + String(me.get_path()))
-			continue
-
-		# ✅ IMPORTANT CHANGE:
-		# Always RPC to the owning client (works for host and joiners consistently).
-		me.rpc_id(
+		_send_tether_to_owner(
 			id,
-			"server_set_tether_state",
+			me,
 			partner.global_position,
 			nearest_dist,
 			speed_mult,
@@ -132,6 +141,32 @@ func _server_tick(dt: float) -> void:
 			_dbg_accum = 0.0
 			for id2: int in by_id.keys():
 				print("[Tether] id=", id2, " sanity=", _sanity[id2])
+
+func _send_tether_to_owner(
+	owner_id: int,
+	me: Node3D,
+	partner_pos: Vector3,
+	nearest_dist: float,
+	speed_mult: float,
+	hard_lock: bool,
+	sanity: float,
+	fx_intensity: float
+) -> void:
+	if not me.has_method("server_set_tether_state"):
+		if debug_print:
+			push_warning("Player missing server_set_tether_state(): " + String(me.get_path()))
+		return
+
+	me.rpc_id(
+		owner_id,
+		"server_set_tether_state",
+		partner_pos,
+		nearest_dist,
+		speed_mult,
+		hard_lock,
+		sanity,
+		fx_intensity
+	)
 
 func _player_id_from_node(p: Node) -> int:
 	# Prefer multiplayer authority (most reliable).
