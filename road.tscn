@@ -1,4 +1,4 @@
-[gd_scene load_steps=6 format=3 uid="uid://ret8ne1fmk7l"]
+[gd_scene load_steps=5 format=3 uid="uid://ret8ne1fmk7l"]
 
 [ext_resource type="PackedScene" uid="uid://duxalja24m173" path="res://Assets/Road.glb" id="1_x0d2t"]
 [ext_resource type="Texture2D" uid="uid://xvg1cgf6hqt3" path="res://Assets/textures/AsphaltColor.jpg" id="2_3veuu"]
@@ -10,24 +10,19 @@ albedo_texture_force_srgb = true
 uv1_scale = Vector3(0.8, 0.8, 14)
 uv1_triplanar = true
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_3veuu"]
-size = Vector3(0.7055664, 0.014892578, 16.275269)
-
 [sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_3veuu"]
+points = PackedVector3Array(1.2093332, -0.11638658, 1.6868038, 0.87325644, 0.15377788, 1.6868038, -1.2085254, -0.11638658, 1.6868038, 1.2093332, -0.11638658, -1, 0.87325644, 0.15377788, -1, -0.87339544, 0.15377788, 1.6868038, -1.2085254, -0.11638658, -1, -0.87339544, 0.15377788, -1)
 
 [node name="Road" instance=ExtResource("1_x0d2t")]
 transform = Transform3D(0.9156088, 0, 0, 0, 1, 0, 0, 0, 1.0095282, 0, 0, 0)
 
 [node name="Cube" parent="." index="0"]
-transform = Transform3D(0.2559856, 0, 0, 0, 0.037060205, 0, 0, 0, 6.069557, -0.36082104, 0.004298715, -0.6171237)
+transform = Transform3D(0.2302885, 0, 0, 0, 0.037060205, 0, 0, 0, 6.069557, -0.34271055, 0.004298715, -0.6171237)
 surface_material_override/0 = SubResource("StandardMaterial3D_bpeel")
 
 [node name="StaticBody3D" type="StaticBody3D" parent="." index="1"]
+transform = Transform3D(0.89961517, 0, 0, 0, 1, 0, 0, 0, 0.9999998, -0.018110463, 0, 0)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D" index="0"]
-transform = Transform3D(0.6242399, 0, 0, 0, 0.7115319, 0, 0, 0, 0.9999982, -0.3638628, 0.0059814453, 1.4890308)
-shape = SubResource("BoxShape3D_3veuu")
-
-[node name="CollisionShape3D2" type="CollisionShape3D" parent="StaticBody3D" index="1"]
-transform = Transform3D(0.99999964, 0, 0, 0, 1, 0, 0, 0, 1622.483, -0.12822556, 0.009306408, 1.5024151)
+[node name="CollisionShape3D3" type="CollisionShape3D" parent="StaticBody3D" index="0"]
+transform = Transform3D(0.25598556, 0, 0, 0, 0.037060205, 0, 0, 0, 6.069557, -0.36082104, 0.004298715, -0.6171237)
 shape = SubResource("ConvexPolygonShape3D_3veuu")

@@ -153,10 +153,10 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 0.98174417, -4.163323, 0.1166103
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 0.98174417, 4.836395, 0.10640845, -1.445493)
 
 [node name="Road3" parent="Roads" instance=ExtResource("9_milrp")]
-transform = Transform3D(-4.371139e-08, 0, 0.98174417, 0, 1, 0, -1, 0, -4.29134e-08, -1.4578216, 0.10999818, 4.177435)
+transform = Transform3D(-4.371139e-08, 0, 0.98174417, 0, 1, 0, -1, 0, -4.29134e-08, -1.4578216, 0.109, 4.177435)
 
 [node name="Road4" parent="Roads" instance=ExtResource("9_milrp")]
-transform = Transform3D(-4.371139e-08, 0, 0.98174417, 0, 1, 0, -1, 0, -4.29134e-08, -1.4578216, 0.10999818, -4.866657)
+transform = Transform3D(-4.371139e-08, 0, 0.98174417, 0, 1, 0, -1, 0, -4.29134e-08, -1.4578216, 0.109, -4.866657)
 
 [node name="Paths" type="Node3D" parent="."]
 
