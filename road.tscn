@@ -4,6 +4,7 @@
 [ext_resource type="Texture2D" uid="uid://xvg1cgf6hqt3" path="res://Assets/textures/AsphaltColor.jpg" id="2_3veuu"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_bpeel"]
+albedo_color = Color(0.74558026, 0.7455802, 0.7455802, 1)
 albedo_texture = ExtResource("2_3veuu")
 albedo_texture_force_srgb = true
 uv1_scale = Vector3(0.8, 0.8, 14)
