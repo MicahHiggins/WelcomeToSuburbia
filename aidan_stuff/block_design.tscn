@@ -12,8 +12,8 @@
 [ext_resource type="Texture2D" uid="uid://c37iickr58llo" path="res://textures/GrassTextures/GrassRoughness.png" id="6_v0qsu"]
 [ext_resource type="PackedScene" uid="uid://drk8i4p1of8ar" path="res://whitefence_1.tscn" id="6_x2lvk"]
 [ext_resource type="PackedScene" uid="uid://duxalja24m173" path="res://Assets/Road.glb" id="11_milrp"]
-[ext_resource type="PackedScene" path="res://Bush.tscn" id="12_x5kdk"]
-[ext_resource type="PackedScene" path="res://street_light.tscn" id="13_bcxsy"]
+[ext_resource type="PackedScene" uid="uid://dexa2pmw4ua8t" path="res://Bush.tscn" id="12_x5kdk"]
+[ext_resource type="PackedScene" uid="uid://cxnlf1qokkhee" path="res://street_light.tscn" id="13_bcxsy"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_rkcnq"]
 albedo_color = Color(0.60271376, 0.7674062, 0.73615, 1)
@@ -2159,6 +2159,7 @@ transform = Transform3D(0.13999991, 0, 8.058851e-05, 0, 0.13999988, 0, -8.058851
 transform = Transform3D(0.13999991, 0, 8.058851e-05, 0, 0.13999988, 0, -8.058851e-05, 0, 0.13999991, -7.794025, 0.14870933, 7.896019)
 
 [node name="Area3D" type="Area3D" parent="."]
+visible = false
 collision_layer = 0
 collision_mask = 8
 

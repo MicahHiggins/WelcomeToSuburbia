@@ -13,4 +13,6 @@ var iteration3 = 0
 var iteration4 = 0
 var iteration5 = 0
 
+var algoDebug = false
+
 signal interact
