@@ -1,4 +1,4 @@
-[gd_scene load_steps=20 format=3 uid="uid://r8vqf0qcnkdn"]
+[gd_scene load_steps=22 format=3 uid="uid://r8vqf0qcnkdn"]
 
 [ext_resource type="Script" uid="uid://4p6bc6ac8elf" path="res://aidan_stuff/block_design.gd" id="1_jmv40"]
 [ext_resource type="Texture2D" uid="uid://but80wsucm4q2" path="res://textures/GrassTextures/GrassAlbedo.png" id="2_bkv0n"]
@@ -14,6 +14,7 @@
 [ext_resource type="PackedScene" uid="uid://duxalja24m173" path="res://Assets/Road.glb" id="11_milrp"]
 [ext_resource type="PackedScene" uid="uid://dexa2pmw4ua8t" path="res://Bush.tscn" id="12_x5kdk"]
 [ext_resource type="PackedScene" uid="uid://cxnlf1qokkhee" path="res://street_light.tscn" id="13_bcxsy"]
+[ext_resource type="Script" uid="uid://dbt273cudle2e" path="res://aidan_stuff/iteration_detector.gd" id="15_v0qsu"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_rkcnq"]
 albedo_color = Color(0.60271376, 0.7674062, 0.73615, 1)
@@ -49,6 +50,9 @@ size = Vector3(60, 10, 60)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_jmv40"]
 size = Vector3(5.892517, 1.1880493, 5.880554)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_milrp"]
+size = Vector3(30, 10, 1)
 
 [node name="Block Design" type="Node3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.043141365)
@@ -2158,12 +2162,12 @@ transform = Transform3D(0.13999991, 0, 8.058851e-05, 0, 0.13999988, 0, -8.058851
 [node name="whitefence448" parent="Fences" instance=ExtResource("6_x2lvk")]
 transform = Transform3D(0.13999991, 0, 8.058851e-05, 0, 0.13999988, 0, -8.058851e-05, 0, 0.13999991, -7.794025, 0.14870933, 7.896019)
 
-[node name="Area3D" type="Area3D" parent="."]
+[node name="LoadingSystem" type="Area3D" parent="."]
 visible = false
 collision_layer = 0
 collision_mask = 8
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Area3D"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="LoadingSystem"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.8517437, 0)
 shape = SubResource("BoxShape3D_x2lvk")
 
@@ -2605,5 +2609,30 @@ transform = Transform3D(0.4, 0, 0, 0, 0.4, 0, 0, 0, 0.4, -0.059417486, -0.168638
 [node name="StreetLight8" parent="Streetlights" instance=ExtResource("13_bcxsy")]
 transform = Transform3D(0.4, 0, 0, 0, 0.4, 0, 0, 0, 0.4, -9.93085, -0.16863859, -9.929425)
 
-[connection signal="body_entered" from="Area3D" to="." method="_on_area_3d_body_entered"]
-[connection signal="body_exited" from="Area3D" to="." method="_on_area_3d_body_exited"]
+[node name="IterationDetector" type="Area3D" parent="."]
+collision_layer = 0
+collision_mask = 8
+script = ExtResource("15_v0qsu")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="IterationDetector"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.46524048, 0, -16.226234)
+shape = SubResource("BoxShape3D_milrp")
+
+[node name="CollisionShape3D2" type="CollisionShape3D" parent="IterationDetector"]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 13.913008, 0, 0)
+shape = SubResource("BoxShape3D_milrp")
+
+[node name="CollisionShape3D3" type="CollisionShape3D" parent="IterationDetector"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.685894, 0, 15.101695)
+shape = SubResource("BoxShape3D_milrp")
+
+[node name="CollisionShape3D4" type="CollisionShape3D" parent="IterationDetector"]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -15.229233, 0, 0)
+shape = SubResource("BoxShape3D_milrp")
+
+[node name="Timer" type="Timer" parent="IterationDetector"]
+
+[connection signal="body_entered" from="LoadingSystem" to="." method="_on_area_3d_body_entered"]
+[connection signal="body_exited" from="LoadingSystem" to="." method="_on_area_3d_body_exited"]
+[connection signal="body_entered" from="IterationDetector" to="IterationDetector" method="_on_body_entered"]
+[connection signal="timeout" from="IterationDetector/Timer" to="IterationDetector" method="_on_timer_timeout"]

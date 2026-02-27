@@ -15,6 +15,7 @@ var patrol_instance_campbell: Node3D = null
 var entered := false
 
 func _ready() -> void:
+	GlobalVariables.iterations = 0
 	houses.visible = false
 	roads.visible = false
 
@@ -28,10 +29,7 @@ func _on_peer_connected(peer_id: int) -> void:
 	rpc_id(peer_id, "_rpc_set_active", entered, global_transform)
 
 func _on_area_3d_body_entered(body: Node3D) -> void:
-	#print("WHAT!")
-	#print("name: ", body.name)
-	#
-	#print("name: ", body)
+
 
 	if body == null or not body.is_in_group("player"):
 		return
@@ -44,11 +42,12 @@ func _on_area_3d_body_entered(body: Node3D) -> void:
 		return
 	entered = true
 
-	GlobalVariables.iterations = GlobalVariables.iterations + 1
+	
 
 	# tell everyone to show + spawn
 	if multiplayer.has_multiplayer_peer():
 		rpc("_rpc_set_active", true, global_transform)
+		
 	else:
 		_rpc_set_active(true, global_transform)
 
@@ -74,7 +73,8 @@ func _on_area_3d_body_exited(body: Node3D) -> void:
 func _rpc_set_active(active: bool, block_xform: Transform3D) -> void:
 	houses.visible = active
 	roads.visible = active
-
+	print("SET")
+	#GlobalVariables.iterations = GlobalVariables.iterations + 1
 	if active:
 		_spawn_all(block_xform)
 	else:
@@ -117,3 +117,11 @@ func _despawn_all() -> void:
 	if patrol_instance_campbell != null and is_instance_valid(patrol_instance_campbell):
 		patrol_instance_campbell.queue_free()
 	patrol_instance_campbell = null
+
+
+func _on_iteration_detector_body_entered(body: Node3D) -> void:
+	pass # Replace with function body.
+
+
+func _on_timer_timeout() -> void:
+	pass # Replace with function body.
