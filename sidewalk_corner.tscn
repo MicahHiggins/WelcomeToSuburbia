@@ -1,0 +1,14 @@
+[gd_scene load_steps=3 format=3 uid="uid://bwm6yq7ualh21"]
+
+[ext_resource type="PackedScene" uid="uid://p46vown5mo2q" path="res://Assets/SidewalkCorner.glb" id="1_mymf7"]
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_mymf7"]
+points = PackedVector3Array(0.9999118, -2.2043953, -0.9905603, -1.0000539, -2.2043953, -0.9905603, 1.0774667, -4.531538, -0.9905603, 0.9999118, -2.2043953, -3.6904724, -1.7, -2.2043953, -1.6905065, -1.0000539, -21.721436, -0.9905603, 1.1159651, -8.366163, -0.9905603, 1.0774667, -4.531538, -3.768027, -1.7, -2.2043953, -3.6904724, -1.7, -21.721436, -1.6905065, 1.1499999, -21.721436, -0.9905603, 1.1159651, -8.366163, -3.8065257, 1.1499999, -18.263203, -0.9905603, -1.7, -4.531538, -3.768027, -1.7, -21.721436, -3.8402815, 1.1499999, -21.721436, -3.8402815, 1.1499999, -18.263203, -3.8402815, -1.7, -8.366163, -3.8065257, -1.7, -18.263203, -3.8402815)
+
+[node name="SidewalkCorner" instance=ExtResource("1_mymf7")]
+
+[node name="StaticBody3D" type="StaticBody3D" parent="." index="1"]
+transform = Transform3D(1, 0, 0, 0, 0.020591797, 0, 0, 0, 1, 0, 0.24637641, -0.00013375282)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D" index="0"]
+shape = SubResource("ConvexPolygonShape3D_mymf7")
