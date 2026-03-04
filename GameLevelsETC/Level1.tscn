@@ -8,9 +8,7 @@
 [ext_resource type="PackedScene" uid="uid://bst3bb8d7vieb" path="res://Max's Folder (do not touch!!!)/pcgRescaled.tscn" id="7_d084q"]
 [ext_resource type="Script" uid="uid://c5qchfyao7ahn" path="res://GameLevelsETC/tether_system.gd" id="7_ki0f2"]
 [ext_resource type="Texture2D" uid="uid://bh8hkhotm6bbc" path="res://Assets/Suburbia1.jpg" id="8_5owxm"]
-[ext_resource type="PackedScene" uid="uid://gxwo5ybv7v7s" path="res://Max's Folder (do not touch!!!)/DialogueManager/dialogue_manager.tscn" id="10_pyrst"]
 [ext_resource type="FontFile" uid="uid://g7ve53wy4c3c" path="res://addons/Font/MADE TOMMY Medium_PERSONAL USE.otf" id="10_vlwaf"]
-[ext_resource type="Script" uid="uid://cnfd8g3v8lobu" path="res://GameLevelsETC/pop_up.gd" id="12_dx4jt"]
 [ext_resource type="Script" uid="uid://wufby810baua" path="res://GameLevelsETC/cellar_door.gd" id="12_o8227"]
 [ext_resource type="PackedScene" uid="uid://b36mjwh3wwi6m" path="res://GameLevelsETC/Items/bat_clean.tscn" id="12_wjimw"]
 [ext_resource type="Texture2D" uid="uid://3i53ybhtpc0f" path="res://Assets/—Pngtree—vector copy icon_4013516.png" id="13_grjf3"]
@@ -46,7 +44,6 @@ sdfgi_bounce_feedback = 0.9
 glow_enabled = true
 glow_normalized = true
 glow_bloom = 0.2
-fog_enabled = true
 fog_mode = 1
 fog_light_color = Color(0, 0.6039216, 0.99215686, 1)
 fog_density = 1.0
@@ -247,40 +244,7 @@ E: Interact with NPCs"
 
 [node name="Interact" type="CanvasLayer" parent="Menu"]
 
-[node name="popUp" type="Label" parent="Menu/Interact"]
-anchors_preset = 6
-anchor_left = 1.0
-anchor_top = 0.5
-anchor_right = 1.0
-anchor_bottom = 0.5
-offset_left = -977.0
-offset_top = 152.0
-offset_right = -526.0
-offset_bottom = 214.0
-grow_horizontal = 0
-grow_vertical = 2
-theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_constants/outline_size = 6
-theme_override_fonts/font = ExtResource("10_vlwaf")
-theme_override_font_sizes/font_size = 30
-text = "Press \"f\" to interact"
-script = ExtResource("12_dx4jt")
-
 [node name="NPCDialogue" type="CanvasLayer" parent="Menu"]
-
-[node name="DialogueManager" parent="Menu/NPCDialogue" instance=ExtResource("10_pyrst")]
-anchors_preset = 7
-anchor_left = 0.5
-anchor_top = 1.0
-anchor_right = 0.5
-anchor_bottom = 1.0
-offset_left = -499.99997
-offset_top = -230.0
-offset_right = -365.0
-offset_bottom = -190.0
-grow_horizontal = 2
-grow_vertical = 0
-size_flags_horizontal = 4
 
 [node name="TetherSystem" type="Node" parent="."]
 script = ExtResource("7_ki0f2")
@@ -302,7 +266,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -32.1279, 0, -6.1118)
 mesh = SubResource("BoxMesh_o8227")
 
 [node name="StaticBody3D" type="StaticBody3D" parent="CellarDoor/MeshInstance3D"]
-collision_layer = 9
 collision_mask = 9
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="CellarDoor/MeshInstance3D/StaticBody3D"]

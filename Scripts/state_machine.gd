@@ -23,7 +23,7 @@ func _ready() -> void:
 			st.change_state.connect(change_state)
 		st.initialize()
 
-	print("[NPCStateMachine] ready on:", npc.name, " children:", get_child_count())
+	#print("[NPCStateMachine] ready on:", npc.name, " children:", get_child_count())
 	change_state(initial_state_name)
 
 func change_state(state_name: StringName, msg := {}) -> void:
@@ -40,7 +40,7 @@ func change_state(state_name: StringName, msg := {}) -> void:
 		current.exit()
 
 	current = next
-	print("[NPCStateMachine] -> ", String(state_name))
+	#print("[NPCStateMachine] -> ", String(state_name))
 	current.enter(msg)
 
 # NPC.gd calls this

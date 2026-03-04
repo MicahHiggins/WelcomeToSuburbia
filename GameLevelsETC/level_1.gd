@@ -40,6 +40,9 @@ var current_lobby_id: int = 0
 
 
 func _ready() -> void:
+	#var count = get_tree().get_nodes_in_group("player")
+	#print(count)
+	
 	# UI needs mouse visible before game starts
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 
@@ -62,6 +65,8 @@ func _ready() -> void:
 
 func _process(_delta: float) -> void:
 	# GodotSteam needs its callbacks pumped every frame.
+	#var count = get_tree().get_nodes_in_group("player")
+	#print(count.size())
 	if steam_initialized:
 		Steam.run_callbacks()
 

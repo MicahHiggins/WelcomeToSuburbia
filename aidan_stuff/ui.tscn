@@ -1,7 +1,10 @@
-[gd_scene load_steps=4 format=3 uid="uid://dwgaejjewy8s5"]
+[gd_scene load_steps=7 format=3 uid="uid://dwgaejjewy8s5"]
 
 [ext_resource type="Script" uid="uid://bbitif1hr07eg" path="res://aidan_stuff/ui.gd" id="1_8pkb0"]
 [ext_resource type="Texture2D" uid="uid://dbjeeu2hjcp4e" path="res://Assets/Arrow.png" id="2_e0qpt"]
+[ext_resource type="FontFile" uid="uid://g7ve53wy4c3c" path="res://addons/Font/MADE TOMMY Medium_PERSONAL USE.otf" id="3_q5pv1"]
+[ext_resource type="Script" uid="uid://cnfd8g3v8lobu" path="res://GameLevelsETC/pop_up.gd" id="4_n0eaf"]
+[ext_resource type="PackedScene" uid="uid://gxwo5ybv7v7s" path="res://Max's Folder (do not touch!!!)/DialogueManager/dialogue_manager.tscn" id="5_n0eaf"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_q3uk2"]
 border_width_left = 4
@@ -72,3 +75,37 @@ offset_left = 1034.0
 offset_top = 555.0
 offset_right = 1074.0
 offset_bottom = 578.0
+
+[node name="popUp" type="Label" parent="."]
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -977.0
+offset_top = 152.0
+offset_right = -526.0
+offset_bottom = 214.0
+grow_horizontal = 0
+grow_vertical = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_constants/outline_size = 6
+theme_override_fonts/font = ExtResource("3_q5pv1")
+theme_override_font_sizes/font_size = 30
+text = "Press \"f\" to interact"
+script = ExtResource("4_n0eaf")
+metadata/_edit_use_anchors_ = true
+
+[node name="DialogueManager" parent="." instance=ExtResource("5_n0eaf")]
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -499.99997
+offset_top = -230.0
+offset_right = -365.0
+offset_bottom = -190.0
+grow_horizontal = 2
+grow_vertical = 0
+size_flags_horizontal = 4
