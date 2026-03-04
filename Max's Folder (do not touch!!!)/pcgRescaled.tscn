@@ -21,7 +21,7 @@ transform = Transform3D(5, 0, 0, 0, 5, 0, 0, 0, 5, 0, 0.2705759, 0)
 shape = SubResource("BoxShape3D_2e1xa")
 
 [node name="worldBlock2" parent="." instance=ExtResource("2_1i87g")]
-transform = Transform3D(5.5, 0, 0, 0, 5.5, 0, 0, 0, 5.5, 144, 0, 0)
+transform = Transform3D(5.5, 0, 0, 0, 5.5, 0, 0, 0, 5.5, 176, 0, 0)
 
 [node name="loadZone2" type="Area3D" parent="worldBlock2"]
 collision_layer = 0

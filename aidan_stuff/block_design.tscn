@@ -2622,14 +2622,6 @@ shape = SubResource("BoxShape3D_milrp")
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 13.913008, 0, 0)
 shape = SubResource("BoxShape3D_milrp")
 
-[node name="CollisionShape3D3" type="CollisionShape3D" parent="IterationDetector"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.685894, 0, 15.101695)
-shape = SubResource("BoxShape3D_milrp")
-
-[node name="CollisionShape3D4" type="CollisionShape3D" parent="IterationDetector"]
-transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -15.229233, 0, 0)
-shape = SubResource("BoxShape3D_milrp")
-
 [node name="Timer" type="Timer" parent="IterationDetector"]
 
 [connection signal="body_entered" from="LoadingSystem" to="." method="_on_area_3d_body_entered"]

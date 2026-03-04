@@ -1,7 +1,8 @@
-[gd_scene load_steps=8 format=3 uid="uid://c5jxy2ugosnbe"]
+[gd_scene load_steps=9 format=3 uid="uid://c5jxy2ugosnbe"]
 
 [ext_resource type="Script" uid="uid://bcvvh3m8odln1" path="res://symbol_puzzle.gd" id="1_eqr3m"]
-[ext_resource type="Script" uid="uid://blttmr17ocnya" path="res://test.gd" id="2_tkebk"]
+[ext_resource type="Script" uid="uid://bxcd7murmwyid" path="res://Doer.gd" id="2_eqr3m"]
+[ext_resource type="Script" uid="uid://c34wjk21iigyp" path="res://mask_1.gd" id="3_tkebk"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_uk3cl"]
 
@@ -39,15 +40,22 @@ surface_material_override/0 = SubResource("StandardMaterial3D_tkebk")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Doer/DoArea"]
 shape = SubResource("SphereShape3D_lcf58")
 
-[node name="CanvasLayer" type="CanvasLayer" parent="."]
+[node name="CanvasLayer2" type="CanvasLayer" parent="."]
 
-[node name="Control" type="Control" parent="CanvasLayer"]
-layout_mode = 3
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
+[node name="Draw" type="ColorRect" parent="CanvasLayer2"]
+offset_left = 279.0
+offset_top = 55.0
+offset_right = 879.0
+offset_bottom = 555.0
+script = ExtResource("2_eqr3m")
 
-[node name="test" type="Node2D" parent="CanvasLayer/Control"]
-script = ExtResource("2_tkebk")
+[node name="Mask1" type="ColorRect" parent="CanvasLayer2"]
+offset_left = 283.0
+offset_top = 556.0
+offset_right = 883.0
+offset_bottom = 1056.0
+script = ExtResource("3_tkebk")
+
+[connection signal="body_entered" from="Observer/ObsArea" to="." method="_on_obs_area_body_entered"]
+[connection signal="mouse_entered" from="CanvasLayer2/Draw" to="CanvasLayer2/Draw" method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="CanvasLayer2/Draw" to="CanvasLayer2/Draw" method="_on_mouse_exited"]
