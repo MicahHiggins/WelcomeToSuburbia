@@ -1,19 +1,27 @@
-[gd_scene load_steps=3 format=3 uid="uid://dmeuxsiurwm4q"]
+[gd_scene load_steps=5 format=3 uid="uid://dmeuxsiurwm4q"]
 
 [ext_resource type="PackedScene" uid="uid://ct5iwil0t8qtd" path="res://Assets/Sidewalk.glb" id="1_8of3t"]
+[ext_resource type="Texture2D" uid="uid://cctv7nnxx45nw" path="res://Assets/textures/Concrete.jpg" id="2_ey8ku"]
 
-[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_8of3t"]
-points = PackedVector3Array(1, 1, 1.4804311, -1, 1, 1.4804311, 1, 0.612177, 1.417855, 1, 1, -1.1503394, -1, 0.612177, 1.417855, -1, 1, -1.1503394, 1, 0.19675016, 1.3331327, 1, 0.644675, -1.1503394, -1, 0.19675016, 1.3331327, -1, 0.644675, -1.1503394, 1, -1, 0.9999087, 1, -0.36981207, -1.1166049, -1, -1, 0.9999087, -1, -0.36981207, -1.1166049, 1, -1, -1.0002083, 1, -0.7629209, -1.0779778, -1, -1, -1.0002083, -1, -0.7629209, -1.0779778)
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_oqgy3"]
+albedo_color = Color(0.57254905, 0.5764706, 0.5764706, 1)
+albedo_texture = ExtResource("2_ey8ku")
+uv1_scale = Vector3(50, 1, 1)
+uv1_triplanar = true
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_ey8ku"]
+size = Vector3(1, 1.1651611, 1)
 
 [node name="Sidewalk" instance=ExtResource("1_8of3t")]
 transform = Transform3D(7.5829663, 0, 0, 0, 0.3365562, 0, 0, 0, 0.4619211, 0, 0, 0)
 
 [node name="Cube" parent="." index="0"]
-transform = Transform3D(0.50679094, 0, 0, 0, -0.15224431, 0, 0, 0, 0.39847812, 0, 0, 0)
+transform = Transform3D(0.5400609, 0, 0, 0, -0.043535586, 0, 0, 0, 0.19817726, 0, 0, 0)
+surface_material_override/0 = SubResource("StandardMaterial3D_oqgy3")
 
 [node name="StaticBody3D" type="StaticBody3D" parent="." index="1"]
-transform = Transform3D(0.50679094, 0, 0, 0, 0.7569541, 0, 0, 0, 0.39847812, 0, 0, 0)
+transform = Transform3D(0.25683707, 0, 0, 0, -0.032954436, 0, 0, 0, 0.078969315, 0, 0, 0)
 
-[node name="CollisionShape3D2" type="CollisionShape3D" parent="StaticBody3D" index="0"]
-transform = Transform3D(1, 0, 0, 0, -0.20112754, 0, 0, 0, 1, 0, 0, 0)
-shape = SubResource("ConvexPolygonShape3D_8of3t")
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D" index="0"]
+transform = Transform3D(4.1683736, 0, 0, 0, 2.2216823, 0, 0, 0, 5.708536, 0, 0.0012204014, 0)
+shape = SubResource("BoxShape3D_ey8ku")

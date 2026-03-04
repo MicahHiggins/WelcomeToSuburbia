@@ -67,7 +67,6 @@ const SERVER_ID: int = 1
 const BREATHING_THRESHOLD := 0.5  # 50%
 var breathing_active := false
 
-
 # =========================
 #         RUNTIME STATE
 # =========================
@@ -157,6 +156,7 @@ func _ready() -> void:
 	_setup_sanity_fx_ui()
 	stamina_current = stamina_max
 	_setup_stamina_ui()
+	
 	
 # =========================
 #        PATH HELPERS

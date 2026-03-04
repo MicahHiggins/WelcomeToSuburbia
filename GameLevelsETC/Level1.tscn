@@ -1,4 +1,4 @@
-[gd_scene load_steps=25 format=3 uid="uid://d1ibgfwne281y"]
+[gd_scene load_steps=27 format=3 uid="uid://d1ibgfwne281y"]
 
 [ext_resource type="Script" uid="uid://dppcbcba5rvbf" path="res://GameLevelsETC/level_1.gd" id="1_oh3op"]
 [ext_resource type="PackedScene" uid="uid://bs72ogkvdd7d6" path="res://addons/proto_controller/proto_controller.tscn" id="2_jvlpr"]
@@ -16,6 +16,8 @@
 [ext_resource type="Texture2D" uid="uid://3i53ybhtpc0f" path="res://Assets/—Pngtree—vector copy icon_4013516.png" id="13_grjf3"]
 [ext_resource type="Script" uid="uid://cjg7ws1b5cnm7" path="res://GameLevelsETC/telleport_manager.gd" id="15_vlwaf"]
 [ext_resource type="PackedScene" uid="uid://bf38tvkrxj6ds" path="res://GameLevelsETC/CellarLevel.tscn" id="16_17epn"]
+[ext_resource type="Script" uid="uid://dids50pcpisvx" path="res://GameLevelsETC/sky_billboard_rig.gd" id="17_3nbob"]
+[ext_resource type="PackedScene" uid="uid://cfb6cbspvm3ve" path="res://Assets/Billboard.glb" id="18_wg6gn"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_ki0f2"]
 sky_top_color = Color(1, 0.92156863, 0.26666668, 1)
@@ -44,7 +46,6 @@ sdfgi_bounce_feedback = 0.9
 glow_enabled = true
 glow_normalized = true
 glow_bloom = 0.2
-fog_enabled = true
 fog_mode = 1
 fog_light_color = Color(0, 0.6039216, 0.99215686, 1)
 fog_density = 1.0
@@ -267,6 +268,11 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -242.99564, 0)
 [node name="TelleportManager" type="Node3D" parent="."]
 script = ExtResource("15_vlwaf")
 cellar_scene = ExtResource("16_17epn")
+
+[node name="SkyBillboardRig" type="Node3D" parent="."]
+script = ExtResource("17_3nbob")
+
+[node name="BillboardModel" parent="SkyBillboardRig" instance=ExtResource("18_wg6gn")]
 
 [connection signal="pressed" from="Menu/CanvasLayer/Host" to="." method="_on_host_pressed"]
 [connection signal="pressed" from="Menu/CanvasLayer/Join" to="." method="_on_join_pressed"]

@@ -7,7 +7,7 @@
 albedo_color = Color(0.74558026, 0.7455802, 0.7455802, 1)
 albedo_texture = ExtResource("2_3veuu")
 albedo_texture_force_srgb = true
-uv1_scale = Vector3(0.8, 0.8, 14)
+uv1_scale = Vector3(1, 0.8, 20)
 uv1_triplanar = true
 
 [sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_3veuu"]
@@ -17,7 +17,7 @@ points = PackedVector3Array(1.2093332, -0.11638658, 1.6868038, 0.87325644, 0.153
 transform = Transform3D(0.9156088, 0, 0, 0, 1, 0, 0, 0, 1.0095282, 0, 0, 0)
 
 [node name="Cube" parent="." index="0"]
-transform = Transform3D(0.2302885, 0, 0, 0, 0.037060205, 0, 0, 0, 6.069557, -0.34271055, 0.004298715, -0.6171237)
+transform = Transform3D(0.23, 0, 0, 0, 0.037, 0, 0, 0, 6.066, -0.34271055, 0.004298715, -0.6171237)
 surface_material_override/0 = SubResource("StandardMaterial3D_bpeel")
 
 [node name="StaticBody3D" type="StaticBody3D" parent="." index="1"]
