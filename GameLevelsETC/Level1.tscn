@@ -1,4 +1,4 @@
-[gd_scene load_steps=27 format=3 uid="uid://d1ibgfwne281y"]
+[gd_scene load_steps=30 format=3 uid="uid://d1ibgfwne281y"]
 
 [ext_resource type="Script" uid="uid://dppcbcba5rvbf" path="res://GameLevelsETC/level_1.gd" id="1_oh3op"]
 [ext_resource type="PackedScene" uid="uid://bs72ogkvdd7d6" path="res://addons/proto_controller/proto_controller.tscn" id="2_jvlpr"]
@@ -46,14 +46,15 @@ sdfgi_bounce_feedback = 0.9
 glow_enabled = true
 glow_normalized = true
 glow_bloom = 0.2
+fog_enabled = true
 fog_mode = 1
 fog_light_color = Color(0, 0.6039216, 0.99215686, 1)
 fog_density = 1.0
 fog_sky_affect = 0.99
 fog_height_density = 1.0
 fog_depth_curve = 0.00023582489
-fog_depth_begin = 50.0
-fog_depth_end = 65.0
+fog_depth_begin = 60.0
+fog_depth_end = 75.0
 volumetric_fog_density = 1.0
 volumetric_fog_albedo = Color(0.4862745, 1, 0.95686275, 1)
 volumetric_fog_emission = Color(1, 1, 0.5647059, 1)
@@ -71,6 +72,44 @@ dof_blur_far_distance = 1.44
 dof_blur_near_distance = 0.01
 auto_exposure_min_sensitivity = 8.01
 
+[sub_resource type="Animation" id="Animation_3nbob"]
+resource_name = "fog_cycle"
+length = 60.0
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("WorldEnvironment:environment:fog_light_color")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 14.99, 29.99, 45, 60),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1),
+"update": 0,
+"values": [Color(0, 0.6039216, 0.99215686, 1), Color(0.21960784, 0.45882353, 0.99215686, 1), Color(0, 0.6039216, 0.99215686, 1), Color(0, 0.60784316, 0.75686276, 1), Color(0, 0.6039216, 0.99215686, 1)]
+}
+
+[sub_resource type="Animation" id="Animation_wg6gn"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("WorldEnvironment:environment:fog_light_color")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(0, 0.6039216, 0.99215686, 1)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_nlm5m"]
+_data = {
+&"RESET": SubResource("Animation_wg6gn"),
+&"fog_cycle": SubResource("Animation_3nbob")
+}
+
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_pyrst"]
 texture = ExtResource("8_5owxm")
 
@@ -80,9 +119,10 @@ texture = ExtResource("8_5owxm")
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_o8227"]
 
-[node name="Level1" type="Node3D"]
+[node name="Level1" type="Node3D" node_paths=PackedStringArray("anim")]
 script = ExtResource("1_oh3op")
 player_scene = ExtResource("2_jvlpr")
+anim = NodePath("WorldEnvironment/AnimationPlayer")
 
 [node name="PCGAttempt" parent="." instance=ExtResource("7_d084q")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.1072845, 9.536743e-07, -0.011600018)
@@ -98,6 +138,12 @@ script = ExtResource("4_d084q")
 sun_ref = NodePath("../DirectionalLight3D")
 response_speed = 0.6
 min_fog_multiplier = 0.0
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="WorldEnvironment"]
+root_node = NodePath("../..")
+libraries = {
+&"": SubResource("AnimationLibrary_nlm5m")
+}
 
 [node name="gen" type="Node3D" parent="."]
 

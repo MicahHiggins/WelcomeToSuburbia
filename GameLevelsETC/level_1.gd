@@ -36,6 +36,8 @@ var current_lobby_id: int = 0
 # LineEdit for entering / showing the lobby ID on the main menu.
 @onready var join_code_node: LineEdit = $Menu/CanvasLayer/joinCode
 
+@export var anim: AnimationPlayer
+
 
 func _ready() -> void:
 	# UI needs mouse visible before game starts
@@ -55,6 +57,7 @@ func _ready() -> void:
 	multiplayer.peer_disconnected.connect(_on_peer_disconnected)
 	multiplayer.connected_to_server.connect(_on_connected_ok)
 	multiplayer.connection_failed.connect(_on_connected_fail)
+	anim.play("fog_cycle")
 
 
 func _process(_delta: float) -> void:
