@@ -7,7 +7,9 @@
 [ext_resource type="Script" uid="uid://l6pyeyjgkntn" path="res://GameLevelsETC/item_manager.gd" id="6_gsr76"]
 [ext_resource type="PackedScene" uid="uid://bst3bb8d7vieb" path="res://Max's Folder (do not touch!!!)/pcgRescaled.tscn" id="7_d084q"]
 [ext_resource type="Script" uid="uid://c5qchfyao7ahn" path="res://GameLevelsETC/tether_system.gd" id="7_ki0f2"]
+[ext_resource type="PackedScene" uid="uid://bsrc4sxs0q266" path="res://flashlight.tscn" id="7_vlwaf"]
 [ext_resource type="Texture2D" uid="uid://bh8hkhotm6bbc" path="res://Assets/Suburbia1.jpg" id="8_5owxm"]
+[ext_resource type="PackedScene" uid="uid://bk12xaa431jqc" path="res://symbol.tscn" id="9_17epn"]
 [ext_resource type="FontFile" uid="uid://g7ve53wy4c3c" path="res://addons/Font/MADE TOMMY Medium_PERSONAL USE.otf" id="10_vlwaf"]
 [ext_resource type="Script" uid="uid://wufby810baua" path="res://GameLevelsETC/cellar_door.gd" id="12_o8227"]
 [ext_resource type="PackedScene" uid="uid://b36mjwh3wwi6m" path="res://GameLevelsETC/Items/bat_clean.tscn" id="12_wjimw"]
@@ -148,6 +150,9 @@ libraries = {
 [node name="ItemManager" type="Node" parent="."]
 script = ExtResource("6_gsr76")
 
+[node name="Flashlight" parent="ItemManager" instance=ExtResource("7_vlwaf")]
+transform = Transform3D(0.1, 0, 0, 0, 0.1, 0, 0, 0, 0.2, -3.0001316, 3.0776281, 6.752286)
+
 [node name="Bat" parent="ItemManager" instance=ExtResource("12_wjimw")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5201786, 3.1837187, -3.0952702)
 collision_mask = 11
@@ -155,6 +160,9 @@ collision_mask = 11
 [node name="Bat2" parent="ItemManager" instance=ExtResource("12_wjimw")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.4119205, 3.8536096, -2.444654)
 collision_mask = 11
+
+[node name="Symbol" parent="ItemManager" instance=ExtResource("9_17epn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.375259, 0)
 
 [node name="Menu" type="Node" parent="."]
 
