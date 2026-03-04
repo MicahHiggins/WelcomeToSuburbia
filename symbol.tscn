@@ -1,0 +1,23 @@
+[gd_scene load_steps=5 format=3 uid="uid://bk12xaa431jqc"]
+
+[ext_resource type="Script" uid="uid://dibtxmcc3x423" path="res://symbol.gd" id="1_vauly"]
+[ext_resource type="Shader" uid="uid://bmhpbpjw1o8xe" path="res://symbol.gdshader" id="2_6abkr"]
+
+[sub_resource type="TorusMesh" id="TorusMesh_i78t8"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_4vmqd"]
+render_priority = 0
+shader = ExtResource("2_6abkr")
+shader_parameter/uv_reveal = 0.0
+shader_parameter/base_tint = Color(1, 1, 1, 1)
+shader_parameter/uv_glow_color = Color(0.7, 0.25, 1, 1)
+shader_parameter/glow_strength = 3.0
+
+[node name="Symbol" type="Node3D" groups=["uv_reveal"]]
+script = ExtResource("1_vauly")
+mesh_path = NodePath("MeshInstance3D")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.08849446, -0.99607664, 0, 0.99607664, 0.08849446, 0.051041484, 0, 0)
+mesh = SubResource("TorusMesh_i78t8")
+surface_material_override/0 = SubResource("ShaderMaterial_4vmqd")
