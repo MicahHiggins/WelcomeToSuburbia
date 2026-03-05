@@ -1,4 +1,4 @@
-[gd_resource type="ArrayMesh" load_steps=14 format=4 uid="uid://c31ptvpjwvqhm"]
+[gd_resource type="ArrayMesh" load_steps=14 format=4 uid="uid://03t1d72x2w7t"]
 
 [ext_resource type="Texture2D" uid="uid://13lesnytgt5n" path="res://Assets/RandomObjects/bedrooms/bedroom_copy_4K-fabric_81_basecolor.png" id="1_4bwhw"]
 [ext_resource type="Texture2D" uid="uid://30uhqeu80mcj" path="res://Assets/RandomObjects/bedrooms/bedroom_copy_4K-fabric_81_metallic-4K-fabric_81_roughness.png" id="2_5jh4n"]
@@ -22,14 +22,17 @@ roughness = 0.68
 roughness_texture = ExtResource("2_5jh4n")
 roughness_texture_channel = 1
 normal_enabled = true
-normal_scale = -6.4
+normal_scale = -5.63
 normal_texture = ExtResource("3_j1vf8")
-uv1_scale = Vector3(7, 7, 7)
+uv1_scale = Vector3(4.075, 3.59, 5.06)
+uv1_offset = Vector3(0.385, 0, 0)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_2ajym"]
 resource_name = "Star_Ceiling"
 cull_mode = 2
+albedo_color = Color(0.65882355, 1, 1, 1)
 albedo_texture = ExtResource("4_0p36r")
+metallic_specular = 0.0
 roughness = 0.5
 uv1_scale = Vector3(3.1, 3.1999998, 1)
 uv1_offset = Vector3(0, -2.1999998, 0)
@@ -53,7 +56,7 @@ cull_mode = 2
 albedo_color = Color(0.827451, 0.77254903, 0.627451, 1)
 albedo_texture = ExtResource("8_ef1ps")
 metallic_specular = 0.0
-roughness = 0.38
+roughness = 0.0
 normal_enabled = true
 normal_scale = -0.26
 normal_texture = ExtResource("7_amwy7")

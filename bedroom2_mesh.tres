@@ -1,0 +1,141 @@
+[gd_resource type="ArrayMesh" load_steps=11 format=4 uid="uid://8p3cv0rlssn4"]
+
+[ext_resource type="Texture2D" uid="uid://dnrbx2srv4xne" path="res://Assets/RandomObjects/bedrooms/bedroom2_Star_Ceiling-7 (1).png" id="1_pc1cy"]
+[ext_resource type="Texture2D" uid="uid://c8woawwq3g2jt" path="res://Assets/RandomObjects/bedrooms/bedroom2_wave.png" id="2_ul4da"]
+[ext_resource type="Texture2D" uid="uid://ci4vo0k8s13yo" path="res://Assets/RandomObjects/bedrooms/bedroom2_Carpet005_4K_Color.jpg" id="4_wsihl"]
+[ext_resource type="Texture2D" uid="uid://cdwbkntubpg7q" path="res://Assets/RandomObjects/bedrooms/bedroom2_Carpet005_4K_Roughness.png" id="5_ij70s"]
+[ext_resource type="Texture2D" uid="uid://crn8ffce4h0dy" path="res://Assets/RandomObjects/bedrooms/bedroom2_Carpet005_4K_NormalGL.jpg" id="6_8075h"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_8btwc"]
+resource_name = "Star_Ceiling"
+cull_mode = 2
+albedo_texture = ExtResource("1_pc1cy")
+roughness = 0.5
+uv1_scale = Vector3(3.1, 3.1999998, 1)
+uv1_offset = Vector3(0, -2.1999998, 0)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_wvqdd"]
+resource_name = "Wave"
+cull_mode = 2
+albedo_color = Color(0.5804021, 0.7309269, 0.9999997, 1)
+albedo_texture = ExtResource("2_ul4da")
+metallic_specular = 0.0
+roughness = 0.0
+uv1_scale = Vector3(0.83, 0.83, 0.83)
+uv1_offset = Vector3(7.88, 8.18, 0)
+uv1_triplanar = true
+uv1_triplanar_sharpness = 0.99999464
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_8goqv"]
+albedo_color = Color(0.47868323, 0.605677, 0.8132818, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_oi8bd"]
+resource_name = "Carpet"
+cull_mode = 2
+albedo_texture = ExtResource("4_wsihl")
+metallic_texture = ExtResource("5_ij70s")
+metallic_texture_channel = 2
+roughness_texture = ExtResource("5_ij70s")
+roughness_texture_channel = 1
+normal_enabled = true
+normal_texture = ExtResource("6_8075h")
+uv1_scale = Vector3(9, 6.8999996, 1)
+uv1_offset = Vector3(0, -5.8999996, 0)
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_ue7jf"]
+_surfaces = [{
+"aabb": AABB(-3, 2.711325, -3, 6, 0.28867507, 6),
+"format": 34896613377,
+"index_count": 12,
+"index_data": PackedByteArray("AAABAAIAAAADAAEABAAFAAYABAAHAAUA"),
+"name": "Star_Ceiling",
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 8,
+"vertex_data": PackedByteArray("/////wAAAAAAAP////8AAAAA//8AAAAA////////AACt8wAAUQwAAFEMAACt8wAArfMAAK3zAABRDAAAUQwAAA==")
+}, {
+"aabb": AABB(2.711325, -3, -3, 0.28867507, 6, 6),
+"format": 34896613377,
+"index_count": 12,
+"index_data": PackedByteArray("AAABAAIAAAADAAEABAAFAAYABAAHAAUA"),
+"name": "Wave",
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 8,
+"vertex_data": PackedByteArray("//8AAAAAAAD///////8AAP////8AAAAA//8AAP//AAAAAFEMUQwAAAAArfOt8wAAAABRDK3zAAAAAK3zUQwAAA==")
+}, {
+"aabb": AABB(-3, -3, -3, 6, 6, 6),
+"format": 34896613377,
+"index_count": 96,
+"index_data": PackedByteArray("AAABAAIAAwAAAAIAAwACAAQAAAAFAAEABgABAAUABwAGAAUACAABAAYAAQAIAAkACQAKAAcABwAKAAYACQAIAAsACQALAAoACAAMAAsACgALAAwABgANAAgACAANAAwADgAGAAoACgAMAA4ABgAPAA0ADgAPAAYADAAQAA4ADwAOABAADAARABAADwAQABIAEQAMABMAEwAMAA0AEwANAA8AEwAPABIAFAATABIAFAAVABMAFgAVABQAFgAXABUA"),
+"name": "Wall",
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 24,
+"vertex_data": PackedByteArray("AAAAAP//AAAAAP//AAAAAAAA/////wAA//8AAP//AAD///////8AAAAAAAAAAAAAX22DVAAAAAD//wAAAAAAAF9toJsAAAAA/////wAAAAAJmINUAAAAAAmYoJsAAAAACZigm1EMAABfbaCbUQwAAAmYg1RRDAAAX22DVFEMAACt81EMUQwAAK3zrfNRDAAAUQxRDFEMAABRDK3zUQwAAFEMUQyt8wAAUQyt863zAACt81EMrfMAAK3zrfOt8wAA")
+}, {
+"aabb": AABB(-3, -3, -3, 6, 0.28867507, 6),
+"format": 34896613377,
+"index_count": 12,
+"index_data": PackedByteArray("AAABAAIAAAADAAEABAAFAAYABAAHAAUA"),
+"name": "Carpet",
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 8,
+"vertex_data": PackedByteArray("AAAAAAAAAAD//wAA//8AAP//AAAAAAAAAAAAAP//AABRDP//UQwAAK3z//+t8wAAUQz//63zAACt8///UQwAAA==")
+}]
+blend_shape_mode = 0
+
+[resource]
+resource_name = "bedroom2_Cube_005"
+_surfaces = [{
+"aabb": AABB(-3, 2.711325, -3, 6, 0.28867507, 6),
+"attribute_data": PackedByteArray("AobdgAHG3UABxt2AAobdQAKG3YABxt1AAobdQAHG3YA="),
+"format": 34896613399,
+"index_count": 12,
+"index_data": PackedByteArray("AAABAAIAAAADAAEABAAFAAYABAAHAAUA"),
+"material": SubResource("StandardMaterial3D_8btwc"),
+"name": "Star_Ceiling",
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 8,
+"vertex_data": PackedByteArray("/////wAA//8AAP///////wAA//8AAP////////////+t8wAAUQwAAFEMAACt8wAArfMAAK3zAABRDAAAUQwAAP9//7//f/+//3//v/9//7//f/8//3//P/9//z//f/8/")
+}, {
+"aabb": AABB(2.711325, -3, -3, 0.28867507, 6, 6),
+"attribute_data": PackedByteArray("AkbdgAKG3UACht2AAkbdQAJG3YACht1AAkbdQAKG3YA="),
+"format": 34896613399,
+"index_count": 12,
+"index_data": PackedByteArray("AAABAAIAAAADAAEABAAFAAYABAAHAAUA"),
+"material": SubResource("StandardMaterial3D_wvqdd"),
+"name": "Wave",
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 8,
+"vertex_data": PackedByteArray("//8AAAAAVNX///////9U1f////8AAFTV//8AAP//VNUAAFEMUQyqKgAArfOt86oqAABRDK3zqioAAK3zUQyqKqoqqiqqKqoqqiqqKqoqqipU1VTVVNVU1VTVVNVU1VTV")
+}, {
+"aabb": AABB(-3, -3, -3, 6, 6, 6),
+"attribute_data": PackedByteArray("oKP//zPEGuAzxP//oKMa4GGuetIzxBrgoKMa4KCjNsBtt3rSYa4pzTPENsBttynNoKNSoDPEboAzxFKgoKNugKCj//8zxBrgoKMa4DPE///Nt9jMoKM2wMqt2MzKrbnSM8Q2wKCjGuAzxBrgzbe50qCjUqAzxG6AoKNugDPEUqDeygzKcOuO1XDrDMreyo7VLPRysdv/XNHt/3ixG/RW0e3/eLE+9I6RLPRysf//lJEJ9Drx2/9c0Rv0VtHK/0Hx"),
+"format": 34896613399,
+"index_count": 96,
+"index_data": PackedByteArray("AAABAAIAAAADAAEABAAFAAYABwAEAAYACAAFAAQABwAJAAQABQAIAAoACgAJAAcACgAIAAsACgALAAkADAANAA4ADAAPAA0AEAARABIAEAATABEAFAAVABYAFwAWABUAFAAYABUAFwAVABkAGAAUABoAGgAXABkAGgAUABsAGgAbABcAHAAdAB4AHAAfAB0AIAAhACIAIAAjACEAJAAlACYAJAAnACUAKAApACoAKAArACkALAAtAC4ALAAvAC0A"),
+"material": SubResource("StandardMaterial3D_8goqv"),
+"name": "Wall",
+"primitive": 3,
+"uv_scale": Vector4(1.9648848, 2.0067682, 0, 0),
+"vertex_count": 48,
+"vertex_data": PackedByteArray("AAAAAP//VNUAAP//AABU1QAA/////1TVAAAAAAAAVNVfbYNUAAD//wAA//8AAP//AAAAAAAA/////wAAAAD//19toJsAAP//CZiDVAAA////////AAD//wmYoJsAAP////8AAP///78AAP//////v/////////+/AAAAAP///79RDFEMrfOqKlEMrfNRDKoqUQxRDFEMqipRDK3zrfOqKgmYoJtRDP8/rfNRDFEM/z8JmINUUQz/P19tg1RRDP8/rfOt81EM/z9RDFEMUQz/P1EMrfNRDP8/X22gm1EM/z+t81EMrfMAAFEMrfOt8wAAUQxRDK3zAACt863zrfMAAF9tg1QAAKoqX22gm1EMqipfbaCbAACqKl9tg1RRDKoqCZiDVAAA/z8JmKCbUQz/PwmYg1RRDP8/CZigmwAA/z8JmINUUQyaKl9tg1QAAJoqCZiDVAAAmipfbYNUUQyaKl9toJsAALoqCZigm1EMuioJmKCbAAC6Kl9toJtRDLoqVNVU1VTVVNVU1VTVVNVU1f+//7//v/+//7//v/+//7//v/+//7//v/+//7//v/+//////////////////////6oqqiqqKqoqqiqqKqoqqir///////////////////////////////////////////+//7//v/+//7//v/+//7+qKqoqqiqqKqoqqiqqKqoqt39v/7d/b/+3f2//t39v/5aqs6qWqrOqlqqzqpaqs6qgKkHVoCpB1aAqQdWgKkHV")
+}, {
+"aabb": AABB(-3, -3, -3, 6, 0.28867507, 6),
+"attribute_data": PackedByteArray("AgbdgAJG3UACRt2AAgbdQAIG3YACRt1AAgbdQAJG3YA="),
+"format": 34896613399,
+"index_count": 12,
+"index_data": PackedByteArray("AAABAAIAAAADAAEABAAFAAYABAAHAAUA"),
+"material": SubResource("StandardMaterial3D_oi8bd"),
+"name": "Carpet",
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 8,
+"vertex_data": PackedByteArray("AAAAAAAA/7///wAA////v///AAAAAP+/AAAAAP///79RDP//UQz/P63z//+t8/8/UQz//63z/z+t8///UQz/PwAA/38AAP9/AAD/fwAA/3////9/////f////3////9/")
+}]
+blend_shape_mode = 0
+shadow_mesh = SubResource("ArrayMesh_ue7jf")

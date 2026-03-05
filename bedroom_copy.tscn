@@ -1,7 +1,7 @@
-[gd_scene load_steps=3 format=3 uid="uid://dcbrceljwvjv2"]
+[gd_scene load_steps=3 format=3 uid="uid://becgpkre4p052"]
 
 [ext_resource type="PackedScene" uid="uid://cqfsny6hqv4wa" path="res://Assets/RandomObjects/bedrooms/bedroom_copy.glb" id="1_3r7hy"]
-[ext_resource type="ArrayMesh" uid="uid://c31ptvpjwvqhm" path="res://textures/new_array_mesh.tres" id="2_rouco"]
+[ext_resource type="ArrayMesh" path="res://textures/new_array_mesh.tres" id="2_rouco"]
 
 [node name="bedroom_copy" instance=ExtResource("1_3r7hy")]
 
