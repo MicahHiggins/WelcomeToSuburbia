@@ -129,22 +129,22 @@ func _on_load_zone_5_body_entered(body: Node3D) -> void:
 		iteration5 = 0
 	print("numba 4")
 
-
-func _on_load_zone_1_body_exited(body: Node3D) -> void:
-	iteration1 = 0
-
-
-func _on_load_zone_2_body_exited(body: Node3D) -> void:
-	iteration2 = 0
-
-
-func _on_load_zone_3_body_exited(body: Node3D) -> void:
-	iteration3 = 0
-
-
-func _on_load_zone_4_body_exited(body: Node3D) -> void:
-	iteration4 = 0
-
-
-func _on_load_zone_5_body_exited(body: Node3D) -> void:
-	iteration5 = 0
+#
+#func _on_load_zone_1_body_exited(body: Node3D) -> void:
+	#iteration1 = 0
+#
+#
+#func _on_load_zone_2_body_exited(body: Node3D) -> void:
+	#iteration2 = 0
+#
+#
+#func _on_load_zone_3_body_exited(body: Node3D) -> void:
+	#iteration3 = 0
+#
+#
+#func _on_load_zone_4_body_exited(body: Node3D) -> void:
+	#iteration4 = 0
+#
+#
+#func _on_load_zone_5_body_exited(body: Node3D) -> void:
+	#iteration5 = 0
