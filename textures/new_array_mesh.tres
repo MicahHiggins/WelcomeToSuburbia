@@ -1,0 +1,159 @@
+[gd_resource type="ArrayMesh" load_steps=14 format=4 uid="uid://c31ptvpjwvqhm"]
+
+[ext_resource type="Texture2D" uid="uid://13lesnytgt5n" path="res://Assets/RandomObjects/bedrooms/bedroom_copy_4K-fabric_81_basecolor.png" id="1_4bwhw"]
+[ext_resource type="Texture2D" uid="uid://30uhqeu80mcj" path="res://Assets/RandomObjects/bedrooms/bedroom_copy_4K-fabric_81_metallic-4K-fabric_81_roughness.png" id="2_5jh4n"]
+[ext_resource type="Texture2D" uid="uid://fydkcr3xjrlp" path="res://Assets/RandomObjects/bedrooms/bedroom_copy_4K-fabric_81_normal.png" id="3_j1vf8"]
+[ext_resource type="Texture2D" uid="uid://f4b5veuewpb0" path="res://Assets/RandomObjects/bedrooms/bedroom_copy_Star_Ceiling-7 (1).png" id="4_0p36r"]
+[ext_resource type="Texture2D" uid="uid://dgpw3v0b0xlhf" path="res://Assets/RandomObjects/bedrooms/bedroom_copy_Carpet009_4K_Color.jpg" id="5_gpkcu"]
+[ext_resource type="Texture2D" uid="uid://b7ibn5ee55e4b" path="res://Assets/RandomObjects/bedrooms/bedroom_copy_Carpet009_4K_Roughness.png" id="6_jlyjh"]
+[ext_resource type="Texture2D" uid="uid://cwqmwqfdnpwj8" path="res://Assets/RandomObjects/bedrooms/bedroom_copy_Carpet009_4K_NormalGL.jpg" id="7_amwy7"]
+[ext_resource type="Texture2D" uid="uid://wjfobyuf22s1" path="res://Assets/RandomObjects/bedrooms/bedroom_copy_new_wall_texture.jpg" id="8_ef1ps"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_wvnqn"]
+resource_name = "Flower"
+cull_mode = 2
+albedo_color = Color(0.8977511, 0.9189107, 0.93248755, 1)
+albedo_texture = ExtResource("1_4bwhw")
+metallic = 1.0
+metallic_specular = 0.0
+metallic_texture = ExtResource("2_5jh4n")
+metallic_texture_channel = 2
+roughness = 0.68
+roughness_texture = ExtResource("2_5jh4n")
+roughness_texture_channel = 1
+normal_enabled = true
+normal_scale = -6.4
+normal_texture = ExtResource("3_j1vf8")
+uv1_scale = Vector3(7, 7, 7)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_2ajym"]
+resource_name = "Star_Ceiling"
+cull_mode = 2
+albedo_texture = ExtResource("4_0p36r")
+roughness = 0.5
+uv1_scale = Vector3(3.1, 3.1999998, 1)
+uv1_offset = Vector3(0, -2.1999998, 0)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_e5keo"]
+resource_name = "Carpet"
+cull_mode = 2
+albedo_texture = ExtResource("5_gpkcu")
+metallic_texture = ExtResource("6_jlyjh")
+metallic_texture_channel = 2
+roughness_texture = ExtResource("6_jlyjh")
+roughness_texture_channel = 1
+normal_enabled = true
+normal_texture = ExtResource("7_amwy7")
+uv1_scale = Vector3(9.099999, 8.599999, 1)
+uv1_offset = Vector3(-6.081118, -5.0811176, 0)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_upsd2"]
+resource_name = "Wall"
+cull_mode = 2
+albedo_color = Color(0.827451, 0.77254903, 0.627451, 1)
+albedo_texture = ExtResource("8_ef1ps")
+metallic_specular = 0.0
+roughness = 0.38
+normal_enabled = true
+normal_scale = -0.26
+normal_texture = ExtResource("7_amwy7")
+uv1_scale = Vector3(-4, 10.5, 1.68)
+uv1_offset = Vector3(0, -5.25, 0)
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_2wqfc"]
+_surfaces = [{
+"aabb": AABB(2.711325, -3, -3, 0.28867507, 6, 6),
+"format": 34896613377,
+"index_count": 12,
+"index_data": PackedByteArray("AAABAAIAAAADAAEABAAFAAYABAAHAAUA"),
+"name": "Flower",
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 8,
+"vertex_data": PackedByteArray("//8AAAAAAAD///////8AAP////8AAAAA//8AAP//AAAAAFEMUQwAAAAArfOt8wAAAABRDK3zAAAAAK3zUQwAAA==")
+}, {
+"aabb": AABB(-3, 2.711325, -3, 6, 0.28867507, 6),
+"format": 34896613377,
+"index_count": 12,
+"index_data": PackedByteArray("AAABAAIAAAADAAEABAAFAAYABAAHAAUA"),
+"name": "Star_Ceiling",
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 8,
+"vertex_data": PackedByteArray("/////wAAAAAAAP////8AAAAA//8AAAAA////////AACt8wAAUQwAAFEMAACt8wAArfMAAK3zAABRDAAAUQwAAA==")
+}, {
+"aabb": AABB(-3, -3, -3, 6, 0.28867507, 6),
+"format": 34896613377,
+"index_count": 12,
+"index_data": PackedByteArray("AAABAAIAAAADAAEABAAFAAYABAAHAAUA"),
+"name": "Carpet",
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 8,
+"vertex_data": PackedByteArray("AAAAAAAAAAD//wAA//8AAP//AAAAAAAAAAAAAP//AABRDP//UQwAAK3z//+t8wAAUQz//63zAACt8///UQwAAA==")
+}, {
+"aabb": AABB(-3, -3, -3, 6, 6, 6),
+"format": 34896613377,
+"index_count": 96,
+"index_data": PackedByteArray("AAABAAIAAwAAAAIAAwACAAQAAAAFAAEABgABAAUABwAGAAUACAABAAYAAQAIAAkACQAKAAcABwAKAAYACQAIAAsACQALAAoACAAMAAsACgALAAwABgANAAgACAANAAwADgAGAAoACgAMAA4ABgAPAA0ADgAPAAYADAAQAA4ADwAOABAADAARABAADwAQABIAEQAMABMAEwAMAA0AEwANAA8AEwAPABIAFAATABIAFAAVABMAFgAVABQAFgAXABUA"),
+"name": "Wall",
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 24,
+"vertex_data": PackedByteArray("AAAAAP//AAAAAP//AAAAAAAA/////wAA//8AAP//AAD///////8AAAAAAAAAAAAAX22DVAAAAAD//wAAAAAAAF9toJsAAAAA/////wAAAAAJmINUAAAAAAmYoJsAAAAACZigm1EMAABfbaCbUQwAAAmYg1RRDAAAX22DVFEMAACt81EMUQwAAK3zrfNRDAAAUQxRDFEMAABRDK3zUQwAAFEMUQyt8wAAUQyt863zAACt81EMrfMAAK3zrfOt8wAA")
+}]
+blend_shape_mode = 0
+
+[resource]
+resource_name = "bedroom_copy_Cube_005"
+_surfaces = [{
+"aabb": AABB(2.711325, -3, -3, 0.28867507, 6, 6),
+"attribute_data": PackedByteArray("/1//f/+f/z//n/9//1//P/9f/3//n/8//1//P/+f/38="),
+"format": 34896613399,
+"index_count": 12,
+"index_data": PackedByteArray("AAABAAIAAAADAAEABAAFAAYABAAHAAUA"),
+"material": SubResource("StandardMaterial3D_wvnqn"),
+"name": "Flower",
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 8,
+"vertex_data": PackedByteArray("//8AAAAAVNX///////9U1f////8AAFTV//8AAP//VNUAAFEMUQyqKgAArfOt86oqAABRDK3zqioAAK3zUQyqKqoqqiqqKqoqqiqqKqoqqipU1VTVVNVU1VTVVNVU1VTV")
+}, {
+"aabb": AABB(-3, 2.711325, -3, 6, 0.28867507, 6),
+"attribute_data": PackedByteArray("/5//f//f/z//3/9//5//P/+f/3//3/8//5//P//f/38="),
+"format": 34896613399,
+"index_count": 12,
+"index_data": PackedByteArray("AAABAAIAAAADAAEABAAFAAYABAAHAAUA"),
+"material": SubResource("StandardMaterial3D_2ajym"),
+"name": "Star_Ceiling",
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 8,
+"vertex_data": PackedByteArray("/////wAA//8AAP///////wAA//8AAP////////////+t8wAAUQwAAFEMAACt8wAArfMAAK3zAABRDAAAUQwAAP9//7//f/+//3//v/9//7//f/8//3//P/9//z//f/8/")
+}, {
+"aabb": AABB(-3, -3, -3, 6, 0.28867507, 6),
+"attribute_data": PackedByteArray("/x//f/9f/z//X/9//x//P/8f/3//X/8//x//P/9f/38="),
+"format": 34896613399,
+"index_count": 12,
+"index_data": PackedByteArray("AAABAAIAAAADAAEABAAFAAYABAAHAAUA"),
+"material": SubResource("StandardMaterial3D_e5keo"),
+"name": "Carpet",
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 8,
+"vertex_data": PackedByteArray("AAAAAAAA/7///wAA////v///AAAAAP+/AAAAAP///79RDP//UQz/P63z//+t8/8/UQz//63z/z+t8///UQz/PwAA/38AAP9/AAD/fwAA/3////9/////f////3////9/")
+}, {
+"aabb": AABB(-3, -3, -3, 6, 6, 6),
+"attribute_data": PackedByteArray("/1////+f/7//n////1//vyB1p6T/n/+//1//v/9f/3/nhqekIHX8mf+f/3/nhvyZ/1//P/+fAAD/n/8//18AAP9f////n/+//1//v/+f//+jh1mZ/1//f/hzWZn4cyal/5//f/9f/7//n/+/o4cmpf9f/z//nwAA/18AAP+f/z+cEdbgnFHu95xR1uCcEe733OOsd+n6sLf0+rB30eOst/T6sHfn46w33OOsd//6sDfG46v36fqwt9HjrLfe+q/3"),
+"format": 34896613399,
+"index_count": 96,
+"index_data": PackedByteArray("AAABAAIAAAADAAEABAAFAAYABwAEAAYACAAFAAQABwAJAAQABQAIAAoACgAJAAcACgAIAAsACgALAAkADAANAA4ADAAPAA0AEAARABIAEAATABEAFAAVABYAFwAWABUAFAAYABUAFwAVABkAGAAUABoAGgAXABkAGgAUABsAGgAbABcAHAAdAB4AHAAfAB0AIAAhACIAIAAjACEAJAAlACYAJAAnACUAKAApACoAKAArACkALAAtAC4ALAAvAC0A"),
+"material": SubResource("StandardMaterial3D_upsd2"),
+"name": "Wall",
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 48,
+"vertex_data": PackedByteArray("AAAAAP//VNUAAP//AABU1QAA/////1TVAAAAAAAAVNVfbYNUAAD//wAA//8AAP//AAAAAAAA/////wAAAAD//19toJsAAP//CZiDVAAA////////AAD//wmYoJsAAP////8AAP///78AAP//////v/////////+/AAAAAP///79RDFEMrfOqKlEMrfNRDKoqUQxRDFEMqipRDK3zrfOqKgmYoJtRDP8/rfNRDFEM/z8JmINUUQz/P19tg1RRDP8/rfOt81EM/z9RDFEMUQz/P1EMrfNRDP8/X22gm1EM/z+t81EMrfMAAFEMrfOt8wAAUQxRDK3zAACt863zrfMAAF9tg1QAAKoqX22gm1EMqipfbaCbAACqKl9tg1RRDKoqCZiDVAAA/z8JmKCbUQz/PwmYg1RRDP8/CZigmwAA/z8JmINUUQylKl9tg1QAAKUqCZiDVAAApSpfbYNUUQylKl9toJsAAK8qCZigm1EMryoJmKCbAACvKl9toJtRDK8qVNVU1VTVVNVU1VTVVNVU1f+//7//v/+//7//v/+//7//v/+//7//v/+//7//v/+//////////////////////6oqqiqqKqoqqiqqKqoqqir///////////////////////////////////////////+//7//v/+//7//v/+//7+qKqoqqiqqKqoqqiqqKqoq6H/R/+h/0f/of9H/6H/R/6Oqraqjqq2qo6qtqqOqraqnKk7VpypO1acqTtWnKk7V")
+}]
+blend_shape_mode = 0
+shadow_mesh = SubResource("ArrayMesh_2wqfc")

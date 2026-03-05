@@ -16,7 +16,7 @@
 [ext_resource type="PackedScene" uid="uid://c23ew22eosded" path="res://Short_sidewalk.tscn" id="10_rkcnq"]
 [ext_resource type="PackedScene" uid="uid://dexa2pmw4ua8t" path="res://Bush.tscn" id="12_x5kdk"]
 [ext_resource type="PackedScene" uid="uid://cxnlf1qokkhee" path="res://street_light.tscn" id="13_bcxsy"]
-[ext_resource type="Script" uid="uid://dbt273cudle2e" path="res://aidan_stuff/iteration_detector.gd" id="15_v0qsu"]
+[ext_resource type="Script" path="res://aidan_stuff/iteration_detector.gd" id="15_v0qsu"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_rkcnq"]
 albedo_color = Color(0.60271376, 0.7674062, 0.73615, 1)
