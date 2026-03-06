@@ -1,0 +1,990 @@
+[gd_scene load_steps=24 format=3 uid="uid://dxcch8qmbgxvs"]
+
+[ext_resource type="PackedScene" uid="uid://bs2jm62cmkbrk" path="res://addons/instant-realistic-light/light_scene.tscn" id="1_qci02"]
+[ext_resource type="PackedScene" uid="uid://becgpkre4p052" path="res://bedroom_copy.tscn" id="1_qogrp"]
+[ext_resource type="Script" uid="uid://bkb35cbdsgdbh" path="res://addons/instant-realistic-light/light_scene.gd" id="2_emiaf"]
+[ext_resource type="PackedScene" uid="uid://d0082o2yj0qb2" path="res://bedroom_2.tscn" id="2_rbxy2"]
+[ext_resource type="PackedScene" uid="uid://bs72ogkvdd7d6" path="res://addons/proto_controller/proto_controller.tscn" id="4_5540h"]
+[ext_resource type="PackedScene" uid="uid://c4o2j15yoqaln" path="res://HouseModel/surb_house_v_1.tscn" id="5_qci02"]
+[ext_resource type="Texture2D" uid="uid://but80wsucm4q2" path="res://textures/GrassTextures/GrassAlbedo.png" id="6_ynj4c"]
+[ext_resource type="Texture2D" uid="uid://do7xmc15vdxif" path="res://textures/GrassTextures/GrassAO.png" id="7_jxbfd"]
+[ext_resource type="Texture2D" uid="uid://cgxv1p4pfa1ju" path="res://textures/GrassTextures/GrassTransluc.png" id="8_et2vk"]
+[ext_resource type="Texture2D" uid="uid://btkv156gx2ymr" path="res://textures/GrassTextures/GrassNormal.png" id="9_aosf6"]
+[ext_resource type="Texture2D" uid="uid://c37iickr58llo" path="res://textures/GrassTextures/GrassRoughness.png" id="10_1r6ai"]
+[ext_resource type="PackedScene" uid="uid://drk8i4p1of8ar" path="res://whitefence_1.tscn" id="11_jxbfd"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_qci02"]
+sky_top_color = Color(1, 0.92156863, 0.26666668, 1)
+sky_horizon_color = Color(0.76312476, 0.6242516, 0.5129601, 1)
+sky_curve = 0.026516547
+sky_energy_multiplier = 0.4
+ground_bottom_color = Color(0.16964138, 0.17850074, 0.15653285, 1)
+ground_horizon_color = Color(0, 0.73333335, 0.99215686, 1)
+sun_angle_max = 100.0
+sun_curve = 0.058843866
+
+[sub_resource type="Sky" id="Sky_emiaf"]
+sky_material = SubResource("ProceduralSkyMaterial_qci02")
+radiance_size = 2
+
+[sub_resource type="Environment" id="Environment_rjnlh"]
+background_mode = 2
+background_intensity = 100000.0
+sky = SubResource("Sky_emiaf")
+tonemap_mode = 3
+tonemap_white = 8.0
+ssao_enabled = true
+ssao_detail = 2.0
+sdfgi_enabled = true
+sdfgi_bounce_feedback = 0.9
+glow_enabled = true
+glow_normalized = true
+glow_bloom = 0.2
+fog_mode = 1
+fog_light_color = Color(0, 0.6039216, 0.99215686, 1)
+fog_density = 1.0
+fog_sky_affect = 0.99
+fog_height_density = 1.0
+fog_depth_curve = 0.00023582489
+fog_depth_begin = 60.0
+fog_depth_end = 75.0
+volumetric_fog_density = 1.0
+volumetric_fog_albedo = Color(0.4862745, 1, 0.95686275, 1)
+volumetric_fog_emission = Color(1, 1, 0.5647059, 1)
+volumetric_fog_emission_energy = 5.0
+volumetric_fog_gi_inject = 16.0
+volumetric_fog_ambient_inject = 3.1
+volumetric_fog_sky_affect = 0.295
+adjustment_saturation = 1.17
+
+[sub_resource type="CameraAttributesPractical" id="CameraAttributesPractical_ed1y8"]
+exposure_multiplier = 3.069
+auto_exposure_scale = 0.22
+auto_exposure_speed = 0.8
+dof_blur_far_distance = 1.44
+dof_blur_near_distance = 0.01
+auto_exposure_min_sensitivity = 8.01
+
+[sub_resource type="Animation" id="Animation_wg6gn"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("WorldEnvironment:environment:fog_light_color")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(0, 0.6039216, 0.99215686, 1)]
+}
+
+[sub_resource type="Animation" id="Animation_3nbob"]
+resource_name = "fog_cycle"
+length = 60.0
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("WorldEnvironment:environment:fog_light_color")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 14.99, 29.99, 45, 60),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1),
+"update": 0,
+"values": [Color(0, 0.6039216, 0.99215686, 1), Color(0.21960784, 0.45882353, 0.99215686, 1), Color(0, 0.6039216, 0.99215686, 1), Color(0, 0.60784316, 0.75686276, 1), Color(0, 0.6039216, 0.99215686, 1)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_nlm5m"]
+_data = {
+&"RESET": SubResource("Animation_wg6gn"),
+&"fog_cycle": SubResource("Animation_3nbob")
+}
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_5540h"]
+size = Vector3(10.073151, 1.2070313, 10.223694)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_2lyw5"]
+size = Vector3(10.811035, 6.757904, 0.5205078)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_rkcnq"]
+albedo_color = Color(0.60271376, 0.7674062, 0.73615, 1)
+albedo_texture = ExtResource("6_ynj4c")
+metallic = 0.69
+metallic_specular = 0.18
+metallic_texture = ExtResource("8_et2vk")
+roughness = 0.7
+roughness_texture = ExtResource("10_1r6ai")
+roughness_texture_channel = 1
+normal_enabled = true
+normal_scale = -1.89
+normal_texture = ExtResource("9_aosf6")
+ao_enabled = true
+ao_light_affect = 0.61
+ao_texture = ExtResource("7_jxbfd")
+ao_on_uv2 = true
+ao_texture_channel = 1
+heightmap_enabled = true
+heightmap_scale = 2.45
+uv1_scale = Vector3(25, 25, 25)
+uv2_scale = Vector3(15, 15, 15)
+
+[sub_resource type="BoxMesh" id="BoxMesh_so2gl"]
+material = SubResource("StandardMaterial3D_rkcnq")
+size = Vector3(16, 5, 16)
+
+[node name="Kidnap" type="Node3D"]
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(-1, -8.7422784e-08, 0, 5.2612343e-08, -0.60181504, 0.79863554, -6.981894e-08, 0.79863554, 0.60181504, 0, 14.722999, 0)
+light_energy = 0.0
+
+[node name="WorldEnvironment" parent="." node_paths=PackedStringArray("sun_ref") instance=ExtResource("1_qci02")]
+environment = SubResource("Environment_rjnlh")
+camera_attributes = SubResource("CameraAttributesPractical_ed1y8")
+script = ExtResource("2_emiaf")
+sun_ref = NodePath("../DirectionalLight3D")
+response_speed = 0.6
+min_fog_multiplier = 0.0
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="WorldEnvironment"]
+root_node = NodePath("../..")
+libraries = {
+&"": SubResource("AnimationLibrary_nlm5m")
+}
+
+[node name="Bedrooms" type="Node3D" parent="."]
+transform = Transform3D(1.4, 0, 0, 0, 1.4, 0, 0, 0, 1.4, 0, 0, 0)
+
+[node name="bedroom_copy" parent="Bedrooms" instance=ExtResource("1_qogrp")]
+transform = Transform3D(1, 0, 0, 0, 0.8, 0, 0, 0, 1, 0, 0, 9)
+
+[node name="Collisions" type="StaticBody3D" parent="Bedrooms/bedroom_copy"]
+
+[node name="CollisionShape3D6" type="CollisionShape3D" parent="Bedrooms/bedroom_copy/Collisions"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.022476196, -3.4390893, 16.614336)
+shape = SubResource("BoxShape3D_5540h")
+
+[node name="CollisionShape3D7" type="CollisionShape3D" parent="Bedrooms/bedroom_copy/Collisions"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0715332, -0.08985901, 21.688211)
+shape = SubResource("BoxShape3D_2lyw5")
+
+[node name="CollisionShape3D8" type="CollisionShape3D" parent="Bedrooms/bedroom_copy/Collisions"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0715332, -0.08985901, 11.609346)
+shape = SubResource("BoxShape3D_2lyw5")
+
+[node name="CollisionShape3D9" type="CollisionShape3D" parent="Bedrooms/bedroom_copy/Collisions"]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -5.107387, -0.08985901, 16.950623)
+shape = SubResource("BoxShape3D_2lyw5")
+
+[node name="CollisionShape3D10" type="CollisionShape3D" parent="Bedrooms/bedroom_copy/Collisions"]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 5.098427, -0.08985901, 16.950623)
+shape = SubResource("BoxShape3D_2lyw5")
+
+[node name="bedroom2" parent="Bedrooms" instance=ExtResource("2_rbxy2")]
+transform = Transform3D(-1, 0, -1.509958e-07, 0, 0.8, 0, 1.509958e-07, 0, -1, 0, 0, -9)
+
+[node name="Collisions" type="StaticBody3D" parent="Bedrooms/bedroom2"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Bedrooms/bedroom2/Collisions"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.022476196, -3.4390893, -16.91301)
+shape = SubResource("BoxShape3D_5540h")
+
+[node name="CollisionShape3D2" type="CollisionShape3D" parent="Bedrooms/bedroom2/Collisions"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0715332, -0.08985901, -11.839134)
+shape = SubResource("BoxShape3D_2lyw5")
+
+[node name="CollisionShape3D3" type="CollisionShape3D" parent="Bedrooms/bedroom2/Collisions"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0715332, -0.08985901, -21.918)
+shape = SubResource("BoxShape3D_2lyw5")
+
+[node name="CollisionShape3D4" type="CollisionShape3D" parent="Bedrooms/bedroom2/Collisions"]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -5.107387, -0.08985901, -16.576723)
+shape = SubResource("BoxShape3D_2lyw5")
+
+[node name="CollisionShape3D5" type="CollisionShape3D" parent="Bedrooms/bedroom2/Collisions"]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 5.098427, -0.08985901, -16.576723)
+shape = SubResource("BoxShape3D_2lyw5")
+
+[node name="Neighborhood" type="Node3D" parent="."]
+
+[node name="SurbHouseV1" parent="Neighborhood" instance=ExtResource("5_qci02")]
+transform = Transform3D(-7.583926e-08, 0, -1.293, 0, 0.663, 0, 1.735, 0, -5.6518825e-08, -6.0837693, -5.9382663, -17.641933)
+
+[node name="SurbHouseV2" parent="Neighborhood" instance=ExtResource("5_qci02")]
+transform = Transform3D(-7.583926e-08, 0, 1.293, 0, 0.663, 0, -1.735, 0, -5.6518825e-08, -6.0837693, -5.9382663, 17.262146)
+
+[node name="SurbHouseV3" parent="Neighborhood" instance=ExtResource("5_qci02")]
+transform = Transform3D(-7.583926e-08, 0, -1.293, 0, 0.663, 0, 1.735, 0, -5.6518825e-08, 32.573822, -5.9382663, -17.641933)
+
+[node name="SurbHouseV4" parent="Neighborhood" instance=ExtResource("5_qci02")]
+transform = Transform3D(-7.583926e-08, 0, -1.293, 0, 0.663, 0, 1.735, 0, -5.6518825e-08, -44.517834, -5.9382663, -17.641933)
+
+[node name="SurbHouseV5" parent="Neighborhood" instance=ExtResource("5_qci02")]
+transform = Transform3D(-7.583926e-08, 0, 1.293, 0, 0.663, 0, -1.735, 0, -5.6518825e-08, -44.570045, -5.9382663, 17.262146)
+
+[node name="SurbHouseV6" parent="Neighborhood" instance=ExtResource("5_qci02")]
+transform = Transform3D(-7.583926e-08, 0, 1.293, 0, 0.663, 0, -1.735, 0, -5.6518825e-08, 32.66655, -5.9382663, 17.262146)
+
+[node name="SurbHouseV7" parent="Neighborhood" instance=ExtResource("5_qci02")]
+transform = Transform3D(-7.583926e-08, 0, 1.883, 0, 0.663, 0, -1.735, 0, -8.2308546e-08, 75.69535, -5.9382663, 17.262146)
+
+[node name="SurbHouseV8" parent="Neighborhood" instance=ExtResource("5_qci02")]
+transform = Transform3D(-7.583926e-08, 0, 1.883, 0, 0.663, 0, -1.735, 0, -8.2308546e-08, -88.741936, -5.9382663, 17.262146)
+
+[node name="SurbHouseV9" parent="Neighborhood" instance=ExtResource("5_qci02")]
+transform = Transform3D(-7.583926e-08, 0, -1.883, 0, 0.663, 0, 1.735, 0, -8.2308546e-08, 75.42429, -5.9382663, -17.641933)
+
+[node name="SurbHouseV10" parent="Neighborhood" instance=ExtResource("5_qci02")]
+transform = Transform3D(-7.583926e-08, 0, -1.883, 0, 0.663, 0, 1.735, 0, -8.2308546e-08, -88.58339, -5.9382663, -17.641933)
+
+[node name="SurbHouseV11" parent="Neighborhood" instance=ExtResource("5_qci02")]
+transform = Transform3D(-7.583926e-08, 0, -5.263, 0, 0.663, 0, 1.735, 0, -2.3005303e-07, -176.56937, -5.9382663, -17.641933)
+
+[node name="SurbHouseV12" parent="Neighborhood" instance=ExtResource("5_qci02")]
+transform = Transform3D(-7.583926e-08, 0, -5.263, 0, 0.663, 0, 1.735, 0, -2.3005303e-07, 173.01607, -5.9382663, -17.641933)
+
+[node name="SurbHouseV13" parent="Neighborhood" instance=ExtResource("5_qci02")]
+transform = Transform3D(-7.583926e-08, 0, 5.263, 0, 0.663, 0, -1.735, 0, -2.3005303e-07, -177.00809, -5.9382663, 17.262146)
+
+[node name="Grass" type="MeshInstance3D" parent="Neighborhood"]
+transform = Transform3D(40, 0, 0, 0, 20, 0, 0, 0, 20, 0, -55.44985, 0)
+mesh = SubResource("BoxMesh_so2gl")
+metadata/_edit_lock_ = true
+
+[node name="Fences" type="Node3D" parent="Neighborhood"]
+transform = Transform3D(4.85, 0, 0, 0, 4.85, 0, 0, 0, 4.85, 0, -6.243273, 0)
+
+[node name="whitefence1" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(0.14, 0, 0, 0, 0.14, 0, 0, 0, 0.14, 7.177611, 0.14870933, -0.003405422)
+
+[node name="whitefence2" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(0.14, 0, 0, 0, 0.14, 0, 0, 0, 0.14, 6.4465785, 0.14870933, -0.003405422)
+
+[node name="whitefence3" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(0.14, 0, 0, 0, 0.14, 0, 0, 0, 0.14, 5.7130203, 0.14870933, -0.003405422)
+
+[node name="whitefence4" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(0.14, 0, 0, 0, 0.14, 0, 0, 0, 0.14, 4.981988, 0.14870933, -0.003405422)
+
+[node name="whitefence5" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(0.14, 0, 0, 0, 0.14, 0, 0, 0, 0.14, 4.2401857, 0.14870933, -0.003405422)
+
+[node name="whitefence6" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(0.14, 0, 0, 0, 0.14, 0, 0, 0, 0.14, 3.5091536, 0.14870933, -0.003405422)
+
+[node name="whitefence7" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(0.14, 0, 0, 0, 0.14, 0, 0, 0, 0.14, 2.7755954, 0.14870933, -0.003405422)
+
+[node name="whitefence8" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(0.14, 0, 0, 0, 0.14, 0, 0, 0, 0.14, 2.044563, 0.14870933, -0.003405422)
+
+[node name="whitefence9" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(0.14, 0, 0, 0, 0.14, 0, 0, 0, 0.14, 1.302072, 0.14870933, -0.003405422)
+
+[node name="whitefence10" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(0.14, 0, 0, 0, 0.14, 0, 0, 0, 0.14, 0.5710397, 0.14870933, -0.003405422)
+
+[node name="whitefence11" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(0.14, 0, 0, 0, 0.14, 0, 0, 0, 0.14, -0.1625185, 0.14870933, -0.003405422)
+
+[node name="whitefence12" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(0.14, 0, 0, 0, 0.14, 0, 0, 0, 0.14, -0.8935509, 0.14870933, -0.003405422)
+
+[node name="whitefence13" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(0.14, 0, 0, 0, 0.14, 0, 0, 0, 0.14, -1.6353531, 0.14870933, -0.003405422)
+
+[node name="whitefence14" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(0.14, 0, 0, 0, 0.14, 0, 0, 0, 0.14, -2.3663852, 0.14870933, -0.003405422)
+
+[node name="whitefence15" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(0.14, 0, 0, 0, 0.14, 0, 0, 0, 0.14, -3.0999434, 0.14870933, -0.003405422)
+
+[node name="whitefence16" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(0.14, 0, 0, 0, 0.14, 0, 0, 0, 0.14, -3.8309758, 0.14870933, -0.003405422)
+
+[node name="whitefence17" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(0.14, 0, 0, 0, 0.14, 0, 0, 0, 0.14, -4.574898, 0.14870933, -0.003405422)
+
+[node name="whitefence18" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(0.14, 0, 0, 0, 0.14, 0, 0, 0, 0.14, -5.3059297, 0.14870933, -0.003405422)
+
+[node name="whitefence19" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(0.14, 0, 0, 0, 0.14, 0, 0, 0, 0.14, -6.0394883, 0.14870933, -0.003405422)
+
+[node name="whitefence20" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(0.14, 0, 0, 0, 0.14, 0, 0, 0, 0.14, -6.7705207, 0.14870933, -0.003405422)
+
+[node name="whitefence21" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(0.14, 0, 0, 0, 0.14, 0, 0, 0, 0.14, -7.5158954, 0.14870933, -0.003405422)
+
+[node name="whitefence22" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(0.14, 0, 0, 0, 0.14, 0, 0, 0, 0.14, -7.7669454, 0.14870933, -0.003405422)
+
+[node name="whitefence23" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, 2.7027805, 0.1487093, 7.683321)
+
+[node name="whitefence24" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, 2.703227, 0.1487093, 6.952288)
+
+[node name="whitefence25" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, 2.7036753, 0.1487093, 6.2187314)
+
+[node name="whitefence26" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, 2.7041218, 0.1487093, 5.487699)
+
+[node name="whitefence27" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, 2.704575, 0.1487093, 4.7458973)
+
+[node name="whitefence28" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, 2.7050216, 0.1487093, 4.0148644)
+
+[node name="whitefence29" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, 2.7054696, 0.1487093, 3.2813065)
+
+[node name="whitefence30" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, 2.7059162, 0.1487093, 2.5502748)
+
+[node name="whitefence31" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, 2.7063696, 0.1487093, 1.8077841)
+
+[node name="whitefence32" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, 2.7068162, 0.1487093, 1.0767518)
+
+[node name="whitefence33" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, 2.7072644, 0.1487093, 0.34319377)
+
+[node name="whitefence34" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, 2.707711, 0.1487093, -0.3878385)
+
+[node name="whitefence35" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, 2.7081642, 0.1487093, -1.1296403)
+
+[node name="whitefence36" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, 2.7086108, 0.1487093, -1.8606725)
+
+[node name="whitefence37" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, 2.7090588, 0.1487093, -2.5942307)
+
+[node name="whitefence38" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, 2.7095053, 0.1487093, -3.3252625)
+
+[node name="whitefence39" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, 2.7099597, 0.1487093, -4.0691843)
+
+[node name="whitefence40" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, 2.7104063, 0.1487093, -4.800216)
+
+[node name="whitefence41" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, 2.7108545, 0.1487093, -5.533774)
+
+[node name="whitefence42" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, 2.711301, 0.1487093, -6.2648063)
+
+[node name="whitefence43" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, 2.7117565, 0.1487093, -7.010181)
+
+[node name="whitefence44" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, 2.7119098, 0.1487093, -7.2612314)
+
+[node name="whitefence45" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, -5.343627, 0.1487093, 7.683321)
+
+[node name="whitefence46" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, -5.34318, 0.1487093, 6.952288)
+
+[node name="whitefence47" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, -5.342732, 0.1487093, 6.2187314)
+
+[node name="whitefence48" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, -5.342285, 0.1487093, 5.4876986)
+
+[node name="whitefence49" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, -5.341832, 0.1487093, 4.7458973)
+
+[node name="whitefence50" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, -5.3413854, 0.1487093, 4.0148644)
+
+[node name="whitefence51" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, -5.340937, 0.1487093, 3.2813065)
+
+[node name="whitefence52" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, -5.340492, 0.1487093, 2.5502746)
+
+[node name="whitefence53" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, -5.3400373, 0.1487093, 1.8077841)
+
+[node name="whitefence54" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, -5.3395905, 0.1487093, 1.0767518)
+
+[node name="whitefence55" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, -5.339143, 0.1487093, 0.34319377)
+
+[node name="whitefence56" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, -5.338697, 0.1487093, -0.38783848)
+
+[node name="whitefence57" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, -5.338243, 0.1487093, -1.1296403)
+
+[node name="whitefence58" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, -5.337797, 0.1487093, -1.8606725)
+
+[node name="whitefence59" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, -5.337348, 0.1487093, -2.5942307)
+
+[node name="whitefence60" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, -5.3369017, 0.1487093, -3.3252625)
+
+[node name="whitefence61" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, -5.336448, 0.1487093, -4.0691843)
+
+[node name="whitefence62" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, -5.3360014, 0.1487093, -4.800216)
+
+[node name="whitefence63" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, -5.335553, 0.1487093, -5.5337734)
+
+[node name="whitefence64" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, -5.3351064, 0.1487093, -6.2648063)
+
+[node name="whitefence65" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, -5.334651, 0.1487093, -7.010181)
+
+[node name="whitefence66" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, -5.334497, 0.1487093, -7.2612314)
+
+[node name="whitefence67" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(0.13999997, 0, 0, 0, 0.13999997, 0, 0, 0, 0.13999997, -8.5218935, 0.1487093, -0.0034054215)
+
+[node name="whitefence68" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(0.13999997, 0, 0, 0, 0.13999997, 0, 0, 0, 0.13999997, -9.252926, 0.1487093, -0.0034054215)
+
+[node name="whitefence69" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(0.13999997, 0, 0, 0, 0.13999997, 0, 0, 0, 0.13999997, -9.986484, 0.1487093, -0.0034054215)
+
+[node name="whitefence70" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(0.13999997, 0, 0, 0, 0.13999997, 0, 0, 0, 0.13999997, -10.717515, 0.1487093, -0.0034054215)
+
+[node name="whitefence71" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(0.13999997, 0, 0, 0, 0.13999997, 0, 0, 0, 0.13999997, -11.459318, 0.1487093, -0.0034054215)
+
+[node name="whitefence72" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(0.13999997, 0, 0, 0, 0.13999997, 0, 0, 0, 0.13999997, -12.1903515, 0.1487093, -0.0034054215)
+
+[node name="whitefence73" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(0.13999997, 0, 0, 0, 0.13999997, 0, 0, 0, 0.13999997, -12.923908, 0.1487093, -0.0034054215)
+
+[node name="whitefence74" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(0.13999997, 0, 0, 0, 0.13999997, 0, 0, 0, 0.13999997, -13.6549425, 0.1487093, -0.0034054215)
+
+[node name="whitefence75" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(0.13999997, 0, 0, 0, 0.13999997, 0, 0, 0, 0.13999997, -14.397433, 0.1487093, -0.0034054215)
+
+[node name="whitefence76" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(0.13999997, 0, 0, 0, 0.13999997, 0, 0, 0, 0.13999997, -15.128465, 0.1487093, -0.0034054215)
+
+[node name="whitefence77" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(0.13999997, 0, 0, 0, 0.13999997, 0, 0, 0, 0.13999997, -15.862022, 0.1487093, -0.0034054215)
+
+[node name="whitefence78" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(0.13999997, 0, 0, 0, 0.13999997, 0, 0, 0, 0.13999997, -16.593056, 0.1487093, -0.0034054215)
+
+[node name="whitefence79" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(0.13999997, 0, 0, 0, 0.13999997, 0, 0, 0, 0.13999997, -17.334858, 0.1487093, -0.0034054215)
+
+[node name="whitefence80" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(0.13999997, 0, 0, 0, 0.13999997, 0, 0, 0, 0.13999997, -18.06589, 0.1487093, -0.0034054215)
+
+[node name="whitefence81" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(0.13999997, 0, 0, 0, 0.13999997, 0, 0, 0, 0.13999997, -18.799446, 0.1487093, -0.0034054215)
+
+[node name="whitefence82" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(0.13999997, 0, 0, 0, 0.13999997, 0, 0, 0, 0.13999997, -19.530478, 0.1487093, -0.0034054215)
+
+[node name="whitefence83" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(0.13999997, 0, 0, 0, 0.13999997, 0, 0, 0, 0.13999997, -20.274403, 0.1487093, -0.0034054215)
+
+[node name="whitefence84" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(0.13999997, 0, 0, 0, 0.13999997, 0, 0, 0, 0.13999997, -21.005434, 0.1487093, -0.0034054215)
+
+[node name="whitefence85" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(0.13999997, 0, 0, 0, 0.13999997, 0, 0, 0, 0.13999997, -21.73899, 0.1487093, -0.0034054215)
+
+[node name="whitefence86" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(0.13999997, 0, 0, 0, 0.13999997, 0, 0, 0, 0.13999997, -22.470026, 0.1487093, -0.0034054215)
+
+[node name="whitefence87" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(0.13999997, 0, 0, 0, 0.13999997, 0, 0, 0, 0.13999997, -23.2154, 0.1487093, -0.0034054215)
+
+[node name="whitefence88" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(0.13999997, 0, 0, 0, 0.13999997, 0, 0, 0, 0.13999997, -23.466448, 0.1487093, -0.0034054215)
+
+[node name="whitefence89" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(0.13999997, 0, 0, 0, 0.13999997, 0, 0, 0, 0.13999997, 22.854794, 0.1487093, -0.0034054215)
+
+[node name="whitefence90" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(0.13999997, 0, 0, 0, 0.13999997, 0, 0, 0, 0.13999997, 22.123756, 0.1487093, -0.0034054215)
+
+[node name="whitefence91" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(0.13999997, 0, 0, 0, 0.13999997, 0, 0, 0, 0.13999997, 21.390202, 0.1487093, -0.0034054215)
+
+[node name="whitefence92" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(0.13999997, 0, 0, 0, 0.13999997, 0, 0, 0, 0.13999997, 20.65917, 0.1487093, -0.0034054215)
+
+[node name="whitefence93" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(0.13999997, 0, 0, 0, 0.13999997, 0, 0, 0, 0.13999997, 19.917368, 0.1487093, -0.0034054215)
+
+[node name="whitefence94" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(0.13999997, 0, 0, 0, 0.13999997, 0, 0, 0, 0.13999997, 19.186333, 0.1487093, -0.0034054215)
+
+[node name="whitefence95" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(0.13999997, 0, 0, 0, 0.13999997, 0, 0, 0, 0.13999997, 18.452778, 0.1487093, -0.0034054215)
+
+[node name="whitefence96" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(0.13999997, 0, 0, 0, 0.13999997, 0, 0, 0, 0.13999997, 17.721745, 0.1487093, -0.0034054215)
+
+[node name="whitefence97" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(0.13999997, 0, 0, 0, 0.13999997, 0, 0, 0, 0.13999997, 16.979254, 0.1487093, -0.0034054215)
+
+[node name="whitefence98" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(0.13999997, 0, 0, 0, 0.13999997, 0, 0, 0, 0.13999997, 16.24822, 0.1487093, -0.0034054215)
+
+[node name="whitefence99" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(0.13999997, 0, 0, 0, 0.13999997, 0, 0, 0, 0.13999997, 15.514663, 0.1487093, -0.0034054215)
+
+[node name="whitefence100" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(0.13999997, 0, 0, 0, 0.13999997, 0, 0, 0, 0.13999997, 14.78363, 0.1487093, -0.0034054215)
+
+[node name="whitefence101" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(0.13999997, 0, 0, 0, 0.13999997, 0, 0, 0, 0.13999997, 14.041828, 0.1487093, -0.0034054215)
+
+[node name="whitefence102" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(0.13999997, 0, 0, 0, 0.13999997, 0, 0, 0, 0.13999997, 13.310797, 0.1487093, -0.0034054215)
+
+[node name="whitefence103" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(0.13999997, 0, 0, 0, 0.13999997, 0, 0, 0, 0.13999997, 12.577237, 0.1487093, -0.0034054215)
+
+[node name="whitefence104" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(0.13999997, 0, 0, 0, 0.13999997, 0, 0, 0, 0.13999997, 11.846207, 0.1487093, -0.0034054215)
+
+[node name="whitefence105" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(0.13999997, 0, 0, 0, 0.13999997, 0, 0, 0, 0.13999997, 11.102283, 0.1487093, -0.0034054215)
+
+[node name="whitefence106" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(0.13999997, 0, 0, 0, 0.13999997, 0, 0, 0, 0.13999997, 10.371252, 0.1487093, -0.0034054215)
+
+[node name="whitefence107" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(0.13999997, 0, 0, 0, 0.13999997, 0, 0, 0, 0.13999997, 9.637693, 0.1487093, -0.0034054215)
+
+[node name="whitefence108" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(0.13999997, 0, 0, 0, 0.13999997, 0, 0, 0, 0.13999997, 8.90666, 0.1487093, -0.0034054215)
+
+[node name="whitefence109" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(0.13999997, 0, 0, 0, 0.13999997, 0, 0, 0, 0.13999997, 8.161286, 0.1487093, -0.0034054215)
+
+[node name="whitefence110" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(0.13999997, 0, 0, 0, 0.13999997, 0, 0, 0, 0.13999997, 7.9102364, 0.1487093, -0.0034054215)
+
+[node name="whitefence111" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, 10.631366, 0.1487093, 7.683321)
+
+[node name="whitefence112" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, 10.631813, 0.1487093, 6.952288)
+
+[node name="whitefence113" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, 10.63226, 0.1487093, 6.2187314)
+
+[node name="whitefence114" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, 10.632708, 0.1487093, 5.4876986)
+
+[node name="whitefence115" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, 10.633161, 0.1487093, 4.7458973)
+
+[node name="whitefence116" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, 10.633607, 0.1487093, 4.0148644)
+
+[node name="whitefence117" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, 10.634055, 0.1487093, 3.2813065)
+
+[node name="whitefence118" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, 10.634501, 0.1487093, 2.5502746)
+
+[node name="whitefence119" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, 10.634955, 0.1487093, 1.8077841)
+
+[node name="whitefence120" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, 10.635402, 0.1487093, 1.0767518)
+
+[node name="whitefence121" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, 10.635849, 0.1487093, 0.34319377)
+
+[node name="whitefence122" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, 10.636296, 0.1487093, -0.38783848)
+
+[node name="whitefence123" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, 10.636749, 0.1487093, -1.1296403)
+
+[node name="whitefence124" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, 10.637196, 0.1487093, -1.8606725)
+
+[node name="whitefence125" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, 10.637644, 0.1487093, -2.5942307)
+
+[node name="whitefence126" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, 10.638091, 0.1487093, -3.3252625)
+
+[node name="whitefence127" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, 10.638546, 0.1487093, -4.0691843)
+
+[node name="whitefence128" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, 10.638991, 0.1487093, -4.800216)
+
+[node name="whitefence129" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, 10.63944, 0.1487093, -5.5337734)
+
+[node name="whitefence130" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, 10.639887, 0.1487093, -6.2648063)
+
+[node name="whitefence131" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, 10.640342, 0.1487093, -7.010181)
+
+[node name="whitefence132" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, 10.640495, 0.1487093, -7.2612314)
+
+[node name="whitefence133" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, -13.029194, 0.1487093, 7.683321)
+
+[node name="whitefence134" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, -13.028747, 0.1487093, 6.952288)
+
+[node name="whitefence135" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, -13.028298, 0.1487093, 6.2187314)
+
+[node name="whitefence136" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, -13.027852, 0.1487093, 5.4876986)
+
+[node name="whitefence137" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, -13.027399, 0.1487093, 4.7458973)
+
+[node name="whitefence138" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, -13.026952, 0.1487093, 4.0148644)
+
+[node name="whitefence139" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, -13.0265045, 0.1487093, 3.2813065)
+
+[node name="whitefence140" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, -13.026057, 0.1487093, 2.5502746)
+
+[node name="whitefence141" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, -13.025604, 0.1487093, 1.8077841)
+
+[node name="whitefence142" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, -13.025157, 0.1487093, 1.0767518)
+
+[node name="whitefence143" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, -13.02471, 0.1487093, 0.34319377)
+
+[node name="whitefence144" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, -13.024262, 0.1487093, -0.38783848)
+
+[node name="whitefence145" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, -13.0238085, 0.1487093, -1.1296403)
+
+[node name="whitefence146" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, -13.023364, 0.1487093, -1.8606725)
+
+[node name="whitefence147" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, -13.022916, 0.1487093, -2.5942307)
+
+[node name="whitefence148" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, -13.022468, 0.1487093, -3.3252625)
+
+[node name="whitefence149" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, -13.022014, 0.1487093, -4.0691843)
+
+[node name="whitefence150" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, -13.021568, 0.1487093, -4.800216)
+
+[node name="whitefence151" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, -13.02112, 0.1487093, -5.5337734)
+
+[node name="whitefence152" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, -13.020672, 0.1487093, -6.2648063)
+
+[node name="whitefence153" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, -13.020218, 0.1487093, -7.010181)
+
+[node name="whitefence154" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, -13.020063, 0.1487093, -7.2612314)
+
+[node name="whitefence155" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, -24.4149, 0.1487093, 7.683321)
+
+[node name="whitefence156" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, -24.414454, 0.1487093, 6.952288)
+
+[node name="whitefence157" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, -24.414005, 0.1487093, 6.2187314)
+
+[node name="whitefence158" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, -24.413559, 0.1487093, 5.4876986)
+
+[node name="whitefence159" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, -24.413105, 0.1487093, 4.7458973)
+
+[node name="whitefence160" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, -24.412659, 0.1487093, 4.0148644)
+
+[node name="whitefence161" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, -24.41221, 0.1487093, 3.2813065)
+
+[node name="whitefence162" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, -24.411764, 0.1487093, 2.5502746)
+
+[node name="whitefence163" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, -24.41131, 0.1487093, 1.8077841)
+
+[node name="whitefence164" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, -24.410864, 0.1487093, 1.0767518)
+
+[node name="whitefence165" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, -24.410416, 0.1487093, 0.34319377)
+
+[node name="whitefence166" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, -24.40997, 0.1487093, -0.38783848)
+
+[node name="whitefence167" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, -24.409515, 0.1487093, -1.1296403)
+
+[node name="whitefence168" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, -24.40907, 0.1487093, -1.8606725)
+
+[node name="whitefence169" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, -24.408623, 0.1487093, -2.5942307)
+
+[node name="whitefence170" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, -24.408176, 0.1487093, -3.3252625)
+
+[node name="whitefence171" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, -24.40772, 0.1487093, -4.0691843)
+
+[node name="whitefence172" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, -24.407274, 0.1487093, -4.800216)
+
+[node name="whitefence173" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, -24.406826, 0.1487093, -5.5337734)
+
+[node name="whitefence174" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, -24.40638, 0.1487093, -6.2648063)
+
+[node name="whitefence175" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, -24.405924, 0.1487093, -7.010181)
+
+[node name="whitefence176" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, -24.405771, 0.1487093, -7.2612314)
+
+[node name="whitefence177" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, 22.091198, 0.1487093, 7.683321)
+
+[node name="whitefence178" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, 22.091644, 0.1487093, 6.952288)
+
+[node name="whitefence179" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, 22.092093, 0.1487093, 6.2187314)
+
+[node name="whitefence180" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, 22.092539, 0.1487093, 5.4876986)
+
+[node name="whitefence181" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, 22.092993, 0.1487093, 4.7458973)
+
+[node name="whitefence182" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, 22.09344, 0.1487093, 4.0148644)
+
+[node name="whitefence183" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, 22.09389, 0.1487093, 3.2813065)
+
+[node name="whitefence184" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, 22.094334, 0.1487093, 2.5502746)
+
+[node name="whitefence185" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, 22.094788, 0.1487093, 1.8077841)
+
+[node name="whitefence186" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, 22.095234, 0.1487093, 1.0767518)
+
+[node name="whitefence187" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, 22.095684, 0.1487093, 0.34319377)
+
+[node name="whitefence188" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, 22.09613, 0.1487093, -0.38783848)
+
+[node name="whitefence189" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, 22.096582, 0.1487093, -1.1296403)
+
+[node name="whitefence190" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, 22.09703, 0.1487093, -1.8606725)
+
+[node name="whitefence191" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, 22.097477, 0.1487093, -2.5942307)
+
+[node name="whitefence192" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, 22.097921, 0.1487093, -3.3252625)
+
+[node name="whitefence193" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, 22.098377, 0.1487093, -4.0691843)
+
+[node name="whitefence194" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, 22.098825, 0.1487093, -4.800216)
+
+[node name="whitefence195" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, 22.099274, 0.1487093, -5.5337734)
+
+[node name="whitefence196" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, 22.09972, 0.1487093, -6.2648063)
+
+[node name="whitefence197" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, 22.100174, 0.1487093, -7.010181)
+
+[node name="whitefence198" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(-8.5522064e-05, 0, -0.13999994, 0, 0.13999997, 0, 0.13999994, 0, -8.5522064e-05, 22.100327, 0.1487093, -7.2612314)
+
+[node name="whitefence199" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(0.13999997, 0, 0, 0, 0.13999997, 0, 0, 0, 0.13999997, -24.232178, 0.1487093, -0.0034054215)
+
+[node name="whitefence200" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(0.13999997, 0, 0, 0, 0.13999997, 0, 0, 0, 0.13999997, -24.96321, 0.1487093, -0.0034054215)
+
+[node name="whitefence201" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(0.13999997, 0, 0, 0, 0.13999997, 0, 0, 0, 0.13999997, -25.69677, 0.1487093, -0.0034054215)
+
+[node name="whitefence202" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(0.13999997, 0, 0, 0, 0.13999997, 0, 0, 0, 0.13999997, -26.427801, 0.1487093, -0.0034054215)
+
+[node name="whitefence203" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(0.13999997, 0, 0, 0, 0.13999997, 0, 0, 0, 0.13999997, -27.169601, 0.1487093, -0.0034054215)
+
+[node name="whitefence204" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(0.13999997, 0, 0, 0, 0.13999997, 0, 0, 0, 0.13999997, -27.900635, 0.1487093, -0.0034054215)
+
+[node name="whitefence205" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(0.13999997, 0, 0, 0, 0.13999997, 0, 0, 0, 0.13999997, -28.634193, 0.1487093, -0.0034054215)
+
+[node name="whitefence206" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(0.13999997, 0, 0, 0, 0.13999997, 0, 0, 0, 0.13999997, -29.365225, 0.1487093, -0.0034054215)
+
+[node name="whitefence207" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(0.13999997, 0, 0, 0, 0.13999997, 0, 0, 0, 0.13999997, -30.107718, 0.1487093, -0.0034054215)
+
+[node name="whitefence208" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(0.13999997, 0, 0, 0, 0.13999997, 0, 0, 0, 0.13999997, -30.838749, 0.1487093, -0.0034054215)
+
+[node name="whitefence209" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(0.13999997, 0, 0, 0, 0.13999997, 0, 0, 0, 0.13999997, -31.57231, 0.1487093, -0.0034054215)
+
+[node name="whitefence210" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(0.13999997, 0, 0, 0, 0.13999997, 0, 0, 0, 0.13999997, -32.30334, 0.1487093, -0.0034054215)
+
+[node name="whitefence211" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(0.13999997, 0, 0, 0, 0.13999997, 0, 0, 0, 0.13999997, -33.04514, 0.1487093, -0.0034054215)
+
+[node name="whitefence212" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(0.13999997, 0, 0, 0, 0.13999997, 0, 0, 0, 0.13999997, -33.776176, 0.1487093, -0.0034054215)
+
+[node name="whitefence213" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(0.13999997, 0, 0, 0, 0.13999997, 0, 0, 0, 0.13999997, -34.50973, 0.1487093, -0.0034054215)
+
+[node name="whitefence214" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(0.13999997, 0, 0, 0, 0.13999997, 0, 0, 0, 0.13999997, -35.240765, 0.1487093, -0.0034054215)
+
+[node name="whitefence215" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(0.13999997, 0, 0, 0, 0.13999997, 0, 0, 0, 0.13999997, -35.984684, 0.1487093, -0.0034054215)
+
+[node name="whitefence216" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(0.13999997, 0, 0, 0, 0.13999997, 0, 0, 0, 0.13999997, -36.71572, 0.1487093, -0.0034054215)
+
+[node name="whitefence217" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(0.13999997, 0, 0, 0, 0.13999997, 0, 0, 0, 0.13999997, -37.449276, 0.1487093, -0.0034054215)
+
+[node name="whitefence218" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(0.13999997, 0, 0, 0, 0.13999997, 0, 0, 0, 0.13999997, -38.180305, 0.1487093, -0.0034054215)
+
+[node name="whitefence219" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(0.13999997, 0, 0, 0, 0.13999997, 0, 0, 0, 0.13999997, -38.925682, 0.1487093, -0.0034054215)
+
+[node name="whitefence220" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(0.13999997, 0, 0, 0, 0.13999997, 0, 0, 0, 0.13999997, -39.17673, 0.1487093, -0.0034054215)
+
+[node name="whitefence221" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(0.13999997, 0, 0, 0, 0.13999997, 0, 0, 0, 0.13999997, 38.587456, 0.1487093, -0.0034054215)
+
+[node name="whitefence222" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(0.13999997, 0, 0, 0, 0.13999997, 0, 0, 0, 0.13999997, 37.856422, 0.1487093, -0.0034054215)
+
+[node name="whitefence223" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(0.13999997, 0, 0, 0, 0.13999997, 0, 0, 0, 0.13999997, 37.122868, 0.1487093, -0.0034054215)
+
+[node name="whitefence224" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(0.13999997, 0, 0, 0, 0.13999997, 0, 0, 0, 0.13999997, 36.39183, 0.1487093, -0.0034054215)
+
+[node name="whitefence225" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(0.13999997, 0, 0, 0, 0.13999997, 0, 0, 0, 0.13999997, 35.650032, 0.1487093, -0.0034054215)
+
+[node name="whitefence226" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(0.13999997, 0, 0, 0, 0.13999997, 0, 0, 0, 0.13999997, 34.918995, 0.1487093, -0.0034054215)
+
+[node name="whitefence227" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(0.13999997, 0, 0, 0, 0.13999997, 0, 0, 0, 0.13999997, 34.185444, 0.1487093, -0.0034054215)
+
+[node name="whitefence228" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(0.13999997, 0, 0, 0, 0.13999997, 0, 0, 0, 0.13999997, 33.454403, 0.1487093, -0.0034054215)
+
+[node name="whitefence229" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(0.13999997, 0, 0, 0, 0.13999997, 0, 0, 0, 0.13999997, 32.711914, 0.1487093, -0.0034054215)
+
+[node name="whitefence230" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(0.13999997, 0, 0, 0, 0.13999997, 0, 0, 0, 0.13999997, 31.980886, 0.1487093, -0.0034054215)
+
+[node name="whitefence231" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(0.13999997, 0, 0, 0, 0.13999997, 0, 0, 0, 0.13999997, 31.247328, 0.1487093, -0.0034054215)
+
+[node name="whitefence232" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(0.13999997, 0, 0, 0, 0.13999997, 0, 0, 0, 0.13999997, 30.516294, 0.1487093, -0.0034054215)
+
+[node name="whitefence233" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(0.13999997, 0, 0, 0, 0.13999997, 0, 0, 0, 0.13999997, 29.77449, 0.1487093, -0.0034054215)
+
+[node name="whitefence234" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(0.13999997, 0, 0, 0, 0.13999997, 0, 0, 0, 0.13999997, 29.043459, 0.1487093, -0.0034054215)
+
+[node name="whitefence235" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(0.13999997, 0, 0, 0, 0.13999997, 0, 0, 0, 0.13999997, 28.309904, 0.1487093, -0.0034054215)
+
+[node name="whitefence236" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(0.13999997, 0, 0, 0, 0.13999997, 0, 0, 0, 0.13999997, 27.578873, 0.1487093, -0.0034054215)
+
+[node name="whitefence237" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(0.13999997, 0, 0, 0, 0.13999997, 0, 0, 0, 0.13999997, 26.83495, 0.1487093, -0.0034054215)
+
+[node name="whitefence238" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(0.13999997, 0, 0, 0, 0.13999997, 0, 0, 0, 0.13999997, 26.103918, 0.1487093, -0.0034054215)
+
+[node name="whitefence239" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(0.13999997, 0, 0, 0, 0.13999997, 0, 0, 0, 0.13999997, 25.370358, 0.1487093, -0.0034054215)
+
+[node name="whitefence240" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(0.13999997, 0, 0, 0, 0.13999997, 0, 0, 0, 0.13999997, 24.639326, 0.1487093, -0.0034054215)
+
+[node name="whitefence241" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(0.13999997, 0, 0, 0, 0.13999997, 0, 0, 0, 0.13999997, 23.893951, 0.1487093, -0.0034054215)
+
+[node name="whitefence242" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
+transform = Transform3D(0.13999997, 0, 0, 0, 0.13999997, 0, 0, 0, 0.13999997, 23.642902, 0.1487093, -0.0034054215)
+
+[node name="SurbHouseV14" parent="Neighborhood" instance=ExtResource("5_qci02")]
+transform = Transform3D(-7.583926e-08, 0, 5.263, 0, 0.663, 0, -1.735, 0, -2.3005303e-07, 174.70264, -5.9382663, 17.262146)
+
+[node name="ProtoController" parent="." instance=ExtResource("4_5540h")]
+transform = Transform3D(-0.97769535, 0, 0.21002819, 0, 1, 0, -0.21002819, 0, -0.97769535, 0.25159144, -2.1527023, -8.809748)

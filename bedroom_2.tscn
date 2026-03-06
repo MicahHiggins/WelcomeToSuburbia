@@ -6,5 +6,5 @@
 [node name="bedroom2" instance=ExtResource("1_0by73")]
 
 [node name="Cube_001" parent="." index="0"]
-transform = Transform3D(1.25, 0, 0, 0, 0.75, 0, 0, 0, 1.25, -12.7386465, 4.846857, -0.07621765)
+transform = Transform3D(1.25, 0, 0, 0, 0.75, 0, 0, 0, 1.25, 0, 0, 0)
 mesh = ExtResource("2_ecuw0")
