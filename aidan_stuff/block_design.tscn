@@ -1333,9 +1333,6 @@ transform = Transform3D(-8.5525986e-05, 0, -0.13999997, 0, 0.13999999, 0, 0.1399
 [node name="whitefence195" parent="Fences" instance=ExtResource("6_x2lvk")]
 transform = Transform3D(-8.5525986e-05, 0, -0.13999997, 0, 0.13999999, 0, 0.13999997, 0, -8.5525986e-05, 10.09155, 0.14870933, 4.8366885)
 
-[node name="whitefence196" parent="Fences" instance=ExtResource("6_x2lvk")]
-transform = Transform3D(-8.5525986e-05, 0, -0.13999997, 0, 0.13999999, 0, 0.13999997, 0, -8.5525986e-05, 4.833, 0.14870933, 4.094888)
-
 [node name="whitefence197" parent="Fences" instance=ExtResource("6_x2lvk")]
 transform = Transform3D(-8.5525986e-05, 0, -0.13999997, 0, 0.13999999, 0, 0.13999997, 0, -8.5525986e-05, 10.09155, 0.14870933, 3.357854)
 
@@ -2043,6 +2040,9 @@ transform = Transform3D(0.13999991, 0, 8.058851e-05, 0, 0.13999988, 0, -8.058851
 
 [node name="whitefence448" parent="Fences" instance=ExtResource("6_x2lvk")]
 transform = Transform3D(0.13999991, 0, 8.058851e-05, 0, 0.13999988, 0, -8.058851e-05, 0, 0.13999991, -7.794025, 0.14870933, 7.896019)
+
+[node name="whitefence417" parent="Fences" instance=ExtResource("6_x2lvk")]
+transform = Transform3D(-8.5525986e-05, 0, -0.13999997, 0, 0.13999999, 0, 0.13999997, 0, -8.5525986e-05, 10.09155, 0.14870933, 4.097175)
 
 [node name="LoadingSystem" type="Area3D" parent="."]
 collision_layer = 0

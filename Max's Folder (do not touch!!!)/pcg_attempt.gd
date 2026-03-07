@@ -132,6 +132,7 @@ func _on_load_zone_5_body_entered(body: Node3D) -> void:
 	print("numba 4")
 
 
+#
 #func _on_load_zone_1_body_exited(body: Node3D) -> void:
 	#iteration1 = 0
 #

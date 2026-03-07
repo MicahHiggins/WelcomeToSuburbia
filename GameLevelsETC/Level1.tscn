@@ -1,4 +1,4 @@
-[gd_scene load_steps=28 format=3 uid="uid://d1ibgfwne281y"]
+[gd_scene load_steps=31 format=3 uid="uid://d1ibgfwne281y"]
 
 [ext_resource type="Script" uid="uid://dppcbcba5rvbf" path="res://GameLevelsETC/level_1.gd" id="1_oh3op"]
 [ext_resource type="PackedScene" uid="uid://bs72ogkvdd7d6" path="res://addons/proto_controller/proto_controller.tscn" id="2_jvlpr"]
@@ -14,6 +14,7 @@
 [ext_resource type="Script" uid="uid://wufby810baua" path="res://GameLevelsETC/cellar_door.gd" id="12_o8227"]
 [ext_resource type="PackedScene" uid="uid://b36mjwh3wwi6m" path="res://GameLevelsETC/Items/bat_clean.tscn" id="12_wjimw"]
 [ext_resource type="Texture2D" uid="uid://3i53ybhtpc0f" path="res://Assets/—Pngtree—vector copy icon_4013516.png" id="13_grjf3"]
+[ext_resource type="PackedScene" uid="uid://dcbrceljwvjv2" path="res://bedroom_copy.tscn" id="13_wg6gn"]
 [ext_resource type="Script" uid="uid://cjg7ws1b5cnm7" path="res://GameLevelsETC/telleport_manager.gd" id="15_vlwaf"]
 [ext_resource type="PackedScene" uid="uid://bf38tvkrxj6ds" path="res://GameLevelsETC/CellarLevel.tscn" id="16_17epn"]
 
@@ -248,6 +249,9 @@ G: Drop Item
 Mouse Click: Use Item
 Tab: Switch Item
 E: Interact with NPCs"
+
+[node name="bedroom_copy" parent="Menu/pause" instance=ExtResource("13_wg6gn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 21.744919, 5.004241, 49.848515)
 
 [node name="Interact" type="CanvasLayer" parent="Menu"]
 
