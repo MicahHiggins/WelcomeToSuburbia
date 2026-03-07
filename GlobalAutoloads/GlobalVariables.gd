@@ -1,6 +1,5 @@
 extends Node
 
-
 var iterations = 0
 var conversations = 0
 

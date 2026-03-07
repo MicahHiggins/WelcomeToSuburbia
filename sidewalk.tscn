@@ -23,5 +23,5 @@ surface_material_override/0 = SubResource("StandardMaterial3D_oqgy3")
 transform = Transform3D(0.25683707, 0, 0, 0, -0.032954436, 0, 0, 0, 0.078969315, 0, 0, 0)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D" index="0"]
-transform = Transform3D(4.3652697, 0, 0, 0, 2.2216823, 0, 0, 0, 5.708536, 0, 0.0012204017, 0)
+transform = Transform3D(4.361, 0, 0, 0, 2, 0, 0, 0, 5.704, 0, 1, 0)
 shape = SubResource("BoxShape3D_ey8ku")
