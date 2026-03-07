@@ -93,6 +93,7 @@ func _on_clear_pressed() -> void:
 			set_cell(Vector2i(x+20, y), 0, Vector2i(0, 0), 0)
 
 func _drawing1():
+	print("d1")
 	var eyes = 5
 	for x in gridSize:
 		if x != 10 && x != 20:
@@ -104,6 +105,20 @@ func _drawing1():
 			set_cell(pic2, 1, Vector2i(0, 0), 0)
 
 func _drawing2():
+	print("d2")
+	var eyes = 5
+	for x in gridSize:
+		if x != 10 && x != 20:
+			var pic = Vector2i(x+20, eyes)
+			mask_arr.append(pic)
+			var pic2 = Vector2i(x+20, eyes+20)
+			set_cell(pic, 1, Vector2i(0, 0), 0)
+			mask_arr.append(pic2)
+			set_cell(pic2, 1, Vector2i(0, 0), 0)
+	
+	
+func _drawing3():
+	print("d3")
 	var eyes = 5
 	for x in gridSize:
 		if x != 10 && x != 20:
@@ -112,17 +127,6 @@ func _drawing2():
 			var pic2 = Vector2i(x+40, eyes)
 			set_cell(pic, 1, Vector2i(0, 0), 0)
 			mask_arr.append(pic2)
-			set_cell(pic2, 1, Vector2i(0, 0), 0)
-	
-	
-func _drawing3():
-	var eyes = 5
-	for x in gridSize:
-		if x != 10 && x != 20:
-			var pic = Vector2i(x+20, eyes)
-			mask_arr.append(pic)
-			var pic2 = Vector2i(x+40, eyes)
-			set_cell(pic, 1, Vector2i(0, 0), 0)
 			
 	
 
