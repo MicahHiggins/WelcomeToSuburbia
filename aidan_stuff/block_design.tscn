@@ -1,4 +1,4 @@
-[gd_scene load_steps=24 format=3 uid="uid://r8vqf0qcnkdn"]
+[gd_scene load_steps=26 format=3 uid="uid://r8vqf0qcnkdn"]
 
 [ext_resource type="Script" uid="uid://4p6bc6ac8elf" path="res://aidan_stuff/block_design.gd" id="1_jmv40"]
 [ext_resource type="Texture2D" uid="uid://but80wsucm4q2" path="res://textures/GrassTextures/GrassAlbedo.png" id="2_bkv0n"]
@@ -10,6 +10,7 @@
 [ext_resource type="PackedScene" uid="uid://dggh2n0x6keit" path="res://Models/mailbox.tscn" id="6_hvq4h"]
 [ext_resource type="Texture2D" uid="uid://c37iickr58llo" path="res://textures/GrassTextures/GrassRoughness.png" id="6_v0qsu"]
 [ext_resource type="PackedScene" uid="uid://drk8i4p1of8ar" path="res://whitefence_1.tscn" id="6_x2lvk"]
+[ext_resource type="Script" uid="uid://cyf7lc5ca67vp" path="res://aidan_stuff/billboard_root.gd" id="7_lp1yv"]
 [ext_resource type="PackedScene" uid="uid://dmeuxsiurwm4q" path="res://sidewalk.tscn" id="8_milrp"]
 [ext_resource type="PackedScene" uid="uid://ret8ne1fmk7l" path="res://road.tscn" id="9_milrp"]
 [ext_resource type="PackedScene" uid="uid://bwm6yq7ualh21" path="res://sidewalk_corner.tscn" id="9_v0qsu"]
@@ -17,6 +18,7 @@
 [ext_resource type="PackedScene" uid="uid://dexa2pmw4ua8t" path="res://Bush.tscn" id="12_x5kdk"]
 [ext_resource type="PackedScene" uid="uid://cxnlf1qokkhee" path="res://street_light.tscn" id="13_bcxsy"]
 [ext_resource type="Script" path="res://aidan_stuff/iteration_detector.gd" id="15_v0qsu"]
+[ext_resource type="PackedScene" uid="uid://d2rvqfwj71ucv" path="res://billboard.tscn" id="18_vslbx"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_rkcnq"]
 albedo_color = Color(0.60271376, 0.7674062, 0.73615, 1)
@@ -74,6 +76,20 @@ metadata/_edit_lock_ = true
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Ground"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.225, 0)
 shape = SubResource("BoxShape3D_ko78g")
+
+[node name="BillboardRoot" type="Node3D" parent="."]
+script = ExtResource("7_lp1yv")
+
+[node name="Rotator" type="Node3D" parent="BillboardRoot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.992708, 0.15580705, 15.99824)
+
+[node name="Billboard" parent="BillboardRoot/Rotator" instance=ExtResource("18_vslbx")]
+transform = Transform3D(0.14142135, 0, 0.14142135, 0, 0.19999999, 0, -0.14142135, 0, 0.14142135, -4.178631, 0, -4.7642994)
+
+[node name="Label3D" type="Label3D" parent="BillboardRoot/Rotator"]
+transform = Transform3D(-0.14142133, 0, -0.14142136, 0, 0.19999999, 0, 0.14142136, 0, -0.14142133, -0.01703453, 5.846288, -0.07521629)
+pixel_size = 0.05
+text = "Welcome to Suburbia!"
 
 [node name="Houses" type="Node3D" parent="."]
 transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, 0, -0.01093328, 0)
@@ -151,28 +167,28 @@ transform = Transform3D(-2.2791096e-09, 0, -0.06261343, 0, 0.06261343, 0, 0.0521
 transform = Transform3D(-2.2791096e-09, 0, -0.06261343, 0, 0.06261343, 0, 0.05213995, 0, -2.7369198e-09, 3.0849051, 0.045711428, 6.8)
 
 [node name="Sidewalk" type="Node3D" parent="."]
-transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, 0, -0.07, 0)
+transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, 0, -0.09, 0)
 
 [node name="Sidewalk" parent="Sidewalk" instance=ExtResource("8_milrp")]
 transform = Transform3D(-3.3146193e-07, 0, -0.4619211, 0, 0.33655617, 0, 7.5829654, 0, -2.0191212e-08, 4.139, 0.119, -0.004)
 
 [node name="Sidewalk2" parent="Sidewalk" instance=ExtResource("8_milrp")]
-transform = Transform3D(7.5829663, 0, 0, 0, 0.3365562, 0, 0, 0, 0.4619211, 0, 0.120349854, -4.1655755)
+transform = Transform3D(7.5829663, 0, 0, 0, 0.3365562, 0, 0, 0, 0.4619211, 0, 0.119, -4.166)
 
 [node name="Sidewalk3" parent="Sidewalk" instance=ExtResource("8_milrp")]
-transform = Transform3D(-3.31462e-07, 0, -0.4619211, 0, 0.33655617, 0, 7.5829654, 0, -2.019121e-08, -4.844, 0.12, -0.004)
+transform = Transform3D(-3.31462e-07, 0, -0.4619211, 0, 0.33655617, 0, 7.5829654, 0, -2.019121e-08, -4.844, 0.119, -0.004)
 
 [node name="Sidewalk4" parent="Sidewalk" instance=ExtResource("8_milrp")]
-transform = Transform3D(7.5829663, 0, 0, 0, 0.3365562, 0, 0, 0, 0.4619211, 0.023796558, 0.120349854, 4.875399)
+transform = Transform3D(7.5829663, 0, 0, 0, 0.3365562, 0, 0, 0, 0.4619211, 0.024, 0.119, 4.875)
 
 [node name="Sidewalk5" parent="Sidewalk" instance=ExtResource("8_milrp")]
-transform = Transform3D(-7.5829654, 0, 4.0382425e-08, 0, 0.33655617, 0, -6.62924e-07, 0, -0.46192116, 0.029, 0.12, 4.153)
+transform = Transform3D(-7.5829654, 0, 4.0382425e-08, 0, 0.33655617, 0, -6.62924e-07, 0, -0.46192116, 0.029, 0.119, 4.153)
 
 [node name="Sidewalk6" parent="Sidewalk" instance=ExtResource("8_milrp")]
-transform = Transform3D(-3.3146188e-07, 0, 0.4619211, 0, 0.33655617, 0, -7.5829663, 0, -2.0191216e-08, -4.1562986, 0.11999999, 0.0030000005)
+transform = Transform3D(-3.3146188e-07, 0, 0.4619211, 0, 0.33655617, 0, -7.5829663, 0, -2.0191216e-08, -4.156, 0.119, 0.003)
 
 [node name="Sidewalk7" parent="Sidewalk" instance=ExtResource("8_milrp")]
-transform = Transform3D(-7.5829654, 0, 4.0382425e-08, 0, 0.33655617, 0, -6.62924e-07, 0, -0.46192116, 0.008, 0.12, -4.857)
+transform = Transform3D(-7.5829654, 0, 4.0382425e-08, 0, 0.33655617, 0, -6.62924e-07, 0, -0.46192116, 0.008, 0.119, -4.857)
 
 [node name="Sidewalk8" parent="Sidewalk" instance=ExtResource("8_milrp")]
 transform = Transform3D(-3.3146188e-07, 0, 0.4619211, 0, 0.33655617, 0, -7.5829663, 0, -2.0191216e-08, 4.839, 0.119, -0.024)

@@ -49,6 +49,8 @@ func algoForIterations(worldBlocks):
 		if i != worldBlocks:
 			
 			if counter < 2:
+				print("AHAHAHAH")
+				GlobalVariables.iterations +=1
 				#print("EST")
 				#print(counter)
 				#print(worldBlocks2[i].position.x)
@@ -128,6 +130,7 @@ func _on_load_zone_5_body_entered(body: Node3D) -> void:
 		algoForIterations(4)
 		iteration5 = 0
 	print("numba 4")
+
 
 #
 #func _on_load_zone_1_body_exited(body: Node3D) -> void:
