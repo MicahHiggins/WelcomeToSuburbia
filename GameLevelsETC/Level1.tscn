@@ -1,4 +1,4 @@
-[gd_scene load_steps=23 format=3 uid="uid://d1ibgfwne281y"]
+[gd_scene load_steps=31 format=3 uid="uid://d1ibgfwne281y"]
 
 [ext_resource type="Script" uid="uid://dppcbcba5rvbf" path="res://GameLevelsETC/level_1.gd" id="1_oh3op"]
 [ext_resource type="PackedScene" uid="uid://bs72ogkvdd7d6" path="res://addons/proto_controller/proto_controller.tscn" id="2_jvlpr"]
@@ -7,13 +7,18 @@
 [ext_resource type="Script" uid="uid://l6pyeyjgkntn" path="res://GameLevelsETC/item_manager.gd" id="6_gsr76"]
 [ext_resource type="PackedScene" uid="uid://bst3bb8d7vieb" path="res://Max's Folder (do not touch!!!)/pcgRescaled.tscn" id="7_d084q"]
 [ext_resource type="Script" uid="uid://c5qchfyao7ahn" path="res://GameLevelsETC/tether_system.gd" id="7_ki0f2"]
+[ext_resource type="PackedScene" uid="uid://bsrc4sxs0q266" path="res://flashlight.tscn" id="7_vlwaf"]
 [ext_resource type="Texture2D" uid="uid://bh8hkhotm6bbc" path="res://Assets/Suburbia1.jpg" id="8_5owxm"]
+[ext_resource type="PackedScene" uid="uid://bk12xaa431jqc" path="res://symbol.tscn" id="9_17epn"]
 [ext_resource type="FontFile" uid="uid://g7ve53wy4c3c" path="res://addons/Font/MADE TOMMY Medium_PERSONAL USE.otf" id="10_vlwaf"]
 [ext_resource type="Script" uid="uid://wufby810baua" path="res://GameLevelsETC/cellar_door.gd" id="12_o8227"]
 [ext_resource type="PackedScene" uid="uid://b36mjwh3wwi6m" path="res://GameLevelsETC/Items/bat_clean.tscn" id="12_wjimw"]
 [ext_resource type="Texture2D" uid="uid://3i53ybhtpc0f" path="res://Assets/—Pngtree—vector copy icon_4013516.png" id="13_grjf3"]
+[ext_resource type="PackedScene" uid="uid://dcbrceljwvjv2" path="res://bedroom_copy.tscn" id="13_wg6gn"]
 [ext_resource type="Script" uid="uid://cjg7ws1b5cnm7" path="res://GameLevelsETC/telleport_manager.gd" id="15_vlwaf"]
 [ext_resource type="PackedScene" uid="uid://bf38tvkrxj6ds" path="res://GameLevelsETC/CellarLevel.tscn" id="16_17epn"]
+[ext_resource type="Script" uid="uid://dids50pcpisvx" path="res://GameLevelsETC/sky_billboard_rig.gd" id="17_3nbob"]
+[ext_resource type="PackedScene" uid="uid://cfb6cbspvm3ve" path="res://Assets/Billboard.glb" id="18_wg6gn"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_ki0f2"]
 sky_top_color = Color(1, 0.92156863, 0.26666668, 1)
@@ -42,14 +47,15 @@ sdfgi_bounce_feedback = 0.9
 glow_enabled = true
 glow_normalized = true
 glow_bloom = 0.2
+fog_enabled = true
 fog_mode = 1
 fog_light_color = Color(0, 0.6039216, 0.99215686, 1)
 fog_density = 1.0
 fog_sky_affect = 0.99
 fog_height_density = 1.0
 fog_depth_curve = 0.00023582489
-fog_depth_begin = 50.0
-fog_depth_end = 65.0
+fog_depth_begin = 60.0
+fog_depth_end = 75.0
 volumetric_fog_density = 1.0
 volumetric_fog_albedo = Color(0.4862745, 1, 0.95686275, 1)
 volumetric_fog_emission = Color(1, 1, 0.5647059, 1)
@@ -67,6 +73,44 @@ dof_blur_far_distance = 1.44
 dof_blur_near_distance = 0.01
 auto_exposure_min_sensitivity = 8.01
 
+[sub_resource type="Animation" id="Animation_wg6gn"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("WorldEnvironment:environment:fog_light_color")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(0, 0.6039216, 0.99215686, 1)]
+}
+
+[sub_resource type="Animation" id="Animation_3nbob"]
+resource_name = "fog_cycle"
+length = 60.0
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("WorldEnvironment:environment:fog_light_color")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 14.99, 29.99, 45, 60),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1),
+"update": 0,
+"values": [Color(0, 0.6039216, 0.99215686, 1), Color(0.21960784, 0.45882353, 0.99215686, 1), Color(0, 0.6039216, 0.99215686, 1), Color(0, 0.60784316, 0.75686276, 1), Color(0, 0.6039216, 0.99215686, 1)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_nlm5m"]
+_data = {
+&"RESET": SubResource("Animation_wg6gn"),
+&"fog_cycle": SubResource("Animation_3nbob")
+}
+
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_pyrst"]
 texture = ExtResource("8_5owxm")
 
@@ -76,9 +120,10 @@ texture = ExtResource("8_5owxm")
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_o8227"]
 
-[node name="Level1" type="Node3D"]
+[node name="Level1" type="Node3D" node_paths=PackedStringArray("anim")]
 script = ExtResource("1_oh3op")
 player_scene = ExtResource("2_jvlpr")
+anim = NodePath("WorldEnvironment/AnimationPlayer")
 
 [node name="PCGAttempt" parent="." instance=ExtResource("7_d084q")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.1072845, 9.536743e-07, -0.011600018)
@@ -95,10 +140,19 @@ sun_ref = NodePath("../DirectionalLight3D")
 response_speed = 0.6
 min_fog_multiplier = 0.0
 
+[node name="AnimationPlayer" type="AnimationPlayer" parent="WorldEnvironment"]
+root_node = NodePath("../..")
+libraries = {
+&"": SubResource("AnimationLibrary_nlm5m")
+}
+
 [node name="gen" type="Node3D" parent="."]
 
 [node name="ItemManager" type="Node" parent="."]
 script = ExtResource("6_gsr76")
+
+[node name="Flashlight" parent="ItemManager" instance=ExtResource("7_vlwaf")]
+transform = Transform3D(0.1, 0, 0, 0, 0.1, 0, 0, 0, 0.2, -3.0001316, 3.0776281, 6.752286)
 
 [node name="Bat" parent="ItemManager" instance=ExtResource("12_wjimw")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5201786, 3.1837187, -3.0952702)
@@ -107,6 +161,9 @@ collision_mask = 11
 [node name="Bat2" parent="ItemManager" instance=ExtResource("12_wjimw")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.4119205, 3.8536096, -2.444654)
 collision_mask = 11
+
+[node name="Symbol" parent="ItemManager" instance=ExtResource("9_17epn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.375259, 0)
 
 [node name="Menu" type="Node" parent="."]
 
@@ -195,6 +252,9 @@ Mouse Click: Use Item
 Tab: Switch Item
 E: Interact with NPCs"
 
+[node name="bedroom_copy" parent="Menu/pause" instance=ExtResource("13_wg6gn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 21.744919, 5.004241, 49.848515)
+
 [node name="Interact" type="CanvasLayer" parent="Menu"]
 
 [node name="NPCDialogue" type="CanvasLayer" parent="Menu"]
@@ -230,6 +290,11 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -242.99564, 0)
 [node name="TelleportManager" type="Node3D" parent="."]
 script = ExtResource("15_vlwaf")
 cellar_scene = ExtResource("16_17epn")
+
+[node name="SkyBillboardRig" type="Node3D" parent="."]
+script = ExtResource("17_3nbob")
+
+[node name="BillboardModel" parent="SkyBillboardRig" instance=ExtResource("18_wg6gn")]
 
 [connection signal="pressed" from="Menu/CanvasLayer/Host" to="." method="_on_host_pressed"]
 [connection signal="pressed" from="Menu/CanvasLayer/Join" to="." method="_on_join_pressed"]

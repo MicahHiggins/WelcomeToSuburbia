@@ -1,12 +1,6 @@
 extends Node
 # ------------------------------------------------------------
 # ItemManager (SERVER authoritative)
-# - Owns authoritative "who is holding what" state
-# - Broadcasts pickup/drop reparenting to ALL peers
-# - Uses a STABLE per-item key ("item_key") so drop works after reparenting
-# - Forces physics/collision state so dropped items don't stay frozen / un-pickupable
-# - NEW: Late-join sync so joining players get correct dropped/held state
-# - NEW: Server-authoritative Use/Attack that plays item animation ("swing") for ALL peers
 # ------------------------------------------------------------
 
 const SERVER_ID: int = 1
@@ -32,12 +26,15 @@ const SERVER_ID: int = 1
 @export var drop_gravity_scale: float = 1.0
 
 # Attack / Use tuning
-@export var attack_animation_name: StringName = &"swing"   # name of animation on the item
-@export var attack_restart_if_playing: bool = true         # restart the swing if spammed
+@export var attack_animation_name: StringName = &"swing"
+@export var attack_restart_if_playing: bool = true
 
 # Keyed by STABLE scene-relative key (ex: "Items/BatClean")
 var _held_by: Dictionary = {}           # NodePath -> int (peer_id), -1 = free
 var _original_parent: Dictionary = {}   # NodePath -> NodePath (scene-relative parent path)
+
+# NEW: remember the original local scale so held items don't "change size"
+var _original_scale: Dictionary = {}    # NodePath -> Vector3
 
 # NEW: last known world transform for late-join reconstruction
 var _last_world_xform: Dictionary = {}  # NodePath -> Transform3D
@@ -46,19 +43,15 @@ var _last_world_xform: Dictionary = {}  # NodePath -> Transform3D
 #      READY / LATE JOIN
 # =========================
 func _ready() -> void:
-	# Ensure every peer stamps item_key + caches original parent so stable lookup works everywhere.
 	_register_scene_items()
 
-	# Server: push full state snapshot to new peers
 	if multiplayer.has_multiplayer_peer() and multiplayer.is_server():
 		multiplayer.peer_connected.connect(_on_peer_connected)
 
 func _on_peer_connected(peer_id: int) -> void:
-	# Defer 1 frame so the joining peer finishes spawning their player/items.
 	call_deferred("_send_full_state_to_peer", peer_id)
 
 func _register_scene_items() -> void:
-	# Runs on ALL peers. Makes sure items have item_key meta and original parent recorded.
 	var pickups: Array = get_tree().get_nodes_in_group("pickup")
 	for obj in pickups:
 		var item: Node = obj as Node
@@ -69,15 +62,16 @@ func _register_scene_items() -> void:
 		if String(key) == "":
 			continue
 
-		# Stamp stable key everywhere
 		item.set_meta("item_key", String(key))
 
-		# Record original parent once
 		if not _original_parent.has(key):
 			var parent_path: NodePath = _to_scene_path(item.get_parent())
 			_original_parent[key] = parent_path
 
-		# Remember last transform baseline
+		# NEW: cache original scale once
+		if item is Node3D and not _original_scale.has(key):
+			_original_scale[key] = (item as Node3D).scale
+
 		if item is Node3D and not _last_world_xform.has(key):
 			_last_world_xform[key] = (item as Node3D).global_transform
 
@@ -85,7 +79,6 @@ func _send_full_state_to_peer(peer_id: int) -> void:
 	if not multiplayer.is_server():
 		return
 
-	# Ensure we include ALL pickup items, even never-picked-up ones
 	var payload: Array = []
 	var pickups: Array = get_tree().get_nodes_in_group("pickup")
 
@@ -120,7 +113,6 @@ func _send_full_state_to_peer(peer_id: int) -> void:
 
 @rpc("any_peer", "call_local", "reliable")
 func sync_full_state(payload: Array) -> void:
-	# Runs on the JOINING peer. Reconstructs held/dropped state locally (fixes hovering & pickup).
 	for v in payload:
 		if typeof(v) != TYPE_DICTIONARY:
 			continue
@@ -168,12 +160,10 @@ func _to_scene_path(n: Node) -> NodePath:
 #   STABLE ITEM LOOKUP
 # =========================
 func _resolve_item_anywhere(item_key: NodePath) -> Node:
-	# 1) Try resolve by key path (works when under Items/)
 	var direct: Node = _resolve_scene_path(item_key)
 	if direct != null:
 		return direct
 
-	# 2) Fallback: scan pickup group for item_key meta match (works while held)
 	var key_str: String = String(item_key)
 	var pickups: Array = get_tree().get_nodes_in_group("pickup")
 	for obj in pickups:
@@ -263,7 +253,6 @@ func _unfreeze_for_drop(item: Node, impulse_dir: Vector3) -> void:
 
 		_apply_slow_fall(rb)
 
-		# Always nudge it so it wakes up on all peers (prevents hover)
 		var impulse: Vector3 = impulse_dir * drop_impulse_strength + Vector3.DOWN * drop_downward_impulse
 		if impulse.length() < 0.0001:
 			impulse = Vector3.DOWN * 0.01
@@ -323,6 +312,10 @@ func request_pickup(item_path: NodePath) -> void:
 		var parent_path: NodePath = _to_scene_path(item.get_parent())
 		_original_parent[item_key] = parent_path
 
+	# NEW: ensure original scale cached even if item was spawned later
+	if item is Node3D and not _original_scale.has(item_key):
+		_original_scale[item_key] = (item as Node3D).scale
+
 	if not _held_by.has(item_key):
 		_held_by[item_key] = -1
 
@@ -373,17 +366,37 @@ func apply_pickup(item_key: NodePath, player_path: NodePath, new_owner_id: int) 
 
 	item.set_meta("item_key", String(item_key))
 
+	# NEW: remember current scale just in case
+	var saved_scale := Vector3.ONE
+	if item is Node3D:
+		saved_scale = (item as Node3D).scale
+	if _original_scale.has(item_key):
+		saved_scale = _original_scale[item_key]
+
 	_freeze_for_hold(item)
 
-	# While held, holder owns authority
 	item.set_multiplayer_authority(new_owner_id)
 
 	var marker: Node = player.get_node_or_null("Head/CarryObjectMarker")
 	if marker != null and marker is Node3D:
 		item.reparent(marker as Node3D)
-		item.transform = Transform3D.IDENTITY
+
+		# IMPORTANT FIX:
+		# Don't wipe scale by setting Transform3D.IDENTITY.
+		# Just snap position/rotation, then restore scale.
+		if item is Node3D:
+			var n3 := item as Node3D
+			n3.position = Vector3.ZERO
+			n3.rotation = Vector3.ZERO
+			n3.scale = saved_scale
 	else:
 		item.reparent(player)
+
+		if item is Node3D:
+			var n3b := item as Node3D
+			n3b.position = Vector3.ZERO
+			n3b.rotation = Vector3.ZERO
+			n3b.scale = saved_scale
 
 	if "set_held" in item:
 		item.call_deferred("set_held", true)
@@ -421,7 +434,6 @@ func request_drop(item_key: NodePath) -> void:
 	var drop_pos: Vector3 = p.global_position + forward * drop_forward_distance + Vector3.UP * drop_up_offset
 	var drop_xform: Transform3D = Transform3D(item.global_transform.basis, drop_pos)
 
-	# IMPORTANT: dropped items should be server-authoritative
 	item.set_multiplayer_authority(SERVER_ID)
 
 	_last_world_xform[item_key] = drop_xform
@@ -458,10 +470,15 @@ func apply_drop(item_key: NodePath, world_xform: Transform3D, impulse_forward: V
 	if parent_node == null:
 		parent_node = scene if scene != null else get_tree().root
 
+	# NEW: restore original scale when dropping too (keeps it consistent)
+	var saved_scale := Vector3.ONE
+	if _original_scale.has(item_key):
+		saved_scale = _original_scale[item_key]
+
 	item.reparent(parent_node)
 	item.global_transform = world_xform
+	item.scale = saved_scale
 
-	# IMPORTANT: dropped items should be server-authoritative on all peers too
 	item.set_multiplayer_authority(SERVER_ID)
 
 	_unfreeze_for_drop(item, impulse_forward)
@@ -483,13 +500,11 @@ func request_use_attack(item_key: NodePath) -> void:
 	if sender == 0:
 		sender = multiplayer.get_unique_id()
 
-	# Must be holding this item
 	if not _held_by.has(item_key):
 		return
 	if int(_held_by[item_key]) != sender:
 		return
 
-	# Broadcast to ALL peers so everyone sees the swing
 	rpc("apply_use_attack", item_key)
 
 # =========================

@@ -67,7 +67,6 @@ const SERVER_ID: int = 1
 const BREATHING_THRESHOLD := 0.5  # 50%
 var breathing_active := false
 
-
 # =========================
 #         RUNTIME STATE
 # =========================
@@ -111,6 +110,17 @@ var hint_label: Label
 
 # Footstep spam guard
 var _last_footstep_time: float = -9999.0
+
+# =========================
+#    CELLAR ROLE STATE (NEW)
+# =========================
+var cellar_active: bool = false
+var cellar_is_leader: bool = true
+var cellar_leader_peer_id: int = -1
+var cellar_leader_speed_mult: float = 1.0
+
+var forced_pose_active: bool = false
+var forced_pose_target: Vector3 = Vector3.ZERO
 
 # =========================
 #    NETWORK SYNC CONFIG
@@ -157,6 +167,7 @@ func _ready() -> void:
 	_setup_sanity_fx_ui()
 	stamina_current = stamina_max
 	_setup_stamina_ui()
+	
 	
 # =========================
 #        PATH HELPERS
@@ -540,6 +551,17 @@ func _physics_authority(delta: float) -> void:
 		move_and_collide(motion)
 		return
 
+	# =========================
+	#    CELLAR ROLE (FIXED)
+	# =========================
+	# follower is locked in place but can still look around
+	# (do this BEFORE gravity/jump/sprint so nothing fights the forced pose)
+	if cellar_active and not cellar_is_leader:
+		velocity = Vector3.ZERO
+		if forced_pose_active:
+			global_position = forced_pose_target
+		return
+
 	if has_gravity and not is_on_floor():
 		velocity += get_gravity() * delta
 
@@ -585,6 +607,10 @@ func _physics_authority(delta: float) -> void:
 		breathing_active = false
 
 	move_speed *= tether_speed_mult
+
+	# leader moves slower in cellar
+	if cellar_active and cellar_is_leader:
+		move_speed *= cellar_leader_speed_mult
 
 	if can_move:
 		var input_dir := Input.get_vector(input_left, input_right, input_forward, input_back)
@@ -803,6 +829,41 @@ func server_set_tether_state(
 
 	sanity = new_sanity
 	sanity_fx_intensity = fx_intensity
+
+# =========================
+#  CELLAR ROLE RPCs (NEW)
+# =========================
+@rpc("any_peer", "call_local", "reliable")
+func server_set_cellar_role(
+	is_leader: bool,
+	leader_mult: float,
+	hover_h: float,
+	fwd_off: float,
+	leader_peer_id: int
+) -> void:
+	# only apply to the owning player
+	if not is_multiplayer_authority():
+		return
+
+	cellar_active = true
+	cellar_is_leader = is_leader
+	cellar_leader_peer_id = leader_peer_id
+	cellar_leader_speed_mult = leader_mult
+
+	# stop sliding from old velocity after teleport
+	velocity = Vector3.ZERO
+
+@rpc("any_peer", "call_local", "unreliable")
+func server_set_forced_pose(enabled: bool, target_pos: Vector3) -> void:
+	# only apply to the owning player
+	if not is_multiplayer_authority():
+		return
+
+	forced_pose_active = enabled
+	forced_pose_target = target_pos
+
+	if enabled:
+		velocity = Vector3.ZERO
 
 @rpc("any_peer", "call_local", "reliable")
 func server_set_inventory(new_inventory: Array[StringName]) -> void:

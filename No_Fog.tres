@@ -1,0 +1,7 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3 uid="uid://doggft114d5q5"]
+
+[ext_resource type="Shader" uid="uid://c6warrl5c3imj" path="res://No_Fog.gdshader" id="1_0aoq0"]
+
+[resource]
+render_priority = 0
+shader = ExtResource("1_0aoq0")
