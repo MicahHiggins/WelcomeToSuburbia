@@ -1,7 +1,6 @@
-[gd_scene load_steps=14 format=3 uid="uid://c5jxy2ugosnbe"]
+[gd_scene load_steps=12 format=3 uid="uid://c5jxy2ugosnbe"]
 
 [ext_resource type="Texture2D" uid="uid://wy5xfggc16ak" path="res://Max's Folder (do not touch!!!)/Tiles/drawn.png" id="2_tkebk"]
-[ext_resource type="Texture2D" uid="uid://lln4d7bumdks" path="res://Max's Folder (do not touch!!!)/Tiles/grid.png" id="3_lam6w"]
 [ext_resource type="Texture2D" uid="uid://cs51fm4ybyunp" path="res://Max's Folder (do not touch!!!)/Tiles/empty-Sheet.png" id="3_lcf58"]
 [ext_resource type="Script" uid="uid://drdtamscdvpnk" path="res://drawing.gd" id="4_lcf58"]
 
@@ -42,15 +41,10 @@ texture = ExtResource("2_tkebk")
 1:2/0 = 0
 2:2/0 = 0
 
-[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_nsdqc"]
-texture = ExtResource("3_lam6w")
-0:0/0 = 0
-
 [sub_resource type="TileSet" id="TileSet_nsdqc"]
 navigation_layer_0/layers = 1
 sources/0 = SubResource("TileSetAtlasSource_lam6w")
 sources/1 = SubResource("TileSetAtlasSource_tf5p5")
-sources/2 = SubResource("TileSetAtlasSource_nsdqc")
 
 [node name="Puzzle2" type="Node3D"]
 
@@ -97,34 +91,6 @@ offset_bottom = -43.0
 grow_vertical = 0
 text = "Clear Canvas"
 
-[node name="Button" type="Button" parent="Buttons"]
-layout_mode = 1
-anchors_preset = 3
-anchor_left = 1.0
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = -275.0
-offset_top = -144.0
-offset_right = -44.0
-offset_bottom = -38.0
-grow_horizontal = 0
-grow_vertical = 0
-text = "Enter"
-
-[node name="Label" type="Label" parent="Buttons"]
-layout_mode = 1
-anchors_preset = 5
-anchor_left = 0.5
-anchor_right = 0.5
-offset_left = -483.0
-offset_top = 216.0
-offset_right = -389.0
-offset_bottom = 382.0
-grow_horizontal = 2
-theme_override_font_sizes/font_size = 30
-text = "Hello!"
-
 [node name="Drawing" type="Node2D" parent="."]
 position = Vector2(1, 110)
 
@@ -135,4 +101,3 @@ script = ExtResource("4_lcf58")
 
 [connection signal="body_entered" from="Observer/ObsArea" to="." method="_on_obs_area_body_entered"]
 [connection signal="pressed" from="Buttons/Clear" to="Drawing/TileMapLayer" method="_on_clear_pressed"]
-[connection signal="pressed" from="Buttons/Button" to="Drawing/TileMapLayer" method="_on_button_pressed"]
