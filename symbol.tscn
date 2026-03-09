@@ -19,7 +19,7 @@ shader_parameter/pulse_speed = 2.2
 
 [node name="Symbol" type="Node3D" groups=["uv_reveal"]]
 script = ExtResource("1_vauly")
-glow_color = Color(0.08235294, 0.98039216, 0.16470589, 1)
+glow_color = Color(0.2071996, 0.015976882, 0.08617854, 1)
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 0.08849446, -0.99607664, 0, 0.99607664, 0.08849446, 0.051041484, 0, 0)
