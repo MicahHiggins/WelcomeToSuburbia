@@ -159,7 +159,7 @@ libraries = {
 transform = Transform3D(1.4, 0, 0, 0, 1.4, 0, 0, 0, 1.4, 0, 0, 0)
 
 [node name="bedroom_copy" parent="Bedrooms" instance=ExtResource("1_qogrp")]
-transform = Transform3D(1, 0, 0, 0, 0.8, 0, 0, 0, 1, 0, 0, 9)
+transform = Transform3D(1, 0, 0, 0, 0.8, 0, 0, 0, 1, -0.12646402, 0.087929964, 8.996908)
 
 [node name="Collisions" type="StaticBody3D" parent="Bedrooms/bedroom_copy"]
 
@@ -184,7 +184,7 @@ transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 3.48
 shape = SubResource("BoxShape3D_2lyw5")
 
 [node name="bedroom2" parent="Bedrooms" instance=ExtResource("2_rbxy2")]
-transform = Transform3D(-1, 0, -1.509958e-07, 0, 0.8, 0, 1.509958e-07, 0, -1, 0, 0, -9)
+transform = Transform3D(-1, 0, -1.509958e-07, 0, 0.8, 0, 1.509958e-07, 0, -1, 0.3168704, 0.11224883, -9.391982)
 
 [node name="Collisions" type="StaticBody3D" parent="Bedrooms/bedroom2"]
 
