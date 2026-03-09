@@ -1,9 +1,11 @@
-[gd_scene load_steps=14 format=3 uid="uid://c5jxy2ugosnbe"]
+[gd_scene load_steps=16 format=3 uid="uid://c5jxy2ugosnbe"]
 
+[ext_resource type="Script" uid="uid://dtdv2huwkhvfh" path="res://symbolManager.gd" id="1_tf5p5"]
 [ext_resource type="Texture2D" uid="uid://wy5xfggc16ak" path="res://Max's Folder (do not touch!!!)/Tiles/drawn.png" id="2_tkebk"]
 [ext_resource type="Texture2D" uid="uid://lln4d7bumdks" path="res://Max's Folder (do not touch!!!)/Tiles/grid.png" id="3_lam6w"]
 [ext_resource type="Texture2D" uid="uid://cs51fm4ybyunp" path="res://Max's Folder (do not touch!!!)/Tiles/empty-Sheet.png" id="3_lcf58"]
 [ext_resource type="Script" uid="uid://drdtamscdvpnk" path="res://drawing.gd" id="4_lcf58"]
+[ext_resource type="Script" uid="uid://c42s0sbmibvcb" path="res://Seeing.gd" id="6_nsdqc"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_uk3cl"]
 
@@ -53,6 +55,7 @@ sources/1 = SubResource("TileSetAtlasSource_tf5p5")
 sources/2 = SubResource("TileSetAtlasSource_nsdqc")
 
 [node name="Puzzle2" type="Node3D"]
+script = ExtResource("1_tf5p5")
 
 [node name="Observer" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.300502, 0, 0)
@@ -60,6 +63,8 @@ mesh = SubResource("BoxMesh_uk3cl")
 surface_material_override/0 = SubResource("StandardMaterial3D_t31mu")
 
 [node name="ObsArea" type="Area3D" parent="Observer"]
+collision_layer = 0
+collision_mask = 8
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Observer/ObsArea"]
 shape = SubResource("SphereShape3D_lcf58")
@@ -70,11 +75,37 @@ mesh = SubResource("BoxMesh_eqr3m")
 surface_material_override/0 = SubResource("StandardMaterial3D_tkebk")
 
 [node name="DoArea" type="Area3D" parent="Doer"]
+collision_layer = 0
+collision_mask = 8
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Doer/DoArea"]
 shape = SubResource("SphereShape3D_lcf58")
 
+[node name="Drawing" type="Node2D" parent="."]
+visible = false
+z_index = 1
+y_sort_enabled = true
+position = Vector2(1, 110)
+
+[node name="drawing" type="TileMapLayer" parent="Drawing"]
+z_index = 1
+y_sort_enabled = true
+tile_set = SubResource("TileSet_nsdqc")
+script = ExtResource("4_lcf58")
+
+[node name="Seeing" type="Node2D" parent="."]
+visible = false
+z_index = 1
+y_sort_enabled = true
+position = Vector2(1, 110)
+
+[node name="seeing" type="TileMapLayer" parent="Seeing"]
+y_sort_enabled = true
+tile_set = SubResource("TileSet_nsdqc")
+script = ExtResource("6_nsdqc")
+
 [node name="Buttons" type="Control" parent="."]
+visible = false
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -125,14 +156,23 @@ grow_horizontal = 2
 theme_override_font_sizes/font_size = 30
 text = "Hello!"
 
-[node name="Drawing" type="Node2D" parent="."]
-position = Vector2(1, 110)
-
-[node name="TileMapLayer" type="TileMapLayer" parent="Drawing"]
-y_sort_enabled = true
-tile_set = SubResource("TileSet_nsdqc")
-script = ExtResource("4_lcf58")
+[node name="Exit" type="Button" parent="Buttons"]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -155.0
+offset_top = -79.0
+offset_right = 104.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "Exit "
 
 [connection signal="body_entered" from="Observer/ObsArea" to="." method="_on_obs_area_body_entered"]
-[connection signal="pressed" from="Buttons/Clear" to="Drawing/TileMapLayer" method="_on_clear_pressed"]
-[connection signal="pressed" from="Buttons/Button" to="Drawing/TileMapLayer" method="_on_button_pressed"]
+[connection signal="body_exited" from="Observer/ObsArea" to="." method="_on_obs_area_body_exited"]
+[connection signal="body_entered" from="Doer/DoArea" to="." method="_on_do_area_body_entered"]
+[connection signal="body_exited" from="Doer/DoArea" to="." method="_on_do_area_body_exited"]
+[connection signal="pressed" from="Buttons/Clear" to="Drawing/drawing" method="_on_clear_pressed"]
+[connection signal="pressed" from="Buttons/Button" to="Drawing/drawing" method="_on_button_pressed"]

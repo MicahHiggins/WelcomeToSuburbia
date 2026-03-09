@@ -11,7 +11,7 @@ var iteration2 = 0
 var iteration3 = 0
 var iteration4 = 0
 var iteration5 = 0
-
+var puzzleType := randi_range(1, 3)
 var algoDebug = false
 
 signal interact

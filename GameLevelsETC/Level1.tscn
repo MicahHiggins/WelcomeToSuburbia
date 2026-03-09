@@ -1,4 +1,4 @@
-[gd_scene load_steps=28 format=3 uid="uid://d1ibgfwne281y"]
+[gd_scene load_steps=29 format=3 uid="uid://d1ibgfwne281y"]
 
 [ext_resource type="Script" uid="uid://dppcbcba5rvbf" path="res://GameLevelsETC/level_1.gd" id="1_oh3op"]
 [ext_resource type="PackedScene" uid="uid://bs72ogkvdd7d6" path="res://addons/proto_controller/proto_controller.tscn" id="2_jvlpr"]
@@ -10,6 +10,7 @@
 [ext_resource type="PackedScene" path="res://flashlight.tscn" id="7_vlwaf"]
 [ext_resource type="Texture2D" uid="uid://bh8hkhotm6bbc" path="res://Assets/Suburbia1.jpg" id="8_5owxm"]
 [ext_resource type="PackedScene" path="res://symbol.tscn" id="9_17epn"]
+[ext_resource type="PackedScene" uid="uid://c5jxy2ugosnbe" path="res://SymbolPuzzle.tscn" id="10_m3vh4"]
 [ext_resource type="FontFile" uid="uid://g7ve53wy4c3c" path="res://addons/Font/MADE TOMMY Medium_PERSONAL USE.otf" id="10_vlwaf"]
 [ext_resource type="Script" uid="uid://wufby810baua" path="res://GameLevelsETC/cellar_door.gd" id="12_o8227"]
 [ext_resource type="PackedScene" uid="uid://b36mjwh3wwi6m" path="res://GameLevelsETC/Items/bat_clean.tscn" id="12_wjimw"]
@@ -124,6 +125,9 @@ anim = NodePath("WorldEnvironment/AnimationPlayer")
 
 [node name="PCGAttempt" parent="." instance=ExtResource("7_d084q")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.1072845, 9.536743e-07, -0.011600018)
+
+[node name="Puzzle2" parent="." instance=ExtResource("10_m3vh4")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.617628, 3.4346662, 4.953907)
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(-1, -8.742278e-08, 0, 5.2612343e-08, -0.60181504, 0.79863554, -6.981894e-08, 0.79863554, 0.60181504, 0, 0, 0)

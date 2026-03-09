@@ -41,7 +41,8 @@ func _ready() -> void:
 				
 			set_cell(Vector2i(x+20, y), 0, Vector2i(0, 0), 0)
 	
-	var num = rand_num()		
+	var num = GlobalVariables.puzzleType
+	print("num: ", num)
 	match(num):
 		1:
 			_drawing1()
@@ -68,6 +69,7 @@ func _process(delta: float) -> void:
 
 
 func _on_clear_pressed() -> void:
+	print("CLEAR")
 	drawn_tiles.clear()
 	for x in gridSize:
 		for y in gridSize:
@@ -100,9 +102,9 @@ func _drawing1():
 			var pic = Vector2i(x+20, eyes)
 			mask_arr.append(pic)
 			var pic2 = Vector2i(eyes+20, x)
-			set_cell(pic, 1, Vector2i(0, 0), 0)
+			#set_cell(pic, 1, Vector2i(0, 0), 0)
 			mask_arr.append(pic2)
-			set_cell(pic2, 1, Vector2i(0, 0), 0)
+			#set_cell(pic2, 1, Vector2i(0, 0), 0)
 
 func _drawing2():
 	print("d2")
@@ -112,9 +114,9 @@ func _drawing2():
 			var pic = Vector2i(x+20, eyes)
 			mask_arr.append(pic)
 			var pic2 = Vector2i(x+20, eyes+20)
-			set_cell(pic, 1, Vector2i(0, 0), 0)
+			#set_cell(pic, 1, Vector2i(0, 0), 0)
 			mask_arr.append(pic2)
-			set_cell(pic2, 1, Vector2i(0, 0), 0)
+			#set_cell(pic2, 1, Vector2i(0, 0), 0)
 	
 	
 func _drawing3():
@@ -124,9 +126,9 @@ func _drawing3():
 		if x != 10 && x != 20:
 			var pic = Vector2i(x+20, eyes)
 			mask_arr.append(pic)
-			var pic2 = Vector2i(x+40, eyes)
-			set_cell(pic, 1, Vector2i(0, 0), 0)
-			mask_arr.append(pic2)
+			#var pic2 = Vector2i(x+40, eyes)
+			##set_cell(pic, 1, Vector2i(0, 0), 0)
+			#mask_arr.append(pic2)
 			
 	
 
@@ -147,18 +149,20 @@ func _on_button_pressed() -> void:
 	perc = count/mask_size
 	print(mask_size)
 	print(count)
-	print(perc*100)
+	print(perc)
 	label.text = "Calculating Results."
 	await get_tree().create_timer(0.3).timeout 
 	label.text = "Calculating Results.."
 	await get_tree().create_timer(0.3).timeout 
-	label.text = "Calculating Results.."
+	label.text = "Calculating Results..."
 	await get_tree().create_timer(0.3).timeout 
-	if perc*100 >= 60.00:
-		print("test")
-		label.text = "You Win: " + str(perc)
+	var percentage = perc * 100
+	print(percentage)
+	if percentage >= 60:
+		#print("test")
+		label.text = "You Win:  %.2f" % perc
 	else:
-		print("FUCk")
-		label.text = "You Lose: " + str(perc)
+		#print("FUCk")
+		label.text = "You Lose: %.2f" % perc
 	
 		
