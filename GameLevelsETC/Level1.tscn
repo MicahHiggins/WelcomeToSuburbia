@@ -7,7 +7,7 @@
 [ext_resource type="Script" uid="uid://l6pyeyjgkntn" path="res://GameLevelsETC/item_manager.gd" id="6_gsr76"]
 [ext_resource type="PackedScene" uid="uid://bst3bb8d7vieb" path="res://Max's Folder (do not touch!!!)/pcgRescaled.tscn" id="7_d084q"]
 [ext_resource type="Script" uid="uid://c5qchfyao7ahn" path="res://GameLevelsETC/tether_system.gd" id="7_ki0f2"]
-[ext_resource type="PackedScene" uid="uid://bsrc4sxs0q266" path="res://flashlight.tscn" id="7_vlwaf"]
+[ext_resource type="PackedScene" path="res://flashlight.tscn" id="7_vlwaf"]
 [ext_resource type="Texture2D" uid="uid://bh8hkhotm6bbc" path="res://Assets/Suburbia1.jpg" id="8_5owxm"]
 [ext_resource type="PackedScene" uid="uid://bk12xaa431jqc" path="res://symbol.tscn" id="9_17epn"]
 [ext_resource type="FontFile" uid="uid://g7ve53wy4c3c" path="res://addons/Font/MADE TOMMY Medium_PERSONAL USE.otf" id="10_vlwaf"]
