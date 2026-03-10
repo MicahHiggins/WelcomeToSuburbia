@@ -1,16 +1,16 @@
-[gd_scene load_steps=14 format=3 uid="uid://c2ocvg8ruxbbg"]
+[gd_scene load_steps=14 format=3 uid="uid://babsyhm5jcfme"]
 
-[ext_resource type="Script" uid="uid://dywhk2ngguw7a" path="res://GameLevelsETC/lobby_manager.gd" id="1_l5n62"]
+[ext_resource type="Script" path="res://GameLevelsETC/lobby_manager.gd" id="1_l5n62"]
 [ext_resource type="Script" uid="uid://l6pyeyjgkntn" path="res://GameLevelsETC/item_manager.gd" id="1_lbg40"]
 [ext_resource type="PackedScene" uid="uid://bs72ogkvdd7d6" path="res://addons/proto_controller/proto_controller.tscn" id="2_6bcdd"]
 [ext_resource type="PackedScene" uid="uid://bsrc4sxs0q266" path="res://flashlight.tscn" id="2_7dwkj"]
 [ext_resource type="PackedScene" uid="uid://b36mjwh3wwi6m" path="res://GameLevelsETC/Items/bat_clean.tscn" id="3_xokw7"]
 [ext_resource type="PackedScene" uid="uid://bk12xaa431jqc" path="res://symbol.tscn" id="4_vhrww"]
-[ext_resource type="Script" uid="uid://w8c1ppjt0y6g" path="res://level_flow_manager.gd" id="5_l5n62"]
+[ext_resource type="Script" path="res://level_flow_manager.gd" id="5_l5n62"]
 [ext_resource type="PackedScene" uid="uid://d1ibgfwne281y" path="res://GameLevelsETC/Level1.tscn" id="6_6bcdd"]
 [ext_resource type="Texture2D" uid="uid://bh8hkhotm6bbc" path="res://Assets/Suburbia1.jpg" id="8_6bcdd"]
 [ext_resource type="Texture2D" uid="uid://3i53ybhtpc0f" path="res://Assets/—Pngtree—vector copy icon_4013516.png" id="9_7i78e"]
-[ext_resource type="Script" uid="uid://744qvh7h6rs5" path="res://GameLevelsETC/player_spawner.gd" id="9_nqjqn"]
+[ext_resource type="Script" path="res://GameLevelsETC/player_spawner.gd" id="9_nqjqn"]
 [ext_resource type="FontFile" uid="uid://g7ve53wy4c3c" path="res://addons/Font/MADE TOMMY Medium_PERSONAL USE.otf" id="10_nqjqn"]
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_fan4m"]
@@ -26,22 +26,22 @@ player_scene = ExtResource("2_6bcdd")
 
 [node name="ItemsRoot" type="Node3D" parent="."]
 
-[node name="ItemManager" type="Node" parent="."]
-script = ExtResource("1_lbg40")
-
-[node name="Flashlight" parent="ItemManager" instance=ExtResource("2_7dwkj")]
+[node name="Flashlight" parent="ItemsRoot" instance=ExtResource("2_7dwkj")]
 transform = Transform3D(0.1, 0, 0, 0, 0.1, 0, 0, 0, 0.2, 8.3724575, 3.0776281, 44.523262)
 
-[node name="Bat" parent="ItemManager" instance=ExtResource("3_xokw7")]
+[node name="Bat" parent="ItemsRoot" instance=ExtResource("3_xokw7")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5201786, 3.1837187, 44.58463)
 collision_mask = 11
 
-[node name="Bat2" parent="ItemManager" instance=ExtResource("3_xokw7")]
+[node name="Bat2" parent="ItemsRoot" instance=ExtResource("3_xokw7")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.4119205, 3.8536096, 45.23525)
 collision_mask = 11
 
-[node name="Symbol" parent="ItemManager" instance=ExtResource("4_vhrww")]
+[node name="Symbol" parent="ItemsRoot" instance=ExtResource("4_vhrww")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.375259, 0)
+
+[node name="ItemManager" type="Node" parent="."]
+script = ExtResource("1_lbg40")
 
 [node name="LevelFlowManager" type="Node3D" parent="."]
 script = ExtResource("5_l5n62")
