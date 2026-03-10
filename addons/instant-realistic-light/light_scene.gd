@@ -38,3 +38,4 @@ func _process(dt: float) -> void:
 
 	# Smooth it so it feels natural
 	environment.fog_light_energy = lerpf(environment.fog_light_energy, base_fog_light_energy * target_mult, dt * response_speed)
+	
