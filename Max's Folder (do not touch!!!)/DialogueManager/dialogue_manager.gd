@@ -25,6 +25,7 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	npcText.text = uniqueName
 	if toggle == true:
+		
 		visible = true
 	else:
 		visible = false;

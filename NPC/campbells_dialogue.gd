@@ -52,14 +52,14 @@ func enter_abigail_dialogue():
 
 
 func _on_talk_detection_body_entered(body: Node3D) -> void:
-	#GlobalVariables.interact.emit()
-	tutorial.interact = true
-	in_campbell_area = true
-	print("TRUE")
+	if body.is_multiplayer_authority():
+		tutorial.interact = true
+		in_campbell_area = true
+		print("TRUE")
 
 
 func _on_talk_detection_body_exited(body: Node3D) -> void:
-	#GlobalVariables.interact.emit()
-	tutorial.interact = false
-	in_campbell_area = false
-	print("FALSE")
+	if body.is_multiplayer_authority():
+		tutorial.interact = false
+		in_campbell_area = false
+		print("FALSE")
