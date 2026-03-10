@@ -50,7 +50,7 @@ func algoForIterations(worldBlocks):
 			
 			if counter < 2:
 				print("AHAHAHAH")
-				GlobalVariables.iterations +=1
+				
 				#print("EST")
 				#print(counter)
 				#print(worldBlocks2[i].position.x)
