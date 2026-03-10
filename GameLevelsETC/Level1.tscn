@@ -1,10 +1,8 @@
-[gd_scene load_steps=28 format=3 uid="uid://d1ibgfwne281y"]
+[gd_scene load_steps=19 format=3 uid="uid://d1ibgfwne281y"]
 
-[ext_resource type="Script" uid="uid://dppcbcba5rvbf" path="res://GameLevelsETC/level_1.gd" id="1_oh3op"]
-[ext_resource type="PackedScene" uid="uid://bs72ogkvdd7d6" path="res://addons/proto_controller/proto_controller.tscn" id="2_jvlpr"]
+[ext_resource type="Script" uid="uid://bw77jeuwa8wio" path="res://GameLevelsETC/level_1.gd" id="1_oh3op"]
 [ext_resource type="PackedScene" uid="uid://bs2jm62cmkbrk" path="res://addons/instant-realistic-light/light_scene.tscn" id="3_jo2a5"]
 [ext_resource type="Script" uid="uid://bkb35cbdsgdbh" path="res://addons/instant-realistic-light/light_scene.gd" id="4_d084q"]
-[ext_resource type="Script" uid="uid://l6pyeyjgkntn" path="res://GameLevelsETC/item_manager.gd" id="6_gsr76"]
 [ext_resource type="PackedScene" uid="uid://bst3bb8d7vieb" path="res://Max's Folder (do not touch!!!)/pcgRescaled.tscn" id="7_d084q"]
 [ext_resource type="Script" uid="uid://c5qchfyao7ahn" path="res://GameLevelsETC/tether_system.gd" id="7_ki0f2"]
 [ext_resource type="PackedScene" path="res://flashlight.tscn" id="7_vlwaf"]
@@ -14,6 +12,7 @@
 [ext_resource type="Script" uid="uid://wufby810baua" path="res://GameLevelsETC/cellar_door.gd" id="12_o8227"]
 [ext_resource type="PackedScene" uid="uid://b36mjwh3wwi6m" path="res://GameLevelsETC/Items/bat_clean.tscn" id="12_wjimw"]
 [ext_resource type="Texture2D" uid="uid://3i53ybhtpc0f" path="res://Assets/—Pngtree—vector copy icon_4013516.png" id="13_grjf3"]
+[ext_resource type="Script" uid="uid://wufby810baua" path="res://GameLevelsETC/cellar_door.gd" id="12_o8227"]
 [ext_resource type="Script" uid="uid://cjg7ws1b5cnm7" path="res://GameLevelsETC/telleport_manager.gd" id="15_vlwaf"]
 [ext_resource type="PackedScene" uid="uid://bf38tvkrxj6ds" path="res://GameLevelsETC/CellarLevel.tscn" id="16_17epn"]
 
@@ -108,19 +107,14 @@ _data = {
 &"fog_cycle": SubResource("Animation_3nbob")
 }
 
-[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_pyrst"]
-texture = ExtResource("8_5owxm")
-
 [sub_resource type="BoxShape3D" id="BoxShape3D_pyrst"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_o8227"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_o8227"]
 
-[node name="Level1" type="Node3D" node_paths=PackedStringArray("anim")]
+[node name="Level1" type="Node3D"]
 script = ExtResource("1_oh3op")
-player_scene = ExtResource("2_jvlpr")
-anim = NodePath("WorldEnvironment/AnimationPlayer")
 
 [node name="PCGAttempt" parent="." instance=ExtResource("7_d084q")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.1072845, 9.536743e-07, -0.011600018)
@@ -145,121 +139,13 @@ libraries = {
 
 [node name="gen" type="Node3D" parent="."]
 
-[node name="ItemManager" type="Node" parent="."]
-script = ExtResource("6_gsr76")
-
-[node name="Flashlight" parent="ItemManager" instance=ExtResource("7_vlwaf")]
-transform = Transform3D(0.1, 0, 0, 0, 0.1, 0, 0, 0, 0.2, 8.3724575, 3.0776281, 44.523262)
-
-[node name="Bat" parent="ItemManager" instance=ExtResource("12_wjimw")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5201786, 3.1837187, 44.58463)
-collision_mask = 11
-
-[node name="Bat2" parent="ItemManager" instance=ExtResource("12_wjimw")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.4119205, 3.8536096, 45.23525)
-collision_mask = 11
-
-[node name="Symbol" parent="ItemManager" instance=ExtResource("9_17epn")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.375259, 0)
-
-[node name="Menu" type="Node" parent="."]
-
-[node name="CanvasLayer" type="CanvasLayer" parent="Menu"]
-
-[node name="TitleScreen" type="Panel" parent="Menu/CanvasLayer"]
-offset_right = 1154.0
-offset_bottom = 646.0
-theme_override_styles/panel = SubResource("StyleBoxTexture_pyrst")
-
-[node name="Host" type="Button" parent="Menu/CanvasLayer"]
-anchors_preset = -1
-anchor_right = 0.2560764
-anchor_bottom = 0.10185185
-offset_left = 738.0
-offset_top = 358.0
-offset_right = 782.0
-offset_bottom = 389.0
-text = "Host
-"
-
-[node name="Join" type="Button" parent="Menu/CanvasLayer"]
-anchors_preset = -1
-anchor_left = -0.0034722222
-anchor_right = 0.2560764
-anchor_bottom = 0.12808642
-offset_left = 743.0
-offset_top = 461.0
-offset_right = 781.0
-offset_bottom = 492.0
-text = "Join
-"
-
-[node name="joinCode" type="LineEdit" parent="Menu/CanvasLayer"]
-offset_left = 815.0
-offset_top = 577.0
-offset_right = 992.0
-offset_bottom = 617.0
-
-[node name="pause" type="CanvasLayer" parent="Menu"]
-
-[node name="quit" type="Button" parent="Menu/pause"]
-offset_left = 39.0
-offset_top = 55.0
-offset_right = 208.0
-offset_bottom = 120.0
-text = "Quit
-"
-
-[node name="menu" type="Button" parent="Menu/pause"]
-offset_left = 41.0
-offset_top = 127.0
-offset_right = 206.0
-offset_bottom = 196.0
-text = "Menu
-"
-
-[node name="code" type="Label" parent="Menu/pause"]
-offset_left = 41.0
-offset_top = 199.0
-offset_right = 210.0
-offset_bottom = 225.0
-
-[node name="copy" type="Button" parent="Menu/pause"]
-offset_left = 97.0
-offset_top = 232.0
-offset_right = 1129.0
-offset_bottom = 1264.0
-scale = Vector2(0.05, 0.05)
-icon = ExtResource("13_grjf3")
-
-[node name="tutorial" type="Label" parent="Menu/pause"]
-offset_left = 39.0
-offset_top = 293.0
-offset_right = 344.0
-offset_bottom = 536.0
-theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
-theme_override_constants/outline_size = 6
-theme_override_fonts/font = ExtResource("10_vlwaf")
-theme_override_font_sizes/font_size = 30
-text = "WASD: Move
-F: Pick up Item
-G: Drop Item
-Mouse Click: Use Item
-Tab: Switch Item
-E: Interact with NPCs"
-
-[node name="Interact" type="CanvasLayer" parent="Menu"]
-
-[node name="NPCDialogue" type="CanvasLayer" parent="Menu"]
-
 [node name="TetherSystem" type="Node" parent="."]
 script = ExtResource("7_ki0f2")
 
 [node name="CellarDoor" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.322731, 1.8603764, 3)
 script = ExtResource("12_o8227")
-teleport_manager_path = NodePath("../TelleportManager")
+next_level = ExtResource("16_17epn")
 
 [node name="Area3D" type="Area3D" parent="CellarDoor" groups=["interactable"]]
 collision_layer = 8
@@ -285,8 +171,5 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -242.99564, 0)
 script = ExtResource("15_vlwaf")
 cellar_scene = ExtResource("16_17epn")
 
-[connection signal="pressed" from="Menu/CanvasLayer/Host" to="." method="_on_host_pressed"]
-[connection signal="pressed" from="Menu/CanvasLayer/Join" to="." method="_on_join_pressed"]
-[connection signal="pressed" from="Menu/pause/quit" to="." method="_on_pause_quit_pressed"]
-[connection signal="pressed" from="Menu/pause/menu" to="." method="_on_pause_back_to_menu_pressed"]
-[connection signal="pressed" from="Menu/pause/copy" to="." method="_on_pause_copy_code_pressed"]
+[node name="Spawn" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.4970512, 47.726566)
