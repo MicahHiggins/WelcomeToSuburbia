@@ -1,7 +1,9 @@
-[gd_scene load_steps=9 format=3 uid="uid://bf38tvkrxj6ds"]
+[gd_scene load_steps=11 format=3 uid="uid://bf38tvkrxj6ds"]
 
 [ext_resource type="Script" uid="uid://dqvoninhsiala" path="res://GameLevelsETC/cellar_3_door_hallway.gd" id="1_tmgbf"]
 [ext_resource type="PackedScene" uid="uid://dqbgiq51e15mw" path="res://stone_block.tscn" id="2_3njtq"]
+[ext_resource type="PackedScene" uid="uid://bk12xaa431jqc" path="res://symbol.tscn" id="3_3njtq"]
+[ext_resource type="PackedScene" uid="uid://b6vnu6i8g7uqc" path="res://symbol_correct.tscn" id="3_720kl"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_720kl"]
 
@@ -22,7 +24,11 @@ ambient_light_energy = 7.11
 
 [node name="HallwayGen" type="Node3D" parent="."]
 script = ExtResource("1_tmgbf")
+spawn_marker_path = NodePath("")
 block_scene = ExtResource("2_3njtq")
+correct_symbol_scene = ExtResource("3_720kl")
+wrong_symbol_scene_a = ExtResource("3_3njtq")
+wrong_symbol_scene_b = ExtResource("3_3njtq")
 
 [node name="TriggerArea" type="Node3D" parent="."]
 
@@ -77,12 +83,10 @@ collision_mask = 9
 [node name="CollisionShape3D" type="CollisionShape3D" parent="TriggerArea/Reveal3"]
 shape = SubResource("BoxShape3D_f1x8v")
 
-[node name="SpawnPoints" type="Node3D" parent="."]
-
-[node name="Spawn" type="Marker3D" parent="SpawnPoints"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.6968203, 0)
-
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_720kl")
 
 [node name="world" type="Node3D" parent="."]
+
+[node name="Spawn" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.2284875, 0)
