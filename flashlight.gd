@@ -5,7 +5,6 @@ class_name UVFlashlight
 @onready var uv_light: SpotLight3D = $SpotLight3D
 
 # CHANGED: ShapeCast3D instead of RayCast3D
-# Set this in the inspector if your node isn't named "ShapeCast3D"
 @export var uv_cast_path: NodePath = NodePath("ShapeCast3D")
 var uv_cast: ShapeCast3D = null
 
@@ -15,7 +14,19 @@ var outline_mesh: MeshInstance3D = null
 
 @export var authority_only_physics: bool = true
 
+# ============================================================
+# NEW: “bat-style” physics while dropped (CharacterBody3D sim)
+# - keeps flashlight from being frozen in midair when dropped
+# - behaves similarly to your bat script
+# ============================================================
+@export var enable_drop_physics: bool = true
+@export var ground_friction: float = 5.0
+@export var air_gravity_mult: float = 1.0
+var _gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity")
+
+# ============================================================
 # beam/reveal tuning
+# ============================================================
 @export var uv_range_m: float = 10.0
 @export var reveal_radius_m: float = 1.75
 @export var reveal_max_targets_per_frame: int = 12
@@ -35,9 +46,10 @@ var _revealed_this_frame: Dictionary = {}
 var _previous_reveals: Array[UvRevealTarget] = []
 
 func _ready() -> void:
+	# IMPORTANT: ItemManager discovery depends on this group existing on all peers.
 	add_to_group("pickup")
 
-	# outline hover
+	# outline hover (your Player raycast should call set_hovered just like bat)
 	if outline_mesh_path != NodePath(""):
 		outline_mesh = get_node_or_null(outline_mesh_path) as MeshInstance3D
 		if outline_mesh != null:
@@ -62,28 +74,32 @@ func _ready() -> void:
 		uv_light.visible = false
 
 func set_hovered(v: bool) -> void:
+	# This is what your Player raycast/hover system should call.
 	_hovered = v
 	if outline_mesh != null and not _held:
 		outline_mesh.visible = v
 
 func set_held(v: bool) -> void:
 	_held = v
+
+	# When held, never show outline (same as bat).
 	if outline_mesh != null:
 		outline_mesh.visible = false
 
-	# when dropped, kill UV
+	# When dropped, kill UV (prevents “dropped flashlight still revealing”).
 	if not v:
 		_set_uv_on(false)
 
 func _unhandled_input(event: InputEvent) -> void:
-	# only allow toggle when held
+	# Only allow toggle when held.
+	# IMPORTANT: This runs only on the client that owns the player holding it.
 	if not _held:
 		return
 	if event.is_action_pressed(String(toggle_action)):
 		_set_uv_on(not _uv_on)
 
 func _process(_delta: float) -> void:
-	# purely visual reveal, do it locally
+	# purely visual reveal, do it locally (this is fine; reveal targets can also be local-only)
 	if not _held or not _uv_on:
 		_revealed_this_frame.clear()
 		_clear_previous_reveals()
@@ -99,14 +115,48 @@ func _process(_delta: float) -> void:
 	_reveal_in_beam()
 	_clear_previous_reveals()
 
+# ============================================================
+# NEW: physics loop like your bat
+# - server (authority) simulates dropped motion so everyone sees it
+# - non-authority peers just “accept transforms” (ItemManager handles snap for drops)
+# ============================================================
+func _physics_process(delta: float) -> void:
+	if not enable_drop_physics:
+		return
+
+	# If held, no body physics (ItemManager parents it to CarryObjectMarker anyway)
+	if _held:
+		velocity = Vector3.ZERO
+		return
+
+	var has_peer := multiplayer.has_multiplayer_peer()
+	if authority_only_physics and has_peer:
+		# Only authority simulates dropped motion
+		if is_multiplayer_authority():
+			_do_drop_physics(delta)
+		return
+
+	# Singleplayer or non-authority-only setting
+	_do_drop_physics(delta)
+
+func _do_drop_physics(delta: float) -> void:
+	# gravity
+	if not is_on_floor():
+		velocity.y -= _gravity * air_gravity_mult * delta
+	else:
+		# simple friction on ground (same feel as bat)
+		velocity.x = move_toward(velocity.x, 0.0, ground_friction * delta)
+		velocity.z = move_toward(velocity.z, 0.0, ground_friction * delta)
+
+	move_and_slide()
+
+# ============================================================
+# UV reveal logic
+# ============================================================
 func _reveal_in_beam() -> void:
-	# We pick a "beam center" point:
-	# - if ShapeCast hits something: use closest collision point
-	# - else: point straight ahead at max range
 	var hit_pos := global_transform.origin + (-global_transform.basis.z.normalized() * uv_range_m)
 
 	if uv_cast != null and uv_cast.is_colliding():
-		# pick the closest collision
 		var best_d := INF
 		for i in range(uv_cast.get_collision_count()):
 			var p := uv_cast.get_collision_point(i)
@@ -115,7 +165,6 @@ func _reveal_in_beam() -> void:
 				best_d = d
 				hit_pos = p
 
-	# reveal nearby targets
 	var targets: Array = get_tree().get_nodes_in_group("uv_reveal")
 	var count := 0
 
@@ -133,7 +182,6 @@ func _reveal_in_beam() -> void:
 			_revealed_this_frame[rt] = true
 			count += 1
 
-	# maintain previous list (only valid ones)
 	_previous_reveals = _previous_reveals.filter(func(x): return x != null and is_instance_valid(x))
 	for k in _revealed_this_frame.keys():
 		var rr := k as UvRevealTarget
@@ -155,7 +203,7 @@ func _set_uv_on(v: bool) -> void:
 	if uv_cast != null:
 		uv_cast.enabled = v
 
-	# optional: replicate the light visible to others (cosmetic)
+	# cosmetic replication (good for Steam multiplayer)
 	if replicate_light_toggle and multiplayer.has_multiplayer_peer():
 		rpc("_rpc_set_uv_visible", v)
 
