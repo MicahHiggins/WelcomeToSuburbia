@@ -46,11 +46,8 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.375259, 0)
 [node name="LevelFlowManager" type="Node3D" parent="."]
 script = ExtResource("5_l5n62")
 default_level = ExtResource("6_6bcdd")
-spawn_marker_path_in_level = NodePath("../LevelContainer/Level1/Spawn")
 
 [node name="LevelContainer" type="Node3D" parent="."]
-
-[node name="Level1" parent="LevelContainer" instance=ExtResource("6_6bcdd")]
 
 [node name="PlayerSpawner" type="Node3D" parent="."]
 script = ExtResource("9_nqjqn")
@@ -146,4 +143,8 @@ E: Interact with NPCs"
 
 [node name="NPCDialogue" type="CanvasLayer" parent="Menu"]
 
-[editable path="LevelContainer/Level1"]
+[connection signal="pressed" from="Menu/CanvasLayer/Host" to="LobbyManager" method="_on_host_pressed"]
+[connection signal="pressed" from="Menu/CanvasLayer/Join" to="LobbyManager" method="_on_join_pressed"]
+[connection signal="pressed" from="Menu/pause/quit" to="LobbyManager" method="_on_pause_quit_pressed"]
+[connection signal="pressed" from="Menu/pause/menu" to="LobbyManager" method="_on_pause_back_to_menu_pressed"]
+[connection signal="pressed" from="Menu/pause/copy" to="LobbyManager" method="_on_pause_copy_code_pressed"]

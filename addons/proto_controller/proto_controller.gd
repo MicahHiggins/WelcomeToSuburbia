@@ -687,6 +687,17 @@ func server_teleport_to(xform: Transform3D) -> void:
 	global_transform = xform
 	velocity = Vector3.ZERO
 
+func _play_footstep_audio() -> void:
+	# If you already have a footstep AudioStreamPlayer3D in the scene:
+	if footstep == null:
+		return
+
+	# Only play for the local controlling player (prevents doubles)
+	if multiplayer.has_multiplayer_peer() and not is_multiplayer_authority():
+		return
+
+	footstep.pitch_scale = randf_range(0.85, 1.25)
+	footstep.play()
 # =========================
 #  CELLAR ROLE RPCs
 # =========================

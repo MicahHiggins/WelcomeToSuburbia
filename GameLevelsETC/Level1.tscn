@@ -138,7 +138,7 @@ script = ExtResource("7_ki0f2")
 [node name="CellarDoor" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.322731, 1.8603764, 3)
 script = ExtResource("12_o8227")
-teleport_manager_path = NodePath("../TelleportManager")
+next_level = ExtResource("16_17epn")
 
 [node name="Area3D" type="Area3D" parent="CellarDoor" groups=["interactable"]]
 collision_layer = 8
