@@ -104,10 +104,10 @@ _data = {
 }
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_5540h"]
-size = Vector3(10.073151, 1.2070313, 10.223694)
+size = Vector3(7.7937393, 1.0354004, 7.665653)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_2lyw5"]
-size = Vector3(10.811035, 6.757904, 0.5205078)
+size = Vector3(6.777272, 4.2207623, 0.31888485)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_rkcnq"]
 albedo_color = Color(0.60271376, 0.7674062, 0.73615, 1)
@@ -159,53 +159,53 @@ libraries = {
 transform = Transform3D(1.4, 0, 0, 0, 1.4, 0, 0, 0, 1.4, 0, 0, 0)
 
 [node name="bedroom_copy" parent="Bedrooms" instance=ExtResource("1_qogrp")]
-transform = Transform3D(1, 0, 0, 0, 0.8, 0, 0, 0, 1, 0, 0, 9)
+transform = Transform3D(1, 0, 0, 0, 0.8, 0, 0, 0, 1, -0.12646402, 0.087929964, 8.996908)
 
 [node name="Collisions" type="StaticBody3D" parent="Bedrooms/bedroom_copy"]
 
 [node name="CollisionShape3D6" type="CollisionShape3D" parent="Bedrooms/bedroom_copy/Collisions"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.022476196, -3.4390893, 16.614336)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.09956101, -2.5789206, -18.063543)
 shape = SubResource("BoxShape3D_5540h")
 
 [node name="CollisionShape3D7" type="CollisionShape3D" parent="Bedrooms/bedroom_copy/Collisions"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0715332, -0.08985901, 21.688211)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.043420553, 0.11283349, -14.401438)
 shape = SubResource("BoxShape3D_2lyw5")
 
 [node name="CollisionShape3D8" type="CollisionShape3D" parent="Bedrooms/bedroom_copy/Collisions"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0715332, -0.08985901, 11.609346)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.01253342, -0.050566185, -21.552368)
 shape = SubResource("BoxShape3D_2lyw5")
 
 [node name="CollisionShape3D9" type="CollisionShape3D" parent="Bedrooms/bedroom_copy/Collisions"]
-transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -5.107387, -0.08985901, 16.950623)
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -3.72502, 0.023052694, -18.095638)
 shape = SubResource("BoxShape3D_2lyw5")
 
 [node name="CollisionShape3D10" type="CollisionShape3D" parent="Bedrooms/bedroom_copy/Collisions"]
-transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 5.098427, -0.08985901, 16.950623)
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 3.4806824, -0.02391148, -18.024698)
 shape = SubResource("BoxShape3D_2lyw5")
 
 [node name="bedroom2" parent="Bedrooms" instance=ExtResource("2_rbxy2")]
-transform = Transform3D(-1, 0, -1.509958e-07, 0, 0.8, 0, 1.509958e-07, 0, -1, 0, 0, -9)
+transform = Transform3D(-1, 0, -1.509958e-07, 0, 0.8, 0, 1.509958e-07, 0, -1, 0.3168704, 0.11224883, -9.391982)
 
 [node name="Collisions" type="StaticBody3D" parent="Bedrooms/bedroom2"]
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Bedrooms/bedroom2/Collisions"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.022476196, -3.4390893, -16.91301)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.10619733, -2.6089382, -18.048445)
 shape = SubResource("BoxShape3D_5540h")
 
 [node name="CollisionShape3D2" type="CollisionShape3D" parent="Bedrooms/bedroom2/Collisions"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0715332, -0.08985901, -11.839134)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.24346982, -0.06194684, -14.248376)
 shape = SubResource("BoxShape3D_2lyw5")
 
 [node name="CollisionShape3D3" type="CollisionShape3D" parent="Bedrooms/bedroom2/Collisions"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0715332, -0.08985901, -21.918)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.071533166, -0.08985901, -21.658087)
 shape = SubResource("BoxShape3D_2lyw5")
 
 [node name="CollisionShape3D4" type="CollisionShape3D" parent="Bedrooms/bedroom2/Collisions"]
-transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -5.107387, -0.08985901, -16.576723)
+transform = Transform3D(-4.371138e-08, 0, 1, 0, 1, 0, -1, 0, -4.371138e-08, -3.5686343, -0.08985901, -18.060328)
 shape = SubResource("BoxShape3D_2lyw5")
 
 [node name="CollisionShape3D5" type="CollisionShape3D" parent="Bedrooms/bedroom2/Collisions"]
-transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 5.098427, -0.08985901, -16.576723)
+transform = Transform3D(-4.371138e-08, 0, 1, 0, 1, 0, -1, 0, -4.371138e-08, 3.5398877, 0.010992047, -17.950844)
 shape = SubResource("BoxShape3D_2lyw5")
 
 [node name="Neighborhood" type="Node3D" parent="."]
@@ -244,10 +244,13 @@ transform = Transform3D(-7.583926e-08, 0, -1.883, 0, 0.663, 0, 1.735, 0, -8.2308
 transform = Transform3D(-7.583926e-08, 0, -5.263, 0, 0.663, 0, 1.735, 0, -2.3005303e-07, -176.56937, -5.9382663, -17.641933)
 
 [node name="SurbHouseV12" parent="Neighborhood" instance=ExtResource("5_qci02")]
-transform = Transform3D(-7.583926e-08, 0, -5.263, 0, 0.663, 0, 1.735, 0, -2.3005303e-07, 173.01607, -5.9382663, -17.641933)
+transform = Transform3D(-7.583926e-08, 0, -5.263, 0, 0.663, 0, 1.735, 0, -2.3005303e-07, 170.11821, -5.9382663, -17.641933)
 
 [node name="SurbHouseV13" parent="Neighborhood" instance=ExtResource("5_qci02")]
 transform = Transform3D(-7.583926e-08, 0, 5.263, 0, 0.663, 0, -1.735, 0, -2.3005303e-07, -177.00809, -5.9382663, 17.262146)
+
+[node name="SurbHouseV14" parent="Neighborhood" instance=ExtResource("5_qci02")]
+transform = Transform3D(-7.583927e-08, 0, 5.263, 0, 0.663, 0, -1.735, 0, -2.3005305e-07, 171.47307, -5.9382668, 17.262146)
 
 [node name="Grass" type="MeshInstance3D" parent="Neighborhood"]
 transform = Transform3D(40, 0, 0, 0, 20, 0, 0, 0, 20, 0, -55.44985, 0)
@@ -982,9 +985,6 @@ transform = Transform3D(0.13999997, 0, 0, 0, 0.13999997, 0, 0, 0, 0.13999997, 23
 
 [node name="whitefence242" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
 transform = Transform3D(0.13999997, 0, 0, 0, 0.13999997, 0, 0, 0, 0.13999997, 23.642902, 0.1487093, -0.0034054215)
-
-[node name="SurbHouseV14" parent="Neighborhood" instance=ExtResource("5_qci02")]
-transform = Transform3D(-7.583926e-08, 0, 5.263, 0, 0.663, 0, -1.735, 0, -2.3005303e-07, 174.70264, -5.9382663, 17.262146)
 
 [node name="ProtoController" parent="." instance=ExtResource("4_5540h")]
 transform = Transform3D(-0.97769535, 0, 0.21002819, 0, 1, 0, -0.21002819, 0, -0.97769535, 0.25159144, -2.1527023, -8.809748)

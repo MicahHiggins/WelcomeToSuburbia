@@ -14,6 +14,11 @@
 [ext_resource type="Script" uid="uid://wufby810baua" path="res://GameLevelsETC/cellar_door.gd" id="12_o8227"]
 [ext_resource type="PackedScene" uid="uid://b36mjwh3wwi6m" path="res://GameLevelsETC/Items/bat_clean.tscn" id="12_wjimw"]
 [ext_resource type="Texture2D" uid="uid://3i53ybhtpc0f" path="res://Assets/—Pngtree—vector copy icon_4013516.png" id="13_grjf3"]
+[ext_resource type="PackedScene" uid="uid://becgpkre4p052" path="res://bedroom_copy.tscn" id="13_wg6gn"]
+[ext_resource type="Script" uid="uid://cjg7ws1b5cnm7" path="res://GameLevelsETC/telleport_manager.gd" id="15_vlwaf"]
+[ext_resource type="PackedScene" uid="uid://bf38tvkrxj6ds" path="res://GameLevelsETC/CellarLevel.tscn" id="16_17epn"]
+[ext_resource type="Script" path="res://GameLevelsETC/sky_billboard_rig.gd" id="17_3nbob"]
+[ext_resource type="PackedScene" uid="uid://cfb6cbspvm3ve" path="res://Assets/Billboard.glb" id="18_wg6gn"]
 [ext_resource type="Script" uid="uid://cjg7ws1b5cnm7" path="res://GameLevelsETC/telleport_manager.gd" id="15_vlwaf"]
 [ext_resource type="PackedScene" uid="uid://bf38tvkrxj6ds" path="res://GameLevelsETC/CellarLevel.tscn" id="16_17epn"]
 
@@ -27,14 +32,14 @@ ground_horizon_color = Color(0, 0.73333335, 0.99215686, 1)
 sun_angle_max = 100.0
 sun_curve = 0.058843866
 
-[sub_resource type="Sky" id="Sky_tyhie"]
+[sub_resource type="Sky" id="Sky_wg6gn"]
 sky_material = SubResource("ProceduralSkyMaterial_ki0f2")
 radiance_size = 2
 
 [sub_resource type="Environment" id="Environment_f8w8m"]
 background_mode = 2
 background_intensity = 100000.0
-sky = SubResource("Sky_tyhie")
+sky = SubResource("Sky_wg6gn")
 tonemap_mode = 3
 tonemap_white = 8.0
 ssao_enabled = true

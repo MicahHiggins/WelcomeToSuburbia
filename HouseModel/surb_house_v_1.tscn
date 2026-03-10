@@ -235,7 +235,7 @@ transform = Transform3D(-1.0000001, 0, -1.7484557e-07, 0, 2, 0, 8.742278e-08, 0,
 material_override = ExtResource("4_6xo08")
 
 [node name="Window_003" parent="." index="7"]
-transform = Transform3D(-1.0000001, 0, -1.7484557e-07, 0, 2, 0, 8.742278e-08, 0, -2, 0.65058964, 4.284812, -0.059078842)
+transform = Transform3D(-1.0000001, 0, -1.7484557e-07, 0, 1.9999999, 0, 8.742278e-08, 0, -1.9999999, 0.5226177, 4.2848125, -0.05907884)
 material_override = ExtResource("2_8qxbv")
 
 [node name="Window_004" parent="." index="8"]
