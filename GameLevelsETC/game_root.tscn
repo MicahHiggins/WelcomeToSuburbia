@@ -1,9 +1,9 @@
-[gd_scene load_steps=14 format=3 uid="uid://babsyhm5jcfme"]
+[gd_scene load_steps=14 format=3 uid="uid://crhxxndsra57g"]
 
 [ext_resource type="Script" path="res://GameLevelsETC/lobby_manager.gd" id="1_l5n62"]
 [ext_resource type="Script" uid="uid://l6pyeyjgkntn" path="res://GameLevelsETC/item_manager.gd" id="1_lbg40"]
 [ext_resource type="PackedScene" uid="uid://bs72ogkvdd7d6" path="res://addons/proto_controller/proto_controller.tscn" id="2_6bcdd"]
-[ext_resource type="PackedScene" path="res://flashlight.tscn" id="2_7dwkj"]
+[ext_resource type="PackedScene" uid="uid://bsrc4sxs0q266" path="res://flashlight.tscn" id="2_7dwkj"]
 [ext_resource type="PackedScene" uid="uid://b36mjwh3wwi6m" path="res://GameLevelsETC/Items/bat_clean.tscn" id="3_xokw7"]
 [ext_resource type="PackedScene" uid="uid://bk12xaa431jqc" path="res://symbol.tscn" id="4_vhrww"]
 [ext_resource type="Script" path="res://level_flow_manager.gd" id="5_l5n62"]
