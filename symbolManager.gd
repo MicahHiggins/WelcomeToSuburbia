@@ -34,9 +34,9 @@ func randPuzzle():
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
-	print(in_area)
+	#print(in_area)
 	if in_area == true:
-		print("HU")
+		#print("HU")
 		interact.visible = true
 	else: 
 		interact.visible = false
