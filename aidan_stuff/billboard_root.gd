@@ -2,6 +2,7 @@ extends Node3D
 
 @onready var rotator: Node3D = $Rotator
 @onready var label_3d: Label3D = $Rotator/Label3D
+@onready var label_3d2: Label3D = $Rotator/Label3D2
 
 @export var default_text: String = "Welcome to Suburbia!"
 
@@ -42,12 +43,14 @@ func update_text() -> void:
 	if label_3d == null:
 		return
 
-	var iteration: int = GlobalVariables.iterations
+	var iteration: int = GlobalVariables.ITERS
 
 	if iteration in unique_iterations:
 		label_3d.text = unique_iterations[iteration]
+		label_3d2.text = unique_iterations[iteration]
 	else:
 		label_3d.text = default_text
+		label_3d2.text = default_text
 
 
 func face_player_y_only() -> void:
