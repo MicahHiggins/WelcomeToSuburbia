@@ -32,8 +32,17 @@ func _ready() -> void:
 	#pass
 	
 func algoForIterations(worldBlocks):
+	# ============================================================
+	# MULTIPLAYER FIX:
+	# In multiplayer, ONLY the SERVER is allowed to move world blocks.
+	# If clients also run this, layouts diverge instantly.
+	# ============================================================
+	if multiplayer.has_multiplayer_peer() and not multiplayer.is_server():
+		return
+
 	if GlobalVariables.algoDebug == true:
 		return
+
 	#print(worldBlocks2[1])
 	#print("TESTESTES")
 	var currentWorldBlockIteration = worldBlocks2[worldBlocks].global_position
@@ -77,6 +86,14 @@ func algoForIterations(worldBlocks):
 
 
 func _on_load_zone_1_body_entered(body: Node3D) -> void:
+	# ============================================================
+	# MULTIPLAYER FIX:
+	# Only the SERVER should react to zone triggers and reposition blocks.
+	# Clients still enter zones, but they should NOT run generation logic.
+	# ============================================================
+	if multiplayer.has_multiplayer_peer() and not multiplayer.is_server():
+		return
+
 	print(body)
 	iteration1 = iteration1 + 1
 	#print(iteration1)
@@ -90,6 +107,10 @@ func _on_load_zone_1_body_entered(body: Node3D) -> void:
 
 
 func _on_load_zone_2_body_entered(body: Node3D) -> void:
+	# SERVER-ONLY in multiplayer
+	if multiplayer.has_multiplayer_peer() and not multiplayer.is_server():
+		return
+
 	iteration2 = iteration2 + 1
 	#print(player)
 	#print(iteration2)
@@ -101,6 +122,10 @@ func _on_load_zone_2_body_entered(body: Node3D) -> void:
 
 
 func _on_load_zone_3_body_entered(body: Node3D) -> void:
+	# SERVER-ONLY in multiplayer 
+	if multiplayer.has_multiplayer_peer() and not multiplayer.is_server():
+		return
+
 	iteration3 = iteration3 + 1
 	#print(player)
 	#print(iteration3)
@@ -112,6 +137,10 @@ func _on_load_zone_3_body_entered(body: Node3D) -> void:
 
 
 func _on_load_zone_4_body_entered(body: Node3D) -> void:
+	# SERVER-ONLY in multiplayer 
+	if multiplayer.has_multiplayer_peer() and not multiplayer.is_server():
+		return
+
 	iteration4 = iteration4 + 1
 	#print(player)
 	#print(iteration4)
@@ -123,6 +152,10 @@ func _on_load_zone_4_body_entered(body: Node3D) -> void:
 
 
 func _on_load_zone_5_body_entered(body: Node3D) -> void:
+	#  SERVER-ONLY in multiplayer 
+	if multiplayer.has_multiplayer_peer() and not multiplayer.is_server():
+		return
+
 	iteration5 = iteration5 + 1
 	#print(iteration5)
 	if iteration5 == 2:

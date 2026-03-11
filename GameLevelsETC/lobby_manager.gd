@@ -229,6 +229,19 @@ func _host_game(_lobby_id: int) -> void:
 
 	peer = steam_peer
 	multiplayer.multiplayer_peer = peer
+
+	# ============================================================
+	# ✅ CRITICAL FIX (RPC PATH SYNC)
+	# Godot's SceneMultiplayer encodes NodePaths in RPC packets.
+	# If the multiplayer "root path" differs per peer, Godot can't
+	# simplify/resolve paths consistently and you get infinite spam:
+	#   - process_simplify_path: node is null
+	#   - Invalid packet received. Requested node was not found
+	#   - get_node: Node not found: ".../@Node3D@2/..."
+	# Force the root to the current scene (your GameRoot).
+	# ============================================================
+	multiplayer.set_root_path(get_tree().current_scene.get_path())
+
 	print("SteamMultiplayerPeer host created. My unique_id:", multiplayer.get_unique_id())
 
 	# spawn local player through PlayerSpawner (under PlayersRoot)
@@ -256,6 +269,15 @@ func _join_game(lobby_id: int) -> void:
 
 	peer = steam_peer
 	multiplayer.multiplayer_peer = peer
+
+	# ============================================================
+	# ✅ CRITICAL FIX (RPC PATH SYNC)
+	# Same reason as host: make sure the root path for RPC node paths
+	# matches the host. This prevents @Node3D@X paths + "node not found"
+	# loops on clients when level instances differ.
+	# ============================================================
+	multiplayer.set_root_path(get_tree().current_scene.get_path())
+
 	print("SteamMultiplayerPeer client created. Host SteamID:", host_id)
 
 	# spawn local player through PlayerSpawner (under PlayersRoot)
