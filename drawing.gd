@@ -16,6 +16,7 @@ var drawn_tiles = []
 func rand_num():
 	return randi_range(1, 3)
 func _ready() -> void:
+	GlobalVariables.puzzleType = randi_range(1, 3)
 	label.text = "Hello!"
 	
 	for x in gridSize:

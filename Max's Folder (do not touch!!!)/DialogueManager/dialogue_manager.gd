@@ -6,9 +6,11 @@ class_name dialogue
 @onready var npcText: Label = $Text
 
 
+
 static var uniqueName := "default"
 static var uniqueDialogue := "default"
 static var toggle := false
+static var img
 
 #@onready var text: Label = $Text
 #@onready var name: Label = $Name

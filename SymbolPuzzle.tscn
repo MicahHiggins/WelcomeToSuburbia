@@ -1,11 +1,11 @@
 [gd_scene load_steps=22 format=3 uid="uid://c5jxy2ugosnbe"]
 
-[ext_resource type="Script" path="res://symbolManager.gd" id="1_tf5p5"]
+[ext_resource type="Script" uid="uid://dtdv2huwkhvfh" path="res://symbolManager.gd" id="1_tf5p5"]
 [ext_resource type="Texture2D" uid="uid://wy5xfggc16ak" path="res://Max's Folder (do not touch!!!)/Tiles/drawn.png" id="2_tkebk"]
 [ext_resource type="Texture2D" uid="uid://lln4d7bumdks" path="res://Max's Folder (do not touch!!!)/Tiles/grid.png" id="3_lam6w"]
 [ext_resource type="Texture2D" uid="uid://cs51fm4ybyunp" path="res://Max's Folder (do not touch!!!)/Tiles/empty-Sheet.png" id="3_lcf58"]
 [ext_resource type="Script" uid="uid://drdtamscdvpnk" path="res://drawing.gd" id="4_lcf58"]
-[ext_resource type="Script" path="res://Seeing.gd" id="6_nsdqc"]
+[ext_resource type="Script" uid="uid://c42s0sbmibvcb" path="res://Seeing.gd" id="6_nsdqc"]
 [ext_resource type="PackedScene" uid="uid://bs2jm62cmkbrk" path="res://addons/instant-realistic-light/light_scene.tscn" id="7_nsdqc"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_uk3cl"]
@@ -225,7 +225,7 @@ text = "f to interact
 [node name="Spawn" type="Marker3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5404701, 0.19048405, 0)
 
-[node name="WorldEnvironment" type="WorldEnvironment" parent="." instance=ExtResource("7_nsdqc")]
+[node name="WorldEnvironment" parent="." instance=ExtResource("7_nsdqc")]
 environment = SubResource("Environment_f8w8m")
 camera_attributes = SubResource("CameraAttributesPractical_qo5hu")
 
