@@ -45,16 +45,16 @@ func enter_bob_dialogue():
 	
 
 
-func _on_talk_detection_body_entered(body: Node3D) -> void:
-	if body.is_multiplayer_authority():	
-		tutorial.interact = true
-		in_bob_area = true
-		print("TRUE")
-
-
-func _on_talk_detection_body_exited(body: Node3D) -> void:
-	if body.is_multiplayer_authority():
-		GlobalVariables.interact.emit()
-		tutorial.interact = false
-		in_bob_area = false
-		print("FALSE")
+#func _on_talk_detection_body_entered(body: Node3D) -> void:
+	#if body.is_multiplayer_authority():	
+		#tutorial.interact = true
+		#in_bob_area = true
+		#print("TRUE")
+#
+#
+#func _on_talk_detection_body_exited(body: Node3D) -> void:
+	#if body.is_multiplayer_authority():
+		#GlobalVariables.interact.emit()
+		#tutorial.interact = false
+		#in_bob_area = false
+		#print("FALSE")
