@@ -18,7 +18,7 @@ var do = false
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	#GlobalVariables.puzzleType = randi_range(1, 3)
+	GlobalVariables.puzzleType = randi_range(1, 3)
 	print("NUMM:, ", GlobalVariables.puzzleType)
 	seeing.visible = false
 				#exit.visible = false
