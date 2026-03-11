@@ -15,54 +15,55 @@ var do = false
 
 const SERVER_ID: int = 1
 
-# ADDED: store the authoritative puzzle type on this node (not only in GlobalVariables)
-# GlobalVariables is per-peer, so relying on it alone can diverge.
+# ADDED: cache the authoritative type on this node
 var _puzzle_type: int = -1
 
 
 func _ready() -> void:
-	# IMPORTANT: hide UI first so clients don't "show something" before puzzle type arrives
 	seeing.visible = false
 	buttons.visible = false
 	drawing.visible = false
 	buttons.visible = false
 
-	# SINGLEPLAYER: keep your original behavior
+	# SINGLEPLAYER: keep old behavior
 	if not multiplayer.has_multiplayer_peer():
 		_puzzle_type = randi_range(1, 3)
 		GlobalVariables.puzzleType = _puzzle_type
 		print("NUMM:, ", GlobalVariables.puzzleType)
 		return
 
-	# MULTIPLAYER:
-	# Server chooses once and pushes to everyone.
-	# Clients do NOT roll locally. They request the current value from server.
+	# MULTIPLAYER: server decides once, clients never roll locally
 	if multiplayer.is_server():
 		if _puzzle_type == -1:
 			_puzzle_type = randi_range(1, 3)
-
 		GlobalVariables.puzzleType = _puzzle_type
 		rpc("_rpc_set_puzzle_type", _puzzle_type)
-		print("NUMM:, ", GlobalVariables.puzzleType)
 
-		# ADDED: late joiners get the already-chosen puzzle type
+		# ADDED: late joiners get the same puzzle type
 		if not multiplayer.peer_connected.is_connected(_on_peer_connected):
 			multiplayer.peer_connected.connect(_on_peer_connected)
 	else:
-		# ADDED: client asks server for the current puzzle type (covers join timing)
+		# ADDED: joining client asks server for current puzzle type
 		rpc_id(SERVER_ID, "_rpc_request_puzzle_type")
 
+	print("NUMM:, ", GlobalVariables.puzzleType)
 
-# ADDED: when a new peer joins, server sends the current puzzle type
-func _on_peer_connected(peer_id: int) -> void:
-	if not multiplayer.is_server():
+
+func randPuzzle():
+	# MULTIPLAYER: server rerolls and broadcasts
+	if multiplayer.has_multiplayer_peer():
+		if multiplayer.is_server():
+			_puzzle_type = randi_range(1, 3)
+			GlobalVariables.puzzleType = _puzzle_type
+			rpc("_rpc_set_puzzle_type", _puzzle_type)
 		return
-	if _puzzle_type == -1:
-		return
-	rpc_id(peer_id, "_rpc_set_puzzle_type", _puzzle_type)
+
+	# SINGLEPLAYER
+	_puzzle_type = randi_range(1, 3)
+	GlobalVariables.puzzleType = _puzzle_type
 
 
-# ADDED: client -> server request for the current puzzle type
+# ADDED: joining client asks server for the current type
 @rpc("any_peer", "reliable")
 func _rpc_request_puzzle_type() -> void:
 	if not multiplayer.is_server():
@@ -76,25 +77,19 @@ func _rpc_request_puzzle_type() -> void:
 	rpc_id(sender, "_rpc_set_puzzle_type", _puzzle_type)
 
 
-# ADDED: apply authoritative puzzle type on every peer (including host)
+# ADDED: server sends the type to new peers
+func _on_peer_connected(peer_id: int) -> void:
+	if not multiplayer.is_server():
+		return
+	if _puzzle_type == -1:
+		return
+	rpc_id(peer_id, "_rpc_set_puzzle_type", _puzzle_type)
+
+
+# apply authoritative puzzle type on every peer (including host)
 @rpc("any_peer", "call_local", "reliable")
 func _rpc_set_puzzle_type(t: int) -> void:
 	_puzzle_type = int(t)
-	GlobalVariables.puzzleType = _puzzle_type
-	print("NUMM:, ", GlobalVariables.puzzleType)
-
-
-func randPuzzle():
-	# MULTIPLAYER: only server is allowed to reroll, then broadcast
-	if multiplayer.has_multiplayer_peer():
-		if multiplayer.is_server():
-			_puzzle_type = randi_range(1, 3)
-			GlobalVariables.puzzleType = _puzzle_type
-			rpc("_rpc_set_puzzle_type", _puzzle_type)
-		return
-
-	# SINGLEPLAYER
-	_puzzle_type = randi_range(1, 3)
 	GlobalVariables.puzzleType = _puzzle_type
 
 

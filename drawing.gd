@@ -1,6 +1,5 @@
 extends TileMapLayer
 @onready var clear: Button = $"../Clear"
-
 @onready var label: Label = $"../../Buttons/Label"
 
 var gridSize = 30
@@ -10,13 +9,13 @@ var Mask = {}
 var mask_arr = []
 var drawn_tiles = []
 
-
-
-
 func rand_num():
 	return randi_range(1, 3)
+
 func _ready() -> void:
-	GlobalVariables.puzzleType = randi_range(1, 3)
+	# CHANGED: do not randomize puzzleType here in multiplayer (manager/server owns it)
+	# GlobalVariables.puzzleType = randi_range(1, 3)
+
 	label.text = "Hello!"
 	
 	for x in gridSize:
@@ -51,23 +50,14 @@ func _ready() -> void:
 			_drawing2()
 		3:
 			_drawing3()
-			
-		
 
 func _process(delta: float) -> void:
 	var tile = local_to_map(get_local_mouse_position())
-	#print(tile)
-	#var tile2 = local_to_map(get_local_mouse_position()) + Vector2i(1, 1)
-	
-	#print(tile)
 	if Dict.has(tile) && Input.is_action_pressed("use-attack") && !Grid.has(tile):
-		#print(tile)
 		set_cell(tile, 1, Vector2i(0, 0), 0)
-		#set_cell(tile2, 1, Vector2i(0, 0), 0)
 		if not drawn_tiles.has(tile):
 			drawn_tiles.append(tile)
 			print("Added tile: ", tile, " | Total tiles drawn: ", drawn_tiles.size())
-
 
 func _on_clear_pressed() -> void:
 	print("CLEAR")
@@ -103,9 +93,7 @@ func _drawing1():
 			var pic = Vector2i(x+20, eyes)
 			mask_arr.append(pic)
 			var pic2 = Vector2i(eyes+20, x)
-			#set_cell(pic, 1, Vector2i(0, 0), 0)
 			mask_arr.append(pic2)
-			#set_cell(pic2, 1, Vector2i(0, 0), 0)
 
 func _drawing2():
 	print("d2")
@@ -115,11 +103,8 @@ func _drawing2():
 			var pic = Vector2i(x+20, eyes)
 			mask_arr.append(pic)
 			var pic2 = Vector2i(x+20, eyes+20)
-			#set_cell(pic, 1, Vector2i(0, 0), 0)
 			mask_arr.append(pic2)
-			#set_cell(pic2, 1, Vector2i(0, 0), 0)
-	
-	
+
 func _drawing3():
 	print("d3")
 	var eyes = 5
@@ -127,12 +112,6 @@ func _drawing3():
 		if x != 10 && x != 20:
 			var pic = Vector2i(x+20, eyes)
 			mask_arr.append(pic)
-			#var pic2 = Vector2i(x+40, eyes)
-			##set_cell(pic, 1, Vector2i(0, 0), 0)
-			#mask_arr.append(pic2)
-			
-	
-
 
 func _on_button_pressed() -> void:
 	var count := 0.00
@@ -142,11 +121,8 @@ func _on_button_pressed() -> void:
 	for i in mask_arr.size(): 
 		for j in drawn_tiles.size():
 			if mask_arr[i] == drawn_tiles[j]:
-				
 				count = count + 1
-				#print("count")
 	
-	count = count
 	perc = count/mask_size
 	print(mask_size)
 	print(count)
@@ -160,10 +136,6 @@ func _on_button_pressed() -> void:
 	var percentage = perc * 100
 	print(percentage)
 	if percentage >= 60:
-		#print("test")
 		label.text = "You Win:  %.2f" % perc
 	else:
-		#print("FUCk")
 		label.text = "You Lose: %.2f" % perc
-	
-		
