@@ -4,7 +4,7 @@
 [ext_resource type="Script" uid="uid://cicakuq5a1gle" path="res://Scripts/state_machine.gd" id="2_j5jp7"]
 [ext_resource type="Script" uid="uid://dtisy2wdio7v" path="res://Scripts/patrol_state.gd" id="3_7i6xh"]
 [ext_resource type="Script" uid="uid://cvv6jryec78f3" path="res://Scripts/talk_state.gd" id="4_qmemm"]
-[ext_resource type="Script" uid="uid://55dhm6461fi7" path="res://NPC/abigail_dialogue.gd" id="5_j5jp7"]
+[ext_resource type="Script" uid="uid://bdyreatjqakvi" path="res://npcResource.gd" id="5_j5jp7"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_g4ita"]
 radius = 2.0
@@ -56,8 +56,9 @@ collision_mask = 8
 transform = Transform3D(1.25, 0, 0, 0, 1.25, 0, 0, 0, 1.25, 0, 0, 0)
 shape = SubResource("SphereShape3D_g4ita")
 
-[node name="abigailDialogue" type="Node" parent="."]
+[node name="abigailDialogue" type="Node3D" parent="."]
 script = ExtResource("5_j5jp7")
+npc_name = "Abigail"
 
 [connection signal="body_entered" from="interact" to="." method="_on_interact_body_entered"]
 [connection signal="body_exited" from="interact" to="." method="_on_interact_body_exited"]

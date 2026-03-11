@@ -23,6 +23,7 @@ NetSceneManager="*res://net_scene_manager.gd"
 
 [display]
 
+window/size/mode=3
 window/stretch/mode="viewport"
 
 [editor_plugins]

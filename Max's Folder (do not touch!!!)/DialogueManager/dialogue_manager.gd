@@ -23,7 +23,8 @@ func _ready() -> void:
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
-	npcText.text = uniqueName
+	npcText.text = uniqueDialogue
+	npcName.text = uniqueName
 	if toggle == true:
 		
 		visible = true

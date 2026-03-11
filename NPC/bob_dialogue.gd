@@ -9,7 +9,7 @@ signal dialogueSig
 
 
 var dialogueArray = [
-	["What are you doing walking in my\n yard, kids?", "Oh, good morning to you two", "My neighbors are weird as hell,\n you two seem fine though"],
+	["What are you doing walking in *this* \n neighborhood, kids?", "Oh, good morning to you two", "My neighbors are weird as hell,\n you two seem fine though"],
 	["I tried going to work but\n I can’t get out of this damn\n neighborhood", "My neighbors keep staring at me.\n Be careful around these creeps.", "Something feels weird."],
 	["I dont think its safe here.\n But I don’t think i can leave", "The new HOA rules are really\n strange.", "Don’t let them get you"]
 ]
@@ -45,16 +45,16 @@ func enter_bob_dialogue():
 	
 
 
-func _on_talk_detection_body_entered(body: Node3D) -> void:
-	if body.is_multiplayer_authority():	
-		tutorial.interact = true
-		in_bob_area = true
-		print("TRUE")
-
-
-func _on_talk_detection_body_exited(body: Node3D) -> void:
-	if body.is_multiplayer_authority():
-		GlobalVariables.interact.emit()
-		tutorial.interact = false
-		in_bob_area = false
-		print("FALSE")
+#func _on_talk_detection_body_entered(body: Node3D) -> void:
+	#if body.is_multiplayer_authority():	
+		#tutorial.interact = true
+		#in_bob_area = true
+		#print("TRUE")
+#
+#
+#func _on_talk_detection_body_exited(body: Node3D) -> void:
+	#if body.is_multiplayer_authority():
+		#GlobalVariables.interact.emit()
+		#tutorial.interact = false
+		#in_bob_area = false
+		#print("FALSE")

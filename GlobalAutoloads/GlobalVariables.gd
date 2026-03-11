@@ -16,3 +16,4 @@ var puzzleType := randi_range(1, 3)
 var algoDebug = false
 
 signal interact
+var playerTalking = false
