@@ -17,7 +17,7 @@ var current_lobby_id: int = 0
 @export var player_spawner_path: NodePath = NodePath("../PlayerSpawner")
 @export var players_root_path: NodePath = NodePath("../PlayersRoot")
 
-# NEW: LevelFlowManager (loads Level1 into LevelContainer and places players)
+# LevelFlowManager (loads Level1 into LevelContainer and places players)
 @export var level_flow_manager_path: NodePath = NodePath("../LevelFlowManager")
 var _level_flow: Node = null
 
@@ -28,6 +28,21 @@ var _join_code_node: LineEdit = null
 
 var _player_spawner: Node = null
 var _players_root: Node3D = null
+
+# ------------------------------------------------------------
+# ADDED: Pause menu LevelSelect buttons (matches your scene tree)
+# Menu/pause/LevelSelect/lvl1Button
+# Menu/pause/LevelSelect/lvl2Button
+# Menu/pause/LevelSelect/lvl3Button
+# ------------------------------------------------------------
+@export var level_select_root_path: NodePath = NodePath("../Menu/pause/LevelSelect")
+@export var lvl1_button_name: StringName = &"lvl1Button"
+@export var lvl2_button_name: StringName = &"lvl2Button"
+@export var lvl3_button_name: StringName = &"lvl3Button"
+
+var _lvl1_btn: Button = null
+var _lvl2_btn: Button = null
+var _lvl3_btn: Button = null
 
 
 func _ready() -> void:
@@ -49,6 +64,9 @@ func _ready() -> void:
 
 	_init_menu_refs()
 	_init_steam()
+
+	# ADDED: hook up pause menu level select buttons
+	_init_level_select_buttons()
 
 	# global multiplayer signals
 	multiplayer.peer_connected.connect(_on_peer_connected)
@@ -109,6 +127,49 @@ func _init_menu_refs() -> void:
 
 	if _join_code_node == null:
 		push_warning("[LobbyManager] Could not find join code LineEdit under Menu/CanvasLayer.")
+
+
+# ------------------------------------------------------------
+# ADDED: pause menu LevelSelect wiring
+# This only connects if nodes exist, so it won't crash if the UI changes.
+# ------------------------------------------------------------
+func _init_level_select_buttons() -> void:
+	var ls_root: Node = get_node_or_null(level_select_root_path)
+	if ls_root == null:
+		push_warning("[LobbyManager] LevelSelect root not found. Fix level_select_root_path.")
+		return
+
+	_lvl1_btn = ls_root.get_node_or_null(NodePath(String(lvl1_button_name))) as Button
+	_lvl2_btn = ls_root.get_node_or_null(NodePath(String(lvl2_button_name))) as Button
+	_lvl3_btn = ls_root.get_node_or_null(NodePath(String(lvl3_button_name))) as Button
+
+	if _lvl1_btn != null and not _lvl1_btn.pressed.is_connected(_on_lvl1_pressed):
+		_lvl1_btn.pressed.connect(_on_lvl1_pressed)
+	if _lvl2_btn != null and not _lvl2_btn.pressed.is_connected(_on_lvl2_pressed):
+		_lvl2_btn.pressed.connect(_on_lvl2_pressed)
+	if _lvl3_btn != null and not _lvl3_btn.pressed.is_connected(_on_lvl3_pressed):
+		_lvl3_btn.pressed.connect(_on_lvl3_pressed)
+
+
+# ADDED: button callbacks delegate to LevelFlowManager
+func _on_lvl1_pressed() -> void:
+	_request_level_change(1)
+
+func _on_lvl2_pressed() -> void:
+	_request_level_change(2)
+
+func _on_lvl3_pressed() -> void:
+	_request_level_change(3)
+
+func _request_level_change(level_index: int) -> void:
+	if _level_flow == null:
+		push_warning("[LobbyManager] Cannot change level; LevelFlowManager missing.")
+		return
+
+	if _level_flow.has_method("request_level_change"):
+		_level_flow.call("request_level_change", level_index)
+	else:
+		push_warning("[LobbyManager] LevelFlowManager missing request_level_change(level_index).")
 
 
 func _toggle_pause_menu() -> void:
@@ -230,16 +291,7 @@ func _host_game(_lobby_id: int) -> void:
 	peer = steam_peer
 	multiplayer.multiplayer_peer = peer
 
-	# ============================================================
-	# ✅ CRITICAL FIX (RPC PATH SYNC)
-	# Godot's SceneMultiplayer encodes NodePaths in RPC packets.
-	# If the multiplayer "root path" differs per peer, Godot can't
-	# simplify/resolve paths consistently and you get infinite spam:
-	#   - process_simplify_path: node is null
-	#   - Invalid packet received. Requested node was not found
-	#   - get_node: Node not found: ".../@Node3D@2/..."
-	# Force the root to the current scene (your GameRoot).
-	# ============================================================
+	# CRITICAL FIX (RPC PATH SYNC)
 	multiplayer.set_root_path(get_tree().current_scene.get_path())
 
 	print("SteamMultiplayerPeer host created. My unique_id:", multiplayer.get_unique_id())
@@ -247,7 +299,7 @@ func _host_game(_lobby_id: int) -> void:
 	# spawn local player through PlayerSpawner (under PlayersRoot)
 	_player_spawner.call("spawn_local_player", multiplayer.get_unique_id(), player_scene)
 
-	# NEW: server kicks off the game level load once the lobby is ready
+	# server kicks off the game level load once the lobby is ready
 	if _level_flow != null and _level_flow.has_method("on_lobby_ready_server"):
 		_level_flow.call("on_lobby_ready_server")
 
@@ -270,12 +322,7 @@ func _join_game(lobby_id: int) -> void:
 	peer = steam_peer
 	multiplayer.multiplayer_peer = peer
 
-	# ============================================================
-	# ✅ CRITICAL FIX (RPC PATH SYNC)
-	# Same reason as host: make sure the root path for RPC node paths
-	# matches the host. This prevents @Node3D@X paths + "node not found"
-	# loops on clients when level instances differ.
-	# ============================================================
+	# CRITICAL FIX (RPC PATH SYNC)
 	multiplayer.set_root_path(get_tree().current_scene.get_path())
 
 	print("SteamMultiplayerPeer client created. Host SteamID:", host_id)

@@ -139,6 +139,24 @@ Mouse Click: Use Item
 Tab: Switch Item
 E: Interact with NPCs"
 
+[node name="LevelSelect" type="VBoxContainer" parent="Menu/pause"]
+offset_left = 702.0
+offset_top = 56.0
+offset_right = 983.0
+offset_bottom = 157.0
+
+[node name="lvl1Button" type="Button" parent="Menu/pause/LevelSelect"]
+layout_mode = 2
+text = "Level 1"
+
+[node name="lvl2Button" type="Button" parent="Menu/pause/LevelSelect"]
+layout_mode = 2
+text = "Level 2"
+
+[node name="lvl3Button" type="Button" parent="Menu/pause/LevelSelect"]
+layout_mode = 2
+text = "Level 3"
+
 [node name="Interact" type="CanvasLayer" parent="Menu"]
 
 [node name="NPCDialogue" type="CanvasLayer" parent="Menu"]

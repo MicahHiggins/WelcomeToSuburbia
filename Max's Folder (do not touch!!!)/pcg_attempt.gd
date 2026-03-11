@@ -23,14 +23,6 @@ const DISPLACEMENT = 176
 const SERVER_ID: int = 1
 
 
-# ADDED: avoid RPC calls before Steam peer is actually connected
-func _net_connected() -> bool:
-	if not multiplayer.has_multiplayer_peer():
-		return true
-	var mp: MultiplayerPeer = multiplayer.multiplayer_peer
-	return mp != null and mp.get_connection_status() == MultiplayerPeer.CONNECTION_CONNECTED
-
-
 ## Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	worldBlocks2 = [world_block_1, world_block_2, world_block_3,
@@ -46,10 +38,6 @@ func _ready() -> void:
 func algoForIterations(worldBlocks):
 	# ADDED: in multiplayer, only the server is allowed to compute/move blocks
 	if multiplayer.has_multiplayer_peer() and not multiplayer.is_server():
-		return
-
-	# ADDED: if server peer isn't connected yet, don't run/sync anything
-	if not _net_connected():
 		return
 
 	if GlobalVariables.algoDebug == true:
@@ -94,10 +82,6 @@ func _broadcast_worldblock_positions() -> void:
 	if not multiplayer.has_multiplayer_peer():
 		return
 
-	# ADDED: don't try to RPC until connected (prevents joiner-side "peer not connected" errors)
-	if not _net_connected():
-		return
-
 	# server broadcasts current positions
 	if multiplayer.is_server():
 		var positions: Array = []
@@ -120,14 +104,6 @@ func _rpc_apply_worldblock_positions(positions: Array) -> void:
 
 
 func _on_load_zone_1_body_entered(body: Node3D) -> void:
-	# ADDED: ignore non-players (prevents random bodies from driving generation)
-	if body == null or not body.is_in_group("player"):
-		return
-
-	# ADDED: if multiplayer and not connected yet, do nothing (joiner hits zones early)
-	if not _net_connected():
-		return
-
 	# ADDED: if multiplayer client, request server to run iteration instead of running locally
 	if multiplayer.has_multiplayer_peer() and not multiplayer.is_server():
 		rpc_id(SERVER_ID, "_rpc_request_iteration", 0)
@@ -142,11 +118,6 @@ func _on_load_zone_1_body_entered(body: Node3D) -> void:
 
 
 func _on_load_zone_2_body_entered(body: Node3D) -> void:
-	if body == null or not body.is_in_group("player"):
-		return
-	if not _net_connected():
-		return
-
 	# ADDED: client requests server
 	if multiplayer.has_multiplayer_peer() and not multiplayer.is_server():
 		rpc_id(SERVER_ID, "_rpc_request_iteration", 1)
@@ -160,11 +131,6 @@ func _on_load_zone_2_body_entered(body: Node3D) -> void:
 
 
 func _on_load_zone_3_body_entered(body: Node3D) -> void:
-	if body == null or not body.is_in_group("player"):
-		return
-	if not _net_connected():
-		return
-
 	# ADDED: client requests server
 	if multiplayer.has_multiplayer_peer() and not multiplayer.is_server():
 		rpc_id(SERVER_ID, "_rpc_request_iteration", 2)
@@ -178,11 +144,6 @@ func _on_load_zone_3_body_entered(body: Node3D) -> void:
 
 
 func _on_load_zone_4_body_entered(body: Node3D) -> void:
-	if body == null or not body.is_in_group("player"):
-		return
-	if not _net_connected():
-		return
-
 	# ADDED: client requests server
 	if multiplayer.has_multiplayer_peer() and not multiplayer.is_server():
 		rpc_id(SERVER_ID, "_rpc_request_iteration", 3)
@@ -196,11 +157,6 @@ func _on_load_zone_4_body_entered(body: Node3D) -> void:
 
 
 func _on_load_zone_5_body_entered(body: Node3D) -> void:
-	if body == null or not body.is_in_group("player"):
-		return
-	if not _net_connected():
-		return
-
 	# ADDED: client requests server
 	if multiplayer.has_multiplayer_peer() and not multiplayer.is_server():
 		rpc_id(SERVER_ID, "_rpc_request_iteration", 4)
@@ -213,14 +169,10 @@ func _on_load_zone_5_body_entered(body: Node3D) -> void:
 	print("numba 4")
 
 
-# ADDED: server receives iteration request and runs the original logic
+# ADDED: server receives iteration request
 @rpc("any_peer", "reliable")
 func _rpc_request_iteration(zone_idx: int) -> void:
 	if not multiplayer.is_server():
-		return
-
-	# ADDED: if server isn't connected yet, ignore requests
-	if not _net_connected():
 		return
 
 	match zone_idx:

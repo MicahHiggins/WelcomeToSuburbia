@@ -1,10 +1,9 @@
-[gd_scene load_steps=24 format=3 uid="uid://dw6fx71adu107"]
+[gd_scene load_steps=23 format=3 uid="uid://dw6fx71adu107"]
 
 [ext_resource type="PackedScene" uid="uid://bs2jm62cmkbrk" path="res://addons/instant-realistic-light/light_scene.tscn" id="1_qci02"]
 [ext_resource type="PackedScene" uid="uid://becgpkre4p052" path="res://bedroom_copy.tscn" id="1_qogrp"]
 [ext_resource type="Script" uid="uid://bkb35cbdsgdbh" path="res://addons/instant-realistic-light/light_scene.gd" id="2_emiaf"]
 [ext_resource type="PackedScene" uid="uid://d0082o2yj0qb2" path="res://bedroom_2.tscn" id="2_rbxy2"]
-[ext_resource type="PackedScene" uid="uid://bs72ogkvdd7d6" path="res://addons/proto_controller/proto_controller.tscn" id="4_5540h"]
 [ext_resource type="PackedScene" uid="uid://c4o2j15yoqaln" path="res://HouseModel/surb_house_v_1.tscn" id="5_qci02"]
 [ext_resource type="Texture2D" uid="uid://but80wsucm4q2" path="res://textures/GrassTextures/GrassAlbedo.png" id="6_ynj4c"]
 [ext_resource type="Texture2D" uid="uid://do7xmc15vdxif" path="res://textures/GrassTextures/GrassAO.png" id="7_jxbfd"]
@@ -162,6 +161,8 @@ transform = Transform3D(1.4, 0, 0, 0, 1.4, 0, 0, 0, 1.4, 0, 0, 0)
 transform = Transform3D(1, 0, 0, 0, 0.8, 0, 0, 0, 1, -0.12646402, 0.087929964, 8.996908)
 
 [node name="Collisions" type="StaticBody3D" parent="Bedrooms/bedroom_copy"]
+collision_layer = 8
+collision_mask = 9
 
 [node name="CollisionShape3D6" type="CollisionShape3D" parent="Bedrooms/bedroom_copy/Collisions"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.09956101, -2.5789206, -18.063543)
@@ -986,5 +987,5 @@ transform = Transform3D(0.13999997, 0, 0, 0, 0.13999997, 0, 0, 0, 0.13999997, 23
 [node name="whitefence242" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
 transform = Transform3D(0.13999997, 0, 0, 0, 0.13999997, 0, 0, 0, 0.13999997, 23.642902, 0.1487093, -0.0034054215)
 
-[node name="ProtoController" parent="." instance=ExtResource("4_5540h")]
-transform = Transform3D(-0.97769535, 0, 0.21002819, 0, 1, 0, -0.21002819, 0, -0.97769535, 0.25159144, -2.1527023, -8.809748)
+[node name="Spawn" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.657707, 0, -9.8326)

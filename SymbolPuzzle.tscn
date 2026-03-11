@@ -1,11 +1,12 @@
-[gd_scene load_steps=16 format=3 uid="uid://c5jxy2ugosnbe"]
+[gd_scene load_steps=22 format=3 uid="uid://c5jxy2ugosnbe"]
 
-[ext_resource type="Script" uid="uid://dtdv2huwkhvfh" path="res://symbolManager.gd" id="1_tf5p5"]
+[ext_resource type="Script" path="res://symbolManager.gd" id="1_tf5p5"]
 [ext_resource type="Texture2D" uid="uid://wy5xfggc16ak" path="res://Max's Folder (do not touch!!!)/Tiles/drawn.png" id="2_tkebk"]
 [ext_resource type="Texture2D" uid="uid://lln4d7bumdks" path="res://Max's Folder (do not touch!!!)/Tiles/grid.png" id="3_lam6w"]
 [ext_resource type="Texture2D" uid="uid://cs51fm4ybyunp" path="res://Max's Folder (do not touch!!!)/Tiles/empty-Sheet.png" id="3_lcf58"]
 [ext_resource type="Script" uid="uid://drdtamscdvpnk" path="res://drawing.gd" id="4_lcf58"]
-[ext_resource type="Script" uid="uid://c42s0sbmibvcb" path="res://Seeing.gd" id="6_nsdqc"]
+[ext_resource type="Script" path="res://Seeing.gd" id="6_nsdqc"]
+[ext_resource type="PackedScene" uid="uid://bs2jm62cmkbrk" path="res://addons/instant-realistic-light/light_scene.tscn" id="7_nsdqc"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_uk3cl"]
 
@@ -53,6 +54,42 @@ navigation_layer_0/layers = 1
 sources/0 = SubResource("TileSetAtlasSource_lam6w")
 sources/1 = SubResource("TileSetAtlasSource_tf5p5")
 sources/2 = SubResource("TileSetAtlasSource_nsdqc")
+
+[sub_resource type="PhysicalSkyMaterial" id="PhysicalSkyMaterial_gn88m"]
+ground_color = Color(0, 0, 0, 1)
+
+[sub_resource type="Sky" id="Sky_tyhie"]
+sky_material = SubResource("PhysicalSkyMaterial_gn88m")
+radiance_size = 2
+
+[sub_resource type="Environment" id="Environment_f8w8m"]
+background_mode = 2
+background_intensity = 100000.0
+sky = SubResource("Sky_tyhie")
+tonemap_mode = 3
+tonemap_white = 8.0
+ssao_enabled = true
+ssao_detail = 2.0
+sdfgi_enabled = true
+sdfgi_bounce_feedback = 0.9
+glow_enabled = true
+glow_normalized = true
+glow_bloom = 0.2
+volumetric_fog_density = 0.01
+volumetric_fog_gi_inject = 1.14
+volumetric_fog_anisotropy = 0.7
+volumetric_fog_sky_affect = 0.295
+adjustment_saturation = 1.17
+
+[sub_resource type="CameraAttributesPractical" id="CameraAttributesPractical_qo5hu"]
+exposure_multiplier = 3.069
+auto_exposure_scale = 0.22
+auto_exposure_speed = 0.8
+dof_blur_far_distance = 1.44
+dof_blur_near_distance = 0.01
+auto_exposure_min_sensitivity = 8.01
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_nsdqc"]
 
 [node name="Puzzle2" type="Node3D"]
 script = ExtResource("1_tf5p5")
@@ -184,6 +221,21 @@ grow_horizontal = 2
 grow_vertical = 0
 text = "f to interact
 "
+
+[node name="Spawn" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5404701, 0.19048405, 0)
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." instance=ExtResource("7_nsdqc")]
+environment = SubResource("Environment_f8w8m")
+camera_attributes = SubResource("CameraAttributesPractical_qo5hu")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="."]
+transform = Transform3D(50, 0, 0, 0, 1, 0, 0, 0, 50, 0, -1.1798667, 0)
+collision_layer = 9
+collision_mask = 9
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D"]
+shape = SubResource("BoxShape3D_nsdqc")
 
 [connection signal="body_entered" from="Observer/ObsArea" to="." method="_on_obs_area_body_entered"]
 [connection signal="body_exited" from="Observer/ObsArea" to="." method="_on_obs_area_body_exited"]

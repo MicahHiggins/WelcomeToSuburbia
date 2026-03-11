@@ -3,7 +3,7 @@
 [ext_resource type="Script" uid="uid://dqvoninhsiala" path="res://GameLevelsETC/cellar_3_door_hallway.gd" id="1_tmgbf"]
 [ext_resource type="PackedScene" uid="uid://dqbgiq51e15mw" path="res://stone_block.tscn" id="2_3njtq"]
 [ext_resource type="PackedScene" uid="uid://bk12xaa431jqc" path="res://symbol.tscn" id="3_3njtq"]
-[ext_resource type="PackedScene" uid="uid://b6vnu6i8g7uqc" path="res://symbol_correct.tscn" id="3_720kl"]
+[ext_resource type="PackedScene" path="res://symbol_correct.tscn" id="3_720kl"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_720kl"]
 

@@ -21,7 +21,7 @@ class_name CellarThreeDoorHallway
 @export var hall_width_cells: int = 7
 @export var entry_len_before_doors: int = 10
 
-# ✅ shorter “infinite” hallway
+# shorter “infinite” hallway
 @export var back_hall_len: int = 70
 
 @export var door_x_offsets: Array[int] = [-2, 0, 2]
@@ -44,15 +44,12 @@ class_name CellarThreeDoorHallway
 
 @export var pass_threshold_forward_cells: float = 0.6
 
-# ✅ how far forward the NEXT hub starts after a correct door (so new doors are farther away)
+# how far forward the NEXT hub starts after a correct door (so new doors are farther away)
 @export var next_hub_start_gap_cells: int = 12
 
 # ============================================================
-# ✅ SYMBOLS ON THE "TOP BLOCK" OF EACH DOOR COLUMN
-# You said: "the 4th block that isnt a doorway — right in front of it"
-# So we place each symbol in front of the block at:
-#   height = door_open_height_blocks + 1   (clamped to wall_height_blocks)
-# in the DOOR COLUMN cell (the wall cell), facing toward the player.
+# SYMBOLS
+# Change: place symbols inside/in-front of the doorway opening for visibility.
 # ============================================================
 @export var correct_symbol_scene: PackedScene
 @export var wrong_symbol_scene_a: PackedScene
@@ -60,13 +57,13 @@ class_name CellarThreeDoorHallway
 
 @export var symbols_root_path: NodePath = NodePath("") # optional; if empty, we create a child "Symbols"
 
-# how far in front of the block face (meters). 0.0 = exactly on the face plane.
-@export var symbol_face_offset_m: float = 0.05
+# how far toward the player from the wall center (meters). bigger = more visible
+@export var symbol_inside_offset_m: float = 0.35
 # optional vertical tweak in meters (if your symbol pivot isn't centered)
 @export var symbol_extra_y_offset_m: float = 0.0
 
 # ============================================================
-# ✅ WRONG DOOR “GUST” PUSHBACK
+# WRONG DOOR “GUST” PUSHBACK
 # ============================================================
 @export var wrong_door_gust_distance_cells: float = 3.0
 @export var wrong_door_gust_duration: float = 0.25
@@ -110,9 +107,9 @@ var _open_panel_blocks: Array = [] # Array[Node3D]
 var _open_cap_blocks: Array = []   # Array[Node3D]
 
 # cached KEYS we delete AFTER the player passes through
-# - Door wall keys exclude CEILING so no ceiling hole.
-# - Cap keys exclude FLOOR/CEILING so no floor/ceiling hole.
-# - Door wall keys also exclude the two OUTER EDGE COLUMNS (keeps side walls, prevents void).
+# Change: delete the full door wall face (interior columns) so the hallway looks continuous.
+# Notes:
+# - We still avoid deleting floor/ceiling tiles to prevent holes.
 var _pending_delete_wall_keys: Array[String] = []
 var _pending_delete_open_keys: Array[String] = []
 var _pending_delete_wall_cell: Vector2i = Vector2i(0, 0)
@@ -298,11 +295,14 @@ func _build_hub_geometry() -> void:
 	_spawn_symbols_for_current_hub(door_wall_cell, _forward, _hub_id)
 
 func _collect_door_wall_keys(door_wall_cell: Vector2i, forward: Vector2i) -> Array[String]:
+	# Change: delete the full interior wall face so it reads as open hallway after passing.
+	# Keep floor/ceiling tiles by not including y=0 or y=wall_height+1 keys here.
 	var out: Array[String] = []
 	var half_w: int = int(hall_width_cells / 2)
 	var right: Vector2i = _right_vec(forward)
 
-	for w in range(-half_w + 1, half_w): # excludes -half_w and +half_w
+	# interior columns across the door wall (keeps edge sidewalls intact)
+	for w in range(-half_w + 1, half_w): 
 		var c: Vector2i = door_wall_cell + right * w
 		for h in range(1, wall_height_blocks + 1):
 			out.append(_key(c.x, h, c.y))
@@ -394,11 +394,8 @@ func _server_like_reveal(door_idx: int) -> void:
 	if _revealed[door_idx]:
 		return
 
+	# Change: no text output (reveal still gates door interaction)
 	_revealed[door_idx] = true
-	if door_idx == _progress_door:
-		rpc("_rpc_broadcast_message", "[Cellar] ...this one feels warmer. like the air is moving.")
-	else:
-		rpc("_rpc_broadcast_message", "[Cellar] ...dead quiet. like it doesn’t want you in there.")
 
 @rpc("any_peer", "reliable")
 func _rpc_request_enter_door(door_idx: int, player_owner_id: int) -> void:
@@ -410,12 +407,11 @@ func _server_like_enter_door(door_idx: int, player_owner_id: int) -> void:
 	if door_idx < 0 or door_idx > 2:
 		return
 	if not _revealed[door_idx]:
-		rpc("_rpc_broadcast_message", "[Cellar] all three look the same. get closer first.")
+		# Change: no text output, just ignore until reveal happens
 		return
 
 	if door_idx == _progress_door:
 		_correct_count += 1
-		rpc("_rpc_broadcast_message", "[Cellar] click. it lets you through.")
 
 		_pending_delete_wall_cell = _active_door_wall_cell
 		_pending_delete_forward = _active_door_wall_forward
@@ -433,8 +429,7 @@ func _server_like_enter_door(door_idx: int, player_owner_id: int) -> void:
 		_watch_owner_id = player_owner_id
 		return
 
-	# WRONG
-	rpc("_rpc_broadcast_message", "[Cellar] wrong. it loops back on itself.")
+	# WRONG: reroll answer + reroll symbols; gust pushback
 	_reroll_nonce += 1
 	_revealed = [false, false, false]
 	_progress_door = _pick_progress_door_for_current_hub()
@@ -555,12 +550,9 @@ func _rpc_delete_many(keys: Array[String]) -> void:
 			n.queue_free()
 		_spawned.erase(k)
 
-# ============================================================
-# SYMBOLS — UPDATED PLACEMENT:
-# Put symbol "exactly in front of" the TOP BLOCK above the doorway:
-# height = door_open_height_blocks + 1 (clamped)
-# forward offset = block_size/2 + symbol_face_offset_m
-# ============================================================
+# -------------------------
+# SYMBOLS
+# -------------------------
 func _spawn_symbols_for_current_hub(door_wall_cell: Vector2i, forward: Vector2i, hub_id: int) -> void:
 	if _symbols_root == null:
 		return
@@ -582,9 +574,6 @@ func _spawn_symbols_for_current_hub(door_wall_cell: Vector2i, forward: Vector2i,
 	for i in range(3):
 		if i != _progress_door:
 			wrong_idxs.append(i)
-
-	# "top block that isn't doorway"
-	var top_h: int = clampi(door_open_height_blocks + 1, 1, wall_height_blocks)
 
 	for door_i in range(3):
 		var ps: PackedScene = null
@@ -609,16 +598,16 @@ func _spawn_symbols_for_current_hub(door_wall_cell: Vector2i, forward: Vector2i,
 		inst.name = "DoorSymbol_%d_%d" % [hub_id, door_i]
 		_symbols_root.add_child(inst)
 
-		# door column cell in the wall
+		# Place symbol inside/in-front of the doorway opening so it is easy to see.
+		# - center on the door column cell
+		# - push toward the player a bit
+		# - place at mid door height
 		var door_cell: Vector2i = door_wall_cell + right * door_x_offsets[door_i]
-
-		# center of the TOP BLOCK (h = top_h)
 		var base: Vector3 = _cell_to_world(door_cell)
-		base.y = _world_origin.y + y_offset_m + float(top_h) * block_size_m + symbol_extra_y_offset_m
 
-		# "exactly in front of the block face" toward the player
-		var face_push: float = (block_size_m * 0.5) + symbol_face_offset_m
-		var pos: Vector3 = base - fwd_world * face_push
+		var y_mid: float = _floor_top_y() + (float(door_open_height_blocks) * block_size_m * 0.5) + symbol_extra_y_offset_m
+		var pos: Vector3 = base - fwd_world * symbol_inside_offset_m
+		pos.y = y_mid
 
 		inst.global_position = pos
 
@@ -828,6 +817,7 @@ func _player_for_owner(owner_id: int) -> Node3D:
 			return p
 	return null
 
+# Change: no text spam anywhere (kept so existing calls won't crash if reintroduced)
 @rpc("any_peer", "call_local", "reliable")
-func _rpc_broadcast_message(text: String) -> void:
-	print(text)
+func _rpc_broadcast_message(_text: String) -> void:
+	pass

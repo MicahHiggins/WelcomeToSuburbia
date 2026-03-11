@@ -19,6 +19,17 @@ const SERVER_ID: int = 1
 # If true: when a player spawns late, we snap them into the current level spawn.
 @export var snap_late_joiners_to_spawn: bool = true
 
+# ------------------------------------------------------------
+# ADDED: Level Select scenes (set in inspector or leave as-is)
+# These match your provided paths:
+#   res://SymbolPuzzle.tscn
+#   res://kidnap.tscn
+#   res://GameLevelsETC/CellarLevel.tscn
+# ------------------------------------------------------------
+@export var level_1_scene: PackedScene = preload("res://SymbolPuzzle.tscn")
+@export var level_2_scene: PackedScene = preload("res://kidnap.tscn")
+@export var level_3_scene: PackedScene = preload("res://GameLevelsETC/CellarLevel.tscn")
+
 # Cached
 var _level_container: Node = null
 var _players_root: Node3D = null
@@ -70,6 +81,65 @@ func _on_peer_connected(peer_id: int) -> void:
 
 	# Send the same level to the new peer (stable name keeps paths consistent)
 	rpc_id(peer_id, "_rpc_load_level_all", _current_level_scene_path)
+
+
+# ------------------------------------------------------------
+# ADDED: Public API for pause-menu level select
+# Call this from LobbyManager when a button is pressed.
+# In multiplayer:
+#   - clients request the server
+#   - server is authoritative and loads for everyone
+# ------------------------------------------------------------
+func request_level_change(level_index: int) -> void:
+	# Singleplayer: just load locally
+	if not multiplayer.has_multiplayer_peer():
+		var ps_local: PackedScene = _scene_for_index(level_index)
+		if ps_local == null:
+			push_warning("[LevelFlowManager] request_level_change: invalid level index: %d" % level_index)
+			return
+		_load_level_local(ps_local)
+		_place_all_players_local_to_spawn()
+		return
+
+	# Multiplayer: server decides
+	if multiplayer.is_server():
+		_server_change_level(level_index)
+	else:
+		# Guard against "peer not connected yet" during join transition
+		var mp: MultiplayerPeer = multiplayer.multiplayer_peer
+		if mp == null or mp.get_connection_status() != MultiplayerPeer.CONNECTION_CONNECTED:
+			return
+		rpc_id(SERVER_ID, "_rpc_request_level_change", level_index)
+
+
+# ADDED: client -> server request
+@rpc("any_peer", "reliable")
+func _rpc_request_level_change(level_index: int) -> void:
+	if not multiplayer.is_server():
+		return
+	_server_change_level(level_index)
+
+
+# ADDED: server-side implementation
+func _server_change_level(level_index: int) -> void:
+	var ps: PackedScene = _scene_for_index(level_index)
+	if ps == null:
+		push_warning("[LevelFlowManager] _server_change_level: invalid level index: %d" % level_index)
+		return
+	load_level_server(ps)
+
+
+# ADDED: mapping from button index to scene
+func _scene_for_index(level_index: int) -> PackedScene:
+	match level_index:
+		1:
+			return level_1_scene
+		2:
+			return level_2_scene
+		3:
+			return level_3_scene
+		_:
+			return null
 
 
 func load_level_server(scene: PackedScene) -> void:
@@ -268,3 +338,17 @@ func _cache_spawn_transform() -> void:
 
 	_cached_spawn_xform = xform
 	_has_spawn_xform = true
+
+
+# ADDED: used by request_level_change singleplayer branch
+func _place_all_players_local_to_spawn() -> void:
+	_cache_spawn_transform()
+	if not _has_spawn_xform:
+		return
+
+	var kids: Array = _players_root.get_children()
+	for child_any in kids:
+		var p: Node3D = child_any as Node3D
+		if p == null:
+			continue
+		p.global_transform = _cached_spawn_xform
