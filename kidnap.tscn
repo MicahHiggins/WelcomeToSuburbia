@@ -990,5 +990,10 @@ transform = Transform3D(0.13999997, 0, 0, 0, 0.13999997, 0, 0, 0, 0.13999997, 23
 [node name="whitefence242" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
 transform = Transform3D(0.13999997, 0, 0, 0, 0.13999997, 0, 0, 0, 0.13999997, 23.642902, 0.1487093, -0.0034054215)
 
-[node name="Spawn" type="Marker3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.657707, -1.7164149, -17.883625)
+[node name="Spawns" type="Node3D" parent="."]
+
+[node name="SpawnHost" type="Marker3D" parent="Spawns"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.0910182, -11.988237)
+
+[node name="SpawnJoin" type="Marker3D" parent="Spawns"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.7124307, 9.086284)

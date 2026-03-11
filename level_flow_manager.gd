@@ -10,8 +10,16 @@ const SERVER_ID: int = 1
 # Optional: initial level to load once lobby starts
 @export var default_level: PackedScene
 
-# Spawn marker inside each level
+# Spawn marker inside each level (original single spawn)
 @export var spawn_marker_path_in_level: NodePath = NodePath("Spawn")
+
+# ADDED: optional multi-spawn root inside each level
+# If this node exists and has 2+ Node3D children, we use them as per-player spawns.
+# Example in a level:
+#   SpawnPoints
+#     SpawnHost (Marker3D)
+#     SpawnJoin (Marker3D)
+@export var spawns_root_path_in_level: NodePath = NodePath("SpawnPoints")
 
 # Small lift so players don't clip floor
 @export var spawn_y_lift: float = 1.5
@@ -20,11 +28,7 @@ const SERVER_ID: int = 1
 @export var snap_late_joiners_to_spawn: bool = true
 
 # ------------------------------------------------------------
-# ADDED: Level Select scenes (set in inspector or leave as-is)
-# These match your provided paths:
-#   res://SymbolPuzzle.tscn
-#   res://kidnap.tscn
-#   res://GameLevelsETC/CellarLevel.tscn
+# Level Select scenes
 # ------------------------------------------------------------
 @export var level_1_scene: PackedScene = preload("res://SymbolPuzzle.tscn")
 @export var level_2_scene: PackedScene = preload("res://kidnap.tscn")
@@ -37,13 +41,14 @@ var _players_root: Node3D = null
 var _current_level: Node = null
 var _current_level_scene_path: String = ""
 
-# Typed spawn cache
+# Typed spawn cache (single spawn fallback)
 var _has_spawn_xform: bool = false
 var _cached_spawn_xform: Transform3D = Transform3D.IDENTITY
 
+# ADDED: cached per-player spawns (if level provides them)
+var _spawn_markers: Array[Node3D] = []
+
 # Level-load readiness handshake.
-# Fixes "RPC requested node not found" by ensuring clients have the level
-# before the server sends RPCs that reference nodes inside the level.
 var _ready_peers: Dictionary = {} # int(peer_id) -> bool
 var _waiting_for_ready: bool = false
 
@@ -84,11 +89,7 @@ func _on_peer_connected(peer_id: int) -> void:
 
 
 # ------------------------------------------------------------
-# ADDED: Public API for pause-menu level select
-# Call this from LobbyManager when a button is pressed.
-# In multiplayer:
-#   - clients request the server
-#   - server is authoritative and loads for everyone
+# Public API for pause-menu level select
 # ------------------------------------------------------------
 func request_level_change(level_index: int) -> void:
 	# Singleplayer: just load locally
@@ -112,7 +113,6 @@ func request_level_change(level_index: int) -> void:
 		rpc_id(SERVER_ID, "_rpc_request_level_change", level_index)
 
 
-# ADDED: client -> server request
 @rpc("any_peer", "reliable")
 func _rpc_request_level_change(level_index: int) -> void:
 	if not multiplayer.is_server():
@@ -120,7 +120,6 @@ func _rpc_request_level_change(level_index: int) -> void:
 	_server_change_level(level_index)
 
 
-# ADDED: server-side implementation
 func _server_change_level(level_index: int) -> void:
 	var ps: PackedScene = _scene_for_index(level_index)
 	if ps == null:
@@ -129,7 +128,6 @@ func _server_change_level(level_index: int) -> void:
 	load_level_server(ps)
 
 
-# ADDED: mapping from button index to scene
 func _scene_for_index(level_index: int) -> PackedScene:
 	match level_index:
 		1:
@@ -211,9 +209,6 @@ func _rpc_client_level_ready(scene_path: String) -> void:
 
 func _server_try_finish_ready() -> void:
 	# Shared server-side "are all peers ready?" check.
-	# Called after:
-	# 1) server finishes loading locally
-	# 2) server receives each client ready ack
 	if not multiplayer.is_server():
 		return
 	if not _waiting_for_ready:
@@ -231,9 +226,6 @@ func _server_try_finish_ready() -> void:
 
 func _load_level_local(scene: PackedScene) -> void:
 	# Clear container
-	# Change: use immediate free, not queue_free.
-	# queue_free is end-of-frame, which can cause name collisions that become "@Node3D@2"
-	# and break RPC paths like "LevelContainer/Level1/...".
 	var kids: Array = _level_container.get_children()
 	for c_any in kids:
 		var c: Node = c_any as Node
@@ -247,16 +239,17 @@ func _load_level_local(scene: PackedScene) -> void:
 		return
 
 	# Stable level node name across peers.
-	# This prevents paths like "@Node3D@2" and stops node-not-found RPC spam.
 	var rp: String = scene.resource_path
 	var stable_name: String = "Level"
 	if rp != "":
-		stable_name = rp.get_file().get_basename() # ex: "Level1"
+		stable_name = rp.get_file().get_basename()
 	_current_level.name = stable_name
 
 	_level_container.add_child(_current_level)
 
+	# Cache spawns (multi-spawn if present, otherwise single spawn fallback)
 	_cache_spawn_transform()
+	_cache_spawn_markers()
 
 	print("[LevelFlowManager] Loaded level:", scene.resource_path)
 
@@ -266,8 +259,7 @@ func teleport_all_players_to_current_spawn_server() -> void:
 		return
 
 	_cache_spawn_transform()
-	if not _has_spawn_xform:
-		return
+	_cache_spawn_markers()
 
 	# Server tells each owner to teleport their own player.
 	var kids: Array = _players_root.get_children()
@@ -280,10 +272,19 @@ func teleport_all_players_to_current_spawn_server() -> void:
 		if owner_id <= 0:
 			continue
 
+		# ADDED: choose per-player spawn if the level provides multiple markers
+		var target_xf: Transform3D = _cached_spawn_xform
+
+		if _spawn_markers.size() >= 2:
+			var slot: int = _slot_for_peer(owner_id)
+			var use_idx: int = clampi(slot, 0, _spawn_markers.size() - 1)
+			target_xf = _spawn_markers[use_idx].global_transform
+			target_xf.origin.y += spawn_y_lift
+
 		if p.has_method("server_teleport_to"):
-			p.rpc_id(owner_id, "server_teleport_to", _cached_spawn_xform)
+			p.rpc_id(owner_id, "server_teleport_to", target_xf)
 		else:
-			p.global_transform = _cached_spawn_xform
+			p.global_transform = target_xf
 
 
 func on_lobby_ready_server() -> void:
@@ -309,16 +310,8 @@ func server_place_player_if_needed(player: Node3D) -> void:
 	if _current_level == null:
 		return
 
-	_cache_spawn_transform()
-	if not _has_spawn_xform:
-		return
-
-	var owner_id: int = int(player.get_multiplayer_authority())
-	if owner_id <= 0:
-		return
-
-	if player.has_method("server_teleport_to"):
-		player.rpc_id(owner_id, "server_teleport_to", _cached_spawn_xform)
+	# ADDED: re-run normal placement so the late joiner also gets the correct spawn slot
+	teleport_all_players_to_current_spawn_server()
 
 
 func _cache_spawn_transform() -> void:
@@ -330,7 +323,8 @@ func _cache_spawn_transform() -> void:
 
 	var spawn: Node3D = _current_level.get_node_or_null(spawn_marker_path_in_level) as Node3D
 	if spawn == null:
-		push_error("[LevelFlowManager] Spawn marker not found in level at: " + String(spawn_marker_path_in_level))
+		# If the level uses SpawnPoints instead, this can be missing.
+		# We do not error here to allow multi-spawn-only levels.
 		return
 
 	var xform: Transform3D = spawn.global_transform
@@ -340,15 +334,70 @@ func _cache_spawn_transform() -> void:
 	_has_spawn_xform = true
 
 
-# ADDED: used by request_level_change singleplayer branch
+# ADDED: gather multi-spawn markers if they exist, otherwise keep empty and we fall back to Spawn
+func _cache_spawn_markers() -> void:
+	_spawn_markers.clear()
+
+	if _current_level == null:
+		return
+
+	var root: Node = _current_level.get_node_or_null(spawns_root_path_in_level)
+	if root == null:
+		return
+
+	for ch in root.get_children():
+		var m: Node3D = ch as Node3D
+		if m != null:
+			_spawn_markers.append(m)
+
+	# Stable order so host/join matches every time.
+	# If you name them SpawnHost and SpawnJoin this will sort correctly.
+	if _spawn_markers.size() > 1:
+		_spawn_markers.sort_custom(func(a: Node3D, b: Node3D) -> bool:
+			return String(a.name) < String(b.name)
+		)
+
+
+# ADDED: peer -> spawn slot mapping
+# slot 0 = host/server (peer 1)
+# slot 1 = first joiner, etc
+func _slot_for_peer(peer_id: int) -> int:
+	if not multiplayer.has_multiplayer_peer():
+		return 0
+	if peer_id == SERVER_ID:
+		return 0
+
+	var peers: Array = multiplayer.get_peers()
+	peers.sort()
+
+	var slot: int = 1
+	for pid_any in peers:
+		var pid: int = int(pid_any)
+		if pid == SERVER_ID:
+			continue
+		if pid == peer_id:
+			return slot
+		slot += 1
+
+	return 0
+
+
+# Used by request_level_change singleplayer branch
 func _place_all_players_local_to_spawn() -> void:
 	_cache_spawn_transform()
-	if not _has_spawn_xform:
-		return
+	_cache_spawn_markers()
 
 	var kids: Array = _players_root.get_children()
 	for child_any in kids:
 		var p: Node3D = child_any as Node3D
 		if p == null:
 			continue
-		p.global_transform = _cached_spawn_xform
+
+		var target_xf: Transform3D = _cached_spawn_xform
+
+		# Singleplayer: if the level has multiple spawns, just use the first
+		if _spawn_markers.size() >= 1:
+			target_xf = _spawn_markers[0].global_transform
+			target_xf.origin.y += spawn_y_lift
+
+		p.global_transform = target_xf
