@@ -494,6 +494,15 @@ func _play_attack_local() -> void:
 #      FRAME / PHYSICS
 # =========================
 func _process(_dt: float) -> void:
+	#print("Yep")
+	if GlobalVariables.playerTalking == true:
+		base_speed = 0
+		sprint_speed = 0
+	else:
+		base_speed = 3.2
+		sprint_speed = 5
+		
+		
 	if not is_multiplayer_authority():
 		return
 

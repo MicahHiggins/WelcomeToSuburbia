@@ -5,7 +5,9 @@ class_name npcStats
 @export var npc_name: String = "NPC"
 @export var health: int = 100
 @export var move_speed: float = 150.0
-@export var dialogue_id: Array = []
+
+
+
 
 
 var in_area = false
@@ -15,6 +17,12 @@ signal dialogueSig
 
 
 var local_dial := 0
+
+func _ready():
+	pass
+	
+
+	#label.text = dialogue_id.replace("\\n", "\n")
 func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("interact"):
 		dialogueSig.emit()
@@ -23,22 +31,39 @@ func _input(event: InputEvent) -> void:
 		enter_dialogue()
 		
 func enter_dialogue():
+	GlobalVariables.playerTalking = true
 	if talking == false:
-		
+		dialogue.uniqueName = npc_name
 		talking = true
 		dialogue.toggle = true
 		print(GlobalVariables.iterations)
-		if (GlobalVariables.iterations >= 3):
-			dialogue.uniqueName = dialogue_id[2][local_dial]
-		else:
-			dialogue.uniqueName = dialogue_id[GlobalVariables.iterations][local_dial]
+		match(npc_name):
+			"Bob":
+				if (GlobalVariables.iterations >= 3):
+					dialogue.uniqueDialogue =  npcDialogue.bobDialogue[2][local_dial]
+				else:
+					dialogue.uniqueDialogue = npcDialogue.bobDialogue[GlobalVariables.iterations][local_dial]
+			"Abigail":
+				if (GlobalVariables.iterations >= 3):
+					dialogue.uniqueDialogue =  npcDialogue.abigailDialogue[2][local_dial]
+				else:
+					dialogue.uniqueDialogue = npcDialogue.abigailDialogue[GlobalVariables.iterations][local_dial]
+			"The Campbells":
+				if (GlobalVariables.iterations >= 3):
+					dialogue.uniqueDialogue =  npcDialogue.campbellsDialogue[2][local_dial]
+				else:
+					dialogue.uniqueDialogue = npcDialogue.campbellsDialogue[GlobalVariables.iterations][local_dial]
+				
+				
 		await dialogueSig
 		dialogue.toggle = false
 		local_dial = local_dial + 1
 		if local_dial == 3:
-			local_dial = 0
-		get_tree().create_timer(1).timeout
+			local_dial = 2
+		await get_tree().create_timer(0.5).timeout
 		talking = false
+		GlobalVariables.playerTalking = false
+	
 	
 	
 	
