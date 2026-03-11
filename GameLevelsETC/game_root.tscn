@@ -10,7 +10,7 @@
 [ext_resource type="PackedScene" uid="uid://d1ibgfwne281y" path="res://GameLevelsETC/Level1.tscn" id="6_6bcdd"]
 [ext_resource type="Texture2D" uid="uid://bh8hkhotm6bbc" path="res://Assets/Suburbia1.jpg" id="8_6bcdd"]
 [ext_resource type="Texture2D" uid="uid://3i53ybhtpc0f" path="res://Assets/—Pngtree—vector copy icon_4013516.png" id="9_7i78e"]
-[ext_resource type="Script" path="res://GameLevelsETC/player_spawner.gd" id="9_nqjqn"]
+[ext_resource type="Script" uid="uid://744qvh7h6rs5" path="res://GameLevelsETC/player_spawner.gd" id="9_nqjqn"]
 [ext_resource type="FontFile" uid="uid://g7ve53wy4c3c" path="res://addons/Font/MADE TOMMY Medium_PERSONAL USE.otf" id="10_nqjqn"]
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_fan4m"]

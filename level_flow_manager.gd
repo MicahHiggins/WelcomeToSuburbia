@@ -161,11 +161,16 @@ func _server_try_finish_ready() -> void:
 
 func _load_level_local(scene: PackedScene) -> void:
 	# Clear container
+	# Change: use immediate free, not queue_free.
+	# queue_free is end-of-frame, which can cause name collisions that become "@Node3D@2"
+	# and break RPC paths like "LevelContainer/Level1/...".
 	var kids: Array = _level_container.get_children()
 	for c_any in kids:
 		var c: Node = c_any as Node
-		if c != null:
-			c.queue_free()
+		if c != null and is_instance_valid(c):
+			c.free()
+
+	_current_level = null
 
 	_current_level = scene.instantiate()
 	if _current_level == null:

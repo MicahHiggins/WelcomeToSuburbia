@@ -25,12 +25,17 @@ func _ready() -> void:
 			multiplayer.peer_connected.connect(_on_peer_connected)
 
 func _on_peer_connected(peer_id: int) -> void:
+	# ADDED: defer one frame so the joining peer has finished instancing the level tree
+	call_deferred("_deferred_send_state_to_peer", peer_id)
+
+# ADDED: actual send happens after one frame
+func _deferred_send_state_to_peer(peer_id: int) -> void:
+	if not multiplayer.is_server():
+		return
 	# bring the new peer up to date
 	rpc_id(peer_id, "_rpc_set_active", entered, global_transform)
 
 func _on_area_3d_body_entered(body: Node3D) -> void:
-
-
 	if body == null or not body.is_in_group("player"):
 		return
 
@@ -42,12 +47,9 @@ func _on_area_3d_body_entered(body: Node3D) -> void:
 		return
 	entered = true
 
-	
-
 	# tell everyone to show + spawn
 	if multiplayer.has_multiplayer_peer():
 		rpc("_rpc_set_active", true, global_transform)
-		
 	else:
 		_rpc_set_active(true, global_transform)
 
@@ -71,10 +73,14 @@ func _on_area_3d_body_exited(body: Node3D) -> void:
 
 @rpc("any_peer", "call_local", "reliable")
 func _rpc_set_active(active: bool, block_xform: Transform3D) -> void:
+	# ADDED: apply the authoritative transform first
+	# This prevents "finicky" visibility/spawns when the client has not yet applied PCG block moves.
+	global_transform = block_xform
+
 	houses.visible = active
 	roads.visible = active
 	print("SET")
-	#GlobalVariables.iterations = GlobalVariables.iterations + 1
+
 	if active:
 		_spawn_all(block_xform)
 	else:
@@ -85,14 +91,14 @@ func _spawn_all(block_xform: Transform3D) -> void:
 	if patrol_instance_bob == null or not is_instance_valid(patrol_instance_bob):
 		patrol_instance_bob = PATROL_BUNDLE.instantiate() as Node3D
 		add_child(patrol_instance_bob)
-		patrol_instance_bob.name = "PatrolBundle" 
+		patrol_instance_bob.name = "PatrolBundle"
 		patrol_instance_bob.global_transform = block_xform
 
 	# Spawn Abigail bundle
 	if patrol_instance_abigail == null or not is_instance_valid(patrol_instance_abigail):
 		patrol_instance_abigail = PATROL_BUNDLE_ABIGAIL.instantiate() as Node3D
 		add_child(patrol_instance_abigail)
-		patrol_instance_abigail.name = "PatrolBundelAbigail" 
+		patrol_instance_abigail.name = "PatrolBundelAbigail"
 		patrol_instance_abigail.global_transform = block_xform
 
 	# Spawn Campbell bundle
@@ -118,10 +124,8 @@ func _despawn_all() -> void:
 		patrol_instance_campbell.queue_free()
 	patrol_instance_campbell = null
 
-
 func _on_iteration_detector_body_entered(body: Node3D) -> void:
-	pass # Replace with function body.
-
+	pass
 
 func _on_timer_timeout() -> void:
-	pass # Replace with function body.
+	pass
