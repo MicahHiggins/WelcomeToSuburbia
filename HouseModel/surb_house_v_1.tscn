@@ -194,7 +194,7 @@ blend_shape_mode = 0
 shadow_mesh = SubResource("ArrayMesh_jb11d")
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_8qxbv"]
-size = Vector3(12.883652, 7.5253296, 18.191895)
+size = Vector3(12.883652, 3.9062195, 18.191895)
 
 [sub_resource type="BoxMesh" id="BoxMesh_8qxbv"]
 
@@ -288,7 +288,7 @@ skeleton = NodePath("")
 [node name="HouseCollision" type="StaticBody3D" parent="." index="17"]
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="HouseCollision" index="0"]
-transform = Transform3D(1, 0, 0, 0, 0.99999934, 0, 0, 0, 0.99999934, 0.085655, 3.6225517, -0.05883773)
+transform = Transform3D(1, 0, 0, 0, 0.99999934, 0, 0, 0, 0.99999934, 0.085655, 1.8129978, -0.05883773)
 shape = SubResource("BoxShape3D_8qxbv")
 
 [node name="HouseNumberPlacue" type="MeshInstance3D" parent="." index="18"]
