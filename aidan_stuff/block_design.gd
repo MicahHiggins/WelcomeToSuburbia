@@ -14,6 +14,14 @@ var patrol_instance_campbell: Node3D = null
 
 var entered := false
 
+# ADDED: avoid RPC calls before Steam peer is actually connected
+func _net_connected() -> bool:
+	if not multiplayer.has_multiplayer_peer():
+		return true
+	var mp: MultiplayerPeer = multiplayer.multiplayer_peer
+	return mp != null and mp.get_connection_status() == MultiplayerPeer.CONNECTION_CONNECTED
+
+
 func _ready() -> void:
 	GlobalVariables.iterations = 0
 	houses.visible = false
@@ -24,16 +32,26 @@ func _ready() -> void:
 		if not multiplayer.peer_connected.is_connected(_on_peer_connected):
 			multiplayer.peer_connected.connect(_on_peer_connected)
 
+
 func _on_peer_connected(peer_id: int) -> void:
-	# ADDED: defer one frame so the joining peer has finished instancing the level tree
+	# ADDED: do not attempt to RPC until we're connected
+	if not _net_connected():
+		return
+
+	# ADDED: defer so the joining peer has finished instancing the level tree
 	call_deferred("_deferred_send_state_to_peer", peer_id)
+
 
 # ADDED: actual send happens after one frame
 func _deferred_send_state_to_peer(peer_id: int) -> void:
 	if not multiplayer.is_server():
 		return
+	if not _net_connected():
+		return
+
 	# bring the new peer up to date
 	rpc_id(peer_id, "_rpc_set_active", entered, global_transform)
+
 
 func _on_area_3d_body_entered(body: Node3D) -> void:
 	if body == null or not body.is_in_group("player"):
@@ -47,11 +65,16 @@ func _on_area_3d_body_entered(body: Node3D) -> void:
 		return
 	entered = true
 
+	# ADDED: don't RPC until connected
+	if multiplayer.has_multiplayer_peer() and not _net_connected():
+		return
+
 	# tell everyone to show + spawn
 	if multiplayer.has_multiplayer_peer():
 		rpc("_rpc_set_active", true, global_transform)
 	else:
 		_rpc_set_active(true, global_transform)
+
 
 func _on_area_3d_body_exited(body: Node3D) -> void:
 	if body == null or not body.is_in_group("player"):
@@ -65,16 +88,21 @@ func _on_area_3d_body_exited(body: Node3D) -> void:
 		return
 	entered = false
 
+	# ADDED: don't RPC until connected
+	if multiplayer.has_multiplayer_peer() and not _net_connected():
+		return
+
 	# tell everyone to hide + despawn
 	if multiplayer.has_multiplayer_peer():
 		rpc("_rpc_set_active", false, global_transform)
 	else:
 		_rpc_set_active(false, global_transform)
 
+
 @rpc("any_peer", "call_local", "reliable")
 func _rpc_set_active(active: bool, block_xform: Transform3D) -> void:
 	# ADDED: apply the authoritative transform first
-	# This prevents "finicky" visibility/spawns when the client has not yet applied PCG block moves.
+	# Prevents "finicky" visibility/spawns when the client has not yet applied PCG block moves.
 	global_transform = block_xform
 
 	houses.visible = active
@@ -85,6 +113,7 @@ func _rpc_set_active(active: bool, block_xform: Transform3D) -> void:
 		_spawn_all(block_xform)
 	else:
 		_despawn_all()
+
 
 func _spawn_all(block_xform: Transform3D) -> void:
 	# Spawn Bob bundle
@@ -108,6 +137,7 @@ func _spawn_all(block_xform: Transform3D) -> void:
 		patrol_instance_campbell.name = "PatrolBundleCampbells"
 		patrol_instance_campbell.global_transform = block_xform
 
+
 func _despawn_all() -> void:
 	# Despawn Bob bundle
 	if patrol_instance_bob != null and is_instance_valid(patrol_instance_bob):
@@ -124,8 +154,10 @@ func _despawn_all() -> void:
 		patrol_instance_campbell.queue_free()
 	patrol_instance_campbell = null
 
+
 func _on_iteration_detector_body_entered(body: Node3D) -> void:
 	pass
+
 
 func _on_timer_timeout() -> void:
 	pass
