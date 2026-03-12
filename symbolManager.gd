@@ -5,100 +5,42 @@ extends Node3D
 @onready var label: Label = $Buttons/Label
 @onready var button: Button = $Buttons/Button
 @onready var clear: Button = $Buttons/Clear
+#@onready var puzzle_draw: Node2D = $Drawing
+#@onready var puzzle_see: Node2D = $Seeing
 
 @onready var interact: Label = $interact
+
 @onready var buttons: Control = $Buttons
 
 var in_area = false
 var see = false
 var do = false
 
-const SERVER_ID: int = 1
-
-# ADDED: cache the authoritative type on this node
-var _puzzle_type: int = -1
-
-
+# Called when the node enters the scene tree for the first time.
 func _ready() -> void:
+	GlobalVariables.puzzleType = randi_range(1, 3)
+	print("NUMM:, ", GlobalVariables.puzzleType)
 	seeing.visible = false
+				#exit.visible = false
+				#puzzle_see.visible = false
 	buttons.visible = false
 	drawing.visible = false
+				#exit.visible = false
+				#puzzle_see.visible = false
 	buttons.visible = false
 
-	# SINGLEPLAYER: 
-	if not multiplayer.has_multiplayer_peer():
-		_puzzle_type = randi_range(1, 3)
-		GlobalVariables.puzzleType = _puzzle_type
-		print("NUMM:, ", GlobalVariables.puzzleType)
-		return
-
-	# MULTIPLAYER: server decides once, clients never roll locally
-	if multiplayer.is_server():
-		if _puzzle_type == -1:
-			_puzzle_type = randi_range(1, 3)
-		GlobalVariables.puzzleType = _puzzle_type
-		rpc("_rpc_set_puzzle_type", _puzzle_type)
-
-		# ADDED: late joiners get the same puzzle type
-		if not multiplayer.peer_connected.is_connected(_on_peer_connected):
-			multiplayer.peer_connected.connect(_on_peer_connected)
-	else:
-		# ADDED: joining client asks server for current puzzle type
-		rpc_id(SERVER_ID, "_rpc_request_puzzle_type")
-
-	print("NUMM:, ", GlobalVariables.puzzleType)
-
-
 func randPuzzle():
-	# MULTIPLAYER: server rerolls and broadcasts
-	if multiplayer.has_multiplayer_peer():
-		if multiplayer.is_server():
-			_puzzle_type = randi_range(1, 3)
-			GlobalVariables.puzzleType = _puzzle_type
-			rpc("_rpc_set_puzzle_type", _puzzle_type)
-		return
+	GlobalVariables.puzzleType = randi_range(1, 3)
 
-	# SINGLEPLAYER
-	_puzzle_type = randi_range(1, 3)
-	GlobalVariables.puzzleType = _puzzle_type
-
-
-# ADDED: joining client asks server for the current type
-@rpc("any_peer", "reliable")
-func _rpc_request_puzzle_type() -> void:
-	if not multiplayer.is_server():
-		return
-	var sender: int = multiplayer.get_remote_sender_id()
-	if sender <= 0:
-		return
-	if _puzzle_type == -1:
-		_puzzle_type = randi_range(1, 3)
-	GlobalVariables.puzzleType = _puzzle_type
-	rpc_id(sender, "_rpc_set_puzzle_type", _puzzle_type)
-
-
-# ADDED: server sends the type to new peers
-func _on_peer_connected(peer_id: int) -> void:
-	if not multiplayer.is_server():
-		return
-	if _puzzle_type == -1:
-		return
-	rpc_id(peer_id, "_rpc_set_puzzle_type", _puzzle_type)
-
-
-# apply authoritative puzzle type on every peer (including host)
-@rpc("any_peer", "call_local", "reliable")
-func _rpc_set_puzzle_type(t: int) -> void:
-	_puzzle_type = int(t)
-	GlobalVariables.puzzleType = _puzzle_type
-
-
+# Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
+	#print(in_area)
 	if in_area == true:
+		#print("HU")
 		interact.visible = true
-	else:
+	else: 
 		interact.visible = false
-
+		
 
 func _input(event: InputEvent) -> void:
 	if in_area == true && event.is_action("interact") && see == true:
@@ -109,26 +51,41 @@ func _input(event: InputEvent) -> void:
 		drawing.visible = true
 		buttons.visible = true
 		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
-
-
+		#else:
+				#seeing.visible = false
+				##exit.visible = false
+				##puzzle_see.visible = false
+				#buttons.visible = false
+				#drawing.visible = false
+				##exit.visible = false
+				##puzzle_see.visible = false
+				#buttons.visible = false
+		
+		
+		
+		
 func _on_obs_area_body_entered(body: Node3D) -> void:
 	print("TESTETES")
 	if body.is_multiplayer_authority():
 		in_area = true
 		print("IN")
 		see = true
-
+		#exit.visible = true
+		#puzzle_see.visible = true
 
 func _on_obs_area_body_exited(body: Node3D) -> void:
 	if body.is_multiplayer_authority():
 		in_area = false
 		see = false
+		
 
 
 func _on_do_area_body_entered(body: Node3D) -> void:
 	if body.is_multiplayer_authority():
 		in_area = true
 		do = true
+
+		#exit.visible = true
 
 
 func _on_do_area_body_exited(body: Node3D) -> void:
@@ -139,6 +96,10 @@ func _on_do_area_body_exited(body: Node3D) -> void:
 
 func _on_exit_pressed() -> void:
 	seeing.visible = false
+				#exit.visible = false
+				#puzzle_see.visible = false
 	buttons.visible = false
 	drawing.visible = false
+				#exit.visible = false
+	#puzzle_see.visible = false
 	buttons.visible = false
