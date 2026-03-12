@@ -182,88 +182,88 @@ libraries = {
 [node name="Bedrooms" type="Node3D" parent="."]
 transform = Transform3D(1.4, 0, 0, 0, 1.4, 0, 0, 0, 1.4, 0, 0, 0)
 
-[node name="bedroom_copy" parent="Bedrooms" instance=ExtResource("1_qogrp")]
+[node name="bedroom1" parent="Bedrooms" instance=ExtResource("1_qogrp")]
 transform = Transform3D(1.5, 0, 0, 0, 1.2, 0, 0, 0, 1.5, -0.12646402, 0.087929964, 13.246087)
 
-[node name="Collisions" type="StaticBody3D" parent="Bedrooms/bedroom_copy"]
+[node name="Collisions" type="StaticBody3D" parent="Bedrooms/bedroom1"]
 collision_layer = 2
 collision_mask = 9
 
-[node name="CollisionShape3D6" type="CollisionShape3D" parent="Bedrooms/bedroom_copy/Collisions"]
+[node name="CollisionShape3D6" type="CollisionShape3D" parent="Bedrooms/bedroom1/Collisions"]
 transform = Transform3D(1.0000006, 0, 0, 0, 1, 0, 0, 0, 1.0000006, 0.012794748, -2.1159873, 0.01333046)
 shape = SubResource("BoxShape3D_5540h")
 
-[node name="CollisionShape3D7" type="CollisionShape3D" parent="Bedrooms/bedroom_copy/Collisions"]
+[node name="CollisionShape3D7" type="CollisionShape3D" parent="Bedrooms/bedroom1/Collisions"]
 transform = Transform3D(1.0000006, 0, 0, 0, 1, 0, 0, 0, 1.0000006, 0.022586316, 0.1128335, 3.5499845)
 shape = SubResource("BoxShape3D_2lyw5")
 
-[node name="CollisionShape3D8" type="CollisionShape3D" parent="Bedrooms/bedroom_copy/Collisions"]
+[node name="CollisionShape3D8" type="CollisionShape3D" parent="Bedrooms/bedroom1/Collisions"]
 transform = Transform3D(1.0000006, 0, 0, 0, 1, 0, 0, 0, 1.0000006, 0.012249865, 0.08638193, -3.5919797)
 shape = SubResource("BoxShape3D_2lyw5")
 
-[node name="CollisionShape3D9" type="CollisionShape3D" parent="Bedrooms/bedroom_copy/Collisions"]
+[node name="CollisionShape3D9" type="CollisionShape3D" parent="Bedrooms/bedroom1/Collisions"]
 transform = Transform3D(-4.371221e-08, 0, 1.0000006, 0, 1, 0, -1.0000006, 0, -4.371221e-08, -3.5785897, 0.023052692, -0.09948635)
 shape = SubResource("BoxShape3D_2lyw5")
 
-[node name="CollisionShape3D10" type="CollisionShape3D" parent="Bedrooms/bedroom_copy/Collisions"]
+[node name="CollisionShape3D10" type="CollisionShape3D" parent="Bedrooms/bedroom1/Collisions"]
 transform = Transform3D(-4.3712635e-08, 0, 1.0000006, 0, 1, 0, -1.0000006, 0, -4.3712635e-08, 3.5621285, -0.023911487, -0.03504944)
 shape = SubResource("BoxShape3D_2lyw5")
 
-[node name="Bed" parent="Bedrooms/bedroom_copy" instance=ExtResource("5_et2vk")]
+[node name="Bed" parent="Bedrooms/bedroom1" instance=ExtResource("5_et2vk")]
 transform = Transform3D(-0.80000055, 0, -6.993827e-08, 0, 0.80000013, 0, 6.993827e-08, 0, -0.80000055, 2.5384, -2.027907, 1.7765894)
 
-[node name="StaticBody3D" type="StaticBody3D" parent="Bedrooms/bedroom_copy/Bed"]
+[node name="StaticBody3D" type="StaticBody3D" parent="Bedrooms/bedroom1/Bed"]
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Bedrooms/bedroom_copy/Bed/StaticBody3D"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Bedrooms/bedroom1/Bed/StaticBody3D"]
 transform = Transform3D(1, 0, 8.0717655e-12, 0, 1, 0, -8.0717655e-12, 0, 1, 0.0006723404, 0.35276818, -0.07090807)
 shape = SubResource("BoxShape3D_asrhd")
 
-[node name="Nightstand" parent="Bedrooms/bedroom_copy" instance=ExtResource("6_aosf6")]
+[node name="Nightstand" parent="Bedrooms/bedroom1" instance=ExtResource("6_aosf6")]
 transform = Transform3D(-1.0000006, 0, -8.742284e-08, 0, 1, 0, 8.742284e-08, 0, -1.0000006, 1.2298965, -2.0381522, 2.843995)
 
-[node name="StaticBody3D" type="StaticBody3D" parent="Bedrooms/bedroom_copy/Nightstand"]
+[node name="StaticBody3D" type="StaticBody3D" parent="Bedrooms/bedroom1/Nightstand"]
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Bedrooms/bedroom_copy/Nightstand/StaticBody3D"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Bedrooms/bedroom1/Nightstand/StaticBody3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.01880169, 0.44482422, 0.0035562515)
 shape = SubResource("BoxShape3D_lvd32")
 
-[node name="Lamp" parent="Bedrooms/bedroom_copy" instance=ExtResource("7_1r6ai")]
+[node name="Lamp" parent="Bedrooms/bedroom1" instance=ExtResource("7_1r6ai")]
 transform = Transform3D(0.60000044, 0, -7.105431e-15, 0, 0.6000001, 0, 7.105431e-15, 0, 0.60000044, 1.2545395, -1.0862061, 3.0131636)
 
-[node name="Dresser" parent="Bedrooms/bedroom_copy" instance=ExtResource("8_so2gl")]
+[node name="Dresser" parent="Bedrooms/bedroom1" instance=ExtResource("8_so2gl")]
 transform = Transform3D(-5.2453704e-08, 0, -1.2000009, 0, 1.5, 0, 1.2000009, 0, -5.2453704e-08, -2.1757061, -0.8876659, 2.5052242)
 
-[node name="StaticBody3D" type="StaticBody3D" parent="Bedrooms/bedroom_copy/Dresser"]
+[node name="StaticBody3D" type="StaticBody3D" parent="Bedrooms/bedroom1/Dresser"]
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Bedrooms/bedroom_copy/Dresser/StaticBody3D"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Bedrooms/bedroom1/Dresser/StaticBody3D"]
 transform = Transform3D(1, 0, 0, 0, 0.9999996, 0, 0, 0, 1, 0.3463744, -0.0004272461, -0.016935825)
 shape = SubResource("BoxShape3D_mdyle")
 
-[node name="Desk" parent="Bedrooms/bedroom_copy" instance=ExtResource("9_i862x")]
+[node name="Desk" parent="Bedrooms/bedroom1" instance=ExtResource("9_i862x")]
 transform = Transform3D(-5.463927e-08, 0, 1.2500008, 0, 1.2500002, 0, -1.2500008, 0, -5.463927e-08, -2.7362323, -2.031248, -2.2053218)
 
-[node name="StaticBody3D" type="StaticBody3D" parent="Bedrooms/bedroom_copy/Desk"]
+[node name="StaticBody3D" type="StaticBody3D" parent="Bedrooms/bedroom1/Desk"]
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Bedrooms/bedroom_copy/Desk/StaticBody3D"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Bedrooms/bedroom1/Desk/StaticBody3D"]
 transform = Transform3D(0.99997854, 0, -1.2221335e-12, 0, 0.99999917, 0, 1.2221335e-12, 0, 0.99997854, -0.0008226633, 0.42379487, -0.05090332)
 shape = SubResource("BoxShape3D_kiafm")
 
-[node name="Desk Light" parent="Bedrooms/bedroom_copy" instance=ExtResource("10_w2tuc")]
+[node name="Desk Light" parent="Bedrooms/bedroom1" instance=ExtResource("10_w2tuc")]
 transform = Transform3D(0.81363344, 0, 0.94894737, 0, 1.2500002, 0, -0.94894737, 0, 0.81363344, -3.0751343, -0.87845737, -3.11899)
 
-[node name="Chair" parent="Bedrooms/bedroom_copy" instance=ExtResource("11_8awp3")]
+[node name="Chair" parent="Bedrooms/bedroom1" instance=ExtResource("11_8awp3")]
 transform = Transform3D(-1.3131986, 0, -0.72492445, 0, 1.5, 0, 0.72492445, 0, -1.3131986, -1.2762998, -1.9826562, -4.800614)
 
-[node name="StaticBody3D" type="StaticBody3D" parent="Bedrooms/bedroom_copy/Chair"]
+[node name="StaticBody3D" type="StaticBody3D" parent="Bedrooms/bedroom1/Chair"]
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Bedrooms/bedroom_copy/Chair/StaticBody3D"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Bedrooms/bedroom1/Chair/StaticBody3D"]
 transform = Transform3D(1, 0, -4.4703484e-08, 0, 1, 0, 4.4703484e-08, 0, 1, 0.9011636, 0.17053258, -1.1934946)
 shape = SubResource("BoxShape3D_pe1yd")
 
-[node name="toy_piano_2" parent="Bedrooms/bedroom_copy" instance=ExtResource("12_xv1t7")]
+[node name="toy_piano_2" parent="Bedrooms/bedroom1" instance=ExtResource("12_xv1t7")]
 transform = Transform3D(-6.5567116e-09, 0, -0.1500001, 0, 0.15000002, 0, 0.1500001, 0, -6.5567116e-09, -2.5088928, -0.7991139, -2.1711254)
 
-[node name="etch-a-sketch" parent="Bedrooms/bedroom_copy" instance=ExtResource("13_asrhd")]
+[node name="etch-a-sketch" parent="Bedrooms/bedroom1" instance=ExtResource("13_asrhd")]
 transform = Transform3D(-2.1855714e-08, 0, -0.5000003, 0, 0.5, 0, 0.5000003, 0, -2.1855714e-08, 1.2308958, -1.6584717, 2.727562)
 
 [node name="bedroom2" parent="Bedrooms" instance=ExtResource("2_rbxy2")]
@@ -402,6 +402,7 @@ metadata/_edit_lock_ = true
 
 [node name="Fences" type="Node3D" parent="Neighborhood"]
 transform = Transform3D(4.85, 0, 0, 0, 4.85, 0, 0, 0, 4.85, 0, -6.243273, 0)
+metadata/_edit_lock_ = true
 
 [node name="whitefence1" parent="Neighborhood/Fences" instance=ExtResource("11_jxbfd")]
 transform = Transform3D(0.14, 0, 0, 0, 0.14, 0, 0, 0, 0.14, 7.177611, 0.14870933, -0.003405422)
