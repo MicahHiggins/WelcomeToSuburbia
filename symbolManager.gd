@@ -25,7 +25,7 @@ func _ready() -> void:
 	drawing.visible = false
 	buttons.visible = false
 
-	# SINGLEPLAYER: keep old behavior
+	# SINGLEPLAYER: 
 	if not multiplayer.has_multiplayer_peer():
 		_puzzle_type = randi_range(1, 3)
 		GlobalVariables.puzzleType = _puzzle_type
