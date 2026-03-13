@@ -4,108 +4,131 @@ class_name UVFlashlight
 @onready var interact_area: Area3D = $Area3D
 @onready var uv_light: SpotLight3D = $SpotLight3D
 
-# CHANGED: ShapeCast3D instead of RayCast3D
 @export var uv_cast_path: NodePath = NodePath("ShapeCast3D")
 var uv_cast: ShapeCast3D = null
 
-# optional outline like your bat (set path if you have it)
 @export var outline_mesh_path: NodePath
 var outline_mesh: MeshInstance3D = null
 
 @export var authority_only_physics: bool = true
 
-# ============================================================
-# NEW: “bat-style” physics while dropped (CharacterBody3D sim)
-# - keeps flashlight from being frozen in midair when dropped
-# - behaves similarly to your bat script
-# ============================================================
 @export var enable_drop_physics: bool = true
 @export var ground_friction: float = 5.0
 @export var air_gravity_mult: float = 1.0
 var _gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity")
 
-# ============================================================
-# beam/reveal tuning
-# ============================================================
 @export var uv_range_m: float = 10.0
 @export var reveal_radius_m: float = 1.75
 @export var reveal_max_targets_per_frame: int = 12
 
-# input
-@export var toggle_action: StringName = &"toggle_flashlight"  # add in InputMap
-
-# net (optional: makes other players see beam on/off)
+@export var toggle_action: StringName = &"toggle_flashlight"
 @export var replicate_light_toggle: bool = true
 
 var _held: bool = false
 var _hovered: bool = false
 var _uv_on: bool = false
 
-# cache for “things we turned on this frame”
 var _revealed_this_frame: Dictionary = {}
 var _previous_reveals: Array[UvRevealTarget] = []
 
+# ADDED: server id (host)
+const SERVER_ID: int = 1
+
+# ADDED: reveal replication (owner broadcasts which targets are being hit)
+@export var replicate_reveal: bool = true
+@export var reveal_send_rate_hz: float = 20.0
+var _reveal_last_send_time: float = 0.0
+
+# ADDED: receiver-side cache so we can turn off ones not in the latest packet
+var _net_prev_reveals: Dictionary = {} # String(path) -> bool
+
+# ADDED: replicate flashlight aim (rotation) so all peers see same beam direction
+@export var replicate_aim: bool = true
+@export var aim_send_rate_hz: float = 20.0
+@export var aim_lerp_alpha: float = 0.35
+
+var _aim_last_send_time: float = 0.0
+var _aim_target_basis: Basis = Basis.IDENTITY
+var _aim_has_target: bool = false
+
+
 func _ready() -> void:
-	# IMPORTANT: ItemManager discovery depends on this group existing on all peers.
 	add_to_group("pickup")
 
-	# outline hover (your Player raycast should call set_hovered just like bat)
 	if outline_mesh_path != NodePath(""):
 		outline_mesh = get_node_or_null(outline_mesh_path) as MeshInstance3D
 		if outline_mesh != null:
 			outline_mesh.visible = false
 
-	# pickup ray target layer setup (same pattern as your bat)
 	if interact_area != null:
 		interact_area.set_collision_layer_value(4, true)
 		interact_area.collision_mask = 0
 
-	# bind shapecast safely
 	uv_cast = get_node_or_null(uv_cast_path) as ShapeCast3D
 	if uv_cast == null:
 		push_error("[UVFlashlight] ShapeCast3D not found. Set uv_cast_path to your ShapeCast3D node.")
 	else:
 		uv_cast.enabled = false
 		uv_cast.target_position = Vector3(0, 0, -uv_range_m)
-		# NOTE: make sure the ShapeCast3D has a Shape assigned in the inspector
 
-	# default off
 	if uv_light != null:
 		uv_light.visible = false
 
+	_aim_target_basis = global_transform.basis
+
+
 func set_hovered(v: bool) -> void:
-	# This is what your Player raycast/hover system should call.
 	_hovered = v
 	if outline_mesh != null and not _held:
 		outline_mesh.visible = v
 
+
 func set_held(v: bool) -> void:
 	_held = v
-
-	# When held, never show outline (same as bat).
 	if outline_mesh != null:
 		outline_mesh.visible = false
-
-	# When dropped, kill UV (prevents “dropped flashlight still revealing”).
 	if not v:
 		_set_uv_on(false)
 
+
 func _unhandled_input(event: InputEvent) -> void:
-	# Only allow toggle when held.
-	# IMPORTANT: This runs only on the client that owns the player holding it.
 	if not _held:
 		return
 	if event.is_action_pressed(String(toggle_action)):
 		_set_uv_on(not _uv_on)
 
+
 func _process(_delta: float) -> void:
-	# purely visual reveal, do it locally (this is fine; reveal targets can also be local-only)
+	# SINGLEPLAYER: local reveal is fine
+	if not multiplayer.has_multiplayer_peer():
+		_process_reveal_local()
+		return
+
+	# MULTIPLAYER:
+	# Only the flashlight authority computes reveal and broadcasts it.
+	# Everyone else only applies what they receive.
+	if replicate_reveal and is_multiplayer_authority():
+		_process_reveal_local()
+		_net_maybe_send_reveals()
+	else:
+		# Non-authority should not run local reveal; it would diverge.
+		_revealed_this_frame.clear()
+		_clear_previous_reveals()
+
+	# Aim replication tick (rotation)
+	if replicate_aim and multiplayer.has_multiplayer_peer() and _held:
+		if is_multiplayer_authority():
+			_net_maybe_send_aim()
+		else:
+			_net_interpolate_remote_aim()
+
+
+func _process_reveal_local() -> void:
 	if not _held or not _uv_on:
 		_revealed_this_frame.clear()
 		_clear_previous_reveals()
 		return
 
-	# update cast
 	if uv_cast != null:
 		uv_cast.enabled = true
 		uv_cast.target_position = Vector3(0, 0, -uv_range_m)
@@ -115,55 +138,68 @@ func _process(_delta: float) -> void:
 	_reveal_in_beam()
 	_clear_previous_reveals()
 
-# ============================================================
-# NEW: physics loop like your bat
-# - server (authority) simulates dropped motion so everyone sees it
-# - non-authority peers just “accept transforms” (ItemManager handles snap for drops)
-# ============================================================
+
 func _physics_process(delta: float) -> void:
 	if not enable_drop_physics:
 		return
 
-	# If held, no body physics (ItemManager parents it to CarryObjectMarker anyway)
 	if _held:
 		velocity = Vector3.ZERO
 		return
 
 	var has_peer := multiplayer.has_multiplayer_peer()
 	if authority_only_physics and has_peer:
-		# Only authority simulates dropped motion
 		if is_multiplayer_authority():
 			_do_drop_physics(delta)
 		return
 
-	# Singleplayer or non-authority-only setting
 	_do_drop_physics(delta)
 
+
 func _do_drop_physics(delta: float) -> void:
-	# gravity
 	if not is_on_floor():
 		velocity.y -= _gravity * air_gravity_mult * delta
 	else:
-		# simple friction on ground (same feel as bat)
 		velocity.x = move_toward(velocity.x, 0.0, ground_friction * delta)
 		velocity.z = move_toward(velocity.z, 0.0, ground_friction * delta)
 
 	move_and_slide()
 
-# ============================================================
-# UV reveal logic
-# ============================================================
+
 func _reveal_in_beam() -> void:
+	# Default beam center is max range straight ahead
 	var hit_pos := global_transform.origin + (-global_transform.basis.z.normalized() * uv_range_m)
 
+	# ADDED: Only accept collisions that belong to uv_reveal targets
+	# This prevents near collisions (walls/player) from forcing you to get close.
 	if uv_cast != null and uv_cast.is_colliding():
-		var best_d := INF
+		var found_valid := false
+		var best_d := -INF
+
 		for i in range(uv_cast.get_collision_count()):
+			var col := uv_cast.get_collider(i)
+
+			var ok := false
+			if col != null and col is Node:
+				var n := col as Node
+				if n.is_in_group("uv_reveal"):
+					ok = true
+				elif n.get_parent() != null and n.get_parent().is_in_group("uv_reveal"):
+					ok = true
+
+			if not ok:
+				continue
+
 			var p := uv_cast.get_collision_point(i)
 			var d := global_transform.origin.distance_to(p)
-			if d < best_d:
+
+			# Pick the farthest valid uv_reveal hit
+			if d > best_d:
 				best_d = d
 				hit_pos = p
+				found_valid = true
+
+		# If no valid uv_reveal collider is hit, keep default hit_pos
 
 	var targets: Array = get_tree().get_nodes_in_group("uv_reveal")
 	var count := 0
@@ -188,12 +224,14 @@ func _reveal_in_beam() -> void:
 		if rr != null and _previous_reveals.find(rr) == -1:
 			_previous_reveals.append(rr)
 
+
 func _clear_previous_reveals() -> void:
 	for rt in _previous_reveals:
 		if rt == null or not is_instance_valid(rt):
 			continue
 		if not _revealed_this_frame.has(rt):
 			rt.set_reveal(false)
+
 
 func _set_uv_on(v: bool) -> void:
 	_uv_on = v
@@ -203,11 +241,95 @@ func _set_uv_on(v: bool) -> void:
 	if uv_cast != null:
 		uv_cast.enabled = v
 
-	# cosmetic replication (good for Steam multiplayer)
 	if replicate_light_toggle and multiplayer.has_multiplayer_peer():
+		var mp: MultiplayerPeer = multiplayer.multiplayer_peer
+		if mp == null or mp.get_connection_status() != MultiplayerPeer.CONNECTION_CONNECTED:
+			return
 		rpc("_rpc_set_uv_visible", v)
+
 
 @rpc("any_peer", "call_local", "unreliable")
 func _rpc_set_uv_visible(v: bool) -> void:
 	if uv_light != null:
 		uv_light.visible = v
+
+
+# ADDED: send revealed targets to everyone (owner authoritative)
+func _net_maybe_send_reveals() -> void:
+	if not replicate_reveal:
+		return
+
+	var mp: MultiplayerPeer = multiplayer.multiplayer_peer
+	if mp == null or mp.get_connection_status() != MultiplayerPeer.CONNECTION_CONNECTED:
+		return
+
+	var now: float = float(Time.get_ticks_msec()) / 1000.0
+	var min_interval: float = 1.0 / max(reveal_send_rate_hz, 1.0)
+	if now - _reveal_last_send_time < min_interval:
+		return
+	_reveal_last_send_time = now
+
+	# Pack current revealed targets as absolute node paths (must match on all peers)
+	var paths: Array[String] = []
+	for k in _revealed_this_frame.keys():
+		var rt := k as UvRevealTarget
+		if rt != null and is_instance_valid(rt):
+			paths.append(String(rt.get_path()))
+
+	rpc("_rpc_apply_reveals", paths)
+
+
+# ADDED: apply reveal list on all peers (including host)
+@rpc("any_peer", "call_local", "unreliable")
+func _rpc_apply_reveals(paths: Array[String]) -> void:
+	# Turn ON any targets in the list
+	var seen: Dictionary = {}
+	for pstr in paths:
+		seen[pstr] = true
+		var n: Node = get_node_or_null(NodePath(pstr))
+		var rt := n as UvRevealTarget
+		if rt != null and is_instance_valid(rt):
+			rt.set_reveal(true)
+
+	# Turn OFF anything that was on last tick but is missing now
+	for old_key in _net_prev_reveals.keys():
+		var kstr: String = String(old_key)
+		if not seen.has(kstr):
+			var n2: Node = get_node_or_null(NodePath(kstr))
+			var rt2 := n2 as UvRevealTarget
+			if rt2 != null and is_instance_valid(rt2):
+				rt2.set_reveal(false)
+
+	_net_prev_reveals = seen
+
+
+# Aim replication (rotation only)
+func _net_maybe_send_aim() -> void:
+	var mp: MultiplayerPeer = multiplayer.multiplayer_peer
+	if mp == null or mp.get_connection_status() != MultiplayerPeer.CONNECTION_CONNECTED:
+		return
+
+	var now: float = float(Time.get_ticks_msec()) / 1000.0
+	var min_interval: float = 1.0 / max(aim_send_rate_hz, 1.0)
+	if now - _aim_last_send_time < min_interval:
+		return
+
+	_aim_last_send_time = now
+	rpc("_rpc_set_aim_basis", global_transform.basis)
+
+
+@rpc("any_peer", "call_local", "unreliable")
+func _rpc_set_aim_basis(b: Basis) -> void:
+	if is_multiplayer_authority():
+		return
+	_aim_target_basis = b
+	_aim_has_target = true
+
+
+func _net_interpolate_remote_aim() -> void:
+	if not _aim_has_target:
+		return
+
+	var gt := global_transform
+	gt.basis = gt.basis.slerp(_aim_target_basis, aim_lerp_alpha)
+	global_transform = gt

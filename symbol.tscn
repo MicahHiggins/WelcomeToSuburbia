@@ -23,5 +23,6 @@ glow_color = Color(0.2071996, 0.015976882, 0.08617854, 1)
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 0.08849446, -0.99607664, 0, 0.99607664, 0.08849446, 0.051041484, 0, 0)
+layers = 256
 mesh = SubResource("TorusMesh_i78t8")
 surface_material_override/0 = SubResource("ShaderMaterial_4vmqd")

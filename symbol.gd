@@ -4,14 +4,12 @@ class_name UvRevealTarget
 @export var target_mesh_path: NodePath
 @export var auto_add_to_group: bool = true
 
-# Slower = smaller numbers (units/sec)
 @export var fade_in_speed: float = 2.0
 @export var fade_out_speed: float = 0.8
 
 @export var glow_color: Color = Color(0.3, 0.9, 1.0, 1.0)
 @export var glow_strength: float = 3.0
 
-# hold full brightness after UV stops
 @export var hold_full_seconds: float = 3.0
 
 var _mesh: MeshInstance3D = null
@@ -26,32 +24,53 @@ func _ready() -> void:
 	if auto_add_to_group:
 		add_to_group("uv_reveal")
 
+	# ADDED: ensure a CollisionObject child can also be recognized as uv_reveal by the flashlight
+	# This helps when the ShapeCast collider is not the UvRevealTarget node itself.
+	_tag_collision_children()
+
 	_mesh = _resolve_mesh()
 	if _mesh == null:
 		push_warning("[UvRevealTarget] No MeshInstance3D found. Set target_mesh_path or put a MeshInstance3D under this node.")
 		return
 
-	# Prefer surface material 0, fallback to material_override
 	_mat = _mesh.get_active_material(0) as ShaderMaterial
+	var using_surface := true
 	if _mat == null:
 		_mat = _mesh.material_override as ShaderMaterial
+		using_surface = false
 
 	if _mat == null:
 		push_warning("[UvRevealTarget] Target mesh has no ShaderMaterial (surface 0 or material_override).")
 		return
 
+	# ADDED: duplicate material so each target is independent
+	# Without this, setting shader params reveals every mesh sharing the same resource.
+	_mat = _mat.duplicate(true) as ShaderMaterial
+	if using_surface:
+		_mesh.set_surface_override_material(0, _mat)
+	else:
+		_mesh.material_override = _mat
+
 	_apply_params()
 	set_process(true)
 
 
+func _tag_collision_children() -> void:
+	var stack: Array[Node] = [self]
+	while stack.size() > 0:
+		var n: Node = stack.pop_back()
+		for ch in n.get_children():
+			if ch is CollisionObject3D:
+				(ch as CollisionObject3D).add_to_group("uv_reveal")
+			stack.append(ch)
+
+
 func _resolve_mesh() -> MeshInstance3D:
-	# If you set an explicit path, use it
 	if target_mesh_path != NodePath(""):
 		var m: MeshInstance3D = get_node_or_null(target_mesh_path) as MeshInstance3D
 		if m != null:
 			return m
 
-	# Fallback: find first MeshInstance3D under this node (no Variant inference)
 	var stack: Array[Node] = [self]
 	while stack.size() > 0:
 		var n: Node = stack.pop_back()
@@ -65,12 +84,10 @@ func _resolve_mesh() -> MeshInstance3D:
 
 
 func set_reveal(v: bool) -> void:
-	# called by flashlight
 	if v:
 		_want_on = true
 		_hold_t = hold_full_seconds
 	else:
-		# don’t turn off instantly; let hold timer expire
 		_want_on = false
 
 
@@ -78,13 +95,11 @@ func _process(delta: float) -> void:
 	if _mat == null:
 		return
 
-	# If being hit this frame, keep refreshing the hold timer
 	if _want_on:
 		_hold_t = hold_full_seconds
 	else:
 		_hold_t = maxf(0.0, _hold_t - delta)
 
-	# Full bright while hold timer is active, then fade out
 	var target: float = 1.0 if _hold_t > 0.0 else 0.0
 
 	if target > _reveal:
