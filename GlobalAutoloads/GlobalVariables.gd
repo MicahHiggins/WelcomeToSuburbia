@@ -12,7 +12,7 @@ var iteration2 = 0
 var iteration3 = 0
 var iteration4 = 0
 var iteration5 = 0
-var puzzleType
+var puzzleType = 0
 var algoDebug = false
 
 signal interact

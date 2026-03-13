@@ -18,15 +18,14 @@ var do = false
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	GlobalVariables.puzzleType = randi_range(1, 3)
+	see = false
+	do = false
+	randPuzzle()
 	print("NUMM:, ", GlobalVariables.puzzleType)
 	seeing.visible = false
-				#exit.visible = false
-				#puzzle_see.visible = false
+
 	buttons.visible = false
 	drawing.visible = false
-				#exit.visible = false
-				#puzzle_see.visible = false
 	buttons.visible = false
 
 func randPuzzle():
@@ -43,6 +42,7 @@ func _process(delta: float) -> void:
 		
 
 func _input(event: InputEvent) -> void:
+	#print(see)
 	if in_area == true && event.is_action("interact") && see == true:
 		seeing.visible = true
 		buttons.visible = true
@@ -51,22 +51,14 @@ func _input(event: InputEvent) -> void:
 		drawing.visible = true
 		buttons.visible = true
 		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
-		#else:
-				#seeing.visible = false
-				##exit.visible = false
-				##puzzle_see.visible = false
-				#buttons.visible = false
-				#drawing.visible = false
-				##exit.visible = false
-				##puzzle_see.visible = false
-				#buttons.visible = false
+
 		
 		
 		
 		
 func _on_obs_area_body_entered(body: Node3D) -> void:
 	print("TESTETES")
-	if body.is_multiplayer_authority():
+	if body.is_multiplayer_authority() && body.is_in_group("player"):
 		in_area = true
 		print("IN")
 		see = true
@@ -74,14 +66,14 @@ func _on_obs_area_body_entered(body: Node3D) -> void:
 		#puzzle_see.visible = true
 
 func _on_obs_area_body_exited(body: Node3D) -> void:
-	if body.is_multiplayer_authority():
+	if body.is_multiplayer_authority() && body.is_in_group("player"):
 		in_area = false
 		see = false
 		
 
 
 func _on_do_area_body_entered(body: Node3D) -> void:
-	if body.is_multiplayer_authority():
+	if body.is_multiplayer_authority() && body.is_in_group("player"):
 		in_area = true
 		do = true
 
@@ -89,17 +81,13 @@ func _on_do_area_body_entered(body: Node3D) -> void:
 
 
 func _on_do_area_body_exited(body: Node3D) -> void:
-	if body.is_multiplayer_authority():
+	if body.is_multiplayer_authority() && body.is_in_group("player"):
 		in_area = false
 		do = false
 
 
 func _on_exit_pressed() -> void:
 	seeing.visible = false
-				#exit.visible = false
-				#puzzle_see.visible = false
 	buttons.visible = false
 	drawing.visible = false
-				#exit.visible = false
-	#puzzle_see.visible = false
 	buttons.visible = false

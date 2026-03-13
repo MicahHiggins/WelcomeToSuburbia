@@ -15,7 +15,7 @@ func _ready() -> void:
 	
 	for x in gridSize:
 		for y in gridSize:
-			for i in range(0, 30, 10):
+			for i in range(0, 30, 5):
 				if i > 0:
 					var grid = Vector2i(x+20, i)
 					var grid2 = Vector2i(i+20, y)
@@ -37,6 +37,7 @@ func _ready() -> void:
 			set_cell(Vector2i(x+20, y), 0, Vector2i(0, 0), 0)
 	
 	var num = GlobalVariables.puzzleType
+	print("NUM:", num)
 	match(num):
 		1:
 			_drawing1()

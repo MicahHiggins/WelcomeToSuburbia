@@ -6,7 +6,7 @@ extends TileMapLayer
 var gridSize = 30
 var Dict = {}
 var Grid = {}
-var Mask = {}
+#var Mask = {}
 var mask_arr = []
 var drawn_tiles = []
 
@@ -16,8 +16,18 @@ var drawn_tiles = []
 func rand_num():
 	return randi_range(1, 3)
 func _ready() -> void:
+	mask_arr.clear()
 	GlobalVariables.puzzleType = randi_range(1, 3)
 	label.text = "Hello!"
+	#print("num: ", num)
+	match(GlobalVariables.puzzleType):
+		1:
+			_drawing1()
+		2: 
+			_drawing2()
+		3:
+			_drawing3()
+			
 	
 	for x in gridSize:
 		for y in gridSize:
@@ -41,17 +51,8 @@ func _ready() -> void:
 			}
 				
 			set_cell(Vector2i(x+20, y), 0, Vector2i(0, 0), 0)
-	
-	var num = GlobalVariables.puzzleType
-	print("num: ", num)
-	match(num):
-		1:
-			_drawing1()
-		2: 
-			_drawing2()
-		3:
-			_drawing3()
-			
+	_on_clear_pressed()
+
 		
 
 func _process(delta: float) -> void:
@@ -71,6 +72,7 @@ func _process(delta: float) -> void:
 
 func _on_clear_pressed() -> void:
 	print("CLEAR")
+	
 	drawn_tiles.clear()
 	for x in gridSize:
 		for y in gridSize:
@@ -135,6 +137,7 @@ func _drawing3():
 
 
 func _on_button_pressed() -> void:
+	print("On button pressed: ", GlobalVariables.puzzleType)
 	var count := 0.00
 	var perc := 0.00
 	var mask_size = mask_arr.size()
@@ -142,7 +145,7 @@ func _on_button_pressed() -> void:
 	for i in mask_arr.size(): 
 		for j in drawn_tiles.size():
 			if mask_arr[i] == drawn_tiles[j]:
-				
+				print("On button pressed: ", GlobalVariables.puzzleType)
 				count = count + 1
 				#print("count")
 	
