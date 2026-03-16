@@ -7,6 +7,7 @@ extends CanvasLayer
 @onready var root_control: Control = $Control
 @onready var partner_arrow: TextureRect = $Control/PartnerArrow
 @onready var distance_label: Label = $Control/distance
+@onready var dialogue_manager: dialogue = $DialogueManager
 
 @export var hide_when_close_m: float = 1.5
 @export var show_distance: bool = true
@@ -21,11 +22,22 @@ extends CanvasLayer
 # If tether data isn't being set, we can still find the other player reliably
 @export var prefer_scan_for_partner: bool = true
 
+# for better ui
+var esc_toggle := false
+
 var player: CharacterBody3D
 var cam: Camera3D
 
+
 func _ready() -> void:
 	player = get_parent() as CharacterBody3D
+	
+	#UI menu toggle
+	if esc_toggle:
+		dialogue_manager.visible = false
+	else: 
+		dialogue_manager.visible = true
+		
 
 	# UI should only be visible & updating for the locally controlled player.
 	if player == null or not player.is_multiplayer_authority():
@@ -49,6 +61,13 @@ func _ready() -> void:
 
 	_update_labels()
 
+
+func _input(event: InputEvent) -> void:
+	if event.is_action_pressed("quit"):
+		if esc_toggle:
+			esc_toggle = false
+		else:
+			esc_toggle = true
 func _make_hud_ignore_mouse() -> void:
 	if root_control != null:
 		root_control.mouse_filter = Control.MOUSE_FILTER_IGNORE
