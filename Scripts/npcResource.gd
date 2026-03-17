@@ -8,7 +8,10 @@ class_name npcStats
 
 
 
-
+var bob_local := 0
+var abi_local := 0
+var camp_local := 0
+var iss_local := 0
 
 var in_area = false
 var talking = false
@@ -30,37 +33,92 @@ func _input(event: InputEvent) -> void:
 	if in_area == true && Input.is_action_just_pressed("interact"):
 		enter_dialogue()
 		
+func bobDial():
+		if (GlobalVariables.iterations >= 2):
+			dialogue.uniqueDialogue =  npcDialogue.bobDialogue[2][bob_local]
+		else:
+			dialogue.uniqueDialogue = npcDialogue.bobDialogue[GlobalVariables.iterations][bob_local]
+			bob_local += 1
+		
+		
+		print(bob_local)
+		
+		
+		
+func abiDial():
+		if (GlobalVariables.iterations >= 3):
+			dialogue.uniqueDialogue =  npcDialogue.abigailDialogue[2][abi_local]
+		else:
+			dialogue.uniqueDialogue = npcDialogue.abigailDialogue[GlobalVariables.iterations][abi_local]
+			
+		abi_local += 1
+		
+func campDial():
+		if (GlobalVariables.iterations >= 3):
+			dialogue.uniqueDialogue =  npcDialogue.campbellsDialogue[2][camp_local]
+		else:
+			dialogue.uniqueDialogue = npcDialogue.campbellsDialogue[GlobalVariables.iterations][camp_local]
+		camp_local += 1
+		
+func dialogueMan(npc_name):
+
+	
+	match(npc_name):
+			"Bob":
+				if bob_local == 3:
+					bob_local = 2
+				bobDial()
+				
+			"Abigail":
+				if abi_local == 3:
+					bob_local = 2
+				abiDial()
+			
+			"The Campbells":
+				if camp_local == 3:
+					camp_local = 2
+				campDial()
+
+		
+
+
+		
 func enter_dialogue():
+	var number = 0
 	GlobalVariables.playerTalking = true
 	if talking == false:
+		
 		dialogue.uniqueName = npc_name
 		talking = true
 		dialogue.toggle = true
-		print(GlobalVariables.iterations)
+		print("Curr Iteration: ", GlobalVariables.iterations)
+		
 		match(npc_name):
 			"Bob":
-				if (GlobalVariables.iterations >= 3):
-					dialogue.uniqueDialogue =  npcDialogue.bobDialogue[2][local_dial]
-				else:
-					dialogue.uniqueDialogue = npcDialogue.bobDialogue[GlobalVariables.iterations][local_dial]
+				number = bob_local
 			"Abigail":
-				if (GlobalVariables.iterations >= 3):
-					dialogue.uniqueDialogue =  npcDialogue.abigailDialogue[2][local_dial]
-				else:
-					dialogue.uniqueDialogue = npcDialogue.abigailDialogue[GlobalVariables.iterations][local_dial]
+				number = abi_local
 			"The Campbells":
-				if (GlobalVariables.iterations >= 3):
-					dialogue.uniqueDialogue =  npcDialogue.campbellsDialogue[2][local_dial]
-				else:
-					dialogue.uniqueDialogue = npcDialogue.campbellsDialogue[GlobalVariables.iterations][local_dial]
-				
-				
-		await dialogueSig
+				number = camp_local
+		
+		if number >= 2:
+			dialogueMan(npc_name)
+			await dialogueSig
+		else: 
+			dialogueMan(npc_name)
+			await dialogueSig
+			dialogueMan(npc_name)
+			await dialogueSig
+			dialogueMan(npc_name)
+			await dialogueSig
+			
+
+
+	
+
+
+		await get_tree().create_timer(0.005).timeout
 		dialogue.toggle = false
-		local_dial = local_dial + 1
-		if local_dial == 3:
-			local_dial = 2
-		await get_tree().create_timer(0.5).timeout
 		talking = false
 		GlobalVariables.playerTalking = false
 	
@@ -68,7 +126,7 @@ func enter_dialogue():
 	
 	
 func _on_talk_detection_body_entered(body: Node3D) -> void:
-	if body.is_multiplayer_authority():	
+	if body.is_multiplayer_authority():
 		tutorial.interact = true
 		in_area = true
 		print("TRUE")
