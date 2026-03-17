@@ -7,7 +7,7 @@ var mailboxOpen := false
 var itemProduced := false
 var baseball_bat
 var flashlight
-const FLASHLIGHT = preload("res://flashlight.tscn")
+const FLASHLIGHT = preload("res://Assets/RandomObjects/flashlight/flashlight.tscn")
 const BAT_CLEAN = preload("res://GameLevelsETC/Items/bat_clean.tscn")
 
 # Called when the node enters the scene tree for the first time.

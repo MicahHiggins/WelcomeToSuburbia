@@ -20,8 +20,8 @@ const SERVER_ID: int = 1
 @export var snap_late_joiners_to_spawn: bool = true
 
 # Level Select scenes
-@export var level_1_scene: PackedScene = preload("res://SymbolPuzzle.tscn")
-@export var level_2_scene: PackedScene = preload("res://kidnap.tscn")
+@export var level_1_scene: PackedScene = preload("res://Assets/RandomObjects/symbol/SymbolPuzzle.tscn")
+@export var level_2_scene: PackedScene = preload("res://GameLevelsETC/kidnap.tscn")
 @export var level_3_scene: PackedScene = preload("res://GameLevelsETC/CellarLevel.tscn")
 
 # Cached
