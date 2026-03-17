@@ -1,0 +1,28 @@
+[gd_scene load_steps=5 format=3 uid="uid://ret8ne1fmk7l"]
+
+[ext_resource type="PackedScene" uid="uid://duxalja24m173" path="res://Assets/RandomObjects/road/Road.glb" id="1_x0d2t"]
+[ext_resource type="Texture2D" uid="uid://xvg1cgf6hqt3" path="res://Assets/textures/AsphaltColor.jpg" id="2_3veuu"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_bpeel"]
+albedo_color = Color(0.74558026, 0.7455802, 0.7455802, 1)
+albedo_texture = ExtResource("2_3veuu")
+albedo_texture_force_srgb = true
+uv1_scale = Vector3(1, 0.8, 20)
+uv1_triplanar = true
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_3veuu"]
+points = PackedVector3Array(1.2093332, -0.11638658, 1.6868038, 0.87325644, 0.15377788, 1.6868038, -1.2085254, -0.11638658, 1.6868038, 1.2093332, -0.11638658, -1, 0.87325644, 0.15377788, -1, -0.87339544, 0.15377788, 1.6868038, -1.2085254, -0.11638658, -1, -0.87339544, 0.15377788, -1)
+
+[node name="Road" instance=ExtResource("1_x0d2t")]
+transform = Transform3D(0.9156088, 0, 0, 0, 1, 0, 0, 0, 1.0095282, 0, 0, 0)
+
+[node name="Cube" parent="." index="0"]
+transform = Transform3D(0.23, 0, 0, 0, 0.037, 0, 0, 0, 6.066, -0.34271055, 0.004298715, -0.6171237)
+surface_material_override/0 = SubResource("StandardMaterial3D_bpeel")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="." index="1"]
+transform = Transform3D(0.89961517, 0, 0, 0, 1, 0, 0, 0, 0.9999998, -0.018110463, 0, 0)
+
+[node name="CollisionShape3D3" type="CollisionShape3D" parent="StaticBody3D" index="0"]
+transform = Transform3D(0.25598556, 0, 0, 0, 0.037060205, 0, 0, 0, 6.069557, -0.36082104, 0.004298715, -0.6171237)
+shape = SubResource("ConvexPolygonShape3D_3veuu")

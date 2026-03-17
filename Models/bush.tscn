@@ -1,6 +1,6 @@
 [gd_scene load_steps=8 format=3 uid="uid://b1rgyo68q67xe"]
 
-[ext_resource type="PackedScene" uid="uid://bhykn53crfp4l" path="res://Assets/Bush.glb" id="1_mms18"]
+[ext_resource type="PackedScene" uid="uid://bhykn53crfp4l" path="res://Assets/RandomObjects/bush/Bush.glb" id="1_mms18"]
 [ext_resource type="Texture2D" uid="uid://but80wsucm4q2" path="res://textures/GrassTextures/GrassAlbedo.png" id="2_nekqn"]
 [ext_resource type="Texture2D" uid="uid://ddugkbf5y7w64" path="res://textures/GrassTextures/GrassHeight.png" id="3_11555"]
 [ext_resource type="Texture2D" uid="uid://btkv156gx2ymr" path="res://textures/GrassTextures/GrassNormal.png" id="4_5mgjp"]

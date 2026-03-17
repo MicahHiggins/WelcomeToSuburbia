@@ -1,0 +1,15 @@
+[gd_scene load_steps=4 format=3 uid="uid://bwm6yq7ualh21"]
+
+[ext_resource type="PackedScene" uid="uid://t5k0iv6mkykf" path="res://Assets/RandomObjects/road/SidewalkCorner.glb" id="1_mymf7"]
+[ext_resource type="Texture2D" uid="uid://cctv7nnxx45nw" path="res://Assets/textures/Concrete.jpg" id="2_8bld7"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_8bld7"]
+albedo_color = Color(0.57254905, 0.5764706, 0.5764706, 1)
+albedo_texture = ExtResource("2_8bld7")
+uv1_triplanar = true
+
+[node name="SidewalkCorner" instance=ExtResource("1_mymf7")]
+
+[node name="Cube_001" parent="." index="0"]
+transform = Transform3D(0.098, 0, 0, 0, 0.059331726, 0, 0, 0, 0.098, 0, 0, 0)
+surface_material_override/0 = SubResource("StandardMaterial3D_8bld7")

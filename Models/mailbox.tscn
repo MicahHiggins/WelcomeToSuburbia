@@ -1,8 +1,8 @@
 [gd_scene load_steps=10 format=3 uid="uid://dggh2n0x6keit"]
 
-[ext_resource type="PackedScene" uid="uid://dkeq6crqg4wl7" path="res://Mailbox.glb" id="1_41uu1"]
+[ext_resource type="PackedScene" uid="uid://ci54frr2u8o1" path="res://Assets/RandomObjects/mailbox/Mailbox.glb" id="1_41uu1"]
 [ext_resource type="Script" uid="uid://dspp6638h3tyf" path="res://Models/mailbox.gd" id="2_g6tt7"]
-[ext_resource type="PackedScene" uid="uid://4oy37r6onjvw" path="res://MailboxLid.glb" id="2_hsgkm"]
+[ext_resource type="PackedScene" uid="uid://4oy37r6onjvw" path="res://Assets/RandomObjects/mailbox/MailboxLid.glb" id="2_hsgkm"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_41uu1"]
 size = Vector3(3, 3, 3)

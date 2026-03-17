@@ -1,7 +1,7 @@
 [gd_scene load_steps=7 format=3 uid="uid://dwgaejjewy8s5"]
 
 [ext_resource type="Script" uid="uid://bbitif1hr07eg" path="res://aidan_stuff/ui.gd" id="1_8pkb0"]
-[ext_resource type="Texture2D" uid="uid://dbjeeu2hjcp4e" path="res://Assets/Arrow.png" id="2_e0qpt"]
+[ext_resource type="Texture2D" uid="uid://dbjeeu2hjcp4e" path="res://Assets/Images/Arrow.png" id="2_e0qpt"]
 [ext_resource type="FontFile" uid="uid://g7ve53wy4c3c" path="res://addons/Font/MADE TOMMY Medium_PERSONAL USE.otf" id="3_q5pv1"]
 [ext_resource type="Script" uid="uid://cnfd8g3v8lobu" path="res://GameLevelsETC/pop_up.gd" id="4_n0eaf"]
 [ext_resource type="PackedScene" uid="uid://gxwo5ybv7v7s" path="res://Max's Folder (do not touch!!!)/DialogueManager/dialogue_manager.tscn" id="5_n0eaf"]

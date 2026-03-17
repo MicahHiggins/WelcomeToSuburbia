@@ -13,13 +13,13 @@ config_version=5
 config/name="WelcomeToSuburbia"
 run/main_scene="uid://babsyhm5jcfme"
 config/features=PackedStringArray("4.5", "GL Compatibility")
-config/icon="res://icon.svg"
+config/icon="res://Assets/Images/icon.svg"
 
 [autoload]
 
 GlobalVariables="*res://GlobalAutoloads/GlobalVariables.gd"
 AudioManager="*res://Audio/audio_manager.tscn"
-NetSceneManager="*res://net_scene_manager.gd"
+NetSceneManager="*res://Scripts/net_scene_manager.gd"
 
 [display]
 

@@ -1,6 +1,6 @@
 [gd_scene load_steps=6 format=3 uid="uid://bcggylgytgib6"]
 
-[ext_resource type="PackedScene" uid="uid://dpo5irto5t3y1" path="res://Assets/Dog.glb" id="1_vfhc1"]
+[ext_resource type="PackedScene" uid="uid://dpo5irto5t3y1" path="res://Assets/RandomObjects/dog/Dog.glb" id="1_vfhc1"]
 [ext_resource type="Script" uid="uid://bdqgvamowd717" path="res://Models/dog.gd" id="2_pxqof"]
 
 [sub_resource type="Animation" id="Animation_0w15p"]
