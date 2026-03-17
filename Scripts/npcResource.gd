@@ -87,7 +87,7 @@ func enter_dialogue():
 	var number = 0
 	GlobalVariables.playerTalking = true
 	if talking == false:
-		
+		#Input.set_mouse_mode(Input.MOUSE_MODE_CONFINED)
 		dialogue.uniqueName = npc_name
 		talking = true
 		dialogue.toggle = true
@@ -118,6 +118,7 @@ func enter_dialogue():
 
 
 		await get_tree().create_timer(0.005).timeout
+		#Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 		dialogue.toggle = false
 		talking = false
 		GlobalVariables.playerTalking = false
