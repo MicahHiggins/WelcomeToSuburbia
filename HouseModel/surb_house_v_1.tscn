@@ -1,4 +1,4 @@
-[gd_scene load_steps=24 format=4 uid="uid://c4o2j15yoqaln"]
+[gd_scene load_steps=25 format=4 uid="uid://c4o2j15yoqaln"]
 
 [ext_resource type="PackedScene" uid="uid://dyyrgnslnmmi4" path="res://HouseModel/SurbHouseV1.glb" id="1_aprdc"]
 [ext_resource type="Material" uid="uid://c00wwgi5uhgyp" path="res://Max's Folder (do not touch!!!)/Resources/Wood3.tres" id="2_8qxbv"]
@@ -201,6 +201,11 @@ size = Vector3(12.883652, 3.9062195, 18.191895)
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_en3fx"]
 albedo_color = Color(0.27171874, 0.16402343, 0.019963602, 1)
 
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_8qxbv"]
+custom_solver_bias = 0.395
+margin = 1.515
+points = PackedVector3Array(0, 0, 24.5, 18, 0, 24.5, 18, 0, 0, 0, 0, 0, 2, 2, 22, 16, 2, 22, 16, 2, 2, 2, 2, 2)
+
 [node name="SurbHouseV1" instance=ExtResource("1_aprdc")]
 transform = Transform3D(1.1501669, 0, 0, 0, 1.9063168, 0, 0, 0, 1.9063168, 0, 0.004610896, -0.00031781197)
 
@@ -295,3 +300,10 @@ shape = SubResource("BoxShape3D_8qxbv")
 transform = Transform3D(0.24874115, 0, 0, 0, 0.637585, 0, 0, 0, 0.79400903, -6.2112, 5.742269, 2.077075)
 mesh = SubResource("BoxMesh_8qxbv")
 surface_material_override/0 = SubResource("StandardMaterial3D_en3fx")
+
+[node name="Area3D" type="StaticBody3D" parent="." index="19"]
+transform = Transform3D(1, 0, 0, 0, 0.9999998, 0, 0, 0, 0.9999998, -17.132383, 0, -12.725131)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Area3D" index="0"]
+transform = Transform3D(1, 0, 0, 0, 0.99999994, 0, 0, 0, 0.99999994, 7.9900246, 0, 0)
+shape = SubResource("ConvexPolygonShape3D_8qxbv")

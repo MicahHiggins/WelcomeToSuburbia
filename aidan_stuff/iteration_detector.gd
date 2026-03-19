@@ -14,7 +14,7 @@ func _process(delta: float) -> void:
 	
 func my_timed_function():
 	#print("TESTSTEST")
-	timer.wait_time = 20
+	timer.wait_time = 60
 	timer.start()
 
 

@@ -17,7 +17,7 @@
 [ext_resource type="PackedScene" uid="uid://c23ew22eosded" path="res://Assets/RandomObjects/road/Short_sidewalk.tscn" id="10_rkcnq"]
 [ext_resource type="PackedScene" uid="uid://dexa2pmw4ua8t" path="res://Assets/RandomObjects/bush/Bush.tscn" id="12_x5kdk"]
 [ext_resource type="PackedScene" uid="uid://cxnlf1qokkhee" path="res://Assets/RandomObjects/streetlight/street_light.tscn" id="13_bcxsy"]
-[ext_resource type="Script" uid="uid://dbt273cudle2e" path="res://aidan_stuff/iteration_detector.gd" id="15_v0qsu"]
+[ext_resource type="Script" path="res://aidan_stuff/iteration_detector.gd" id="15_v0qsu"]
 [ext_resource type="PackedScene" uid="uid://d2rvqfwj71ucv" path="res://Assets/RandomObjects/billboard/billboard.tscn" id="18_vslbx"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_0wadw"]
