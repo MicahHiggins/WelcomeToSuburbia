@@ -1,4 +1,4 @@
-[gd_scene load_steps=26 format=3 uid="uid://r8vqf0qcnkdn"]
+[gd_scene load_steps=27 format=3 uid="uid://r8vqf0qcnkdn"]
 
 [ext_resource type="Script" uid="uid://4p6bc6ac8elf" path="res://aidan_stuff/block_design.gd" id="1_jmv40"]
 [ext_resource type="Texture2D" uid="uid://but80wsucm4q2" path="res://textures/GrassTextures/GrassAlbedo.png" id="2_bkv0n"]
@@ -15,10 +15,11 @@
 [ext_resource type="PackedScene" uid="uid://ret8ne1fmk7l" path="res://Assets/RandomObjects/road/road.tscn" id="9_milrp"]
 [ext_resource type="PackedScene" uid="uid://bwm6yq7ualh21" path="res://Assets/RandomObjects/road/sidewalk_corner.tscn" id="9_v0qsu"]
 [ext_resource type="PackedScene" uid="uid://c23ew22eosded" path="res://Assets/RandomObjects/road/Short_sidewalk.tscn" id="10_rkcnq"]
-[ext_resource type="PackedScene" uid="uid://dexa2pmw4ua8t" path="res://Assets/RandomObjects/bush/Bush.tscn" id="12_x5kdk"]
+[ext_resource type="PackedScene" uid="uid://dexa2pmw4ua8t" path="res://Assets/RandomObjects/Bush/Bush.tscn" id="12_x5kdk"]
 [ext_resource type="PackedScene" uid="uid://cxnlf1qokkhee" path="res://Assets/RandomObjects/streetlight/street_light.tscn" id="13_bcxsy"]
-[ext_resource type="Script" path="res://aidan_stuff/iteration_detector.gd" id="15_v0qsu"]
+[ext_resource type="Script" uid="uid://dbt273cudle2e" path="res://aidan_stuff/iteration_detector.gd" id="15_v0qsu"]
 [ext_resource type="PackedScene" uid="uid://d2rvqfwj71ucv" path="res://Assets/RandomObjects/billboard/billboard.tscn" id="18_vslbx"]
+[ext_resource type="PackedScene" uid="uid://bhne50eu8g2mb" path="res://Assets/RandomObjects/pineTree/pine_tree.tscn" id="20_u2ehm"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_0wadw"]
 albedo_color = Color(0.60271376, 0.7674062, 0.73615, 1)
@@ -2506,6 +2507,59 @@ transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 13.9
 shape = SubResource("BoxShape3D_milrp")
 
 [node name="Timer" type="Timer" parent="IterationDetector"]
+
+[node name="PineTrees" type="Node3D" parent="."]
+
+[node name="PineTree_BEFORE_JOIN" parent="PineTrees" instance=ExtResource("20_u2ehm")]
+transform = Transform3D(0.1, 0, 0, 0, 0.1, 0, 0, 0, 0.1, -4.54882, 0, 5.198498)
+
+[node name="PineTree_BEFORE_JOIN2" parent="PineTrees" instance=ExtResource("20_u2ehm")]
+transform = Transform3D(0.1, 0, 0, 0, 0.1, 0, 0, 0, 0.1, 3.2489228, 0, 6.148223)
+
+[node name="PineTree_BEFORE_JOIN3" parent="PineTrees" instance=ExtResource("20_u2ehm")]
+transform = Transform3D(0.08, 0, 0, 0, 0.08, 0, 0, 0, 0.08, -2.9492812, 0, -5.8483114)
+
+[node name="PineTree_BEFORE_JOIN4" parent="PineTrees" instance=ExtResource("20_u2ehm")]
+transform = Transform3D(0.1, 0, 0, 0, 0.1, 0, 0, 0, 0.1, 3.2989068, 0, -5.3984423)
+
+[node name="PineTree_BEFORE_JOIN5" parent="PineTrees" instance=ExtResource("20_u2ehm")]
+transform = Transform3D(0.08, 0, 0, 0, 0.08, 0, 0, 0, 0.08, 0.59968615, 0, 5.198498)
+
+[node name="PineTree_BEFORE_JOIN6" parent="PineTrees" instance=ExtResource("20_u2ehm")]
+transform = Transform3D(0.08, 0, 0, 0, 0.08, 0, 0, 0, 0.08, 6.8978662, 0, 11.74661)
+
+[node name="PineTree_BEFORE_JOIN17" parent="PineTrees" instance=ExtResource("20_u2ehm")]
+transform = Transform3D(0.08, 0, 0, 0, 0.08, 0, 0, 0, 0.08, -6.9481306, 0, 11.046811)
+
+[node name="PineTree_BEFORE_JOIN7" parent="PineTrees" instance=ExtResource("20_u2ehm")]
+transform = Transform3D(0.08, 0, 0, 0, 0.08, 0, 0, 0, 0.08, 5.148379, 0, -11.646638)
+
+[node name="PineTree_BEFORE_JOIN8" parent="PineTrees" instance=ExtResource("20_u2ehm")]
+transform = Transform3D(0.08, 0, 0, 0, 0.08, 0, 0, 0, 0.08, 11.896421, 0, -5.3984423)
+
+[node name="PineTree_BEFORE_JOIN9" parent="PineTrees" instance=ExtResource("20_u2ehm")]
+transform = Transform3D(0.08, 0, 0, 0, 0.08, 0, 0, 0, 0.08, 11.296598, 0, 0.64980984)
+
+[node name="PineTree_BEFORE_JOIN10" parent="PineTrees" instance=ExtResource("20_u2ehm")]
+transform = Transform3D(0.08, 0, 0, 0, 0.08, 0, 0, 0, 0.08, -11.096937, 0, -3.199077)
+
+[node name="PineTree_BEFORE_JOIN11" parent="PineTrees" instance=ExtResource("20_u2ehm")]
+transform = Transform3D(0.08, 0, 0, 0, 0.08, 0, 0, 0, 0.08, -11.446833, 0, 2.8491752)
+
+[node name="PineTree_BEFORE_JOIN12" parent="PineTrees" instance=ExtResource("20_u2ehm")]
+transform = Transform3D(0.1, 0, 0, 0, 0.1, 0, 0, 0, 0.1, -6.698204, 0, -11.746608)
+
+[node name="PineTree_BEFORE_JOIN13" parent="PineTrees" instance=ExtResource("20_u2ehm")]
+transform = Transform3D(0.1, 0, 0, 0, 0.1, 0, 0, 0, 0.1, -6.898144, 0, -5.6983557)
+
+[node name="PineTree_BEFORE_JOIN14" parent="PineTrees" instance=ExtResource("20_u2ehm")]
+transform = Transform3D(0.1, 0, 0, 0, 0.1, 0, 0, 0, 0.1, -3.149231, 0, 0.5498414)
+
+[node name="PineTree_BEFORE_JOIN15" parent="PineTrees" instance=ExtResource("20_u2ehm")]
+transform = Transform3D(0.1, 0, 0, 0, 0.1, 0, 0, 0, 0.1, 1.0495567, 0, -11.196767)
+
+[node name="PineTree_BEFORE_JOIN16" parent="PineTrees" instance=ExtResource("20_u2ehm")]
+transform = Transform3D(0.1, 0, 0, 0, 0.1, 0, 0, 0, 0.1, 0.849617, 0, -0.8997407)
 
 [connection signal="body_entered" from="LoadingSystem" to="." method="_on_area_3d_body_entered"]
 [connection signal="body_exited" from="LoadingSystem" to="." method="_on_area_3d_body_exited"]

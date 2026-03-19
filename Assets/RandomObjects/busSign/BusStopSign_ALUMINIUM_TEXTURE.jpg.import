@@ -2,17 +2,20 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://doppa8idscy4c"
-path.s3tc="res://.godot/imported/BushColor.jpg-90372730e889dbee7947ab6282b73f5f.s3tc.ctex"
+uid="uid://cm65dgbux1v60"
+path.s3tc="res://.godot/imported/BusStopSign_ALUMINIUM_TEXTURE.jpg-0ce0cc2c860886b77b40fefa6412e2c1.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
 }
+generator_parameters={
+"md5": "f462aac30e0faee2de9f26f585152d8a"
+}
 
 [deps]
 
-source_file="res://Assets/RandomObjects/Bush/BushColor.jpg"
-dest_files=["res://.godot/imported/BushColor.jpg-90372730e889dbee7947ab6282b73f5f.s3tc.ctex"]
+source_file="res://Assets/RandomObjects/busSign/BusStopSign_ALUMINIUM_TEXTURE.jpg"
+dest_files=["res://.godot/imported/BusStopSign_ALUMINIUM_TEXTURE.jpg-0ce0cc2c860886b77b40fefa6412e2c1.s3tc.ctex"]
 
 [params]
 

@@ -2,17 +2,20 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://doppa8idscy4c"
-path.s3tc="res://.godot/imported/BushColor.jpg-90372730e889dbee7947ab6282b73f5f.s3tc.ctex"
+uid="uid://dbw0r0u5jr886"
+path.s3tc="res://.godot/imported/BUS_BlackMetalColor.jpg-44dc25141c474b845473ecf57aa2ee2b.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
 }
+generator_parameters={
+"md5": "abf09f2150416b74fed35e44fe320d34"
+}
 
 [deps]
 
-source_file="res://Assets/RandomObjects/Bush/BushColor.jpg"
-dest_files=["res://.godot/imported/BushColor.jpg-90372730e889dbee7947ab6282b73f5f.s3tc.ctex"]
+source_file="res://Assets/RandomObjects/bus/BUS_BlackMetalColor.jpg"
+dest_files=["res://.godot/imported/BUS_BlackMetalColor.jpg-44dc25141c474b845473ecf57aa2ee2b.s3tc.ctex"]
 
 [params]
 

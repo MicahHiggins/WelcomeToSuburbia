@@ -2,17 +2,20 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://doppa8idscy4c"
-path.s3tc="res://.godot/imported/BushColor.jpg-90372730e889dbee7947ab6282b73f5f.s3tc.ctex"
+uid="uid://c2tkt7ayhe7l2"
+path.s3tc="res://.godot/imported/BusStopSign_BusStopSign.png-36e590e40a5ed5a2b666c14579b6beb7.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
 }
+generator_parameters={
+"md5": "5312c2f8a0befdc7df5023c91185d8b0"
+}
 
 [deps]
 
-source_file="res://Assets/RandomObjects/Bush/BushColor.jpg"
-dest_files=["res://.godot/imported/BushColor.jpg-90372730e889dbee7947ab6282b73f5f.s3tc.ctex"]
+source_file="res://Assets/RandomObjects/busSign/BusStopSign_BusStopSign.png"
+dest_files=["res://.godot/imported/BusStopSign_BusStopSign.png-36e590e40a5ed5a2b666c14579b6beb7.s3tc.ctex"]
 
 [params]
 
