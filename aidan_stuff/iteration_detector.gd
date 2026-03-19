@@ -5,6 +5,7 @@ var toggle_detection
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
+	timer.wait_time = 30
 	toggle_detection = true
 
 
@@ -14,7 +15,7 @@ func _process(delta: float) -> void:
 	
 func my_timed_function():
 	#print("TESTSTEST")
-	timer.wait_time = 60
+	timer.wait_time = 1000
 	timer.start()
 
 
@@ -26,13 +27,15 @@ func my_timed_function():
 func _on_timer_timeout() -> void:
 	toggle_detection = true
 	
+	
 
 
 func _on_body_entered(body: Node3D) -> void:
 	#print("TSTTST")
 	if toggle_detection == true:
-		print(GlobalVariables.iterations)
+		print("Before Iter: ", GlobalVariables.iterations)
 		my_timed_function()
-		GlobalVariables.iterations = GlobalVariables.iterations + 1
+		GlobalVariables.iterations += 1
+		print("After Iter: ", GlobalVariables.iterations)
 		toggle_detection = false
 		

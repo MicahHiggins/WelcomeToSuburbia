@@ -22,10 +22,18 @@ signal dialogueSig
 var local_dial := 0
 
 func _ready():
-	pass
+	
+	#global signal connection
+	questHub.iteration_changed.connect(iterationChange)
+
+#detects iteration change within dialogue
+func iterationChange(value: int):
+	bob_local = 0
+	abi_local = 0
+	camp_local = 0
+	
 	
 
-	#label.text = dialogue_id.replace("\\n", "\n")
 func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("interact"):
 		dialogueSig.emit()
@@ -61,8 +69,6 @@ func campDial():
 		camp_local += 1
 		
 func dialogueMan(npc_name):
-
-	
 	match(npc_name):
 			"Bob":
 				if bob_local == 3:
@@ -71,7 +77,7 @@ func dialogueMan(npc_name):
 				
 			"Abigail":
 				if abi_local == 3:
-					bob_local = 2
+					abi_local = 2
 				abiDial()
 			
 			"The Campbells":

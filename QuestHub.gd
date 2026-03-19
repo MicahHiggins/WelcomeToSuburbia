@@ -1,20 +1,36 @@
 extends Node2D
 
+class_name questHub
 
+
+signal iterationManipulation(value: int)
+
+static var singleton := questHub.new()
+static var iteration_changed := Signal(singleton, "iterationManipulation")
+
+func set_value(new_value: int) -> void:
+	# ... update state ...
+	iteration_changed.emit(new_value)
 
 #Ok lets do this
 
 #First Iteration:
 #UI marker - "Find Home (130)"
-
 #Abigal: Greets and welcomes player
 #Campbell: Greets and Welcomes player (w/ dog)
 #Bob: Greets the Player
 #house 104 HOA: stares
 #Issac: silence
+#Trigger: Going into the next iteration via collision (timer 60 seconds)
  
 
 #2nd Iteration
+#UI marker - "Find Home (130)"
+#Abigal: Greets and welcomes player
+#Campbell: Greets and Welcomes player (w/ dog)
+#Bob: Greets the Player
+#house 104 HOA: stares
+#Issac: silence
 #Pass 124 with heartbeat loud and cool visuals
 
 #3rd Iteration
