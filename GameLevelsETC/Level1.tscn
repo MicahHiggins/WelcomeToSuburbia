@@ -23,7 +23,7 @@ sun_curve = 0.058843866
 sky_material = SubResource("ProceduralSkyMaterial_ki0f2")
 radiance_size = 2
 
-[sub_resource type="Environment" id="Environment_f8w8m"]
+[sub_resource type="Environment" id="Environment_d084q"]
 background_mode = 2
 background_intensity = 100000.0
 sky = SubResource("Sky_wg6gn")
@@ -44,7 +44,7 @@ fog_sky_affect = 0.99
 fog_height_density = 1.0
 fog_depth_curve = 0.00023582489
 fog_depth_begin = 60.0
-fog_depth_end = 75.0
+fog_depth_end = 90.0
 volumetric_fog_density = 1.0
 volumetric_fog_albedo = Color(0.4862745, 1, 0.95686275, 1)
 volumetric_fog_emission = Color(1, 1, 0.5647059, 1)
@@ -64,35 +64,11 @@ auto_exposure_min_sensitivity = 8.01
 
 [sub_resource type="Animation" id="Animation_wg6gn"]
 length = 0.001
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("WorldEnvironment:environment:fog_light_color")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [Color(0, 0.6039216, 0.99215686, 1)]
-}
 
 [sub_resource type="Animation" id="Animation_3nbob"]
 resource_name = "fog_cycle"
 length = 60.0
 loop_mode = 1
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("WorldEnvironment:environment:fog_light_color")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0, 14.99, 29.99, 45, 60),
-"transitions": PackedFloat32Array(1, 1, 1, 1, 1),
-"update": 0,
-"values": [Color(0, 0.6039216, 0.99215686, 1), Color(0.21960784, 0.45882353, 0.99215686, 1), Color(0, 0.6039216, 0.99215686, 1), Color(0, 0.60784316, 0.75686276, 1), Color(0, 0.6039216, 0.99215686, 1)]
-}
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_nlm5m"]
 _data = {
@@ -117,12 +93,16 @@ transform = Transform3D(-1, -8.742278e-08, 0, 5.2612343e-08, -0.60181504, 0.7986
 light_energy = 0.0
 
 [node name="WorldEnvironment" parent="." node_paths=PackedStringArray("sun_ref") instance=ExtResource("3_jo2a5")]
-environment = SubResource("Environment_f8w8m")
+environment = SubResource("Environment_d084q")
 camera_attributes = SubResource("CameraAttributesPractical_qo5hu")
 script = ExtResource("4_d084q")
 sun_ref = NodePath("../DirectionalLight3D")
 response_speed = 0.6
 min_fog_multiplier = 0.0
+start_depth_begin = 70.0
+cycle_speed = 0.2
+red_shift_strength = 1.0
+pulse_speed = 1.0
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="WorldEnvironment"]
 root_node = NodePath("../..")

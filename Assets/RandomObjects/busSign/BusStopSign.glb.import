@@ -3,13 +3,13 @@
 importer="scene"
 importer_version=1
 type="PackedScene"
-uid="uid://bhykn53crfp4l"
-path="res://.godot/imported/Bush.glb-83c99833446ff49de1cfc6ab1fb984f9.scn"
+uid="uid://cskgr0kqw80ro"
+path="res://.godot/imported/BusStopSign.glb-84757eec4bf79fb41e867dcdc9c7c819.scn"
 
 [deps]
 
-source_file="res://Assets/RandomObjects/Bush/Bush.glb"
-dest_files=["res://.godot/imported/Bush.glb-83c99833446ff49de1cfc6ab1fb984f9.scn"]
+source_file="res://Assets/RandomObjects/busSign/BusStopSign.glb"
+dest_files=["res://.godot/imported/BusStopSign.glb-84757eec4bf79fb41e867dcdc9c7c819.scn"]
 
 [params]
 

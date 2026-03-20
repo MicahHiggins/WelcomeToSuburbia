@@ -2,17 +2,20 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://doppa8idscy4c"
-path.s3tc="res://.godot/imported/BushColor.jpg-90372730e889dbee7947ab6282b73f5f.s3tc.ctex"
+uid="uid://c30bass0uhfmo"
+path.s3tc="res://.godot/imported/PineTree_BEFORE_JOIN_PineLeafV2.png-61cfccca54a1063959048a5bad5d9310.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
 }
+generator_parameters={
+"md5": "7017c5d5e22eb0a2cc0f63f9e8e5f406"
+}
 
 [deps]
 
-source_file="res://Assets/RandomObjects/Bush/BushColor.jpg"
-dest_files=["res://.godot/imported/BushColor.jpg-90372730e889dbee7947ab6282b73f5f.s3tc.ctex"]
+source_file="res://Assets/RandomObjects/pineTree/PineTree_BEFORE_JOIN_PineLeafV2.png"
+dest_files=["res://.godot/imported/PineTree_BEFORE_JOIN_PineLeafV2.png-61cfccca54a1063959048a5bad5d9310.s3tc.ctex"]
 
 [params]
 

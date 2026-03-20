@@ -1,7 +1,7 @@
 [gd_scene load_steps=5 format=3 uid="uid://dexa2pmw4ua8t"]
 
-[ext_resource type="PackedScene" uid="uid://bhykn53crfp4l" path="res://Assets/RandomObjects/bush/Bush.glb" id="1_luc60"]
-[ext_resource type="Texture2D" uid="uid://doppa8idscy4c" path="res://Assets/RandomObjects/bush/BushColor.jpg" id="2_58dsv"]
+[ext_resource type="PackedScene" uid="uid://bhykn53crfp4l" path="res://Assets/RandomObjects/Bush/Bush.glb" id="1_luc60"]
+[ext_resource type="Texture2D" uid="uid://doppa8idscy4c" path="res://Assets/RandomObjects/Bush/BushColor.jpg" id="2_58dsv"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_vuovt"]
 albedo_color = Color(0.39215687, 0.7137255, 0.5254902, 1)
