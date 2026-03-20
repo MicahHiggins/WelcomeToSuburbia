@@ -1,0 +1,16 @@
+[gd_scene load_steps=3 format=3 uid="uid://bjq42iea72mgn"]
+
+[ext_resource type="Script" uid="uid://b8tctri7cie6u" path="res://heart_beat_detector.gd" id="1_tr127"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_tr127"]
+radius = 3.0
+
+[node name="heartBeatDetector" type="Area3D"]
+collision_layer = 0
+collision_mask = 8
+script = ExtResource("1_tr127")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("SphereShape3D_tr127")
+
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]

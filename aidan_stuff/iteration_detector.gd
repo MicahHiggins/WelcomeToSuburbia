@@ -8,34 +8,38 @@ func _ready() -> void:
 	timer.wait_time = 30
 	toggle_detection = true
 
-
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta: float) -> void:
-	pass
+#Little mech for 1st iteration! Placeholder/debugging
 	
 func my_timed_function():
-	#print("TESTSTEST")
-	timer.wait_time = 1000
-	timer.start()
+	print("IterationDQ1")
+	questHub.it_change()
+	queue_free()
+	#Might use for differnt ints!
+	#timer.wait_time = 1000
+	#timer.start()
 
 
 
 
 
 
-
-func _on_timer_timeout() -> void:
-	toggle_detection = true
+#
+#func _on_timer_timeout() -> void:
+	#toggle_detection = true
 	
 	
 
 
 func _on_body_entered(body: Node3D) -> void:
-	#print("TSTTST")
-	if toggle_detection == true:
-		print("Before Iter: ", GlobalVariables.iterations)
-		my_timed_function()
-		GlobalVariables.iterations += 1
-		print("After Iter: ", GlobalVariables.iterations)
-		toggle_detection = false
+	#print("WHAT THE FUCK")
+	if body.is_in_group("player"):
+		
+		if toggle_detection == true:
+			toggle_detection = false
+			print("Before Iter1: ", GlobalVariables.iterations)
+			GlobalVariables.iterations += 1
+			my_timed_function()
+			
+			print("After Iter2 ", GlobalVariables.iterations)
+		
 		

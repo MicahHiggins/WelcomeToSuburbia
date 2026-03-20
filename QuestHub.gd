@@ -5,12 +5,20 @@ class_name questHub
 
 signal iterationManipulation(value: int)
 
+
+ # Global signal
 static var singleton := questHub.new()
 static var iteration_changed := Signal(singleton, "iterationManipulation")
 
-func set_value(new_value: int) -> void:
-	# ... update state ...
-	iteration_changed.emit(new_value)
+#func set_value(new_value: int) -> void:
+	## ... update state ...
+	#iteration_changed.emit(GlobalVariables.iterations)
+	#
+	
+static func it_change():
+	print("HowMany?")
+	iteration_changed.emit(GlobalVariables.iterations)
+
 
 #Ok lets do this
 
@@ -26,7 +34,7 @@ func set_value(new_value: int) -> void:
 
 #2nd Iteration
 #UI marker - "Find Home (130)"
-#Abigal: Greets and welcomes player
+#Abigal: Dialogue Change
 #Campbell: Greets and Welcomes player (w/ dog)
 #Bob: Greets the Player
 #house 104 HOA: stares

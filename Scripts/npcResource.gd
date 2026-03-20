@@ -28,6 +28,8 @@ func _ready():
 
 #detects iteration change within dialogue
 func iterationChange(value: int):
+	#print("NPC RESOURCE: iteration ", value)
+
 	bob_local = 0
 	abi_local = 0
 	camp_local = 0
