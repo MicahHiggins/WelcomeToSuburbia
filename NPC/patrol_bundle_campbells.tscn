@@ -1,8 +1,9 @@
-[gd_scene load_steps=4 format=3 uid="uid://wa1g4ojo4bnp"]
+[gd_scene load_steps=5 format=3 uid="uid://wa1g4ojo4bnp"]
 
 [ext_resource type="Script" uid="uid://b8lerjmagqkl4" path="res://GameLevelsETC/patrol_path.gd" id="1_5k6rd"]
 [ext_resource type="PackedScene" uid="uid://c11d0ync6fj8o" path="res://NPC/npc_campbells.tscn" id="2_bvngj"]
 [ext_resource type="AudioStream" uid="uid://cqelxa4fjpjps" path="res://Audio/SFX/toddlerCrying.wav" id="3_5k6rd"]
+[ext_resource type="Script" uid="uid://c1bnlyaj1lygf" path="res://NPC/audio_cue.gd" id="3_bvngj"]
 
 [node name="PatrolBundleCampbells" type="Node3D"]
 
@@ -24,9 +25,18 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.415075, 0.48744488, 9.08125
 [node name="NPC_Campbells" parent="." instance=ExtResource("2_bvngj")]
 transform = Transform3D(0.25, 0, 0, 0, 0.25, 0, 0, 0, 0.25, -0.9027457, 0.4424472, -9.722223)
 
-[node name="AudioCue" type="Node3D" parent="."]
+[node name="AudioCue" type="Node3D" parent="NPC_Campbells"]
+transform = Transform3D(4, 0, 0, 0, 4, 0, 0, 0, 4, 3.610983, -1.7697887, 38.888893)
+script = ExtResource("3_bvngj")
 
-[node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="AudioCue"]
+[node name="toddlerCrying" type="AudioStreamPlayer3D" parent="NPC_Campbells/AudioCue"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.9622278, 0, -10.077015)
 stream = ExtResource("3_5k6rd")
+attenuation_model = 2
+volume_db = -8.542
+unit_size = 78.66
+max_db = -6.233
+max_distance = 81.3
+bus = &"SFX"
 
 [editable path="NPC_Campbells"]

@@ -12,6 +12,8 @@ extends CanvasLayer
 @export var hide_when_close_m: float = 1.5
 @export var show_distance: bool = true
 
+@onready var objectives: Label = $CurrObj/Objectives
+
 # Layout tuning (pixels) — not used here (you said you'll position it yourself)
 @export var arrow_top_margin: float = 22.0
 @export var distance_gap: float = 6.0
@@ -30,6 +32,8 @@ var cam: Camera3D
 
 
 func _ready() -> void:
+	questHub.iteration_changed.connect(iterationChange)
+	objectives.text = "Find Your Way Home (130)"
 	player = get_parent() as CharacterBody3D
 	
 	#UI menu toggle
@@ -62,6 +66,10 @@ func _ready() -> void:
 	_update_labels()
 
 
+#Iteration change (ref questHub.gd)
+func iterationChange(value: int):
+	if value == 2:
+		objectives.text = objectives.text + "\n Investigate the Crying (Campbells)"
 func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("quit"):
 		if esc_toggle:
@@ -75,6 +83,8 @@ func _make_hud_ignore_mouse() -> void:
 		partner_arrow.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	if distance_label != null:
 		distance_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+
+
 
 # NEW: pivot/rotation center fix
 func _fix_arrow_pivot() -> void:
