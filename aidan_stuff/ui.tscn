@@ -94,7 +94,7 @@ theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_constants/outline_size = 6
 theme_override_fonts/font = ExtResource("3_q5pv1")
 theme_override_font_sizes/font_size = 30
-text = "Press \"f\" to interact"
+text = "Press \"F\" to interact"
 script = ExtResource("4_n0eaf")
 metadata/_edit_use_anchors_ = true
 

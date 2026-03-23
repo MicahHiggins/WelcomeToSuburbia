@@ -1,4 +1,4 @@
-[gd_scene load_steps=27 format=3 uid="uid://r8vqf0qcnkdn"]
+[gd_scene load_steps=28 format=3 uid="uid://r8vqf0qcnkdn"]
 
 [ext_resource type="Script" uid="uid://4p6bc6ac8elf" path="res://aidan_stuff/block_design.gd" id="1_jmv40"]
 [ext_resource type="Texture2D" uid="uid://but80wsucm4q2" path="res://textures/GrassTextures/GrassAlbedo.png" id="2_bkv0n"]
@@ -15,7 +15,7 @@
 [ext_resource type="PackedScene" uid="uid://ret8ne1fmk7l" path="res://Assets/RandomObjects/road/road.tscn" id="9_milrp"]
 [ext_resource type="PackedScene" uid="uid://bwm6yq7ualh21" path="res://Assets/RandomObjects/road/sidewalk_corner.tscn" id="9_v0qsu"]
 [ext_resource type="PackedScene" uid="uid://c23ew22eosded" path="res://Assets/RandomObjects/road/Short_sidewalk.tscn" id="10_rkcnq"]
-[ext_resource type="PackedScene" uid="uid://dexa2pmw4ua8t" path="res://Assets/RandomObjects/Bush/Bush.tscn" id="12_x5kdk"]
+[ext_resource type="PackedScene" uid="uid://dexa2pmw4ua8t" path="res://Assets/RandomObjects/bush/Bush.tscn" id="12_x5kdk"]
 [ext_resource type="PackedScene" uid="uid://cxnlf1qokkhee" path="res://Assets/RandomObjects/streetlight/street_light.tscn" id="13_bcxsy"]
 [ext_resource type="Script" uid="uid://dbt273cudle2e" path="res://aidan_stuff/iteration_detector.gd" id="15_v0qsu"]
 [ext_resource type="PackedScene" uid="uid://d2rvqfwj71ucv" path="res://Assets/RandomObjects/billboard/billboard.tscn" id="18_vslbx"]
@@ -2471,28 +2471,28 @@ transform = Transform3D(-1.1049919, 0, 8.742278e-08, 0, 1, 0, -9.660147e-08, 0, 
 [node name="Streetlights" type="Node3D" parent="."]
 
 [node name="StreetLight" parent="Streetlights" instance=ExtResource("13_bcxsy")]
-transform = Transform3D(0.4, 0, 0, 0, 0.4, 0, 0, 0, 0.4, -9.963349, -0.16863859, 0.044979036)
+transform = Transform3D(0.4, 0, 0, 0, 0.4, 0, 0, 0, 0.4, -10.002905, -0.16863859, 0.044979036)
 
 [node name="StreetLight2" parent="Streetlights" instance=ExtResource("13_bcxsy")]
-transform = Transform3D(0.4, 0, 0, 0, 0.4, 0, 0, 0, 0.4, -9.963349, -0.16863859, 9.915795)
+transform = Transform3D(0.4, 0, 0, 0, 0.4, 0, 0, 0, 0.4, -10.066897, -0.16863859, 10.109241)
 
 [node name="StreetLight3" parent="Streetlights" instance=ExtResource("13_bcxsy")]
-transform = Transform3D(0.4, 0, 0, 0, 0.4, 0, 0, 0, 0.4, 0.1052115, -0.16863859, 9.915795)
+transform = Transform3D(0.4, 0, 0, 0, 0.4, 0, 0, 0, 0.4, 0.1052115, -0.16863859, 10.0388155)
 
 [node name="StreetLight4" parent="Streetlights" instance=ExtResource("13_bcxsy")]
-transform = Transform3D(0.4, 0, 0, 0, 0.4, 0, 0, 0, 0.4, 9.97477, -0.16863859, 9.915795)
+transform = Transform3D(0.4, 0, 0, 0, 0.4, 0, 0, 0, 0.4, 10.043525, -0.16863859, 10.11008)
 
 [node name="StreetLight5" parent="Streetlights" instance=ExtResource("13_bcxsy")]
 transform = Transform3D(0.4, 0, 0, 0, 0.4, 0, 0, 0, 0.4, 9.97477, -0.16863859, -0.08211899)
 
 [node name="StreetLight6" parent="Streetlights" instance=ExtResource("13_bcxsy")]
-transform = Transform3D(0.4, 0, 0, 0, 0.4, 0, 0, 0, 0.4, 9.97477, -0.16863859, -9.929425)
+transform = Transform3D(0.4, 0, 0, 0, 0.4, 0, 0, 0, 0.4, 10.046109, -0.16863859, -10.069428)
 
 [node name="StreetLight7" parent="Streetlights" instance=ExtResource("13_bcxsy")]
-transform = Transform3D(0.4, 0, 0, 0, 0.4, 0, 0, 0, 0.4, -0.059417486, -0.16863859, -9.929425)
+transform = Transform3D(0.4, 0, 0, 0, 0.4, 0, 0, 0, 0.4, -0.059417486, -0.16863859, -9.998255)
 
 [node name="StreetLight8" parent="Streetlights" instance=ExtResource("13_bcxsy")]
-transform = Transform3D(0.4, 0, 0, 0, 0.4, 0, 0, 0, 0.4, -9.93085, -0.16863859, -9.929425)
+transform = Transform3D(0.4, 0, 0, 0, 0.4, 0, 0, 0, 0.4, -10.043162, -0.16863859, -10.084398)
 
 [node name="IterationDetector" type="Area3D" parent="."]
 collision_layer = 0
@@ -2514,6 +2514,7 @@ shape = SubResource("BoxShape3D_milrp")
 [node name="heartBeatDetector" parent="AudioCues" instance=ExtResource("20_u2ehm")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.692812, 1.4082727, 10.9122305)
 priority = 1
+
 [node name="PineTrees" type="Node3D" parent="."]
 
 [node name="PineTree_BEFORE_JOIN" parent="PineTrees" instance=ExtResource("21_u2ehm")]
