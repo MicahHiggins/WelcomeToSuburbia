@@ -46,10 +46,11 @@ func _input(event: InputEvent) -> void:
 func bobDial():
 		if (GlobalVariables.iterations >= 2):
 			dialogue.uniqueDialogue =  npcDialogue.bobDialogue[2][bob_local]
+			
 		else:
 			dialogue.uniqueDialogue = npcDialogue.bobDialogue[GlobalVariables.iterations][bob_local]
-			bob_local += 1
-		
+			
+		bob_local += 1
 		
 		print(bob_local)
 		
