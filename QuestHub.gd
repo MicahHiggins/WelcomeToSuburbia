@@ -15,6 +15,7 @@ static var iteration_changed := Signal(singleton, "iterationManipulation")
 	#iteration_changed.emit(GlobalVariables.iterations)
 	#
 	
+#can call this function anywhere for it to be triggered
 static func it_change():
 	print("HowMany?")
 	iteration_changed.emit(GlobalVariables.iterations)
