@@ -12,6 +12,7 @@ func _ready() -> void:
 	
 func my_timed_function():
 	print("IterationDQ1")
+	GlobalVariables.iterations += 1
 	questHub.it_change()
 	queue_free()
 	#Might use for differnt ints!
@@ -37,7 +38,7 @@ func _on_body_entered(body: Node3D) -> void:
 		if toggle_detection == true:
 			toggle_detection = false
 			print("Before Iter1: ", GlobalVariables.iterations)
-			GlobalVariables.iterations += 1
+			
 			my_timed_function()
 			
 			print("After Iter2 ", GlobalVariables.iterations)

@@ -1,0 +1,27 @@
+[gd_scene load_steps=2 format=3 uid="uid://b3tivaphj7o57"]
+
+[ext_resource type="Script" uid="uid://qpid2qt5mt4e" path="res://aidan_stuff/button_4_iteration.gd" id="1_ggpet"]
+
+[node name="IterationChanngeButton" type="Control"]
+layout_mode = 3
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+grow_horizontal = 2
+size_flags_vertical = 0
+script = ExtResource("1_ggpet")
+
+[node name="Button" type="Button" parent="."]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -72.0
+offset_top = 74.0
+offset_right = 73.0
+offset_bottom = 105.0
+grow_horizontal = 2
+text = "Increase Iteration
+"
+
+[connection signal="pressed" from="Button" to="." method="_on_button_pressed"]

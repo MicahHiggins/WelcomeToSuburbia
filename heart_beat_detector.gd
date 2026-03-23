@@ -11,9 +11,7 @@ func _ready() -> void:
 	questHub.iteration_changed.connect(iterationChange)
 
 
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta: float) -> void:
-	pass
+
 
 
 func iterationChange(value: int):
@@ -23,7 +21,7 @@ func iterationChange(value: int):
 		collision_shape_3d.set_deferred("disabled", false) 
 	elif value > 1:
 		queue_free()
-		print("itereationChanged! Heartbeat! Error!")
+		print("itereationChanged! Heartbeat! Error/DQ!")
 			
 func _on_body_entered(body: Node3D) -> void:
 	if body.is_multiplayer_authority() && body.is_in_group("player"):
