@@ -1,6 +1,6 @@
 [gd_scene load_steps=14 format=3 uid="uid://c2ocvg8ruxbbg"]
 
-[ext_resource type="Script" path="res://GameLevelsETC/lobby_manager.gd" id="1_l5n62"]
+[ext_resource type="Script" uid="uid://dywhk2ngguw7a" path="res://GameLevelsETC/lobby_manager.gd" id="1_l5n62"]
 [ext_resource type="Script" uid="uid://l6pyeyjgkntn" path="res://GameLevelsETC/item_manager.gd" id="1_lbg40"]
 [ext_resource type="PackedScene" uid="uid://bs72ogkvdd7d6" path="res://addons/proto_controller/proto_controller.tscn" id="2_6bcdd"]
 [ext_resource type="PackedScene" uid="uid://bsrc4sxs0q266" path="res://Assets/RandomObjects/flashlight/flashlight.tscn" id="2_7dwkj"]
@@ -10,7 +10,7 @@
 [ext_resource type="PackedScene" uid="uid://d1ibgfwne281y" path="res://GameLevelsETC/Level1.tscn" id="6_6bcdd"]
 [ext_resource type="Texture2D" uid="uid://bh8hkhotm6bbc" path="res://Assets/Images/Suburbia1.jpg" id="8_6bcdd"]
 [ext_resource type="Texture2D" uid="uid://3i53ybhtpc0f" path="res://Assets/Images/—Pngtree—vector copy icon_4013516.png" id="9_7i78e"]
-[ext_resource type="Script" path="res://GameLevelsETC/player_spawner.gd" id="9_nqjqn"]
+[ext_resource type="Script" uid="uid://744qvh7h6rs5" path="res://GameLevelsETC/player_spawner.gd" id="9_nqjqn"]
 [ext_resource type="FontFile" uid="uid://g7ve53wy4c3c" path="res://addons/Font/MADE TOMMY Medium_PERSONAL USE.otf" id="10_nqjqn"]
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_fan4m"]
@@ -82,6 +82,14 @@ offset_top = 461.0
 offset_right = 781.0
 offset_bottom = 492.0
 text = "Join
+"
+
+[node name="quit2" type="Button" parent="Menu/CanvasLayer"]
+offset_left = 26.0
+offset_top = 24.0
+offset_right = 148.0
+offset_bottom = 111.0
+text = "Quit
 "
 
 [node name="joinCode" type="LineEdit" parent="Menu/CanvasLayer"]
@@ -163,6 +171,7 @@ text = "Level 3"
 
 [connection signal="pressed" from="Menu/CanvasLayer/Host" to="LobbyManager" method="_on_host_pressed"]
 [connection signal="pressed" from="Menu/CanvasLayer/Join" to="LobbyManager" method="_on_join_pressed"]
+[connection signal="pressed" from="Menu/CanvasLayer/quit2" to="LobbyManager" method="_on_pause_quit_pressed"]
 [connection signal="pressed" from="Menu/pause/quit" to="LobbyManager" method="_on_pause_quit_pressed"]
 [connection signal="pressed" from="Menu/pause/menu" to="LobbyManager" method="_on_pause_back_to_menu_pressed"]
 [connection signal="pressed" from="Menu/pause/copy" to="LobbyManager" method="_on_pause_copy_code_pressed"]
