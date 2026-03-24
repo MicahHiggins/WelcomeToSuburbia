@@ -18,13 +18,14 @@ var talking = false
 
 signal dialogueSig
 
-
+var campbell_talked := false
 var local_dial := 0
 
 func _ready():
 	
 	#global signal connection
 	questHub.iteration_changed.connect(iterationChange)
+	
 
 #detects iteration change within dialogue
 func iterationChange(value: int):
@@ -35,7 +36,11 @@ func iterationChange(value: int):
 	camp_local = 0
 	
 	
-
+#func questSig():
+	#if campbell_talked == false:
+		#campbell_talked = true
+	
+	
 func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("interact"):
 		dialogueSig.emit()
@@ -65,11 +70,15 @@ func abiDial():
 		abi_local += 1
 		
 func campDial():
-		if (GlobalVariables.iterations >= 3):
-			dialogue.uniqueDialogue =  npcDialogue.campbellsDialogue[2][camp_local]
-		else:
-			dialogue.uniqueDialogue = npcDialogue.campbellsDialogue[GlobalVariables.iterations][camp_local]
-		camp_local += 1
+	if campbell_talked == false && GlobalVariables.iterations >= 2:
+		campbell_talked = true
+		print("Campbell Talked To! in iter 3")
+		questHub.campbellTalk()
+	if (GlobalVariables.iterations >= 3):
+		dialogue.uniqueDialogue =  npcDialogue.campbellsDialogue[2][camp_local]
+	else:
+		dialogue.uniqueDialogue = npcDialogue.campbellsDialogue[GlobalVariables.iterations][camp_local]
+	camp_local += 1
 		
 func dialogueMan(npc_name):
 	match(npc_name):

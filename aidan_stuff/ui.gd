@@ -26,13 +26,17 @@ extends CanvasLayer
 
 # for better ui
 var esc_toggle := false
-
+var quest_talked := false
 var player: CharacterBody3D
 var cam: Camera3D
+
+#objective text update
+var prev_text
 
 
 func _ready() -> void:
 	questHub.iteration_changed.connect(iterationChange)
+	questHub.questTalk.connect(talkedTo)
 	objectives.text = "Find Your Way Home (130)"
 	player = get_parent() as CharacterBody3D
 	
@@ -69,7 +73,19 @@ func _ready() -> void:
 #Iteration change (ref questHub.gd)
 func iterationChange(value: int):
 	if value == 2:
+		prev_text = objectives.text
+		
 		objectives.text = objectives.text + "\n Investigate the Crying (Campbells)"
+		
+		
+#checks if campbells are talked to during iteration 3-5
+func talkedTo(value: int):
+	if value >= 2 && value <= 5:
+		print("Campbells talked detected!")
+		
+		objectives.text = objectives.text + "\n Find Fido (The Dog)"
+		
+	
 func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("quit"):
 		if esc_toggle:
