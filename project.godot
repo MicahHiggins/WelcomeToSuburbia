@@ -29,6 +29,10 @@ window/stretch/mode="viewport"
 
 enabled=PackedStringArray("res://addons/infinite_heightmap_terrain/plugin.cfg", "res://addons/instant-realistic-light/plugin.cfg")
 
+[filesystem]
+
+import/blender/enabled=false
+
 [global_group]
 
 pickup=""

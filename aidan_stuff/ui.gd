@@ -1,5 +1,9 @@
 extends CanvasLayer
 
+class_name uiStuff
+
+
+
 @onready var item1: Label = $Item1Label
 @onready var item2: Label = $Item2Lable
 
@@ -11,6 +15,8 @@ extends CanvasLayer
 
 @export var hide_when_close_m: float = 1.5
 @export var show_distance: bool = true
+
+@onready var objectives: Label = $CurrObj/Objectives
 
 # Layout tuning (pixels) — not used here (you said you'll position it yourself)
 @export var arrow_top_margin: float = 22.0
@@ -24,12 +30,19 @@ extends CanvasLayer
 
 # for better ui
 var esc_toggle := false
-
+var quest_talked := false
 var player: CharacterBody3D
 var cam: Camera3D
+static var ObjectiveToggle := false
+
+#objective text update
+var prev_text
 
 
 func _ready() -> void:
+	questHub.iteration_changed.connect(iterationChange)
+	questHub.questTalk.connect(talkedTo)
+	objectives.text = "Find Your Way Home (130)"
 	player = get_parent() as CharacterBody3D
 	
 	#UI menu toggle
@@ -62,6 +75,24 @@ func _ready() -> void:
 	_update_labels()
 
 
+#Iteration change (ref questHub.gd)
+func iterationChange(value: int):
+	if value == 2:
+		prev_text = objectives.text #gets prev text
+		
+		objectives.text = objectives.text + "\n Investigate the Crying (Campbells)"
+		
+		
+#checks if campbells are talked to during iteration 3-5
+func talkedTo(value: int):
+	if value >= 2 && value <= 5:
+		print("Campbells talked detected!")
+		
+		objectives.text = prev_text + "\n Find Fido (The Dog)"
+
+		
+		
+	
 func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("quit"):
 		if esc_toggle:
@@ -76,6 +107,8 @@ func _make_hud_ignore_mouse() -> void:
 	if distance_label != null:
 		distance_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 
+
+
 # NEW: pivot/rotation center fix
 func _fix_arrow_pivot() -> void:
 	if partner_arrow == null:
@@ -86,6 +119,10 @@ func _fix_arrow_pivot() -> void:
 	partner_arrow.pivot_offset = partner_arrow.size * 0.5
 
 func _process(_delta: float) -> void:
+	
+	if ObjectiveToggle == true:
+		objectives.text = prev_text + "\n tell Campbells you found Fido"
+		
 	_update_labels()
 	_update_partner_arrow()
 

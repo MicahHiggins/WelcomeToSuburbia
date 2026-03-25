@@ -9,16 +9,16 @@
 script = ExtResource("1_bs2y1")
 
 [node name="WP_1" type="Marker3D" parent="patrol_path" groups=["patrol_path"]]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.863508, 0.6372285, -9.059021)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.476479, 0.6372285, -9.562622)
 
 [node name="WP_2" type="Marker3D" parent="patrol_path" groups=["patrol_path"]]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.687013, 0.6372285, -9.086744)
+transform = Transform3D(-0.9944432, 0, 0.1052749, 0, 1, 0, -0.1052749, 0, -0.9944432, -9.825427, 0.6372285, 9.64433)
 
 [node name="WP_3" type="Marker3D" parent="patrol_path"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.322273, 0.48744488, 8.970463)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.322273, 0.48744488, 9.76169)
 
 [node name="WP_4" type="Marker3D" parent="patrol_path"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.492943, 0.48744488, 8.537979)
+transform = Transform3D(-0.9944432, 0, 0.1052749, 0, 1, 0, -0.1052749, 0, -0.9944432, -9.685906, 0.48744488, 9.725661)
 
 [node name="NPC_bob" parent="." node_paths=PackedStringArray("patrol_path") instance=ExtResource("2_smt5i")]
 transform = Transform3D(0.25, 0, 0, 0, 0.25, 0, 0, 0, 0.25, 8.3438225, 0.80088663, 9.3888)

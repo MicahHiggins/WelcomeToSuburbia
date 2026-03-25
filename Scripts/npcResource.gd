@@ -15,16 +15,18 @@ var iss_local := 0
 
 var in_area = false
 var talking = false
+const FIDOFOUND = 3
 
 signal dialogueSig
 
-
+var campbell_talked := false
 var local_dial := 0
 
 func _ready():
 	
 	#global signal connection
 	questHub.iteration_changed.connect(iterationChange)
+	
 
 #detects iteration change within dialogue
 func iterationChange(value: int):
@@ -35,7 +37,11 @@ func iterationChange(value: int):
 	camp_local = 0
 	
 	
-
+#func questSig():
+	#if campbell_talked == false:
+		#campbell_talked = true
+	
+	
 func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("interact"):
 		dialogueSig.emit()
@@ -46,10 +52,11 @@ func _input(event: InputEvent) -> void:
 func bobDial():
 		if (GlobalVariables.iterations >= 2):
 			dialogue.uniqueDialogue =  npcDialogue.bobDialogue[2][bob_local]
+			
 		else:
 			dialogue.uniqueDialogue = npcDialogue.bobDialogue[GlobalVariables.iterations][bob_local]
-			bob_local += 1
-		
+			
+		bob_local += 1
 		
 		print(bob_local)
 		
@@ -64,11 +71,21 @@ func abiDial():
 		abi_local += 1
 		
 func campDial():
-		if (GlobalVariables.iterations >= 3):
-			dialogue.uniqueDialogue =  npcDialogue.campbellsDialogue[2][camp_local]
-		else:
-			dialogue.uniqueDialogue = npcDialogue.campbellsDialogue[GlobalVariables.iterations][camp_local]
-		camp_local += 1
+
+	if campbell_talked == false && GlobalVariables.iterations >= 2:
+		campbell_talked = true
+		print("Campbell Talked To! in iter 3")
+		questHub.campbellTalk()
+		
+	if (GlobalVariables.iterations >= 2):
+		dialogue.uniqueDialogue =  npcDialogue.campbellsDialogue[2][camp_local]
+		if fido_dog.fido_toggle == true:
+			if GlobalVariables.iterations < 6:
+				#print("NOT DETECTING")
+				dialogue.uniqueDialogue =  npcDialogue.campbellsDialogue[FIDOFOUND][camp_local]
+	else:
+		dialogue.uniqueDialogue = npcDialogue.campbellsDialogue[GlobalVariables.iterations][camp_local]
+	camp_local += 1
 		
 func dialogueMan(npc_name):
 	match(npc_name):

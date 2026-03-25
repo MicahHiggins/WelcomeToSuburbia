@@ -1,0 +1,88 @@
+[gd_scene load_steps=7 format=3 uid="uid://655t81u48joy"]
+
+[ext_resource type="Script" uid="uid://ckxx8hek6f71" path="res://NPC/fido.gd" id="1_gmpr6"]
+[ext_resource type="PackedScene" uid="uid://dpo5irto5t3y1" path="res://Assets/RandomObjects/dog/Dog.glb" id="2_wfvho"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_1ffcm"]
+
+[sub_resource type="Animation" id="Animation_gmpr6"]
+resource_name = "Bark"
+length = 4.0
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(0, 0, 0)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath(".:rotation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.63, 0.98, 1.24, 1.4333333, 1.6333333, 1.9533334, 2.5833335, 2.9333334, 3.1933331, 3.3866668, 3.5866666),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 0,
+"values": [Vector3(0, 0, 0), Vector3(0.10471976, 0, 0), Vector3(0.31241393, 0, 0), Vector3(0.10471976, 0, 0), Vector3(0, 0, 0), Vector3(0.10471976, 0, 0), Vector3(0, 0, 0), Vector3(0.10471976, 0, 0), Vector3(0.31241393, 0, 0), Vector3(0.10471976, 0, 0), Vector3(0, 0, 0), Vector3(0.10471976, 0, 0)]
+}
+
+[sub_resource type="Animation" id="Animation_wfvho"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(0, 0, 0)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath(".:rotation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(0, 0, 0)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_vuvgn"]
+_data = {
+&"Bark": SubResource("Animation_gmpr6"),
+&"RESET": SubResource("Animation_wfvho")
+}
+
+[node name="Fido" type="CharacterBody3D"]
+transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 0, 0, 0)
+collision_layer = 0
+collision_mask = 8
+script = ExtResource("1_gmpr6")
+
+[node name="Dog" parent="." instance=ExtResource("2_wfvho")]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("SphereShape3D_1ffcm")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+&"": SubResource("AnimationLibrary_vuvgn")
+}
+
+[editable path="Dog"]
