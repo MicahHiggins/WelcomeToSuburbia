@@ -121,6 +121,13 @@ var _net_target_transform: Transform3D = Transform3D.IDENTITY
 var _net_has_target: bool = false
 
 # =========================
+#      LOOK SYNC (Step 2)
+# =========================
+@export var look_send_rate_hz: float = 20.0 # how often I tell the server where my camera is pointing
+var _look_last_send_time: float = 0.0
+var _level_flow_cached: Node = null
+
+# =========================
 #          NODE REFS
 # =========================
 @onready var head: Node3D = $Head
@@ -139,14 +146,14 @@ signal interact_object(target: Node)
 # =========================
 func _enter_tree() -> void:
 	# Your spawner sets node name to peer id string, so this is fine.
-	# ADDED: only set authority if the name is actually a number (singleplayer scenes sometimes aren't)
+	# only set authority if the name is actually a number (singleplayer scenes sometimes aren't)
 	if String(name).is_valid_int():
 		set_multiplayer_authority(name.to_int())
 
 func _ready() -> void:
 	add_to_group("player")
 
-	# CHANGED: in singleplayer we always want our camera active
+	# in singleplayer we always want our camera active
 	# in multiplayer, only the authority gets the camera
 	cam.current = (not multiplayer.has_multiplayer_peer()) or is_multiplayer_authority()
 
@@ -164,6 +171,49 @@ func _ready() -> void:
 # =========================
 func _scene_root() -> Node:
 	return get_tree().current_scene
+
+# =========================
+#    LEVEL FLOW LOOK SYNC
+# =========================
+func _get_level_flow() -> Node:
+	# ADDED: tiny cache so we don't keep searching every frame
+	if _level_flow_cached != null and is_instance_valid(_level_flow_cached):
+		return _level_flow_cached
+
+	var scene: Node = _scene_root()
+	if scene == null:
+		return null
+
+	var lf: Node = scene.find_child("LevelFlowManager", true, false)
+	if lf != null:
+		_level_flow_cached = lf
+		return _level_flow_cached
+
+	return null
+
+func _net_maybe_send_camera_look() -> void:
+	# ADDED: only the local player should report their camera
+	if not multiplayer.has_multiplayer_peer():
+		return
+	if not is_multiplayer_authority():
+		return
+
+	var mp: MultiplayerPeer = multiplayer.multiplayer_peer
+	if mp == null or mp.get_connection_status() != MultiplayerPeer.CONNECTION_CONNECTED:
+		return
+
+	var lf: Node = _get_level_flow()
+	if lf == null:
+		return
+
+	var now: float = float(Time.get_ticks_msec()) / 1000.0
+	var min_interval: float = 1.0 / maxf(look_send_rate_hz, 1.0)
+	if now - _look_last_send_time < min_interval:
+		return
+	_look_last_send_time = now
+
+	# This calls the rpc you added in LevelFlowManager (server stores my camera transform)
+	lf.rpc_id(SERVER_ID, "_rpc_update_peer_camera", cam.global_transform)
 
 # =========================
 #      ITEM MANAGER HOOK
@@ -504,6 +554,9 @@ func _process(_dt: float) -> void:
 		base_speed = 3.2
 		sprint_speed = 5
 
+	# ADDED: keep sending my camera look to the server (so "watched objects" works)
+	_net_maybe_send_camera_look()
+
 	if multiplayer.has_multiplayer_peer() and not is_multiplayer_authority():
 		return
 
@@ -517,7 +570,7 @@ func _process(_dt: float) -> void:
 		stamina_bar.get_parent().visible = stamina_current < stamina_max
 
 func _physics_process(delta: float) -> void:
-	# CHANGED: singleplayer should still move (before this, it was returning early)
+	# singleplayer should still move
 	if not multiplayer.has_multiplayer_peer():
 		_physics_authority(delta)
 		return
@@ -695,7 +748,7 @@ func server_set_tether_state(
 # ✅ REQUIRED for LevelFlowManager teleport
 @rpc("any_peer", "call_local", "reliable")
 func server_teleport_to(xform: Transform3D) -> void:
-	# CHANGED: in singleplayer this should still work (no authority gating needed)
+	# in singleplayer this should still work
 	if multiplayer.has_multiplayer_peer() and not is_multiplayer_authority():
 		return
 	global_transform = xform
