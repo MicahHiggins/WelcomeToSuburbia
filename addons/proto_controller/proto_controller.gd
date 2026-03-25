@@ -32,7 +32,6 @@ var stamina_current: float
 var stamina_regen_cd: float = 0.0
 var is_sprinting: bool = false
 
-
 # Input action names (must exist in InputMap)
 @export var input_left := "ui_left"
 @export var input_right := "ui_right"
@@ -77,7 +76,6 @@ var inventory: Array[StringName] = []
 signal inventory_changed(inv: Array[StringName])
 
 var _last_attack_time: float = -9999.0
-
 var _item_manager_cached: Node = null
 
 # =========================
@@ -141,13 +139,18 @@ signal interact_object(target: Node)
 # =========================
 func _enter_tree() -> void:
 	# Your spawner sets node name to peer id string, so this is fine.
-	set_multiplayer_authority(name.to_int())
+	# ADDED: only set authority if the name is actually a number (singleplayer scenes sometimes aren't)
+	if String(name).is_valid_int():
+		set_multiplayer_authority(name.to_int())
 
 func _ready() -> void:
 	add_to_group("player")
-	cam.current = is_multiplayer_authority()
-	_net_target_transform = global_transform
 
+	# CHANGED: in singleplayer we always want our camera active
+	# in multiplayer, only the authority gets the camera
+	cam.current = (not multiplayer.has_multiplayer_peer()) or is_multiplayer_authority()
+
+	_net_target_transform = global_transform
 	_swing_anim = get_node_or_null(swing_animplayer_path) as AnimationPlayer
 
 	_setup_hint_ui()
@@ -270,7 +273,7 @@ func _show_hint_temp(msg: String, seconds: float = 1.25) -> void:
 #     STAMINA BAR UI
 # =========================
 func _setup_stamina_ui() -> void:
-	if not is_multiplayer_authority():
+	if multiplayer.has_multiplayer_peer() and not is_multiplayer_authority():
 		return
 
 	var ui: CanvasLayer = null
@@ -338,7 +341,7 @@ func _setup_stamina_ui() -> void:
 #     SANITY SCREEN FX UI
 # =========================
 func _setup_sanity_fx_ui() -> void:
-	if not is_multiplayer_authority():
+	if multiplayer.has_multiplayer_peer() and not is_multiplayer_authority():
 		return
 
 	var ui: CanvasLayer = null
@@ -436,13 +439,13 @@ void fragment() {
 #         INPUT HANDLING
 # =========================
 func _input(event: InputEvent) -> void:
-	if not is_multiplayer_authority():
+	if multiplayer.has_multiplayer_peer() and not is_multiplayer_authority():
 		return
 	if event.is_action_pressed("ui_cancel"):
 		_release_mouse()
 
 func _unhandled_input(event: InputEvent) -> void:
-	if not is_multiplayer_authority():
+	if multiplayer.has_multiplayer_peer() and not is_multiplayer_authority():
 		return
 
 	if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
@@ -494,16 +497,14 @@ func _play_attack_local() -> void:
 #      FRAME / PHYSICS
 # =========================
 func _process(_dt: float) -> void:
-	#print("Yep")
 	if GlobalVariables.playerTalking == true:
 		base_speed = 0
 		sprint_speed = 0
 	else:
 		base_speed = 3.2
 		sprint_speed = 5
-		
-		
-	if not is_multiplayer_authority():
+
+	if multiplayer.has_multiplayer_peer() and not is_multiplayer_authority():
 		return
 
 	if _sanity_fx_mat != null and _sanity_fx_rect != null:
@@ -516,9 +517,12 @@ func _process(_dt: float) -> void:
 		stamina_bar.get_parent().visible = stamina_current < stamina_max
 
 func _physics_process(delta: float) -> void:
+	# CHANGED: singleplayer should still move (before this, it was returning early)
 	if not multiplayer.has_multiplayer_peer():
+		_physics_authority(delta)
 		return
 
+	# Multiplayer path
 	if is_multiplayer_authority():
 		_physics_authority(delta)
 		_net_maybe_send_state()
@@ -677,7 +681,7 @@ func server_set_tether_state(
 	new_sanity: float,
 	fx_intensity: float
 ) -> void:
-	if not is_multiplayer_authority():
+	if multiplayer.has_multiplayer_peer() and not is_multiplayer_authority():
 		return
 
 	tether_partner_pos = partner_pos
@@ -691,22 +695,20 @@ func server_set_tether_state(
 # ✅ REQUIRED for LevelFlowManager teleport
 @rpc("any_peer", "call_local", "reliable")
 func server_teleport_to(xform: Transform3D) -> void:
-	if not is_multiplayer_authority():
+	# CHANGED: in singleplayer this should still work (no authority gating needed)
+	if multiplayer.has_multiplayer_peer() and not is_multiplayer_authority():
 		return
 	global_transform = xform
 	velocity = Vector3.ZERO
 
 func _play_footstep_audio() -> void:
-	# If you already have a footstep AudioStreamPlayer3D in the scene:
 	if footstep == null:
 		return
-
-	# Only play for the local controlling player (prevents doubles)
 	if multiplayer.has_multiplayer_peer() and not is_multiplayer_authority():
 		return
-
 	footstep.pitch_scale = randf_range(0.85, 1.25)
 	footstep.play()
+
 # =========================
 #  CELLAR ROLE RPCs
 # =========================
@@ -718,7 +720,7 @@ func server_set_cellar_role(
 	_fwd_off: float,
 	leader_peer_id: int
 ) -> void:
-	if not is_multiplayer_authority():
+	if multiplayer.has_multiplayer_peer() and not is_multiplayer_authority():
 		return
 
 	cellar_active = true
@@ -730,7 +732,7 @@ func server_set_cellar_role(
 
 @rpc("any_peer", "call_local", "unreliable")
 func server_set_forced_pose(enabled: bool, target_pos: Vector3) -> void:
-	if not is_multiplayer_authority():
+	if multiplayer.has_multiplayer_peer() and not is_multiplayer_authority():
 		return
 
 	forced_pose_active = enabled
@@ -757,7 +759,7 @@ func server_show_hint(msg: String, seconds: float = 1.25) -> void:
 		return
 	if sender == 0 and not multiplayer.is_server():
 		return
-	if not is_multiplayer_authority():
+	if multiplayer.has_multiplayer_peer() and not is_multiplayer_authority():
 		return
 	_show_hint_temp(msg, seconds)
 

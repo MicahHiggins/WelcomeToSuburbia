@@ -44,6 +44,12 @@ var _spawn_join_xform: Transform3D = Transform3D.IDENTITY
 var _ready_peers: Dictionary = {} # int(peer_id) -> bool
 var _waiting_for_ready: bool = false
 
+# ------------------------------------------------------------
+# ADDED: witness tracking (server stores what each peer is looking at)
+# peer_id -> NodePath string ("" means looking at nothing)
+# ------------------------------------------------------------
+var _peer_look_target: Dictionary = {} # int(peer_id) -> String
+
 
 func _ready() -> void:
 	_level_container = get_node_or_null(level_container_path)
@@ -61,6 +67,10 @@ func _ready() -> void:
 		if not multiplayer.peer_connected.is_connected(_on_peer_connected):
 			multiplayer.peer_connected.connect(_on_peer_connected)
 
+		# ADDED: clean up witness data when peers leave
+		if not multiplayer.peer_disconnected.is_connected(_on_peer_disconnected):
+			multiplayer.peer_disconnected.connect(_on_peer_disconnected)
+
 	# Optional auto-load (server only in multiplayer)
 	if default_level != null:
 		if multiplayer.has_multiplayer_peer():
@@ -76,7 +86,15 @@ func _on_peer_connected(peer_id: int) -> void:
 	if _current_level_scene_path == "":
 		return
 
+	# ADDED: init witness state for new peer
+	_peer_look_target[peer_id] = ""
+
 	rpc_id(peer_id, "_rpc_load_level_all", _current_level_scene_path)
+
+
+# ADDED: cleanup witness state
+func _on_peer_disconnected(peer_id: int) -> void:
+	_peer_look_target.erase(peer_id)
 
 
 func request_level_change(level_index: int) -> void:
@@ -238,7 +256,6 @@ func teleport_all_players_to_current_spawn_server() -> void:
 	_cache_spawn_transform()
 	_cache_split_spawns() # ADDED: refresh in case the level changed
 
-	# Server tells each owner to teleport their own player.
 	var kids: Array = _players_root.get_children()
 	for child_any in kids:
 		var p: Node3D = child_any as Node3D
@@ -249,7 +266,6 @@ func teleport_all_players_to_current_spawn_server() -> void:
 		if owner_id <= 0:
 			continue
 
-		# ADDED: if this level has SpawnHost/SpawnJoin under Spawn, split by peer id
 		var target_xf: Transform3D = _cached_spawn_xform
 		if _has_split_spawns:
 			target_xf = _spawn_host_xform if owner_id == SERVER_ID else _spawn_join_xform
@@ -283,7 +299,6 @@ func server_place_player_if_needed(player: Node3D) -> void:
 	if _current_level == null:
 		return
 
-	# ADDED: use the same split-spawn logic for late joiners
 	_cache_spawn_transform()
 	_cache_split_spawns()
 
@@ -320,7 +335,6 @@ func _cache_spawn_transform() -> void:
 	_has_spawn_xform = true
 
 
-# ADDED: looks for Spawn/SpawnHost and Spawn/SpawnJoin under your existing Spawn node
 func _cache_split_spawns() -> void:
 	_has_split_spawns = false
 	_spawn_host_xform = Transform3D.IDENTITY
@@ -348,7 +362,6 @@ func _cache_split_spawns() -> void:
 	_has_split_spawns = true
 
 
-# Used by request_level_change singleplayer branch (unchanged)
 func _place_all_players_local_to_spawn() -> void:
 	_cache_spawn_transform()
 	if not _has_spawn_xform:
@@ -360,3 +373,36 @@ func _place_all_players_local_to_spawn() -> void:
 		if p == null:
 			continue
 		p.global_transform = _cached_spawn_xform
+
+
+# ------------------------------------------------------------
+# ADDED: witness API (player reports look target to server)
+# Player will call this later from ProtoController.
+# ------------------------------------------------------------
+@rpc("any_peer", "unreliable")
+func _rpc_witness_set_look_target(target_path: String) -> void:
+	if not multiplayer.is_server():
+		return
+
+	var sender: int = multiplayer.get_remote_sender_id()
+	if sender <= 0:
+		return
+
+	_peer_look_target[sender] = target_path
+
+
+# ADDED: how many peers are looking at a specific path right now
+func witness_get_lookers_count(target_path: String) -> int:
+	if not multiplayer.is_server():
+		return 0
+
+	var count: int = 0
+	for pid in _peer_look_target.keys():
+		if String(_peer_look_target[pid]) == target_path:
+			count += 1
+	return count
+
+
+# ADDED: your iteration value in one place (used for escalation later)
+func witness_get_iters() -> float:
+	return float(GlobalVariables.ITERS)
