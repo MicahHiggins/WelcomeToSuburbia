@@ -1,10 +1,9 @@
-[gd_scene load_steps=6 format=3 uid="uid://wa1g4ojo4bnp"]
+[gd_scene load_steps=5 format=3 uid="uid://wa1g4ojo4bnp"]
 
 [ext_resource type="Script" uid="uid://b8lerjmagqkl4" path="res://GameLevelsETC/patrol_path.gd" id="1_5k6rd"]
 [ext_resource type="PackedScene" uid="uid://c11d0ync6fj8o" path="res://NPC/npc_campbells.tscn" id="2_bvngj"]
 [ext_resource type="AudioStream" uid="uid://cqelxa4fjpjps" path="res://Audio/SFX/toddlerCrying.wav" id="3_5k6rd"]
 [ext_resource type="Script" uid="uid://c1bnlyaj1lygf" path="res://NPC/audio_cue.gd" id="3_bvngj"]
-[ext_resource type="PackedScene" uid="uid://r8vqf0qcnkdn" path="res://aidan_stuff/block_design.tscn" id="5_uxm5b"]
 
 [node name="PatrolBundleCampbells" type="Node3D"]
 
@@ -51,8 +50,5 @@ unit_size = 47.13
 max_db = -6.233
 max_distance = 81.3
 bus = &"SFX"
-
-[node name="Block Design" parent="." instance=ExtResource("5_uxm5b")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
 
 [editable path="NPC_Campbells"]
