@@ -15,6 +15,7 @@ var iss_local := 0
 
 var in_area = false
 var talking = false
+const FIDOFOUND = 3
 
 signal dialogueSig
 
@@ -70,12 +71,18 @@ func abiDial():
 		abi_local += 1
 		
 func campDial():
+
 	if campbell_talked == false && GlobalVariables.iterations >= 2:
 		campbell_talked = true
 		print("Campbell Talked To! in iter 3")
 		questHub.campbellTalk()
+		
 	if (GlobalVariables.iterations >= 3):
 		dialogue.uniqueDialogue =  npcDialogue.campbellsDialogue[2][camp_local]
+		if fido_dog.fido_toggle == true && campbell_talked == true:
+			if GlobalVariables.iterations < 6:
+				print("NOT DETECTING")
+				dialogue.uniqueDialogue =  npcDialogue.campbellsDialogue[FIDOFOUND][camp_local]
 	else:
 		dialogue.uniqueDialogue = npcDialogue.campbellsDialogue[GlobalVariables.iterations][camp_local]
 	camp_local += 1
