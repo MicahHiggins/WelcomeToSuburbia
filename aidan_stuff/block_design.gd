@@ -6,11 +6,17 @@ extends Node3D
 const PATROL_BUNDLE: PackedScene = preload("res://aidan_stuff/patrol_path.tscn")
 const PATROL_BUNDLE_ABIGAIL: PackedScene = preload("res://NPC/patrol_bundel_abigail.tscn")
 const PATROL_BUNDLE_CAMPBELL: PackedScene = preload("res://NPC/patrol_bundle_campbells.tscn")
+const PATROL_BUNDLE_SUS: PackedScene = preload("res://NPC/patrol_bundel_sus.tscn")
+const PATROL_BUNDLE_ISSACC: PackedScene = preload("res://NPC/patrol_bundel_issacc.tscn")
+const PATROL_BUNDLE_RH: PackedScene = preload("res://NPC/patrol_bundel_rh.tscn")
 
 # we want all npcs to spawn on this block, so we keep separate instances
 var patrol_instance_bob: Node3D = null
 var patrol_instance_abigail: Node3D = null
 var patrol_instance_campbell: Node3D = null
+var patrol_instance_sus: Node3D = null
+var patrol_instance_issacc: Node3D = null
+var patrol_instance_rh: Node3D = null
 
 var entered := false
 
@@ -90,23 +96,56 @@ func _spawn_all(block_xform: Transform3D) -> void:
 	# Spawn Bob bundle
 	if patrol_instance_bob == null or not is_instance_valid(patrol_instance_bob):
 		patrol_instance_bob = PATROL_BUNDLE.instantiate() as Node3D
-		add_child(patrol_instance_bob)
-		patrol_instance_bob.name = "PatrolBundle"
-		patrol_instance_bob.global_transform = block_xform
+		if patrol_instance_bob != null:
+			add_child(patrol_instance_bob)
+			patrol_instance_bob.name = "PatrolBundle"
+			patrol_instance_bob.global_transform = block_xform
 
 	# Spawn Abigail bundle
 	if patrol_instance_abigail == null or not is_instance_valid(patrol_instance_abigail):
 		patrol_instance_abigail = PATROL_BUNDLE_ABIGAIL.instantiate() as Node3D
-		add_child(patrol_instance_abigail)
-		patrol_instance_abigail.name = "PatrolBundelAbigail"
-		patrol_instance_abigail.global_transform = block_xform
+		if patrol_instance_abigail != null:
+			add_child(patrol_instance_abigail)
+			patrol_instance_abigail.name = "PatrolBundelAbigail"
+			patrol_instance_abigail.global_transform = block_xform
 
 	# Spawn Campbell bundle
 	if patrol_instance_campbell == null or not is_instance_valid(patrol_instance_campbell):
 		patrol_instance_campbell = PATROL_BUNDLE_CAMPBELL.instantiate() as Node3D
-		add_child(patrol_instance_campbell)
-		patrol_instance_campbell.name = "PatrolBundleCampbells"
-		patrol_instance_campbell.global_transform = block_xform
+		if patrol_instance_campbell != null:
+			add_child(patrol_instance_campbell)
+			patrol_instance_campbell.name = "PatrolBundleCampbells"
+			patrol_instance_campbell.global_transform = block_xform
+
+	# Spawn Sus bundle
+	if patrol_instance_sus == null or not is_instance_valid(patrol_instance_sus):
+		patrol_instance_sus = PATROL_BUNDLE_SUS.instantiate() as Node3D
+		if patrol_instance_sus != null:
+			add_child(patrol_instance_sus)
+			patrol_instance_sus.name = "PatrolBundelSus"
+			patrol_instance_sus.global_transform = block_xform
+		else:
+			push_error("Failed to instantiate res://NPC/patrol_bundel_sus.tscn as Node3D")
+
+	# Spawn Issacc bundle
+	if patrol_instance_issacc == null or not is_instance_valid(patrol_instance_issacc):
+		patrol_instance_issacc = PATROL_BUNDLE_ISSACC.instantiate() as Node3D
+		if patrol_instance_issacc != null:
+			add_child(patrol_instance_issacc)
+			patrol_instance_issacc.name = "PatrolBundelIssacc"
+			patrol_instance_issacc.global_transform = block_xform
+		else:
+			push_error("Failed to instantiate res://NPC/patrol_bundel_issacc.tscn as Node3D")
+
+	# Spawn RH bundle
+	if patrol_instance_rh == null or not is_instance_valid(patrol_instance_rh):
+		patrol_instance_rh = PATROL_BUNDLE_RH.instantiate() as Node3D
+		if patrol_instance_rh != null:
+			add_child(patrol_instance_rh)
+			patrol_instance_rh.name = "PatrolBundelRh"
+			patrol_instance_rh.global_transform = block_xform
+		else:
+			push_error("Failed to instantiate res://NPC/patrol_bundel_rh.tscn as Node3D")
 
 func _despawn_all() -> void:
 	# Despawn Bob bundle
@@ -123,6 +162,21 @@ func _despawn_all() -> void:
 	if patrol_instance_campbell != null and is_instance_valid(patrol_instance_campbell):
 		patrol_instance_campbell.queue_free()
 	patrol_instance_campbell = null
+
+	# Despawn Sus bundle
+	if patrol_instance_sus != null and is_instance_valid(patrol_instance_sus):
+		patrol_instance_sus.queue_free()
+	patrol_instance_sus = null
+
+	# Despawn Issacc bundle
+	if patrol_instance_issacc != null and is_instance_valid(patrol_instance_issacc):
+		patrol_instance_issacc.queue_free()
+	patrol_instance_issacc = null
+
+	# Despawn RH bundle
+	if patrol_instance_rh != null and is_instance_valid(patrol_instance_rh):
+		patrol_instance_rh.queue_free()
+	patrol_instance_rh = null
 
 func _on_iteration_detector_body_entered(body: Node3D) -> void:
 	pass

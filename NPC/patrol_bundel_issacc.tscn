@@ -1,0 +1,17 @@
+[gd_scene load_steps=3 format=3 uid="uid://0kqwxdf31iqg"]
+
+[ext_resource type="Script" uid="uid://b8lerjmagqkl4" path="res://GameLevelsETC/patrol_path.gd" id="1_drhvv"]
+[ext_resource type="PackedScene" uid="uid://c854co31tfyx8" path="res://NPC/npc_issacc.tscn" id="2_6igey"]
+
+[node name="potrol_bundel_isacc" type="Node3D"]
+
+[node name="patrol_path" type="Node3D" parent="."]
+script = ExtResource("1_drhvv")
+
+[node name="WP_1" type="Marker3D" parent="patrol_path" groups=["patrol_path"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.838265, 0.504493, 7.4657526)
+
+[node name="NPC_ISSACC" parent="." instance=ExtResource("2_6igey")]
+transform = Transform3D(0.25, 0, 0, 0, 0.25, 0, 0, 0, 0.25, 12.114987, 0.43336296, 6.744673)
+
+[editable path="NPC_ISSACC"]

@@ -1,0 +1,17 @@
+[gd_scene load_steps=3 format=3 uid="uid://npra8b2st4ul"]
+
+[ext_resource type="Script" uid="uid://b8lerjmagqkl4" path="res://GameLevelsETC/patrol_path.gd" id="1_a0ggd"]
+[ext_resource type="PackedScene" uid="uid://oljhklbdupf6" path="res://NPC/npc_random_homie.tscn" id="2_m730y"]
+
+[node name="patrol_bundel_RH" type="Node3D"]
+
+[node name="patrol_path" type="Node3D" parent="."]
+script = ExtResource("1_a0ggd")
+
+[node name="WP_1" type="Marker3D" parent="patrol_path" groups=["patrol_path"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.838265, 0.504493, 5.687845)
+
+[node name="NPC_Random_Homie" parent="." instance=ExtResource("2_m730y")]
+transform = Transform3D(0.25, 0, 0, 0, 0.25, 0, 0, 0, 0.25, 11.908933, 0.9313283, 5.6556854)
+
+[editable path="NPC_Random_Homie"]
