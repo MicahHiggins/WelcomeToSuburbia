@@ -1,6 +1,6 @@
 [gd_scene load_steps=10 format=3 uid="uid://dggh2n0x6keit"]
 
-[ext_resource type="PackedScene" uid="uid://ci54frr2u8o1" path="res://Assets/RandomObjects/mailbox/Mailbox.glb" id="1_41uu1"]
+[ext_resource type="PackedScene" uid="uid://dkeq6crqg4wl7" path="res://Assets/RandomObjects/mailbox/Mailbox.glb" id="1_41uu1"]
 [ext_resource type="Script" uid="uid://dspp6638h3tyf" path="res://Models/mailbox.gd" id="2_g6tt7"]
 [ext_resource type="PackedScene" uid="uid://4oy37r6onjvw" path="res://Assets/RandomObjects/mailbox/MailboxLid.glb" id="2_hsgkm"]
 
@@ -77,6 +77,8 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.6074524, -0.31812477)
 transform = Transform3D(1, 0, 0, 0, 0.99999994, 0, 0, 0, 0.99999994, 6.399, -3.668, 2.061)
 
 [node name="StaticBody3D" type="StaticBody3D" parent="." index="2"]
+collision_layer = 0
+collision_mask = 0
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D" index="0"]
 transform = Transform3D(0.39999998, 0, 0, 0, 1.2822149, 0, 0, 0, 0.67916715, 0.47364426, -1.3161273, 0.87747836)

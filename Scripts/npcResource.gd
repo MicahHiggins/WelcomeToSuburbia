@@ -81,7 +81,7 @@ func campDial():
 		dialogue.uniqueDialogue =  npcDialogue.campbellsDialogue[2][camp_local]
 		if fido_dog.fido_toggle == true:
 			if GlobalVariables.iterations < 6:
-				print("NOT DETECTING")
+				#print("NOT DETECTING")
 				dialogue.uniqueDialogue =  npcDialogue.campbellsDialogue[FIDOFOUND][camp_local]
 	else:
 		dialogue.uniqueDialogue = npcDialogue.campbellsDialogue[GlobalVariables.iterations][camp_local]
