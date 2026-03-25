@@ -77,9 +77,9 @@ func campDial():
 		print("Campbell Talked To! in iter 3")
 		questHub.campbellTalk()
 		
-	if (GlobalVariables.iterations >= 3):
+	if (GlobalVariables.iterations >= 2):
 		dialogue.uniqueDialogue =  npcDialogue.campbellsDialogue[2][camp_local]
-		if fido_dog.fido_toggle == true && campbell_talked == true:
+		if fido_dog.fido_toggle == true:
 			if GlobalVariables.iterations < 6:
 				print("NOT DETECTING")
 				dialogue.uniqueDialogue =  npcDialogue.campbellsDialogue[FIDOFOUND][camp_local]

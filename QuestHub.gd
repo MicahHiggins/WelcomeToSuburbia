@@ -49,6 +49,7 @@ static func campbellTalk():
 #Issac: silence
 #Pass 124 with heartbeat loud and cool visuals
 
+
 #3rd Iteration
 #Abigail warns the player, and vaguely refers to the dog quest
 #Campbells: Find dog quest (w/ no dog)

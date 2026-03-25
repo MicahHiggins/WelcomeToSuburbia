@@ -16,6 +16,7 @@ func _ready() -> void:
 	#collision_shape_3d.set_deferred("disabled", true)
 	questHub.iteration_changed.connect(iterationChange)
 	fido.visible = false
+	fido_collision.set_deferred("disabled", true)
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -26,9 +27,11 @@ func _process(delta: float) -> void:
 
 func iterationChange(value: int):
 	print("FIDO DETECTED!")
+	
+	#If on iteration 3, turn fido on
 	if value == 2:
 		print(fido.global_position)
-		#collision_shape_3d.set_deferred("disabled", false)
+		fido_collision.set_deferred("disabled", false)
 		print("FIDO ON!")
 		fido.visible = true
 		animation_player.play("Bark")
