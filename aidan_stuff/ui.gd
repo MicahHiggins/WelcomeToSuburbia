@@ -1,5 +1,9 @@
 extends CanvasLayer
 
+class_name uiStuff
+
+
+
 @onready var item1: Label = $Item1Label
 @onready var item2: Label = $Item2Lable
 
@@ -29,6 +33,7 @@ var esc_toggle := false
 var quest_talked := false
 var player: CharacterBody3D
 var cam: Camera3D
+static var ObjectiveToggle := false
 
 #objective text update
 var prev_text
@@ -73,7 +78,7 @@ func _ready() -> void:
 #Iteration change (ref questHub.gd)
 func iterationChange(value: int):
 	if value == 2:
-		prev_text = objectives.text
+		prev_text = objectives.text #gets prev text
 		
 		objectives.text = objectives.text + "\n Investigate the Crying (Campbells)"
 		
@@ -84,6 +89,8 @@ func talkedTo(value: int):
 		print("Campbells talked detected!")
 		
 		objectives.text = prev_text + "\n Find Fido (The Dog)"
+
+		
 		
 	
 func _input(event: InputEvent) -> void:
@@ -112,6 +119,10 @@ func _fix_arrow_pivot() -> void:
 	partner_arrow.pivot_offset = partner_arrow.size * 0.5
 
 func _process(_delta: float) -> void:
+	
+	if ObjectiveToggle == true:
+		objectives.text = prev_text + "\n tell Campbells you found Fido"
+		
 	_update_labels()
 	_update_partner_arrow()
 
