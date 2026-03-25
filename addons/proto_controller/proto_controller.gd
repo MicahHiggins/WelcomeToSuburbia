@@ -213,8 +213,11 @@ func _net_maybe_send_camera_look() -> void:
 	_look_last_send_time = now
 
 	# This calls the rpc you added in LevelFlowManager (server stores my camera transform)
-	lf.rpc_id(SERVER_ID, "_rpc_update_peer_camera", cam.global_transform)
-
+		# ADDED: host can't rpc_id to itself unless the rpc is call_local, so just call it directly
+	if multiplayer.is_server():
+		lf.call("_server_set_peer_camera", multiplayer.get_unique_id(), cam.global_transform)
+	else:
+		lf.rpc_id(SERVER_ID, "_rpc_update_peer_camera", cam.global_transform)
 # =========================
 #      ITEM MANAGER HOOK
 # =========================

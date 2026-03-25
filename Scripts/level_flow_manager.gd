@@ -51,8 +51,7 @@ var _waiting_for_ready: bool = false
 var _peer_look_target: Dictionary = {} # int(peer_id) -> String
 
 # ------------------------------------------------------------
-# ADDED (Step 1): camera look sync
-# server stores each peer's Camera3D global transform so we can do "is it being watched?"
+# camera look sync (server stores each peer's Camera3D global transform)
 # peer_id -> Transform3D
 # ------------------------------------------------------------
 var _peer_cam_xforms: Dictionary = {} # int(peer_id) -> Transform3D
@@ -96,7 +95,7 @@ func _on_peer_connected(peer_id: int) -> void:
 	# init witness state for new peer
 	_peer_look_target[peer_id] = ""
 
-	# ADDED: init camera state (identity until they start sending real camera transforms)
+	# init camera state (identity until they start sending real camera transforms)
 	_peer_cam_xforms[peer_id] = Transform3D.IDENTITY
 
 	rpc_id(peer_id, "_rpc_load_level_all", _current_level_scene_path)
@@ -417,9 +416,16 @@ func witness_get_iters() -> float:
 
 
 # ------------------------------------------------------------
-# ADDED (Step 1): camera look sync API
+# camera look sync API
 # Player will send their Camera3D.global_transform here.
 # ------------------------------------------------------------
+
+# this is just a helper so the host can update itself without rpc-ing itself
+func _server_set_peer_camera(peer_id: int, cam_xform: Transform3D) -> void:
+	if not multiplayer.is_server():
+		return
+	_peer_cam_xforms[peer_id] = cam_xform
+
 @rpc("any_peer", "unreliable")
 func _rpc_update_peer_camera(cam_xform: Transform3D) -> void:
 	if not multiplayer.is_server():
@@ -432,14 +438,12 @@ func _rpc_update_peer_camera(cam_xform: Transform3D) -> void:
 	_peer_cam_xforms[sender] = cam_xform
 
 
-# ADDED: get one peer's camera transform (server-side helper)
 func get_peer_camera_xform(peer_id: int) -> Transform3D:
 	if _peer_cam_xforms.has(peer_id):
 		return _peer_cam_xforms[peer_id]
 	return Transform3D.IDENTITY
 
 
-# ADDED: get all known camera transforms (server-side helper)
 func get_all_peer_camera_xforms() -> Array[Transform3D]:
 	var out: Array[Transform3D] = []
 	for pid in _peer_cam_xforms.keys():
