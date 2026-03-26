@@ -1,0 +1,59 @@
+[gd_scene load_steps=9 format=3 uid="uid://oljhklbdupf6"]
+
+[ext_resource type="Script" uid="uid://csc5bob5s77t" path="res://Scripts/npc_bob.gd" id="1_m8t8r"]
+[ext_resource type="Script" uid="uid://cicakuq5a1gle" path="res://Scripts/state_machine.gd" id="2_n1coq"]
+[ext_resource type="Script" uid="uid://dtisy2wdio7v" path="res://Scripts/patrol_state.gd" id="3_qxe8f"]
+[ext_resource type="Script" uid="uid://cvv6jryec78f3" path="res://Scripts/talk_state.gd" id="4_2hg57"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_g4ita"]
+radius = 2.0
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_5x2h4"]
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_fo4fv"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_g2s2g"]
+albedo_color = Color(0.82533926, 0, 0.2401397, 1)
+
+[node name="NPC_Random_Homie" type="CharacterBody3D" groups=["NPC"]]
+collision_mask = 3
+script = ExtResource("1_m8t8r")
+
+[node name="interact" type="Area3D" parent="."]
+collision_layer = 0
+collision_mask = 8
+
+[node name="interact_shape" type="CollisionShape3D" parent="interact"]
+transform = Transform3D(4, 0, 0, 0, 4, 0, 0, 0, 4, 0, 0, 0)
+shape = SubResource("SphereShape3D_g4ita")
+
+[node name="body" type="CollisionShape3D" parent="."]
+shape = SubResource("CapsuleShape3D_5x2h4")
+debug_color = Color(0.65632045, 0.5013817, 0.35583058, 0.41960785)
+
+[node name="StateMachine" type="Node" parent="."]
+script = ExtResource("2_n1coq")
+
+[node name="PatrolState" type="Node" parent="StateMachine" node_paths=PackedStringArray("talk_range")]
+script = ExtResource("3_qxe8f")
+talk_range = NodePath("../../TalkDetection")
+
+[node name="TalkState" type="Node" parent="StateMachine" node_paths=PackedStringArray("talk_detection")]
+script = ExtResource("4_2hg57")
+talk_detection = NodePath("../../TalkDetection")
+
+[node name="NavigationAgent3D" type="NavigationAgent3D" parent="."]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+mesh = SubResource("CapsuleMesh_fo4fv")
+surface_material_override/0 = SubResource("StandardMaterial3D_g2s2g")
+
+[node name="TalkDetection" type="Area3D" parent="."]
+collision_mask = 8
+
+[node name="TalkDetectionShape" type="CollisionShape3D" parent="TalkDetection"]
+transform = Transform3D(1.25, 0, 0, 0, 1.25, 0, 0, 0, 1.25, 0, 0, 0)
+shape = SubResource("SphereShape3D_g4ita")
+
+[connection signal="body_entered" from="interact" to="." method="_on_interact_body_entered"]
+[connection signal="body_exited" from="interact" to="." method="_on_interact_body_exited"]
