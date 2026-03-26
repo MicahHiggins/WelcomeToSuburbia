@@ -18,5 +18,7 @@ var iteration5 = 0
 var puzzleType = 0
 var algoDebug = false
 
+var level_2_cutscene = null
+
 signal interact
 var playerTalking = false

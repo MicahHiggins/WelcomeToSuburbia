@@ -73,6 +73,8 @@ func _ready() -> void:
 	call_deferred("_fix_arrow_pivot")
 
 	_update_labels()
+	
+	GlobalVariables.level_2_cutscene = $KidnapCutscene
 
 
 #Iteration change (ref questHub.gd)
