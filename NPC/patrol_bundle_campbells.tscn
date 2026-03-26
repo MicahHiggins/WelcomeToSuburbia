@@ -1,9 +1,10 @@
-[gd_scene load_steps=5 format=3 uid="uid://wa1g4ojo4bnp"]
+[gd_scene load_steps=6 format=3 uid="uid://wa1g4ojo4bnp"]
 
 [ext_resource type="Script" uid="uid://b8lerjmagqkl4" path="res://GameLevelsETC/patrol_path.gd" id="1_5k6rd"]
 [ext_resource type="PackedScene" uid="uid://c11d0ync6fj8o" path="res://NPC/npc_campbells.tscn" id="2_bvngj"]
 [ext_resource type="AudioStream" uid="uid://cqelxa4fjpjps" path="res://Audio/SFX/toddlerCrying.wav" id="3_5k6rd"]
 [ext_resource type="Script" uid="uid://c1bnlyaj1lygf" path="res://NPC/audio_cue.gd" id="3_bvngj"]
+[ext_resource type="AudioStream" uid="uid://cb5on36hl4m05" path="res://Audio/SFX/Dog1.wav" id="5_uxm5b"]
 
 [node name="PatrolBundleCampbells" type="Node3D"]
 
@@ -44,8 +45,20 @@ stream = ExtResource("3_5k6rd")
 attenuation_model = 2
 volume_db = -8.542
 unit_size = 47.13
-max_db = -6.233
+max_db = -1.136
 max_distance = 81.3
+panning_strength = 1.2
+bus = &"SFX"
+
+[node name="DogBark1" type="AudioStreamPlayer3D" parent="NPC_Campbells/AudioCue"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.59571457, 0, -10.494152)
+stream = ExtResource("5_uxm5b")
+attenuation_model = 2
+volume_db = -8.0
+unit_size = 17.86
+max_db = -0.903
+max_distance = 397.67
+panning_strength = 1.14
 bus = &"SFX"
 
 [editable path="NPC_Campbells"]

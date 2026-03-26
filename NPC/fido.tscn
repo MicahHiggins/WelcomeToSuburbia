@@ -1,7 +1,8 @@
-[gd_scene load_steps=7 format=3 uid="uid://655t81u48joy"]
+[gd_scene load_steps=8 format=3 uid="uid://655t81u48joy"]
 
 [ext_resource type="Script" uid="uid://ckxx8hek6f71" path="res://NPC/fido.gd" id="1_gmpr6"]
 [ext_resource type="PackedScene" uid="uid://dpo5irto5t3y1" path="res://Assets/RandomObjects/dog/Dog.glb" id="2_wfvho"]
+[ext_resource type="AudioStream" uid="uid://c0tnx00n7c665" path="res://Audio/SFX/Dog2.wav" id="3_wfvho"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_1ffcm"]
 
@@ -84,5 +85,11 @@ shape = SubResource("SphereShape3D_1ffcm")
 libraries = {
 &"": SubResource("AnimationLibrary_vuvgn")
 }
+
+[node name="Bark2" type="AudioStreamPlayer3D" parent="."]
+stream = ExtResource("3_wfvho")
+attenuation_model = 2
+max_db = 2.417
+max_distance = 1484.16
 
 [editable path="Dog"]

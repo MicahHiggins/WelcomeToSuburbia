@@ -10,6 +10,7 @@ class_name fido_dog
 @onready var fido_collision: CollisionShape3D = $"../Area3D/FidoCollision"
 
 static var fido_toggle := false
+@onready var bark_2: AudioStreamPlayer3D = $Bark2
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -35,7 +36,9 @@ func iterationChange(value: int):
 		print("FIDO ON!")
 		fido.visible = true
 		animation_player.play("Bark")
+		bark_2.play()
 	if value > 5:
+		bark_2.stop()
 		fido.visible = false
 		fido_collision.set_deferred("disabled", true)
 		#animation_player.stop()
