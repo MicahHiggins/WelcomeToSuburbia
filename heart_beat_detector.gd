@@ -26,7 +26,7 @@ func iterationChange(value: int):
 		print("itereationChanged! Heartbeat! Error/DQ!")
 			
 func _on_body_entered(body: Node3D) -> void:
-	if body.is_multiplayer_authority() && body.is_in_group("player"):
+	if  body.is_in_group("player"):
 		GlobalVariables.iterations += 1
 		questHub.it_change()
 		GlobalVariables.heart_beat = true

@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3 uid="uid://b5wwmrysksvyf"]
+
+[ext_resource type="PackedScene" uid="uid://bnrwkv6qxylda" path="res://Assets/RandomObjects/humans/isaac.glb" id="1_kvjmq"]
+
+[node name="IsaacModel" type="Node3D"]
+
+[node name="isaac" parent="." instance=ExtResource("1_kvjmq")]

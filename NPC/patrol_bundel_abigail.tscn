@@ -19,5 +19,10 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.47979736, 0.48744488, -8.17
 
 [node name="NPC_Abigail" parent="." instance=ExtResource("2_8sq2l")]
 transform = Transform3D(0.25, 0, 0, 0, 0.25, 0, 0, 0, 0.25, -7.8117085, 0.65578914, -9.66823)
+move_speed = 2.5
+
+[node name="abigailDialogue" parent="NPC_Abigail" index="6"]
+health = null
+move_speed = null
 
 [editable path="NPC_Abigail"]
