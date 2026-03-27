@@ -69,9 +69,9 @@ static func campbellTalk():
 #Abigial HOA reveal, tells the player what's coming
 #Campbell Outcome:
 	#if player found and told campbell about dog befre they talk on 5th iteration
-		#bus = true
-	#else
 		#bus = false
+	#else
+		#bus = true
 
 #Campbells outcome plays (either bus or dog eating them)
 
