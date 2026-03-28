@@ -1,4 +1,4 @@
-[gd_resource type="ArrayMesh" load_steps=14 format=4 uid="uid://03t1d72x2w7t"]
+[gd_resource type="ArrayMesh" load_steps=14 format=4 uid="uid://chol4nbts75fs"]
 
 [ext_resource type="Texture2D" uid="uid://13lesnytgt5n" path="res://Assets/RandomObjects/bedrooms/bedroom_copy_4K-fabric_81_basecolor.png" id="1_4bwhw"]
 [ext_resource type="Texture2D" uid="uid://30uhqeu80mcj" path="res://Assets/RandomObjects/bedrooms/bedroom_copy_4K-fabric_81_metallic-4K-fabric_81_roughness.png" id="2_5jh4n"]

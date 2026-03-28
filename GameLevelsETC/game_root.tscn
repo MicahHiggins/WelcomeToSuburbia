@@ -6,13 +6,13 @@
 [ext_resource type="PackedScene" uid="uid://bsrc4sxs0q266" path="res://Assets/RandomObjects/flashlight/flashlight.tscn" id="2_7dwkj"]
 [ext_resource type="PackedScene" uid="uid://b36mjwh3wwi6m" path="res://GameLevelsETC/Items/bat_clean.tscn" id="3_xokw7"]
 [ext_resource type="PackedScene" uid="uid://bk12xaa431jqc" path="res://Assets/RandomObjects/symbol/symbol.tscn" id="4_vhrww"]
-[ext_resource type="Script" uid="uid://w8c1ppjt0y6g" path="res://Scripts/level_flow_manager.gd" id="5_l5n62"]
+[ext_resource type="Script" path="res://Scripts/level_flow_manager.gd" id="5_l5n62"]
 [ext_resource type="PackedScene" uid="uid://d1ibgfwne281y" path="res://GameLevelsETC/Level1.tscn" id="6_6bcdd"]
 [ext_resource type="Texture2D" uid="uid://bh8hkhotm6bbc" path="res://Assets/Images/Suburbia1.jpg" id="8_6bcdd"]
 [ext_resource type="Texture2D" uid="uid://3i53ybhtpc0f" path="res://Assets/Images/—Pngtree—vector copy icon_4013516.png" id="9_7i78e"]
 [ext_resource type="Script" path="res://GameLevelsETC/player_spawner.gd" id="9_nqjqn"]
 [ext_resource type="FontFile" uid="uid://g7ve53wy4c3c" path="res://addons/Font/MADE TOMMY Medium_PERSONAL USE.otf" id="10_nqjqn"]
-[ext_resource type="PackedScene" uid="uid://b3tivaphj7o57" path="res://aidan_stuff/button4Iteration.tscn" id="13_nqjqn"]
+[ext_resource type="PackedScene" path="res://aidan_stuff/button4Iteration.tscn" id="13_nqjqn"]
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_fan4m"]
 texture = ExtResource("8_6bcdd")
