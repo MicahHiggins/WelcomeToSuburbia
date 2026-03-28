@@ -35,6 +35,7 @@ func iterationChange(value: int):
 	bob_local = 0
 	abi_local = 0
 	camp_local = 0
+	iss_local = 0
 	
 	
 #func questSig():
@@ -86,6 +87,14 @@ func campDial():
 	else:
 		dialogue.uniqueDialogue = npcDialogue.campbellsDialogue[GlobalVariables.iterations][camp_local]
 	camp_local += 1
+
+func issDial():
+	print("ISAAC TEST")
+	if (GlobalVariables.iterations >= 3):
+		dialogue.uniqueDialogue =  npcDialogue.issDialogue[2][iss_local]
+	else:
+		dialogue.uniqueDialogue = npcDialogue.issDialogue[GlobalVariables.iterations][iss_local]
+		
 		
 func dialogueMan(npc_name):
 	match(npc_name):
@@ -103,6 +112,11 @@ func dialogueMan(npc_name):
 				if camp_local == 3:
 					camp_local = 2
 				campDial()
+			"Isaac":
+				if iss_local == 0:
+					iss_local = 0
+				issDial()
+				
 
 		
 
@@ -125,6 +139,8 @@ func enter_dialogue():
 				number = abi_local
 			"The Campbells":
 				number = camp_local
+			"Isaac":
+				number = 2
 		
 		if number >= 2:
 			dialogueMan(npc_name)
@@ -152,6 +168,7 @@ func enter_dialogue():
 	
 	
 func _on_talk_detection_body_entered(body: Node3D) -> void:
+	print("SSSSs")
 	if body.is_multiplayer_authority():
 		tutorial.interact = true
 		in_area = true

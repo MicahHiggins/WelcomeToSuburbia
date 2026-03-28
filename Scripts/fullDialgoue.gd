@@ -21,3 +21,8 @@ static var campbellsDialogue = [
 	["Have you seen Fido?", "He ran away and we can't find him!", "Can you find him for us?"], 
 	["Fido is where?", "Oh my goodness, thank you!", "We will go look for him right now!"]
 ]
+static var issDialogue = [
+	["..."],
+	["..."], 
+	["..."]
+]
