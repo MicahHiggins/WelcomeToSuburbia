@@ -115,10 +115,10 @@ func _server_change_level(level_index: int) -> void:
 		return
 	load_level_server(ps)
 	if level_index == 2:
-		GlobalVariables.level_2_cutscene.visible = true
-		GlobalVariables.level_2_cutscene.paused = false
+		#GlobalVariables.level_2_cutscene.visible = true
+		#GlobalVariables.level_2_cutscene.paused = false
 		await get_tree().create_timer(18).timeout
-		GlobalVariables.level_2_cutscene.visible = false
+		#GlobalVariables.level_2_cutscene.visible = false
 
 
 func _scene_for_index(level_index: int) -> PackedScene:

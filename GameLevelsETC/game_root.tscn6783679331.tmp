@@ -146,7 +146,7 @@ F: Pick up Item
 G: Drop Item
 Mouse Click: Use Item
 Tab: Switch Item
-F: Interact with NPCs"
+E: Interact with NPCs"
 
 [node name="LevelSelect" type="VBoxContainer" parent="Menu/pause"]
 offset_left = 702.0

@@ -10,3 +10,4 @@ func _ready() -> void:
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
 	curr_iter.text = "Curr_Iter: " + str(GlobalVariables.iterations)
+	

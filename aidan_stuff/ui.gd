@@ -40,9 +40,9 @@ var prev_text
 
 
 func _ready() -> void:
-	questHub.iteration_changed.connect(iterationChange)
-	questHub.questTalk.connect(talkedTo)
-	objectives.text = "Find Your Way Home (130)"
+	#questHub.iteration_changed.connect(iterationChange)
+	#questHub.questTalk.connect(talkedTo)
+	#objectives.text = "Find Your Way Home (130)"
 	player = get_parent() as CharacterBody3D
 	
 	#UI menu toggle
@@ -74,26 +74,26 @@ func _ready() -> void:
 
 	_update_labels()
 	
-	GlobalVariables.level_2_cutscene = $KidnapCutscene
+	#GlobalVariables.level_2_cutscene = $KidnapCutscene
 
 
-#Iteration change (ref questHub.gd)
-func iterationChange(value: int):
-	if value == 2:
-		prev_text = objectives.text #gets prev text
+##Iteration change (ref questHub.gd)
+#func iterationChange(value: int):
+	#if value == 2:
+		#prev_text = objectives.text #gets prev text
+		#
+		#objectives.text = objectives.text + "\n Investigate the Crying (Campbells)"
+		#
 		
-		objectives.text = objectives.text + "\n Investigate the Crying (Campbells)"
-		
-		
-#checks if campbells are talked to during iteration 3-5
-func talkedTo(value: int):
-	if value >= 2 && value <= 5:
-		print("Campbells talked detected!")
-		
-		
-		objectives.text = prev_text + "\n Find Fido (The Dog)"
-
-		
+##checks if campbells are talked to during iteration 3-5
+#func talkedTo(value: int):
+	#if value >= 2 && value <= 5:
+		#print("Campbells talked detected!")
+		#
+		#
+		#objectives.text = prev_text + "\n Find Fido (The Dog)"
+#
+		#
 		
 	
 func _input(event: InputEvent) -> void:
@@ -123,8 +123,7 @@ func _fix_arrow_pivot() -> void:
 
 func _process(_delta: float) -> void:
 	
-	if ObjectiveToggle == true:
-		objectives.text = prev_text + "\n tell Campbells you found Fido"
+
 		
 	_update_labels()
 	_update_partner_arrow()

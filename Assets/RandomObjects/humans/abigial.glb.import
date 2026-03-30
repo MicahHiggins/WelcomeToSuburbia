@@ -3,13 +3,13 @@
 importer="scene"
 importer_version=1
 type="PackedScene"
-uid="uid://bnrwkv6qxylda"
-path="res://.godot/imported/isaac.glb-ca13f6d3a1aa3ce913f3d4c2db8e54d1.scn"
+uid="uid://8r75l8ouv3a2"
+path="res://.godot/imported/abigial.glb-ef98369f0ef12086a99072b3947871a5.scn"
 
 [deps]
 
-source_file="res://Assets/RandomObjects/humans/isaac.glb"
-dest_files=["res://.godot/imported/isaac.glb-ca13f6d3a1aa3ce913f3d4c2db8e54d1.scn"]
+source_file="res://Assets/RandomObjects/humans/abigial.glb"
+dest_files=["res://.godot/imported/abigial.glb-ef98369f0ef12086a99072b3947871a5.scn"]
 
 [params]
 
@@ -6211,8 +6211,8 @@ _subresources={
 "materials": {
 "Shirt": {
 "use_external/enabled": true,
-"use_external/fallback_path": "res://Assets/RandomObjects/humans/humanMaterials/hoa.tres",
-"use_external/path": "uid://br1wwr3o2vh8l"
+"use_external/fallback_path": "res://Assets/RandomObjects/humans/humanMaterials/abigail.tres",
+"use_external/path": "uid://bgsxdeiur6opk"
 }
 }
 }
