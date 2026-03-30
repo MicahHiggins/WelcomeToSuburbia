@@ -58,7 +58,7 @@ health = null
 move_speed = null
 
 [node name="hooman" parent="." instance=ExtResource("6_0uuot")]
-transform = Transform3D(-0.028392715, 0, -0.99959683, 0, 1, 0, 0.99959683, 0, -0.028392715, 0, -0.9509717, -0.16790724)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.84263754, 0)
 
 [connection signal="body_entered" from="interact" to="." method="_on_interact_body_entered"]
 [connection signal="body_exited" from="interact" to="." method="_on_interact_body_exited"]
