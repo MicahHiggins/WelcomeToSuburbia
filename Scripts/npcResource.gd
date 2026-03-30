@@ -59,7 +59,6 @@ func bobDial():
 			
 		bob_local += 1
 		
-		print(bob_local)
 		
 		
 		
@@ -112,6 +111,7 @@ func dialogueMan(npc_name):
 				if camp_local == 3:
 					camp_local = 2
 				campDial()
+				
 			"Isaac":
 				if iss_local == 0:
 					iss_local = 0

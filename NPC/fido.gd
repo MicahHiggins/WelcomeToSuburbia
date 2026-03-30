@@ -53,7 +53,7 @@ func _on_area_3d_body_entered(body: Node3D) -> void:
 	if fido_toggle == true:
 		return 
 	if body.is_in_group("player"):
-		quest_marker_.visible = false
+		visible = false
 		print("Fido: Player Detected")
 		fido_toggle = true
 		uiStuff.ObjectiveToggle = true

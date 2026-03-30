@@ -57,6 +57,7 @@ static func campbellTalk():
 #house 104 HOA: stares w/ 2 people
 #Spawn dog in different (maybe random location?)
 #Baby Crying triggers (UI - "Investigate tHe Crying")
+#next iteration: talk to isaac?
 
 #4th Iteration
 #Abigail updates the player
@@ -73,7 +74,7 @@ static func campbellTalk():
 	#else
 		#bus = true
 
-#Campbells outcome plays (either bus or dog eating them)
+#Campbells outcome plays (either bus or dog eating them) + trigger for next iteration.
 
 #6th iteration
 #Isaac: if baby crying, eats

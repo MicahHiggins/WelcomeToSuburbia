@@ -22,6 +22,7 @@ func iterationChange(value: int):
 		quest_marker_.visible = true
 		#print("itrationChanged! Heartbeat!")
 		#questHub.it_change()
+		quest_marker_.visible = true
 		
 		collision_shape_3d.set_deferred("disabled", false) 
 	elif value > 1:
