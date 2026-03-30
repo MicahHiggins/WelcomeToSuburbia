@@ -44,6 +44,9 @@ var patrol_resume_has_data: bool = false
 var patrol_resume_idx: int = 0
 var patrol_resume_wait_t: float = 0.0
 
+
+#for the questMarker
+
 func save_patrol_resume(idx: int, wait_t: float) -> void:
 	patrol_resume_has_data = true
 	patrol_resume_idx = idx
@@ -141,6 +144,8 @@ func _physics_process(delta: float) -> void:
 
 	# Singleplayer / or if you disable authority_only_ai:
 	_do_simulation(delta)
+	
+	
 
 
 # -------------------------

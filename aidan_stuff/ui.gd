@@ -88,6 +88,7 @@ func talkedTo(value: int):
 	if value >= 2 && value <= 5:
 		print("Campbells talked detected!")
 		
+		
 		objectives.text = prev_text + "\n Find Fido (The Dog)"
 
 		

@@ -4,6 +4,7 @@ class_name fido_dog
 
 @onready var fido: CharacterBody3D = $"."
 @onready var animation_player: AnimationPlayer = $AnimationPlayer
+@onready var quest_marker_: questMarker = $"QuestMarker!"
 
 @onready var area_3d: Area3D = $"../Area3D"
 
@@ -31,6 +32,7 @@ func iterationChange(value: int):
 	
 	#If on iteration 3, turn fido on
 	if value == 2:
+		quest_marker_.visible = true
 		print(fido.global_position)
 		fido_collision.set_deferred("disabled", false)
 		print("FIDO ON!")
@@ -51,6 +53,7 @@ func _on_area_3d_body_entered(body: Node3D) -> void:
 	if fido_toggle == true:
 		return 
 	if body.is_in_group("player"):
+		quest_marker_.visible = false
 		print("Fido: Player Detected")
 		fido_toggle = true
 		uiStuff.ObjectiveToggle = true

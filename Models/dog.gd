@@ -1,4 +1,5 @@
 extends Node3D
+@onready var quest_marker_: questMarker = $"../QuestMarker!"
 
 @onready var animation_player: AnimationPlayer = $AnimationPlayer
 @onready var dog: Node3D = $"."
@@ -7,15 +8,27 @@ extends Node3D
 func _ready() -> void:
 	animation_player.play("DogWalk")
 	questHub.iteration_changed.connect(iterationChange)
+	questHub.questTalk.connect(talkedTo)
+	if questMarker.campbells == true:
+		visible = false
+		quest_marker_.visible = true
+
 
 func iterationChange(value: int):
 	
 	#Dog disappears at iteration 3 (2), "teleports" to random location (house near abigail)
 	if value >= 2:
 		dog.visible = false
+		quest_marker_.visible = true
+		questMarker.campbells = true
+		
 	else:
 		dog.visible = true
 		
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
 	pass
+	
+func talkedTo(value: int):
+	print("Talked! Marker!")
+	quest_marker_.visible = false
