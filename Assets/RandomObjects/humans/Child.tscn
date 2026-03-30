@@ -1,9 +1,8 @@
-[gd_scene load_steps=2 format=3 uid="uid://cyc74qo3u5o3v"]
+[gd_scene load_steps=2 format=3 uid="uid://ccymvttc48pmp"]
 
-[ext_resource type="PackedScene" uid="uid://uojbh3stsi7q" path="res://Assets/RandomObjects/humans/hoa.glb" id="1_5bf8t"]
+[ext_resource type="PackedScene" uid="uid://uojbh3stsi7q" path="res://Assets/RandomObjects/humans/hoa.glb" id="1_ldpvu"]
 
-[node name="hoa" instance=ExtResource("1_5bf8t")]
-transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 0, 0, 0)
+[node name="hoa" instance=ExtResource("1_ldpvu")]
 
 [node name="Cube" parent="rig/Cube_002" index="0"]
 transform = Transform3D(0.2957735, 0, 0, 0, 0.046294533, -0.066093676, 0, 0.034797955, 0.087929755, 0, 1.6104954, 0.20637234)
