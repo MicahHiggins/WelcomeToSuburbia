@@ -3,13 +3,13 @@
 importer="scene"
 importer_version=1
 type="PackedScene"
-uid="uid://dm3f1lwj8m573"
-path="res://.godot/imported/Tentacle.glb-06f4daa875ec199a660a6935c68dd9e9.scn"
+uid="uid://dd0s156funjlr"
+path="res://.godot/imported/TentacleV2.glb-b69c9753f2ba15d6bcc58d6a5f41468d.scn"
 
 [deps]
 
-source_file="res://Assets/RandomObjects/tentacle/Tentacle.glb"
-dest_files=["res://.godot/imported/Tentacle.glb-06f4daa875ec199a660a6935c68dd9e9.scn"]
+source_file="res://Assets/RandomObjects/tentacle/TentacleV2.glb"
+dest_files=["res://.godot/imported/TentacleV2.glb-b69c9753f2ba15d6bcc58d6a5f41468d.scn"]
 
 [params]
 
