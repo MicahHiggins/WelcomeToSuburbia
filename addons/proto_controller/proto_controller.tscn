@@ -104,6 +104,7 @@ base_speed = 3.2
 jump_velocity = 3.5
 sprint_speed = 5.0
 freefly_speed = 100.0
+stamina_max = 160.0
 stamina_drain_per_sec = 14.0
 stamina_regen_per_sec = 15.0
 attack_cooldown = 5.0
