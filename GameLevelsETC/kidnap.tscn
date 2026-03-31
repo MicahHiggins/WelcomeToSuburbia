@@ -11,7 +11,6 @@
 [ext_resource type="PackedScene" uid="uid://bjmnpch456whw" path="res://Assets/RandomObjects/Placeholder_Bedroom/Light Desk.glb" id="9_lobfv"]
 [ext_resource type="PackedScene" uid="uid://cin0qg3kj3yj2" path="res://Assets/RandomObjects/chair/Chair.glb" id="10_ppsdj"]
 [ext_resource type="PackedScene" uid="uid://c2v2vucm2vi2v" path="res://Assets/RandomObjects/pianos/toy_piano_2.glb" id="11_wt8sx"]
-[ext_resource type="PackedScene" uid="uid://b5vnqvw11oonb" path="res://Assets/RandomObjects/etch-a-sketch/etch-a-sketch.glb" id="12_lpsft"]
 [ext_resource type="PackedScene" uid="uid://d0082o2yj0qb2" path="res://Assets/RandomObjects/bedrooms/bedroom_2.tscn" id="13_vmkem"]
 [ext_resource type="PackedScene" uid="uid://c4o2j15yoqaln" path="res://HouseModel/surb_house_v_1.tscn" id="14_mgih5"]
 [ext_resource type="Texture2D" uid="uid://but80wsucm4q2" path="res://textures/GrassTextures/GrassAlbedo.png" id="15_ii0sn"]
@@ -21,6 +20,7 @@
 [ext_resource type="Texture2D" uid="uid://c37iickr58llo" path="res://textures/GrassTextures/GrassRoughness.png" id="19_xuf8c"]
 [ext_resource type="PackedScene" uid="uid://drk8i4p1of8ar" path="res://aidan_stuff/whitefence_1.tscn" id="20_eyvg3"]
 [ext_resource type="PackedScene" uid="uid://ret8ne1fmk7l" path="res://Assets/RandomObjects/road/road.tscn" id="21_qolbo"]
+[ext_resource type="PackedScene" uid="uid://c5jxy2ugosnbe" path="res://Assets/RandomObjects/symbol/SymbolPuzzle.tscn" id="22_itlhn"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_qci02"]
 sky_top_color = Color(1, 0.92156863, 0.26666668, 1)
@@ -231,7 +231,7 @@ shape = SubResource("BoxShape3D_lvd32")
 transform = Transform3D(0.60000044, 0, -7.105431e-15, 0, 0.6000001, 0, 7.105431e-15, 0, 0.60000044, 1.2545395, -1.0862061, 3.0131636)
 
 [node name="Dresser" parent="Bedrooms/bedroom1" instance=ExtResource("7_dwtrd")]
-transform = Transform3D(-5.2453704e-08, 0, -1.2000009, 0, 1.5, 0, 1.2000009, 0, -5.2453704e-08, -2.1757061, -0.8876659, 2.5052242)
+transform = Transform3D(-5.2453718e-08, 0, -1.2000009, 0, 1.5, 0, 1.2000009, 0, -5.2453718e-08, -0.10741777, -0.8876659, 2.5052242)
 
 [node name="StaticBody3D" type="StaticBody3D" parent="Bedrooms/bedroom1/Dresser"]
 
@@ -262,9 +262,6 @@ shape = SubResource("BoxShape3D_pe1yd")
 
 [node name="toy_piano_2" parent="Bedrooms/bedroom1" instance=ExtResource("11_wt8sx")]
 transform = Transform3D(-6.5567116e-09, 0, -0.1500001, 0, 0.15000002, 0, 0.1500001, 0, -6.5567116e-09, -2.5088928, -0.7991139, -2.1711254)
-
-[node name="etch-a-sketch" parent="Bedrooms/bedroom1" instance=ExtResource("12_lpsft")]
-transform = Transform3D(-2.1855714e-08, 0, -0.5000003, 0, 0.5, 0, 0.5000003, 0, -2.1855714e-08, 1.2308958, -1.6584717, 2.727562)
 
 [node name="bedroom2" parent="Bedrooms" instance=ExtResource("13_vmkem")]
 transform = Transform3D(-1.5, 0, -2.2649371e-07, 0, 1.2, 0, 2.2649371e-07, 0, -1.5, 0.3168704, 0.11224883, -13.854978)
@@ -315,7 +312,7 @@ shape = SubResource("BoxShape3D_lvd32")
 transform = Transform3D(0.6000004, 0, -7.1054274e-15, 0, 0.6000001, 0, 7.1054274e-15, 0, 0.6000004, -3.1121984, -1.0862061, 1.2192068)
 
 [node name="Dresser" parent="Bedrooms/bedroom2" instance=ExtResource("7_dwtrd")]
-transform = Transform3D(1.2000004, 0, -1.4210855e-14, 0, 1.5, 0, 1.4210855e-14, 0, 1.2000004, 2.5068967, -0.8876658, 0)
+transform = Transform3D(1.2000005, 0, -2.842171e-14, 0, 1.5, 0, 2.842171e-14, 0, 1.2000005, 2.5068974, -0.8876658, -1.9515257)
 
 [node name="StaticBody3D" type="StaticBody3D" parent="Bedrooms/bedroom2/Dresser"]
 
@@ -346,9 +343,6 @@ shape = SubResource("BoxShape3D_pe1yd")
 
 [node name="toy_piano_2" parent="Bedrooms/bedroom2" instance=ExtResource("11_wt8sx")]
 transform = Transform3D(-0.15000002, 0, -2.2649374e-08, 0, 0.15000002, 0, 2.2649374e-08, 0, -0.15000002, -2.147248, -0.7991139, -2.5458293)
-
-[node name="etch-a-sketch" parent="Bedrooms/bedroom2" instance=ExtResource("12_lpsft")]
-transform = Transform3D(-0.5000003, 0, -4.3711424e-08, 0, 0.5, 0, 4.3711424e-08, 0, -0.5000003, -2.816975, -1.6584713, 1.1934843)
 
 [node name="Neighborhood" type="Node3D" parent="."]
 transform = Transform3D(1.5, 0, 0, 0, 1.5, 0, 0, 0, 1.5, 0, 0, 0)
@@ -1839,3 +1833,19 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.0910182, -19.766714)
 
 [node name="SpawnJoin" type="Marker3D" parent="Spawn"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.7124307, 19.075016)
+
+[node name="Puzzle2" parent="." instance=ExtResource("22_itlhn")]
+
+[node name="etch-a-sketch" parent="Puzzle2" index="0"]
+transform = Transform3D(1.9106855e-15, 4.3711392e-08, -1, 1, -4.3711392e-08, 0, -4.371139e-08, -1.0000001, -4.371139e-08, -4.570696, -0.57986665, 25.593967)
+
+[node name="ObsArea" parent="Puzzle2/etch-a-sketch" index="3"]
+transform = Transform3D(1.9106855e-15, 4.371139e-08, -1, 1, -4.371139e-08, 0, -4.371139e-08, -1, -4.371139e-08, -0.09567714, 0.57986665, -0.3335595)
+
+[node name="CollisionShape3D" parent="Puzzle2/etch-a-sketch/ObsArea" index="0"]
+transform = Transform3D(1.9106855e-15, 4.371139e-08, -1, 1, -4.371139e-08, 0, -4.371139e-08, -1, -4.371139e-08, 0, 0, 0)
+
+[node name="etch-a-sketch2" parent="Puzzle2" index="1"]
+transform = Transform3D(4.371139e-08, 1, -8.742278e-08, 1, -4.371139e-08, 0, -3.821371e-15, -8.742278e-08, -1, -6.599003, -1.1230392, -19.273579)
+
+[editable path="Puzzle2"]
