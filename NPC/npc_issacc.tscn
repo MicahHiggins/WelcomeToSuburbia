@@ -60,7 +60,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.6645117, -0.11627531, 1.338
 [node name="QuestMarker!" parent="." instance=ExtResource("7_7n7h8")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2785251, 0)
 
-[node name="Node3D" type="Node3D" parent="."]
+[node name="quest" type="Node3D" parent="."]
 script = ExtResource("8_8kjmk")
 
 [connection signal="body_entered" from="TalkDetection" to="issDial" method="_on_talk_detection_body_entered"]

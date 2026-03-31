@@ -3,17 +3,19 @@ extends VBoxContainer
 
 @onready var curr_obj: VBoxContainer = $"."
 var prev_text := ""
+var curr_text := ""
 var objToggle := false
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	questHub.iteration_changed.connect(iterationChange)
 	questHub.questTalk.connect(talkedTo)
+	questHub.isaacQuest.connect(isaacTrigger)
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
 	if objToggle == true:
-		curr_obj.text = prev_text + "\n tell Campbells you found Fido"
+		objectives.text = prev_text + "\n tell Campbells you found Fido"
 	
 
 
@@ -31,4 +33,8 @@ func iterationChange(value: int):
 		prev_text = objectives.text #gets prev text
 		
 		objectives.text = objectives.text + "\n Investigate the Crying (Campbells)"
+
+func isaacTrigger(value: int):
+	if value >= 5:
+		pass
 		

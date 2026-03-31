@@ -5,12 +5,14 @@ class_name questHub
 
 signal iterationManipulation(value: int)
 signal questManipulation(value: int)
+signal isaacStuff(value: int)
 
 
  # Global signal
 static var singleton := questHub.new()
 static var iteration_changed := Signal(singleton, "iterationManipulation")
 static var questTalk := Signal(singleton, "questManipulation")
+static var isaacQuest := Signal(singleton, "isaacStuff")
 #func set_value(new_value: int) -> void:
 	## ... update state ...
 	#iteration_changed.emit(GlobalVariables.iterations)
@@ -26,6 +28,11 @@ static func campbellTalk():
 	print("Iteration Change Detected!?: ")
 	print(GlobalVariables.iterations)
 	questTalk.emit(GlobalVariables.iterations)
+	
+static func isaacTrigger():
+	print("Iteration Change Detected!?: ")
+	print(GlobalVariables.iterations)
+	isaacQuest.emit(GlobalVariables.iterations)
 
 
 #Ok lets do this
