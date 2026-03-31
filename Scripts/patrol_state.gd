@@ -71,7 +71,10 @@ func physics_update(delta: float) -> void:
 		return
 
 	var target := wp.global_position
+	var look_target := target
+	look_target.y -= 0.55
 	npc3d.move_toward_world(target, delta)
+	npc3d.look_at(look_target)
 
 	var flat_dist := Vector3(npc3d.global_position.x, 0.0, npc3d.global_position.z) \
 		.distance_to(Vector3(target.x, 0.0, target.z))
@@ -80,6 +83,7 @@ func physics_update(delta: float) -> void:
 		if wait_at_waypoint > 0.0:
 			_wait_t = wait_at_waypoint
 		_advance()
+		return
 
 
 func _try_build_path() -> void:
