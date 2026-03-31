@@ -2,6 +2,13 @@ extends Node3D
 
 
 @onready var animation_player: AnimationPlayer = $AnimationPlayer
+@onready var note_1: AudioStreamPlayer3D = $Audio/note1
+@onready var note_2: AudioStreamPlayer3D = $Audio/note2
+@onready var note_3: AudioStreamPlayer3D = $Audio/note3
+@onready var note_4: AudioStreamPlayer3D = $Audio/note4
+@onready var note_5: AudioStreamPlayer3D = $Audio/note5
+@onready var note_6: AudioStreamPlayer3D = $Audio/note6
+@onready var note_7: AudioStreamPlayer3D = $Audio/note7
 
 
 signal puzzleOneComplete
@@ -31,6 +38,7 @@ func _on_cube_1_input_event(camera: Node, event: InputEvent, event_position: Vec
 		if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 			print("The object was clicked!")
 			animation_player.play("Cube_001Action")
+			note_1.play()
 			
 
 
@@ -38,30 +46,35 @@ func _on_cube_2_input_event(camera: Node, event: InputEvent, event_position: Vec
 		if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 			print("The object was clicked!")
 			animation_player.play("Cube_002Action")
+			note_2.play()
 
 
 func _on_cube_3_input_event(camera: Node, event: InputEvent, event_position: Vector3, normal: Vector3, shape_idx: int) -> void:
 		if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 			print("The object was clicked!")
 			animation_player.play("Cube_003Action")
+			note_3.play()
 
 
 func _on_cube_4_input_event(camera: Node, event: InputEvent, event_position: Vector3, normal: Vector3, shape_idx: int) -> void:
 		if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 			print("The object was clicked!")
 			animation_player.play("Cube_004Action")
+			note_4.play()
 
 
 func _on_cube_5_input_event(camera: Node, event: InputEvent, event_position: Vector3, normal: Vector3, shape_idx: int) -> void:
 		if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 			print("The object was clicked!")
 			animation_player.play("Cube_005Action")
+			note_5.play()
 
 
 func _on_cube_6_input_event(camera: Node, event: InputEvent, event_position: Vector3, normal: Vector3, shape_idx: int) -> void:
 		if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 			print("The object was clicked!")
 			animation_player.play("Cube_006Action")
+			note_6.play()
 
 
 func _on_cube_7_input_event(camera: Node, event: InputEvent, event_position: Vector3, normal: Vector3, shape_idx: int) -> void:
@@ -69,3 +82,4 @@ func _on_cube_7_input_event(camera: Node, event: InputEvent, event_position: Vec
 			print("The object was clicked!")
 			animation_player.play("Cube_007Action")
 			puzzleOneComplete.emit()
+			note_7.play()

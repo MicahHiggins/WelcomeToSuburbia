@@ -1,7 +1,14 @@
-[gd_scene load_steps=5 format=3 uid="uid://odknx6p0jv2f"]
+[gd_scene load_steps=12 format=3 uid="uid://odknx6p0jv2f"]
 
 [ext_resource type="PackedScene" uid="uid://cch6cx5a24t20" path="res://Assets/RandomObjects/pianos/toy_piano.glb" id="1_44o2m"]
 [ext_resource type="Script" uid="uid://tjiswyfd6as0" path="res://Assets/RandomObjects/pianos/toy_piano.gd" id="2_6tivc"]
+[ext_resource type="AudioStream" uid="uid://cimsy13co16n1" path="res://Assets/RandomObjects/pianos/notesSounds/note1.wav" id="3_segkh"]
+[ext_resource type="AudioStream" uid="uid://bkplbuy2brlc0" path="res://Assets/RandomObjects/pianos/notesSounds/note2.wav" id="4_xo4wo"]
+[ext_resource type="AudioStream" uid="uid://bx588jx85jm4c" path="res://Assets/RandomObjects/pianos/notesSounds/note3.wav" id="5_5sopt"]
+[ext_resource type="AudioStream" uid="uid://byjbj4scwxqhc" path="res://Assets/RandomObjects/pianos/notesSounds/note5.wav" id="6_ywdog"]
+[ext_resource type="AudioStream" uid="uid://bx4w88wytn1xo" path="res://Assets/RandomObjects/pianos/notesSounds/note7.wav" id="7_5xlke"]
+[ext_resource type="AudioStream" uid="uid://b4adr7126sjh5" path="res://Assets/RandomObjects/pianos/notesSounds/note4.wav" id="8_ypxqi"]
+[ext_resource type="AudioStream" uid="uid://buhe3ijeb8u3q" path="res://Assets/RandomObjects/pianos/notesSounds/note6.wav" id="9_1iq74"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_11rnb"]
 size = Vector3(2, 2, 2)
@@ -59,6 +66,49 @@ collision_mask = 8
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="mousefree" index="0"]
 shape = SubResource("SphereShape3D_8w73t")
+
+[node name="Audio" type="Node3D" parent="." index="12"]
+
+[node name="note1" type="AudioStreamPlayer3D" parent="Audio" index="0"]
+stream = ExtResource("3_segkh")
+
+[node name="note2" type="AudioStreamPlayer3D" parent="Audio" index="1"]
+stream = ExtResource("4_xo4wo")
+
+[node name="note3" type="AudioStreamPlayer3D" parent="Audio" index="2"]
+stream = ExtResource("5_5sopt")
+
+[node name="note4" type="AudioStreamPlayer3D" parent="Audio" index="3"]
+stream = ExtResource("8_ypxqi")
+
+[node name="note5" type="AudioStreamPlayer3D" parent="Audio" index="4"]
+stream = ExtResource("6_ywdog")
+
+[node name="note6" type="AudioStreamPlayer3D" parent="Audio" index="5"]
+stream = ExtResource("9_1iq74")
+
+[node name="note7" type="AudioStreamPlayer3D" parent="Audio" index="6"]
+stream = ExtResource("7_5xlke")
+attenuation_model = 2
+max_distance = 5.0
+
+[node name="Note1" type="AudioStreamPlayer" parent="." index="13"]
+stream = ExtResource("3_segkh")
+
+[node name="Note3" type="AudioStreamPlayer" parent="." index="14"]
+stream = ExtResource("5_5sopt")
+
+[node name="Note4" type="AudioStreamPlayer" parent="." index="15"]
+stream = ExtResource("8_ypxqi")
+
+[node name="Note5" type="AudioStreamPlayer" parent="." index="16"]
+stream = ExtResource("6_ywdog")
+
+[node name="Note6" type="AudioStreamPlayer" parent="." index="17"]
+stream = ExtResource("9_1iq74")
+
+[node name="Note7" type="AudioStreamPlayer" parent="." index="18"]
+stream = ExtResource("7_5xlke")
 
 [connection signal="input_event" from="Cube_001/cube1" to="." method="_on_cube_1_input_event"]
 [connection signal="input_event" from="Cube_002/cube2" to="." method="_on_cube_2_input_event"]
