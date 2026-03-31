@@ -4,7 +4,7 @@ extends Node3D
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	questHub.isaacQuest.connect(iterationChange)
+	questHub.iteration_changed.connect(iterationChange)
 	#questHub.questTalk.connect(talkedTo)
 	quest_marker_.visible = false
 
@@ -15,6 +15,7 @@ func _process(delta: float) -> void:
 
 
 func iterationChange(value: int):
+	print("Isaaac: Marker!")
 	if value == 5:
 		quest_marker_.visible = true
 		
