@@ -1,0 +1,71 @@
+[gd_scene load_steps=5 format=3 uid="uid://odknx6p0jv2f"]
+
+[ext_resource type="PackedScene" uid="uid://cch6cx5a24t20" path="res://Assets/RandomObjects/pianos/toy_piano.glb" id="1_44o2m"]
+[ext_resource type="Script" uid="uid://tjiswyfd6as0" path="res://Assets/RandomObjects/pianos/toy_piano.gd" id="2_6tivc"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_11rnb"]
+size = Vector3(2, 2, 2)
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_8w73t"]
+radius = 4.309
+
+[node name="toy_piano" instance=ExtResource("1_44o2m")]
+script = ExtResource("2_6tivc")
+
+[node name="cube1" type="Area3D" parent="Cube_001" index="0"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Cube_001/cube1" index="0"]
+shape = SubResource("BoxShape3D_11rnb")
+
+[node name="cube2" type="Area3D" parent="Cube_002" index="0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.3, 0, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Cube_002/cube2" index="0"]
+shape = SubResource("BoxShape3D_11rnb")
+
+[node name="cube3" type="Area3D" parent="Cube_003" index="0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.6, 0, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Cube_003/cube3" index="0"]
+shape = SubResource("BoxShape3D_11rnb")
+
+[node name="cube4" type="Area3D" parent="Cube_004" index="0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.9, 0, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Cube_004/cube4" index="0"]
+shape = SubResource("BoxShape3D_11rnb")
+
+[node name="cube5" type="Area3D" parent="Cube_005" index="0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.2, 0, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Cube_005/cube5" index="0"]
+shape = SubResource("BoxShape3D_11rnb")
+
+[node name="cube6" type="Area3D" parent="Cube_006" index="0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11.5, 0, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Cube_006/cube6" index="0"]
+shape = SubResource("BoxShape3D_11rnb")
+
+[node name="cube7" type="Area3D" parent="Cube_007" index="0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -13.8, 0, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Cube_007/cube7" index="0"]
+shape = SubResource("BoxShape3D_11rnb")
+
+[node name="mousefree" type="Area3D" parent="." index="11"]
+collision_layer = 0
+collision_mask = 8
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="mousefree" index="0"]
+shape = SubResource("SphereShape3D_8w73t")
+
+[connection signal="input_event" from="Cube_001/cube1" to="." method="_on_cube_1_input_event"]
+[connection signal="input_event" from="Cube_002/cube2" to="." method="_on_cube_2_input_event"]
+[connection signal="input_event" from="Cube_003/cube3" to="." method="_on_cube_3_input_event"]
+[connection signal="input_event" from="Cube_004/cube4" to="." method="_on_cube_4_input_event"]
+[connection signal="input_event" from="Cube_005/cube5" to="." method="_on_cube_5_input_event"]
+[connection signal="input_event" from="Cube_006/cube6" to="." method="_on_cube_6_input_event"]
+[connection signal="input_event" from="Cube_007/cube7" to="." method="_on_cube_7_input_event"]
+[connection signal="body_entered" from="mousefree" to="." method="_on_mousefree_body_entered"]
+[connection signal="body_exited" from="mousefree" to="." method="_on_mousefree_body_exited"]

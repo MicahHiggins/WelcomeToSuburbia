@@ -12,7 +12,7 @@ var drawn_tiles = []
 
 
 
-
+var can_draw: bool = true
 func rand_num():
 	return randi_range(1, 3)
 func _ready() -> void:
@@ -56,6 +56,9 @@ func _ready() -> void:
 		
 
 func _process(delta: float) -> void:
+	
+	if not symbol.can_draw: 
+		return # Exit early if drawing is disabled
 	var tile = local_to_map(get_local_mouse_position())
 	#print(tile)
 	#var tile2 = local_to_map(get_local_mouse_position()) + Vector2i(1, 1)

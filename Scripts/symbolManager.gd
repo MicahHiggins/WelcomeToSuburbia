@@ -1,4 +1,8 @@
 extends Node3D
+
+class_name symbol
+
+
 @onready var drawing: Node2D = $Drawing
 @onready var seeing: Node2D = $Seeing
 @onready var exit: Button = $Buttons/Exit
@@ -12,6 +16,9 @@ extends Node3D
 
 @onready var buttons: Control = $Buttons
 
+
+
+static var can_draw: bool = true
 var in_area = false
 var see = false
 var do = false

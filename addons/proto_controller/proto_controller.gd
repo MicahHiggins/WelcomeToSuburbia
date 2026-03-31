@@ -31,6 +31,7 @@ class_name player
 @export var stamina_drain_per_sec: float = 18.0
 @export var stamina_regen_per_sec: float = 12.0
 @export var stamina_regen_delay: float = 0.75 # seconds after sprint stops before regen starts
+@export var mouse_sensitivity: float = 0.002
 
 var stamina_current: float
 var stamina_regen_cd: float = 0.0
@@ -446,6 +447,9 @@ func _input(event: InputEvent) -> void:
 		_release_mouse()
 
 func _unhandled_input(event: InputEvent) -> void:
+	#if event is InputEventMouseMotion and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
+		#rotate_y(-event.relative.x * mouse_sensitivity)
+		
 	if not is_multiplayer_authority():
 		return
 
