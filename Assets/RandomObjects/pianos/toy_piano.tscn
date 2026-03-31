@@ -92,24 +92,6 @@ stream = ExtResource("7_5xlke")
 attenuation_model = 2
 max_distance = 5.0
 
-[node name="Note1" type="AudioStreamPlayer" parent="." index="13"]
-stream = ExtResource("3_segkh")
-
-[node name="Note3" type="AudioStreamPlayer" parent="." index="14"]
-stream = ExtResource("5_5sopt")
-
-[node name="Note4" type="AudioStreamPlayer" parent="." index="15"]
-stream = ExtResource("8_ypxqi")
-
-[node name="Note5" type="AudioStreamPlayer" parent="." index="16"]
-stream = ExtResource("6_ywdog")
-
-[node name="Note6" type="AudioStreamPlayer" parent="." index="17"]
-stream = ExtResource("9_1iq74")
-
-[node name="Note7" type="AudioStreamPlayer" parent="." index="18"]
-stream = ExtResource("7_5xlke")
-
 [connection signal="input_event" from="Cube_001/cube1" to="." method="_on_cube_1_input_event"]
 [connection signal="input_event" from="Cube_002/cube2" to="." method="_on_cube_2_input_event"]
 [connection signal="input_event" from="Cube_003/cube3" to="." method="_on_cube_3_input_event"]

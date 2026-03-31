@@ -11,7 +11,7 @@
 [ext_resource type="PackedScene" uid="uid://2rewv5roiott" path="res://Assets/RandomObjects/Placeholder_Bedroom/Desk.glb" id="8_un8vx"]
 [ext_resource type="PackedScene" uid="uid://bjmnpch456whw" path="res://Assets/RandomObjects/Placeholder_Bedroom/Light Desk.glb" id="9_lobfv"]
 [ext_resource type="PackedScene" uid="uid://cin0qg3kj3yj2" path="res://Assets/RandomObjects/chair/Chair.glb" id="10_ppsdj"]
-[ext_resource type="PackedScene" uid="uid://c2v2vucm2vi2v" path="res://Assets/RandomObjects/pianos/toy_piano_2.glb" id="11_wt8sx"]
+[ext_resource type="PackedScene" uid="uid://b2qs55r6f7vro" path="res://Assets/RandomObjects/pianos/toy_piano_listen.tscn" id="12_6rn1s"]
 [ext_resource type="PackedScene" uid="uid://odknx6p0jv2f" path="res://Assets/RandomObjects/pianos/toy_piano.tscn" id="13_itlhn"]
 [ext_resource type="PackedScene" uid="uid://d0082o2yj0qb2" path="res://Assets/RandomObjects/bedrooms/bedroom_2.tscn" id="13_vmkem"]
 [ext_resource type="PackedScene" uid="uid://c4o2j15yoqaln" path="res://HouseModel/surb_house_v_1.tscn" id="14_mgih5"]
@@ -23,6 +23,21 @@
 [ext_resource type="PackedScene" uid="uid://drk8i4p1of8ar" path="res://aidan_stuff/whitefence_1.tscn" id="20_eyvg3"]
 [ext_resource type="PackedScene" uid="uid://ret8ne1fmk7l" path="res://Assets/RandomObjects/road/road.tscn" id="21_qolbo"]
 [ext_resource type="PackedScene" uid="uid://c5jxy2ugosnbe" path="res://Assets/RandomObjects/symbol/SymbolPuzzle.tscn" id="22_itlhn"]
+
+[sub_resource type="Animation" id="Animation_2uf5w"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Bedrooms/bedroom2/Dresser:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(2.5068974, -0.8876658, -0.029426575)]
+}
 
 [sub_resource type="Animation" id="Animation_pm42j"]
 resource_name = "puzzle1Complete"
@@ -38,21 +53,6 @@ tracks/0/keys = {
 "transitions": PackedFloat32Array(1, 1),
 "update": 0,
 "values": [Vector3(2.5068974, -0.8876658, -0.029426575), Vector3(2.5068977, -0.8876658, -1.773798)]
-}
-
-[sub_resource type="Animation" id="Animation_2uf5w"]
-length = 0.001
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("Bedrooms/bedroom2/Dresser:position")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [Vector3(2.5068974, -0.8876658, -0.029426575)]
 }
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_lyc4m"]
@@ -305,8 +305,8 @@ transform = Transform3D(-1.3131986, 0, -0.72492445, 0, 1.5, 0, 0.72492445, 0, -1
 transform = Transform3D(1, 0, -4.4703484e-08, 0, 1, 0, 4.4703484e-08, 0, 1, 0.9011636, 0.17053258, -1.1934946)
 shape = SubResource("BoxShape3D_pe1yd")
 
-[node name="toy_piano_2" parent="Bedrooms/bedroom1" instance=ExtResource("11_wt8sx")]
-transform = Transform3D(-6.5567116e-09, 0, -0.1500001, 0, 0.15000002, 0, 0.1500001, 0, -6.5567116e-09, -2.5088928, -0.7991139, -2.1711254)
+[node name="toy_pianoListen" parent="Bedrooms/bedroom1" instance=ExtResource("12_6rn1s")]
+transform = Transform3D(-0.07346906, 0, -0.13077593, 0, 0.15000002, 0, 0.13077593, 0, -0.07346906, -2.4769094, -0.8305659, -1.5111351)
 
 [node name="bedroom2" parent="Bedrooms" instance=ExtResource("13_vmkem")]
 transform = Transform3D(-1.5, 0, -2.2649371e-07, 0, 1.2, 0, 2.2649371e-07, 0, -1.5, 0.3168704, 0.11224883, -13.854978)
