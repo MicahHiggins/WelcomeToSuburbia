@@ -69,10 +69,10 @@ text = "Vote Start
 "
 
 [node name="Ready" type="Label" parent="LobbyUI"]
-offset_left = 279.0
-offset_top = 241.0
-offset_right = 853.0
-offset_bottom = 350.0
+offset_left = 457.0
+offset_top = 270.0
+offset_right = 668.0
+offset_bottom = 324.0
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." instance=ExtResource("2_sknj8")]
 environment = SubResource("Environment_f8w8m")
