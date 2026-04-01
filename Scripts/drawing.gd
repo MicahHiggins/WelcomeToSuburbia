@@ -1,7 +1,8 @@
 extends TileMapLayer
 @onready var clear: Button = $"../Clear"
+@onready var label: Label = $"../../Buttons4See/Label"
 
-@onready var label: Label = $"../../Buttons/Label"
+
 
 var gridSize = 30
 var Dict = {}
@@ -13,20 +14,16 @@ var drawn_tiles = []
 
 
 var can_draw: bool = true
+
 func rand_num():
 	return randi_range(1, 3)
+	
 func _ready() -> void:
 	mask_arr.clear()
-	GlobalVariables.puzzleType = randi_range(1, 3)
 	label.text = "Hello!"
 	#print("num: ", num)
-	match(GlobalVariables.puzzleType):
-		1:
-			_drawing1()
-		2: 
-			_drawing2()
-		3:
-			_drawing3()
+	_drawing1()
+
 			
 	
 	for x in gridSize:
@@ -112,31 +109,6 @@ func _drawing1():
 			mask_arr.append(pic2)
 			#set_cell(pic2, 1, Vector2i(0, 0), 0)
 
-func _drawing2():
-	print("d2")
-	var eyes = 5
-	for x in gridSize:
-		if x != 10 && x != 20:
-			var pic = Vector2i(x+20, eyes)
-			mask_arr.append(pic)
-			var pic2 = Vector2i(x+20, eyes+20)
-			#set_cell(pic, 1, Vector2i(0, 0), 0)
-			mask_arr.append(pic2)
-			#set_cell(pic2, 1, Vector2i(0, 0), 0)
-	
-	
-func _drawing3():
-	print("d3")
-	var eyes = 5
-	for x in gridSize:
-		if x != 10 && x != 20:
-			var pic = Vector2i(x+20, eyes)
-			mask_arr.append(pic)
-			#var pic2 = Vector2i(x+40, eyes)
-			##set_cell(pic, 1, Vector2i(0, 0), 0)
-			#mask_arr.append(pic2)
-			
-	
 
 
 func _on_button_pressed() -> void:
@@ -154,15 +126,11 @@ func _on_button_pressed() -> void:
 	
 	count = count
 	perc = count/mask_size
-	print(mask_size)
-	print(count)
-	print(perc)
-	label.text = "Calculating Results."
-	await get_tree().create_timer(0.3).timeout 
-	label.text = "Calculating Results.."
-	await get_tree().create_timer(0.3).timeout 
+	#print(mask_size)
+	#print(count)
+	#print(perc)
 	label.text = "Calculating Results..."
-	await get_tree().create_timer(0.3).timeout 
+	await get_tree().create_timer(1).timeout 
 	var percentage = perc * 100
 	print(percentage)
 	if percentage >= 60:
