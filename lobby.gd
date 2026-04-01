@@ -7,14 +7,14 @@ const SERVER_ID: int = 1 # host is peer 1 in our setup
 @export var min_players_to_start: int = 2
 
 # UI nodes in the lobby scene
-@export var lobby_ui_root_path: NodePath = NodePath("LobbyUI") # ADDED: hide/show the whole lobby UI
+@export var lobby_ui_root_path: NodePath = NodePath("LobbyUI") # hide/show the whole lobby UI
 @export var start_button_path: NodePath = NodePath("LobbyUI/VoteStart")
 @export var status_label_path: NodePath = NodePath("LobbyUI/PlayerCount")
 
 # shared popup/countdown label (LobbyUI/Ready)
 @export var ready_popup_label_path: NodePath = NodePath("LobbyUI/Ready")
 
-@export var start_countdown_seconds: int = 3 # ADDED: countdown before starting Level 1
+@export var start_countdown_seconds: int = 3 # countdown before starting Level 1
 
 var _lfm: Node = null
 var _ui_root: CanvasItem = null
@@ -28,7 +28,7 @@ var _votes: Dictionary = {} # int(peer_id) -> bool
 # local cache so we know if *this* player already voted (for button color/text)
 var _local_peer_id: int = -1
 
-# ADDED: stop double-starts
+# stop double-starts
 var _starting: bool = false
 
 
@@ -42,15 +42,13 @@ func _ready() -> void:
 
 	_local_peer_id = multiplayer.get_unique_id()
 
-	# ADDED: hide the whole lobby UI at first
+	# hide everything until we are ACTUALLY hosted/joined
 	if _ui_root != null:
 		_ui_root.visible = false
 
 	if _start_btn != null:
 		_start_btn.visible = false
 		_start_btn.disabled = true
-
-		# prevents the "pressed already connected" error
 		if not _start_btn.pressed.is_connected(_on_start_pressed):
 			_start_btn.pressed.connect(_on_start_pressed)
 
@@ -69,7 +67,16 @@ func _ready() -> void:
 		if not _votes.has(host_id):
 			_votes[host_id] = false
 
-	# one initial refresh
+	# refresh when client connects
+	if not multiplayer.connected_to_server.is_connected(_on_connected_refresh):
+		multiplayer.connected_to_server.connect(_on_connected_refresh)
+
+	# one initial refresh (stays hidden if not hosted/joined)
+	_update_status()
+
+
+func _on_connected_refresh() -> void:
+	_local_peer_id = multiplayer.get_unique_id()
 	_on_peer_change(-1)
 
 
@@ -89,7 +96,7 @@ func _find_level_flow_manager() -> Node:
 
 func _on_peer_change(id: int) -> void:
 	# keep vote list clean when people join/leave
-	if multiplayer.has_multiplayer_peer() and multiplayer.is_server():
+	if _is_server_session_active() and multiplayer.is_server():
 		if id != -1 and not _votes.has(id):
 			_votes[id] = false
 
@@ -107,10 +114,33 @@ func _on_peer_change(id: int) -> void:
 	_update_status()
 
 
+# -------------------------
+# ADDED: this is the real "are we hosted/joined yet?" check
+# -------------------------
+func _is_session_active() -> bool:
+	var mp: MultiplayerPeer = multiplayer.multiplayer_peer
+	if mp == null:
+		return false
+
+	# host counts as active as soon as the peer exists
+	if multiplayer.is_server():
+		return true
+
+	# clients only count as active once actually connected
+	return mp.get_connection_status() == MultiplayerPeer.CONNECTION_CONNECTED
+
+
+# server-side flavor (same thing but reads nicer in code)
+func _is_server_session_active() -> bool:
+	return multiplayer.multiplayer_peer != null
+
+
+# lobby player count uses NETWORK peers, not the "player" group
 func _get_player_count() -> int:
-	# keeping your original logic (works for you already)
-	var players := get_tree().get_nodes_in_group("player")
-	return players.size()
+	if not _is_session_active():
+		return 0
+
+	return 1 + multiplayer.get_peers().size()
 
 
 func _get_vote_count() -> int:
@@ -122,24 +152,32 @@ func _get_vote_count() -> int:
 
 
 func _update_status() -> void:
+	var active := _is_session_active()
+
+	# IMPORTANT: no hosting/joining = UI stays hidden and blank
+	if _ui_root != null:
+		_ui_root.visible = active
+
+	if not active:
+		if _start_btn != null:
+			_start_btn.visible = false
+		if _status != null:
+			_status.text = ""
+		return
+
+	# from here on, we are hosted/joined, so show 1/2, 2/2, etc
 	var count := _get_player_count()
 	var votes := _get_vote_count()
-
-	# ADDED: only show the UI once BOTH players are actually in the lobby level
 	var lobby_full := count >= min_players_to_start
-	if _ui_root != null:
-		_ui_root.visible = lobby_full
 
-	# button hidden until lobby is full
 	if _start_btn != null:
 		_start_btn.visible = lobby_full
 
-	# status text
 	if _status != null:
 		if lobby_full:
 			_status.text = "Players: %d / %d   Votes: %d / %d" % [count, min_players_to_start, votes, min_players_to_start]
 		else:
-			_status.text = "" # ADDED: no UI text before the lobby is really full
+			_status.text = "Players: %d / %d" % [count, min_players_to_start]
 
 	_update_button_visuals()
 
@@ -228,17 +266,13 @@ func _register_vote(peer_id: int, display_name: String) -> void:
 	if _get_vote_count() >= min_players_to_start and not _starting:
 		_starting = true
 		rpc("_rpc_set_starting", true)
-
-		# run the countdown on EVERYONE using the same Ready label
 		rpc("_rpc_start_countdown", start_countdown_seconds)
 
-		# server waits too, then starts Level 1
 		await _server_wait_seconds(float(start_countdown_seconds))
 		_try_start_level_1_server()
 
 
 func _try_start_level_1_server() -> void:
-	# server only
 	if multiplayer.has_multiplayer_peer() and not multiplayer.is_server():
 		return
 
@@ -251,8 +285,6 @@ func _try_start_level_1_server() -> void:
 
 	if _lfm.has_method("request_level_change"):
 		_lfm.call("request_level_change", 1)
-	else:
-		push_warning("[LobbyReady] LevelFlowManager missing request_level_change(level_index).")
 
 
 func _broadcast_votes() -> void:
@@ -310,7 +342,6 @@ func _do_countdown_local(seconds: int = 3) -> void:
 
 
 func _server_wait_seconds(s: float) -> void:
-	# tiny helper so server can await cleanly
 	await get_tree().create_timer(s).timeout
 
 
