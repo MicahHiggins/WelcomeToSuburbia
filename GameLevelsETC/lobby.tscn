@@ -23,10 +23,10 @@ shape = SubResource("BoxShape3D_sknj8")
 [node name="LobbyUI" type="CanvasLayer" parent="."]
 
 [node name="PlayerCount" type="Label" parent="LobbyUI"]
-offset_left = 999.0
-offset_top = 29.0
-offset_right = 1072.0
-offset_bottom = 64.0
+offset_left = 865.0
+offset_top = 35.0
+offset_right = 1111.0
+offset_bottom = 70.0
 
 [node name="VoteStart" type="Button" parent="LobbyUI"]
 offset_left = 986.0
