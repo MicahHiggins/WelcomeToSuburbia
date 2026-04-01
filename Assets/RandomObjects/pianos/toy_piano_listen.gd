@@ -6,6 +6,7 @@ extends Node3D
 
 
 
+@onready var collision_shape_3d: CollisionShape3D = $Cube/Area3D/CollisionShape3D
 
 @onready var note_1: AudioStreamPlayer3D = $Audio/note1
 @onready var note_2: AudioStreamPlayer3D = $Audio/note2
@@ -50,8 +51,10 @@ func _on_mousefree_body_exited(body: Node3D) -> void:
 
 func _on_area_3d_input_event(camera: Node, event: InputEvent, event_position: Vector3, normal: Vector3, shape_idx: int) -> void:
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+		collision_shape_3d.set_deferred("disabled", true)
 		for i in range(8):
 			notesArr[i].play()
 			animation_player_2.stop()
 			animation_player_2.play(animArr[i])
 			await get_tree().create_timer(1).timeout
+		collision_shape_3d.set_deferred("disabled", false)
