@@ -38,7 +38,14 @@ func physics_update(delta: float) -> void:
 	var npc3d := npc as NPC
 	if npc3d == null:
 		return
-
+	
+	#Find and play animations for NPC models
+	var model_node = find_descendant_in_group(npc3d, "NPC_Body")
+	if model_node:
+		var anim_player = find_descendant_in_group(model_node, "NPC_Animation")
+		if anim_player:
+			anim_player.play("NewWalking")
+	
 	# talk interrupt (optional)
 	if _is_player_in_talk_range():
 		npc3d.save_patrol_resume(_idx, _wait_t)
@@ -138,3 +145,15 @@ func _is_player_in_talk_range() -> bool:
 		if b != null and b.is_in_group("player"):
 			return true
 	return false
+	
+#For finding nodes within nodes using groups
+func find_descendant_in_group(node: Node, group: String) -> Node:
+	if node.is_in_group(group):
+		return node
+		
+	for child in node.get_children():
+		var result = find_descendant_in_group(child, group)
+		if result:
+			return result
+			
+	return null

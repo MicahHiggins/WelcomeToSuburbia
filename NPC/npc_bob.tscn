@@ -54,10 +54,8 @@ shape = SubResource("SphereShape3D_g4ita")
 [node name="ResourceTests" type="Node3D" parent="."]
 script = ExtResource("6_oknps")
 npc_name = "Bob"
-health = null
-move_speed = null
 
-[node name="hooman" parent="." instance=ExtResource("6_0uuot")]
+[node name="bob" parent="." groups=["NPC_Body"] instance=ExtResource("6_0uuot")]
 transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, -0.84263754, 0)
 
 [connection signal="body_entered" from="interact" to="." method="_on_interact_body_entered"]
