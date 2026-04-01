@@ -51,6 +51,15 @@ var _aim_last_send_time: float = 0.0
 var _aim_target_basis: Basis = Basis.IDENTITY
 var _aim_has_target: bool = false
 
+# ADDED: replicate dropped motion so the joiner sees it fall too
+@export var replicate_drop_motion: bool = true
+@export var drop_send_rate_hz: float = 20.0
+@export var drop_lerp_alpha: float = 0.25
+
+var _drop_last_send_time: float = 0.0
+var _drop_target_xform: Transform3D = Transform3D.IDENTITY
+var _drop_has_target: bool = false
+
 
 func _ready() -> void:
 	add_to_group("pickup")
@@ -74,8 +83,11 @@ func _ready() -> void:
 	if uv_light != null:
 		uv_light.visible = false
 
-	# ADDED: make sure our starting aim basis is "clean rotation" (no scale)
+	# make sure our starting aim basis is a clean rotation (no scale)
 	_aim_target_basis = global_transform.basis.orthonormalized()
+
+	# ADDED: init drop net target too
+	_drop_target_xform = global_transform
 
 
 func set_hovered(v: bool) -> void:
@@ -106,22 +118,26 @@ func _process(_delta: float) -> void:
 		return
 
 	# MULTIPLAYER:
-	# Only the flashlight authority computes reveal and broadcasts it.
-	# Everyone else only applies what they receive.
+	# only the flashlight authority computes reveal and broadcasts it
+	# everyone else only applies what they receive
 	if replicate_reveal and is_multiplayer_authority():
 		_process_reveal_local()
 		_net_maybe_send_reveals()
 	else:
-		# Non-authority should not run local reveal; it would diverge.
+		# non-authority should not run local reveal; it would diverge
 		_revealed_this_frame.clear()
 		_clear_previous_reveals()
 
-	# Aim replication tick (rotation)
+	# aim replication tick (rotation)
 	if replicate_aim and multiplayer.has_multiplayer_peer() and _held:
 		if is_multiplayer_authority():
 			_net_maybe_send_aim()
 		else:
 			_net_interpolate_remote_aim()
+
+	# ADDED: when it's dropped, clients lerp to the server's falling transform
+	if replicate_drop_motion and multiplayer.has_multiplayer_peer() and not multiplayer.is_server() and not _held:
+		_net_interpolate_remote_drop()
 
 
 func _process_reveal_local() -> void:
@@ -166,12 +182,16 @@ func _do_drop_physics(delta: float) -> void:
 
 	move_and_slide()
 
+	# ADDED: server streams dropped motion so everyone sees it fall
+	if replicate_drop_motion and multiplayer.has_multiplayer_peer() and multiplayer.is_server() and not _held:
+		_net_maybe_send_drop_xform()
+
 
 func _reveal_in_beam() -> void:
-	# Default beam center is max range straight ahead
+	# default beam center is max range straight ahead
 	var hit_pos := global_transform.origin + (-global_transform.basis.z.normalized() * uv_range_m)
 
-	# Only accept collisions that belong to uv_reveal targets
+	# only accept collisions that belong to uv_reveal targets
 	if uv_cast != null and uv_cast.is_colliding():
 		var best_d := -INF
 
@@ -192,7 +212,7 @@ func _reveal_in_beam() -> void:
 			var p := uv_cast.get_collision_point(i)
 			var d := global_transform.origin.distance_to(p)
 
-			# Pick the farthest valid uv_reveal hit
+			# pick the farthest valid uv_reveal hit
 			if d > best_d:
 				best_d = d
 				hit_pos = p
@@ -265,7 +285,7 @@ func _net_maybe_send_reveals() -> void:
 		return
 	_reveal_last_send_time = now
 
-	# Pack current revealed targets as absolute node paths (must match on all peers)
+	# pack current revealed targets as absolute node paths (must match on all peers)
 	var paths: Array[String] = []
 	for k in _revealed_this_frame.keys():
 		var rt := k as UvRevealTarget
@@ -278,7 +298,7 @@ func _net_maybe_send_reveals() -> void:
 # apply reveal list on all peers (including host)
 @rpc("any_peer", "call_local", "unreliable")
 func _rpc_apply_reveals(paths: Array[String]) -> void:
-	# Turn ON any targets in the list
+	# turn ON any targets in the list
 	var seen: Dictionary = {}
 	for pstr in paths:
 		seen[pstr] = true
@@ -287,7 +307,7 @@ func _rpc_apply_reveals(paths: Array[String]) -> void:
 		if rt != null and is_instance_valid(rt):
 			rt.set_reveal(true)
 
-	# Turn OFF anything that was on last tick but is missing now
+	# turn OFF anything that was on last tick but is missing now
 	for old_key in _net_prev_reveals.keys():
 		var kstr: String = String(old_key)
 		if not seen.has(kstr):
@@ -299,7 +319,7 @@ func _rpc_apply_reveals(paths: Array[String]) -> void:
 	_net_prev_reveals = seen
 
 
-# Aim replication (rotation only)
+# aim replication (rotation only)
 func _net_maybe_send_aim() -> void:
 	var mp: MultiplayerPeer = multiplayer.multiplayer_peer
 	if mp == null or mp.get_connection_status() != MultiplayerPeer.CONNECTION_CONNECTED:
@@ -312,7 +332,7 @@ func _net_maybe_send_aim() -> void:
 
 	_aim_last_send_time = now
 
-	# CHANGED: always send a clean rotation basis (no scale) so slerp won't explode
+	# always send a clean rotation basis (no scale) so slerp won't explode
 	var clean_basis: Basis = global_transform.basis.orthonormalized()
 	rpc("_rpc_set_aim_basis", clean_basis)
 
@@ -323,7 +343,7 @@ func _rpc_set_aim_basis(b: Basis) -> void:
 	if is_multiplayer_authority():
 		return
 
-	# CHANGED: sanitize incoming basis so it's a real rotation
+	# sanitize incoming basis so it's a real rotation
 	_aim_target_basis = b.orthonormalized()
 	_aim_has_target = true
 
@@ -332,10 +352,48 @@ func _net_interpolate_remote_aim() -> void:
 	if not _aim_has_target:
 		return
 
-	# CHANGED: sanitize both bases before slerp (fixes the "Basis must be normalized" error)
+	# sanitize both bases before slerp (fixes the "Basis must be normalized" error)
 	var gt := global_transform
 	var cur_basis: Basis = gt.basis.orthonormalized()
 	var tgt_basis: Basis = _aim_target_basis.orthonormalized()
 
 	gt.basis = cur_basis.slerp(tgt_basis, aim_lerp_alpha)
+	global_transform = gt
+
+
+# ADDED: dropped-motion replication (server -> clients)
+func _net_maybe_send_drop_xform() -> void:
+	var mp: MultiplayerPeer = multiplayer.multiplayer_peer
+	if mp == null or mp.get_connection_status() != MultiplayerPeer.CONNECTION_CONNECTED:
+		return
+
+	var now: float = float(Time.get_ticks_msec()) / 1000.0
+	var min_interval: float = 1.0 / max(drop_send_rate_hz, 1.0)
+	if now - _drop_last_send_time < min_interval:
+		return
+	_drop_last_send_time = now
+
+	rpc("_rpc_set_drop_xform", global_transform)
+
+
+@rpc("any_peer", "call_local", "unreliable")
+func _rpc_set_drop_xform(t: Transform3D) -> void:
+	# server doesn't need its own packet
+	if multiplayer.has_multiplayer_peer() and multiplayer.is_server():
+		return
+
+	_drop_target_xform = t
+	_drop_has_target = true
+
+
+func _net_interpolate_remote_drop() -> void:
+	if not _drop_has_target:
+		return
+
+	# keep it stable even if basis gets slightly dirty over the network
+	var gt := global_transform
+	var target := _drop_target_xform
+
+	gt.origin = gt.origin.lerp(target.origin, drop_lerp_alpha)
+	gt.basis = gt.basis.slerp(target.basis.orthonormalized(), drop_lerp_alpha)
 	global_transform = gt
