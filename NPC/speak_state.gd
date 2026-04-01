@@ -1,32 +1,38 @@
 extends NPCState
 class_name SpeakState
 
-const SERVER_ID: int = 1
-
 @export var talk_detection: Area3D
 
-# ADDED: keep it simple — server runs, clients mirror
-@export var net_sync_enabled: bool = true
+var _empty_time: float = 0.0
 
-var _speaker_peer_id: int = -1
+# -------------------------------
+# ADDED: tiny multiplayer sync
+# - server runs SpeakState logic
+# - clients just apply anim + look direction
+# -------------------------------
+@export var net_sync_enabled: bool = true
 
 var _anim_player: AnimationPlayer = null
 var _last_anim: StringName = &""
 
+# clients apply this look target when server sends it
 var _net_look_target: Vector3 = Vector3.ZERO
 var _net_has_look_target: bool = false
 
 
-func enter(msg := {}) -> void:
+func enter(_msg := {}) -> void:
+	_empty_time = 0.0
 	_stop_npc()
 	_last_anim = &""
-
-	# ADDED: remember who started the conversation
-	_speaker_peer_id = int(msg.get("speaker", -1))
-
 	_cache_anim_player()
 
-	# ADDED: when we enter SpeakState, we just play the talking anim
+	# ADDED: reset look cache when entering
+	_net_has_look_target = false
+
+	if npc == null:
+		return
+
+	# when we enter, make sure everyone starts the talking anim
 	_play_anim_local(&"NewTalking")
 	_net_broadcast_anim(&"NewTalking")
 
@@ -38,48 +44,52 @@ func physics_update(delta: float) -> void:
 	if npc3d == null:
 		return
 
-	# ADDED: clients don’t decide anything — they only apply what server sends
+	# clients don't run the logic, they just apply what the server sends
 	if _is_net_client():
 		_apply_net_anim()
 		_apply_net_look(npc3d)
 		return
 
-	# SERVER / SINGLEPLAYER:
-	_play_anim_local(&"NewTalking")
-	_net_broadcast_anim(&"NewTalking")
-
-	# If talk_detection isn't set, we can't aim at anyone
-	if talk_detection == null or not is_instance_valid(talk_detection):
+	# ------------------------------------------------
+	# SERVER / SINGLEPLAYER: normal SpeakState behavior
+	# ------------------------------------------------
+	if GlobalVariables.playerTalking == true:
+		_play_anim_local(&"NewTalking")
+		_net_broadcast_anim(&"NewTalking")
+	else:
+		_net_broadcast_state_change(&"TalkState", {})
+		change_state.emit(&"TalkState")
 		return
 
-	# ADDED: pick the "speaker" player first
-	var chosen: Node3D = null
+	# ------------------------------------------------
+	# FIX: don't pick "the first player"
+	# pick the CLOSEST player in the talk area so joiner can trigger it too
+	# ------------------------------------------------
+	if talk_detection != null and is_instance_valid(talk_detection):
+		var best_player: Node3D = null
+		var best_d2: float = INF
+		var my_pos: Vector3 = npc3d.global_position
 
-	if _speaker_peer_id != -1:
 		for b in talk_detection.get_overlapping_bodies():
 			var p := b as Node3D
-			if p != null and p.is_in_group("player"):
-				if int(p.get_multiplayer_authority()) == _speaker_peer_id:
-					chosen = p
-					break
+			if p == null:
+				continue
+			if not p.is_in_group("player"):
+				continue
 
-	# fallback: if we couldn't find them, just pick the closest player in the area
-	if chosen == null:
-		var best_d := INF
-		for b in talk_detection.get_overlapping_bodies():
-			var p2 := b as Node3D
-			if p2 != null and p2.is_in_group("player"):
-				var d := npc3d.global_position.distance_to(p2.global_position)
-				if d < best_d:
-					best_d = d
-					chosen = p2
+			var d2 := my_pos.distance_squared_to(p.global_position)
+			if d2 < best_d2:
+				best_d2 = d2
+				best_player = p
 
-	if chosen != null:
-		var target := chosen.global_position
-		var look_target := target
-		look_target.y += 1.5
-		npc3d.look_at(look_target)
-		_net_broadcast_look_target(look_target)
+		if best_player != null:
+			var target := best_player.global_position
+			var look_target := target
+			look_target.y += 1.5
+			npc3d.look_at(look_target)
+
+			# send look target so clients see the same facing direction
+			_net_broadcast_look_target(look_target)
 
 
 func _stop_npc() -> void:
@@ -90,7 +100,7 @@ func _stop_npc() -> void:
 
 
 # -------------------------------
-# animation helpers
+# animation helpers (cache once, don't restart every frame)
 # -------------------------------
 func _cache_anim_player() -> void:
 	_anim_player = null
@@ -153,6 +163,23 @@ func _rpc_play_anim(anim_name: String) -> void:
 		return
 	_last_anim = StringName(anim_name)
 	_play_anim_local(_last_anim)
+
+
+func _net_broadcast_state_change(state_name: StringName, msg: Dictionary) -> void:
+	if not net_sync_enabled:
+		return
+	if not multiplayer.has_multiplayer_peer():
+		return
+	if not multiplayer.is_server():
+		return
+	rpc("_rpc_force_state", String(state_name), msg)
+
+
+@rpc("any_peer", "call_local", "reliable")
+func _rpc_force_state(state_name: String, msg: Dictionary) -> void:
+	if multiplayer.has_multiplayer_peer() and multiplayer.is_server():
+		return
+	change_state.emit(StringName(state_name), msg)
 
 
 func _net_broadcast_look_target(look_target: Vector3) -> void:
