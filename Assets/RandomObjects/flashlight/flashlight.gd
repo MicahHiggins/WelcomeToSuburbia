@@ -31,29 +31,42 @@ var _uv_on: bool = false
 var _revealed_this_frame: Dictionary = {}
 var _previous_reveals: Array[UvRevealTarget] = []
 
-# ADDED: server id (host)
 const SERVER_ID: int = 1
 
-# ADDED: reveal replication (owner broadcasts which targets are being hit)
+# reveal replication (owner broadcasts which targets are being hit)
 @export var replicate_reveal: bool = true
 @export var reveal_send_rate_hz: float = 20.0
 var _reveal_last_send_time: float = 0.0
-
-# ADDED: receiver-side cache so we can turn off ones not in the latest packet
 var _net_prev_reveals: Dictionary = {} # String(path) -> bool
 
-# ADDED: replicate flashlight aim (rotation) so all peers see same beam direction
+# replicate flashlight aim (rotation) so all peers see same beam direction
 @export var replicate_aim: bool = true
 @export var aim_send_rate_hz: float = 20.0
 @export var aim_lerp_alpha: float = 0.35
 
 var _aim_last_send_time: float = 0.0
-var _aim_target_basis: Basis = Basis.IDENTITY
+var _aim_target_q: Quaternion = Quaternion.IDENTITY
 var _aim_has_target: bool = false
+
+# replicate dropped motion so the joiner sees it fall too
+@export var replicate_drop_motion: bool = true
+@export var drop_send_rate_hz: float = 20.0
+@export var drop_lerp_alpha: float = 0.25
+
+var _drop_last_send_time: float = 0.0
+var _drop_target_pos: Vector3 = Vector3.ZERO
+var _drop_target_q: Quaternion = Quaternion.IDENTITY
+var _drop_has_target: bool = false
+
+# ADDED: remember how big the flashlight is supposed to be (prevents "huge flashlight" bugs)
+var _base_scale: Vector3 = Vector3.ONE
 
 
 func _ready() -> void:
 	add_to_group("pickup")
+
+	# ADDED: cache our intended scale from the scene file
+	_base_scale = scale
 
 	if outline_mesh_path != NodePath(""):
 		outline_mesh = get_node_or_null(outline_mesh_path) as MeshInstance3D
@@ -74,7 +87,12 @@ func _ready() -> void:
 	if uv_light != null:
 		uv_light.visible = false
 
-	_aim_target_basis = global_transform.basis
+	# start aim target from our current rotation
+	_aim_target_q = global_transform.basis.orthonormalized().get_rotation_quaternion()
+
+	# start drop targets too
+	_drop_target_pos = global_position
+	_drop_target_q = global_transform.basis.orthonormalized().get_rotation_quaternion()
 
 
 func set_hovered(v: bool) -> void:
@@ -105,22 +123,24 @@ func _process(_delta: float) -> void:
 		return
 
 	# MULTIPLAYER:
-	# Only the flashlight authority computes reveal and broadcasts it.
-	# Everyone else only applies what they receive.
+	# only the flashlight authority computes reveal and broadcasts it
 	if replicate_reveal and is_multiplayer_authority():
 		_process_reveal_local()
 		_net_maybe_send_reveals()
 	else:
-		# Non-authority should not run local reveal; it would diverge.
 		_revealed_this_frame.clear()
 		_clear_previous_reveals()
 
-	# Aim replication tick (rotation)
-	if replicate_aim and multiplayer.has_multiplayer_peer() and _held:
+	# aim replication tick (rotation)
+	if replicate_aim and _held:
 		if is_multiplayer_authority():
 			_net_maybe_send_aim()
 		else:
 			_net_interpolate_remote_aim()
+
+	# dropped motion replication (clients lerp to server)
+	if replicate_drop_motion and not multiplayer.is_server() and not _held:
+		_net_interpolate_remote_drop()
 
 
 func _process_reveal_local() -> void:
@@ -165,17 +185,17 @@ func _do_drop_physics(delta: float) -> void:
 
 	move_and_slide()
 
+	# server streams dropped motion so everyone sees it fall
+	if replicate_drop_motion and multiplayer.has_multiplayer_peer() and multiplayer.is_server() and not _held:
+		_net_maybe_send_drop()
+
 
 func _reveal_in_beam() -> void:
-	# Default beam center is max range straight ahead
 	var hit_pos := global_transform.origin + (-global_transform.basis.z.normalized() * uv_range_m)
 
-	# ADDED: Only accept collisions that belong to uv_reveal targets
-	# This prevents near collisions (walls/player) from forcing you to get close.
+	# only accept collisions that belong to uv_reveal targets
 	if uv_cast != null and uv_cast.is_colliding():
-		var found_valid := false
 		var best_d := -INF
-
 		for i in range(uv_cast.get_collision_count()):
 			var col := uv_cast.get_collider(i)
 
@@ -192,14 +212,9 @@ func _reveal_in_beam() -> void:
 
 			var p := uv_cast.get_collision_point(i)
 			var d := global_transform.origin.distance_to(p)
-
-			# Pick the farthest valid uv_reveal hit
 			if d > best_d:
 				best_d = d
 				hit_pos = p
-				found_valid = true
-
-		# If no valid uv_reveal collider is hit, keep default hit_pos
 
 	var targets: Array = get_tree().get_nodes_in_group("uv_reveal")
 	var count := 0
@@ -254,7 +269,7 @@ func _rpc_set_uv_visible(v: bool) -> void:
 		uv_light.visible = v
 
 
-# ADDED: send revealed targets to everyone (owner authoritative)
+# send revealed targets to everyone (owner authoritative)
 func _net_maybe_send_reveals() -> void:
 	if not replicate_reveal:
 		return
@@ -269,7 +284,6 @@ func _net_maybe_send_reveals() -> void:
 		return
 	_reveal_last_send_time = now
 
-	# Pack current revealed targets as absolute node paths (must match on all peers)
 	var paths: Array[String] = []
 	for k in _revealed_this_frame.keys():
 		var rt := k as UvRevealTarget
@@ -279,10 +293,8 @@ func _net_maybe_send_reveals() -> void:
 	rpc("_rpc_apply_reveals", paths)
 
 
-# ADDED: apply reveal list on all peers (including host)
 @rpc("any_peer", "call_local", "unreliable")
 func _rpc_apply_reveals(paths: Array[String]) -> void:
-	# Turn ON any targets in the list
 	var seen: Dictionary = {}
 	for pstr in paths:
 		seen[pstr] = true
@@ -291,7 +303,6 @@ func _rpc_apply_reveals(paths: Array[String]) -> void:
 		if rt != null and is_instance_valid(rt):
 			rt.set_reveal(true)
 
-	# Turn OFF anything that was on last tick but is missing now
 	for old_key in _net_prev_reveals.keys():
 		var kstr: String = String(old_key)
 		if not seen.has(kstr):
@@ -303,7 +314,9 @@ func _rpc_apply_reveals(paths: Array[String]) -> void:
 	_net_prev_reveals = seen
 
 
-# Aim replication (rotation only)
+# -------------------------
+# AIM REPLICATION (QUAT)
+# -------------------------
 func _net_maybe_send_aim() -> void:
 	var mp: MultiplayerPeer = multiplayer.multiplayer_peer
 	if mp == null or mp.get_connection_status() != MultiplayerPeer.CONNECTION_CONNECTED:
@@ -315,14 +328,17 @@ func _net_maybe_send_aim() -> void:
 		return
 
 	_aim_last_send_time = now
-	rpc("_rpc_set_aim_basis", global_transform.basis)
+
+	# send only a clean rotation (quat), never a raw basis
+	var q: Quaternion = global_transform.basis.orthonormalized().get_rotation_quaternion()
+	rpc("_rpc_set_aim_quat", q)
 
 
 @rpc("any_peer", "call_local", "unreliable")
-func _rpc_set_aim_basis(b: Basis) -> void:
+func _rpc_set_aim_quat(q: Quaternion) -> void:
 	if is_multiplayer_authority():
 		return
-	_aim_target_basis = b
+	_aim_target_q = q
 	_aim_has_target = true
 
 
@@ -330,6 +346,51 @@ func _net_interpolate_remote_aim() -> void:
 	if not _aim_has_target:
 		return
 
-	var gt := global_transform
-	gt.basis = gt.basis.slerp(_aim_target_basis, aim_lerp_alpha)
-	global_transform = gt
+	var cur_q: Quaternion = global_transform.basis.orthonormalized().get_rotation_quaternion()
+	var new_q: Quaternion = cur_q.slerp(_aim_target_q, aim_lerp_alpha)
+
+	# keep the same scale every time (prevents "big flashlight")
+	var b: Basis = Basis(new_q).scaled(_base_scale)
+	global_transform = Transform3D(b, global_position)
+
+
+# -------------------------
+# DROP REPLICATION (POS + QUAT)
+# -------------------------
+func _net_maybe_send_drop() -> void:
+	var mp: MultiplayerPeer = multiplayer.multiplayer_peer
+	if mp == null or mp.get_connection_status() != MultiplayerPeer.CONNECTION_CONNECTED:
+		return
+
+	var now: float = float(Time.get_ticks_msec()) / 1000.0
+	var min_interval: float = 1.0 / max(drop_send_rate_hz, 1.0)
+	if now - _drop_last_send_time < min_interval:
+		return
+	_drop_last_send_time = now
+
+	var q: Quaternion = global_transform.basis.orthonormalized().get_rotation_quaternion()
+	rpc("_rpc_set_drop_state", global_position, q)
+
+
+@rpc("any_peer", "call_local", "unreliable")
+func _rpc_set_drop_state(pos: Vector3, q: Quaternion) -> void:
+	# server doesn't need its own packet
+	if multiplayer.has_multiplayer_peer() and multiplayer.is_server():
+		return
+
+	_drop_target_pos = pos
+	_drop_target_q = q
+	_drop_has_target = true
+
+
+func _net_interpolate_remote_drop() -> void:
+	if not _drop_has_target:
+		return
+
+	var pos := global_position.lerp(_drop_target_pos, drop_lerp_alpha)
+	var cur_q: Quaternion = global_transform.basis.orthonormalized().get_rotation_quaternion()
+	var new_q: Quaternion = cur_q.slerp(_drop_target_q, drop_lerp_alpha)
+
+	# rebuild a clean basis + keep our original scale
+	var b: Basis = Basis(new_q).scaled(_base_scale)
+	global_transform = Transform3D(b, pos)

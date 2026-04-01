@@ -35,7 +35,7 @@ var _current_level_scene_path: String = ""
 var _has_spawn_xform: bool = false
 var _cached_spawn_xform: Transform3D = Transform3D.IDENTITY
 
-# ADDED: optional split spawns under Spawn (Level2 only, but safe for any level)
+# optional split spawns under Spawn (Level2 only, but safe for any level)
 var _has_split_spawns: bool = false
 var _spawn_host_xform: Transform3D = Transform3D.IDENTITY
 var _spawn_join_xform: Transform3D = Transform3D.IDENTITY
@@ -43,6 +43,19 @@ var _spawn_join_xform: Transform3D = Transform3D.IDENTITY
 # Level-load readiness handshake.
 var _ready_peers: Dictionary = {} # int(peer_id) -> bool
 var _waiting_for_ready: bool = false
+
+# ------------------------------------------------------------
+# witness tracking (server stores what each peer is looking at)
+# peer_id -> NodePath string ("" means looking at nothing)
+# ------------------------------------------------------------
+var _peer_look_target: Dictionary = {} # int(peer_id) -> String
+
+# ------------------------------------------------------------
+# camera look sync (server stores each peer's Camera3D global transform)
+# peer_id -> Transform3D
+# ------------------------------------------------------------
+var _peer_cam_xforms: Dictionary = {} # int(peer_id) -> Transform3D
+
 
 func _ready() -> void:
 	_level_container = get_node_or_null(level_container_path)
@@ -59,6 +72,10 @@ func _ready() -> void:
 	if multiplayer.has_multiplayer_peer() and multiplayer.is_server():
 		if not multiplayer.peer_connected.is_connected(_on_peer_connected):
 			multiplayer.peer_connected.connect(_on_peer_connected)
+
+		# clean up witness/camera data when peers leave
+		if not multiplayer.peer_disconnected.is_connected(_on_peer_disconnected):
+			multiplayer.peer_disconnected.connect(_on_peer_disconnected)
 
 	# Optional auto-load (server only in multiplayer)
 	if default_level != null:
@@ -77,7 +94,18 @@ func _on_peer_connected(peer_id: int) -> void:
 	if _current_level_scene_path == "":
 		return
 
+	# init witness state for new peer
+	_peer_look_target[peer_id] = ""
+
+	# init camera state (identity until they start sending real camera transforms)
+	_peer_cam_xforms[peer_id] = Transform3D.IDENTITY
+
 	rpc_id(peer_id, "_rpc_load_level_all", _current_level_scene_path)
+
+
+func _on_peer_disconnected(peer_id: int) -> void:
+	_peer_look_target.erase(peer_id)
+	_peer_cam_xforms.erase(peer_id)
 
 
 func request_level_change(level_index: int) -> void:
@@ -232,7 +260,7 @@ func _load_level_local(scene: PackedScene) -> void:
 	_level_container.add_child(_current_level)
 
 	_cache_spawn_transform()
-	_cache_split_spawns() # ADDED
+	_cache_split_spawns()
 
 	print("[LevelFlowManager] Loaded level:", scene.resource_path)
 
@@ -242,9 +270,8 @@ func teleport_all_players_to_current_spawn_server() -> void:
 		return
 
 	_cache_spawn_transform()
-	_cache_split_spawns() # ADDED: refresh in case the level changed
+	_cache_split_spawns()
 
-	# Server tells each owner to teleport their own player.
 	var kids: Array = _players_root.get_children()
 	for child_any in kids:
 		var p: Node3D = child_any as Node3D
@@ -255,7 +282,6 @@ func teleport_all_players_to_current_spawn_server() -> void:
 		if owner_id <= 0:
 			continue
 
-		# ADDED: if this level has SpawnHost/SpawnJoin under Spawn, split by peer id
 		var target_xf: Transform3D = _cached_spawn_xform
 		if _has_split_spawns:
 			target_xf = _spawn_host_xform if owner_id == SERVER_ID else _spawn_join_xform
@@ -289,7 +315,6 @@ func server_place_player_if_needed(player: Node3D) -> void:
 	if _current_level == null:
 		return
 
-	# ADDED: use the same split-spawn logic for late joiners
 	_cache_spawn_transform()
 	_cache_split_spawns()
 
@@ -326,7 +351,6 @@ func _cache_spawn_transform() -> void:
 	_has_spawn_xform = true
 
 
-# ADDED: looks for Spawn/SpawnHost and Spawn/SpawnJoin under your existing Spawn node
 func _cache_split_spawns() -> void:
 	_has_split_spawns = false
 	_spawn_host_xform = Transform3D.IDENTITY
@@ -354,7 +378,6 @@ func _cache_split_spawns() -> void:
 	_has_split_spawns = true
 
 
-# Used by request_level_change singleplayer branch (unchanged)
 func _place_all_players_local_to_spawn() -> void:
 	_cache_spawn_transform()
 	if not _has_spawn_xform:
@@ -366,3 +389,70 @@ func _place_all_players_local_to_spawn() -> void:
 		if p == null:
 			continue
 		p.global_transform = _cached_spawn_xform
+
+
+# ------------------------------------------------------------
+# witness API (player reports look target to server)
+# Player will call this later from ProtoController.
+# ------------------------------------------------------------
+@rpc("any_peer", "unreliable")
+func _rpc_witness_set_look_target(target_path: String) -> void:
+	if not multiplayer.is_server():
+		return
+
+	var sender: int = multiplayer.get_remote_sender_id()
+	if sender <= 0:
+		return
+
+	_peer_look_target[sender] = target_path
+
+
+func witness_get_lookers_count(target_path: String) -> int:
+	if not multiplayer.is_server():
+		return 0
+
+	var count: int = 0
+	for pid in _peer_look_target.keys():
+		if String(_peer_look_target[pid]) == target_path:
+			count += 1
+	return count
+
+
+func witness_get_iters() -> float:
+	return float(GlobalVariables.ITERS)
+
+
+# ------------------------------------------------------------
+# camera look sync API
+# Player will send their Camera3D.global_transform here.
+# ------------------------------------------------------------
+
+# this is just a helper so the host can update itself without rpc-ing itself
+func _server_set_peer_camera(peer_id: int, cam_xform: Transform3D) -> void:
+	if not multiplayer.is_server():
+		return
+	_peer_cam_xforms[peer_id] = cam_xform
+
+@rpc("any_peer", "unreliable")
+func _rpc_update_peer_camera(cam_xform: Transform3D) -> void:
+	if not multiplayer.is_server():
+		return
+
+	var sender: int = multiplayer.get_remote_sender_id()
+	if sender <= 0:
+		return
+
+	_peer_cam_xforms[sender] = cam_xform
+
+
+func get_peer_camera_xform(peer_id: int) -> Transform3D:
+	if _peer_cam_xforms.has(peer_id):
+		return _peer_cam_xforms[peer_id]
+	return Transform3D.IDENTITY
+
+
+func get_all_peer_camera_xforms() -> Array[Transform3D]:
+	var out: Array[Transform3D] = []
+	for pid in _peer_cam_xforms.keys():
+		out.append(_peer_cam_xforms[pid])
+	return out

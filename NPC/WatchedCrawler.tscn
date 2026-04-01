@@ -1,0 +1,16 @@
+[gd_scene load_steps=4 format=3 uid="uid://knf05h80dkgl"]
+
+[ext_resource type="Script" uid="uid://col33obiu0kql" path="res://WatchedCrawler.gd" id="1_diuyk"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_0ktk6"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_a5j5k"]
+
+[node name="Crawler" type="CharacterBody3D"]
+script = ExtResource("1_diuyk")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("BoxShape3D_0ktk6")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="CollisionShape3D"]
+mesh = SubResource("BoxMesh_a5j5k")
