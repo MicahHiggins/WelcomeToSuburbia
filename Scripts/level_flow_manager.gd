@@ -1,3 +1,4 @@
+# res://lobby.gd
 extends Node
 class_name LevelFlowManager
 
@@ -9,6 +10,9 @@ const SERVER_ID: int = 1
 
 # Optional: initial level to load once lobby starts
 @export var default_level: PackedScene
+
+# ADDED: lobby level scene (this is what we load first while waiting for players)
+@export var lobby_level_scene: PackedScene = preload("res://GameLevelsETC/lobby.tscn")
 
 # Spawn marker inside each level
 @export var spawn_marker_path_in_level: NodePath = NodePath("Spawn")
@@ -288,6 +292,13 @@ func teleport_all_players_to_current_spawn_server() -> void:
 func on_lobby_ready_server() -> void:
 	if multiplayer.has_multiplayer_peer() and not multiplayer.is_server():
 		return
+
+	# ADDED: when the Steam lobby becomes "real", we start in the lobby level first
+	if lobby_level_scene != null:
+		load_level_server(lobby_level_scene)
+		return
+
+	# fallback (if lobby scene isn't set)
 	if default_level != null:
 		load_level_server(default_level)
 
