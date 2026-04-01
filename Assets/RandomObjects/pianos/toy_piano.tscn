@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3 uid="uid://odknx6p0jv2f"]
+[gd_scene load_steps=14 format=3 uid="uid://odknx6p0jv2f"]
 
 [ext_resource type="PackedScene" uid="uid://cch6cx5a24t20" path="res://Assets/RandomObjects/pianos/toy_piano.glb" id="1_44o2m"]
 [ext_resource type="Script" uid="uid://tjiswyfd6as0" path="res://Assets/RandomObjects/pianos/toy_piano.gd" id="2_6tivc"]
@@ -10,6 +10,14 @@
 [ext_resource type="AudioStream" uid="uid://b4adr7126sjh5" path="res://Assets/RandomObjects/pianos/notesSounds/note4.wav" id="8_ypxqi"]
 [ext_resource type="AudioStream" uid="uid://buhe3ijeb8u3q" path="res://Assets/RandomObjects/pianos/notesSounds/note6.wav" id="9_1iq74"]
 
+[sub_resource type="Animation" id="Animation_segkh"]
+resource_name = "pianoSuccess"
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_xo4wo"]
+_data = {
+&"pianoSuccess": SubResource("Animation_segkh")
+}
+
 [sub_resource type="BoxShape3D" id="BoxShape3D_11rnb"]
 size = Vector3(2, 2, 2)
 
@@ -18,6 +26,11 @@ radius = 4.309
 
 [node name="toy_piano" instance=ExtResource("1_44o2m")]
 script = ExtResource("2_6tivc")
+
+[node name="pianoResult" type="AnimationPlayer" parent="." index="0"]
+libraries = {
+&"": SubResource("AnimationLibrary_xo4wo")
+}
 
 [node name="cube1" type="Area3D" parent="Cube_001" index="0"]
 
@@ -60,14 +73,14 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -13.8, 0, 0)
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Cube_007/cube7" index="0"]
 shape = SubResource("BoxShape3D_11rnb")
 
-[node name="mousefree" type="Area3D" parent="." index="11"]
+[node name="mousefree" type="Area3D" parent="." index="12"]
 collision_layer = 0
 collision_mask = 8
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="mousefree" index="0"]
 shape = SubResource("SphereShape3D_8w73t")
 
-[node name="Audio" type="Node3D" parent="." index="12"]
+[node name="Audio" type="Node3D" parent="." index="13"]
 
 [node name="note1" type="AudioStreamPlayer3D" parent="Audio" index="0"]
 stream = ExtResource("3_segkh")
