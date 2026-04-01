@@ -1,7 +1,6 @@
 extends NPCState
 class_name SpeakState
 
-
 @export var talk_detection: Area3D
 
 var _empty_time: float = 0.0

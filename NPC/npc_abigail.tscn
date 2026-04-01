@@ -1,11 +1,12 @@
-[gd_scene load_steps=9 format=3 uid="uid://dcbsmn4tm6a86"]
+[gd_scene load_steps=10 format=3 uid="uid://dcbsmn4tm6a86"]
 
 [ext_resource type="Script" uid="uid://csc5bob5s77t" path="res://Scripts/npc_bob.gd" id="1_momcg"]
 [ext_resource type="Script" uid="uid://cicakuq5a1gle" path="res://Scripts/state_machine.gd" id="2_j5jp7"]
 [ext_resource type="Script" uid="uid://dtisy2wdio7v" path="res://Scripts/patrol_state.gd" id="3_7i6xh"]
 [ext_resource type="Script" uid="uid://cvv6jryec78f3" path="res://Scripts/talk_state.gd" id="4_qmemm"]
 [ext_resource type="Script" uid="uid://bdyreatjqakvi" path="res://Scripts/npcResource.gd" id="5_j5jp7"]
-[ext_resource type="PackedScene" uid="uid://tfgl0u3dq5tr" path="res://Assets/RandomObjects/humans/AbigailModel.tscn" id="6_7i6xh"]
+[ext_resource type="Script" uid="uid://b2gxr16iemcxe" path="res://NPC/speak_state.gd" id="5_qmemm"]
+[ext_resource type="PackedScene" uid="uid://bc1n0n5x1huxl" path="res://NPC/new_abigail_model.tscn" id="7_qmemm"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_g4ita"]
 radius = 2.0
@@ -33,15 +34,14 @@ script = ExtResource("2_j5jp7")
 
 [node name="PatrolState" type="Node" parent="StateMachine" node_paths=PackedStringArray("talk_range")]
 script = ExtResource("3_7i6xh")
-arrive_dist = null
-wait_at_waypoint = null
-retry_autofind = null
-retry_interval = null
-retry_max_seconds = null
 talk_range = NodePath("../../TalkDetection")
 
 [node name="TalkState" type="Node" parent="StateMachine" node_paths=PackedStringArray("talk_detection")]
 script = ExtResource("4_qmemm")
+talk_detection = NodePath("../../TalkDetection")
+
+[node name="SpeakState" type="Node" parent="StateMachine" node_paths=PackedStringArray("talk_detection")]
+script = ExtResource("5_qmemm")
 talk_detection = NodePath("../../TalkDetection")
 
 [node name="NavigationAgent3D" type="NavigationAgent3D" parent="."]
@@ -57,8 +57,8 @@ shape = SubResource("SphereShape3D_g4ita")
 script = ExtResource("5_j5jp7")
 npc_name = "Abigail"
 
-[node name="abigial" parent="." groups=["NPC_Body"] instance=ExtResource("6_7i6xh")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.0146366, 0)
+[node name="newAbigailModel" parent="." groups=["NPC_Body"] instance=ExtResource("7_qmemm")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, -0.89566183, 0)
 
 [connection signal="body_entered" from="interact" to="." method="_on_interact_body_entered"]
 [connection signal="body_exited" from="interact" to="." method="_on_interact_body_exited"]
