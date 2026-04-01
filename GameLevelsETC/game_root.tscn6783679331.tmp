@@ -1,0 +1,180 @@
+[gd_scene load_steps=15 format=3 uid="uid://ckinm3lcyfbhx"]
+
+[ext_resource type="Script" uid="uid://dywhk2ngguw7a" path="res://GameLevelsETC/lobby_manager.gd" id="1_l5n62"]
+[ext_resource type="Script" uid="uid://l6pyeyjgkntn" path="res://GameLevelsETC/item_manager.gd" id="1_lbg40"]
+[ext_resource type="PackedScene" uid="uid://bs72ogkvdd7d6" path="res://addons/proto_controller/proto_controller.tscn" id="2_6bcdd"]
+[ext_resource type="PackedScene" uid="uid://bsrc4sxs0q266" path="res://Assets/RandomObjects/flashlight/flashlight.tscn" id="2_7dwkj"]
+[ext_resource type="PackedScene" uid="uid://b36mjwh3wwi6m" path="res://GameLevelsETC/Items/bat_clean.tscn" id="3_xokw7"]
+[ext_resource type="PackedScene" uid="uid://bk12xaa431jqc" path="res://Assets/RandomObjects/symbol/symbol.tscn" id="4_vhrww"]
+[ext_resource type="Script" uid="uid://w8c1ppjt0y6g" path="res://Scripts/level_flow_manager.gd" id="5_l5n62"]
+[ext_resource type="PackedScene" uid="uid://d1ibgfwne281y" path="res://GameLevelsETC/Level1.tscn" id="6_6bcdd"]
+[ext_resource type="Texture2D" uid="uid://bh8hkhotm6bbc" path="res://Assets/Images/Suburbia1.jpg" id="8_6bcdd"]
+[ext_resource type="Texture2D" uid="uid://3i53ybhtpc0f" path="res://Assets/Images/—Pngtree—vector copy icon_4013516.png" id="9_7i78e"]
+[ext_resource type="Script" uid="uid://744qvh7h6rs5" path="res://GameLevelsETC/player_spawner.gd" id="9_nqjqn"]
+[ext_resource type="FontFile" uid="uid://g7ve53wy4c3c" path="res://addons/Font/MADE TOMMY Medium_PERSONAL USE.otf" id="10_nqjqn"]
+[ext_resource type="PackedScene" uid="uid://b3tivaphj7o57" path="res://aidan_stuff/button4Iteration.tscn" id="13_nqjqn"]
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_fan4m"]
+texture = ExtResource("8_6bcdd")
+
+[node name="GameRoot" type="Node3D"]
+
+[node name="LobbyManager" type="Node3D" parent="."]
+script = ExtResource("1_l5n62")
+player_scene = ExtResource("2_6bcdd")
+
+[node name="PlayersRoot" type="Node3D" parent="."]
+
+[node name="ItemsRoot" type="Node3D" parent="."]
+
+[node name="Flashlight" parent="ItemsRoot" instance=ExtResource("2_7dwkj")]
+transform = Transform3D(0.1, 0, 0, 0, 0.1, 0, 0, 0, 0.2, 8.3724575, 3.0776281, 44.523262)
+
+[node name="Bat" parent="ItemsRoot" instance=ExtResource("3_xokw7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5201786, 3.1837187, 44.58463)
+collision_mask = 11
+
+[node name="Bat2" parent="ItemsRoot" instance=ExtResource("3_xokw7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.4119205, 3.8536096, 45.23525)
+collision_mask = 11
+
+[node name="Symbol" parent="ItemsRoot" instance=ExtResource("4_vhrww")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.375259, 0)
+
+[node name="ItemManager" type="Node" parent="."]
+script = ExtResource("1_lbg40")
+
+[node name="LevelFlowManager" type="Node3D" parent="."]
+script = ExtResource("5_l5n62")
+default_level = ExtResource("6_6bcdd")
+
+[node name="LevelContainer" type="Node3D" parent="."]
+
+[node name="PlayerSpawner" type="Node3D" parent="."]
+script = ExtResource("9_nqjqn")
+
+[node name="Menu" type="Node" parent="."]
+
+[node name="CanvasLayer" type="CanvasLayer" parent="Menu"]
+
+[node name="TitleScreen" type="Panel" parent="Menu/CanvasLayer"]
+offset_right = 1154.0
+offset_bottom = 646.0
+theme_override_styles/panel = SubResource("StyleBoxTexture_fan4m")
+
+[node name="Host" type="Button" parent="Menu/CanvasLayer"]
+anchors_preset = -1
+anchor_right = 0.2560764
+anchor_bottom = 0.10185185
+offset_left = 738.0
+offset_top = 358.0
+offset_right = 782.0
+offset_bottom = 389.0
+text = "Host
+"
+
+[node name="Join" type="Button" parent="Menu/CanvasLayer"]
+anchors_preset = -1
+anchor_left = -0.0034722222
+anchor_right = 0.2560764
+anchor_bottom = 0.12808642
+offset_left = 743.0
+offset_top = 461.0
+offset_right = 781.0
+offset_bottom = 492.0
+text = "Join
+"
+
+[node name="quit2" type="Button" parent="Menu/CanvasLayer"]
+offset_left = 26.0
+offset_top = 24.0
+offset_right = 148.0
+offset_bottom = 111.0
+text = "Quit
+"
+
+[node name="joinCode" type="LineEdit" parent="Menu/CanvasLayer"]
+offset_left = 815.0
+offset_top = 577.0
+offset_right = 992.0
+offset_bottom = 617.0
+
+[node name="pause" type="CanvasLayer" parent="Menu"]
+
+[node name="quit" type="Button" parent="Menu/pause"]
+offset_left = 39.0
+offset_top = 55.0
+offset_right = 208.0
+offset_bottom = 120.0
+text = "Quit
+"
+
+[node name="menu" type="Button" parent="Menu/pause"]
+offset_left = 41.0
+offset_top = 127.0
+offset_right = 206.0
+offset_bottom = 196.0
+text = "Menu
+"
+
+[node name="code" type="Label" parent="Menu/pause"]
+offset_left = 41.0
+offset_top = 199.0
+offset_right = 210.0
+offset_bottom = 225.0
+
+[node name="copy" type="Button" parent="Menu/pause"]
+offset_left = 97.0
+offset_top = 232.0
+offset_right = 1129.0
+offset_bottom = 1264.0
+scale = Vector2(0.05, 0.05)
+icon = ExtResource("9_7i78e")
+
+[node name="tutorial" type="Label" parent="Menu/pause"]
+offset_left = 39.0
+offset_top = 293.0
+offset_right = 344.0
+offset_bottom = 536.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 6
+theme_override_fonts/font = ExtResource("10_nqjqn")
+theme_override_font_sizes/font_size = 30
+text = "WASD: Move
+F: Pick up Item
+G: Drop Item
+Mouse Click: Use Item
+Tab: Switch Item
+E: Interact with NPCs"
+
+[node name="LevelSelect" type="VBoxContainer" parent="Menu/pause"]
+offset_left = 702.0
+offset_top = 56.0
+offset_right = 983.0
+offset_bottom = 157.0
+
+[node name="lvl1Button" type="Button" parent="Menu/pause/LevelSelect"]
+layout_mode = 2
+text = "Level 1"
+
+[node name="lvl2Button" type="Button" parent="Menu/pause/LevelSelect"]
+layout_mode = 2
+text = "Level 2"
+
+[node name="lvl3Button" type="Button" parent="Menu/pause/LevelSelect"]
+layout_mode = 2
+text = "Level 3"
+
+[node name="IterationChanngeButton" parent="Menu/pause" instance=ExtResource("13_nqjqn")]
+
+[node name="Interact" type="CanvasLayer" parent="Menu"]
+
+[node name="NPCDialogue" type="CanvasLayer" parent="Menu"]
+
+[connection signal="pressed" from="Menu/CanvasLayer/Host" to="LobbyManager" method="_on_host_pressed"]
+[connection signal="pressed" from="Menu/CanvasLayer/Join" to="LobbyManager" method="_on_join_pressed"]
+[connection signal="pressed" from="Menu/CanvasLayer/quit2" to="LobbyManager" method="_on_pause_quit_pressed"]
+[connection signal="pressed" from="Menu/pause/quit" to="LobbyManager" method="_on_pause_quit_pressed"]
+[connection signal="pressed" from="Menu/pause/menu" to="LobbyManager" method="_on_pause_back_to_menu_pressed"]
+[connection signal="pressed" from="Menu/pause/copy" to="LobbyManager" method="_on_pause_copy_code_pressed"]

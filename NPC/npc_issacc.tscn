@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://c854co31tfyx8"]
+[gd_scene load_steps=11 format=3 uid="uid://c854co31tfyx8"]
 
 [ext_resource type="Script" uid="uid://csc5bob5s77t" path="res://Scripts/npc_bob.gd" id="1_khqxu"]
 [ext_resource type="Script" uid="uid://cicakuq5a1gle" path="res://Scripts/state_machine.gd" id="2_3h4uo"]
@@ -6,6 +6,8 @@
 [ext_resource type="Script" uid="uid://cvv6jryec78f3" path="res://Scripts/talk_state.gd" id="4_7n7h8"]
 [ext_resource type="Script" uid="uid://bdyreatjqakvi" path="res://Scripts/npcResource.gd" id="5_3h4uo"]
 [ext_resource type="PackedScene" uid="uid://b5wwmrysksvyf" path="res://Assets/RandomObjects/humans/isaacModel.tscn" id="6_jfl1l"]
+[ext_resource type="PackedScene" uid="uid://diyfna0mvebm4" path="res://Assets/RandomObjects/quest_marker!.tscn" id="7_7n7h8"]
+[ext_resource type="Script" uid="uid://c6herk6erruc2" path="res://NPC/issacQuests.gd" id="8_8kjmk"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_g4ita"]
 radius = 2.0
@@ -54,6 +56,12 @@ npc_name = "Isaac"
 
 [node name="IsaacModel" parent="." instance=ExtResource("6_jfl1l")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.6645117, -0.11627531, 1.338022)
+
+[node name="QuestMarker!" parent="." instance=ExtResource("7_7n7h8")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2785251, 0)
+
+[node name="quest" type="Node3D" parent="."]
+script = ExtResource("8_8kjmk")
 
 [connection signal="body_entered" from="TalkDetection" to="issDial" method="_on_talk_detection_body_entered"]
 [connection signal="body_exited" from="TalkDetection" to="issDial" method="_on_talk_detection_body_exited"]

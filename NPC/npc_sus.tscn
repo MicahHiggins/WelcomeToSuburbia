@@ -1,19 +1,15 @@
-[gd_scene load_steps=9 format=3 uid="uid://dsihuwsxj0cyi"]
+[gd_scene load_steps=8 format=3 uid="uid://dsihuwsxj0cyi"]
 
 [ext_resource type="Script" uid="uid://csc5bob5s77t" path="res://Scripts/npc_bob.gd" id="1_2yflj"]
 [ext_resource type="Script" uid="uid://cicakuq5a1gle" path="res://Scripts/state_machine.gd" id="2_ahve0"]
 [ext_resource type="Script" uid="uid://dtisy2wdio7v" path="res://Scripts/patrol_state.gd" id="3_gow7q"]
 [ext_resource type="Script" uid="uid://cvv6jryec78f3" path="res://Scripts/talk_state.gd" id="4_soqnv"]
+[ext_resource type="PackedScene" uid="uid://cyc74qo3u5o3v" path="res://Assets/RandomObjects/humans/HOA.tscn" id="5_2yflj"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_g4ita"]
 radius = 2.0
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_5x2h4"]
-
-[sub_resource type="CapsuleMesh" id="CapsuleMesh_fo4fv"]
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_6srom"]
-albedo_color = Color(0.074430324, 0.07443032, 0.07443032, 1)
 
 [node name="NPC_SUS" type="CharacterBody3D" groups=["NPC"]]
 collision_mask = 3
@@ -44,16 +40,15 @@ talk_detection = NodePath("../../TalkDetection")
 
 [node name="NavigationAgent3D" type="NavigationAgent3D" parent="."]
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
-mesh = SubResource("CapsuleMesh_fo4fv")
-surface_material_override/0 = SubResource("StandardMaterial3D_6srom")
-
 [node name="TalkDetection" type="Area3D" parent="."]
 collision_mask = 8
 
 [node name="TalkDetectionShape" type="CollisionShape3D" parent="TalkDetection"]
 transform = Transform3D(1.25, 0, 0, 0, 1.25, 0, 0, 0, 1.25, 0, 0, 0)
 shape = SubResource("SphereShape3D_g4ita")
+
+[node name="hoa" parent="." instance=ExtResource("5_2yflj")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.9269365, 0)
 
 [connection signal="body_entered" from="interact" to="." method="_on_interact_body_entered"]
 [connection signal="body_exited" from="interact" to="." method="_on_interact_body_exited"]

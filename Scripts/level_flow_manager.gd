@@ -82,6 +82,8 @@ func _ready() -> void:
 				load_level_server(default_level)
 		else:
 			_load_level_local(default_level)
+			
+	
 
 
 func _on_peer_connected(peer_id: int) -> void:
@@ -136,6 +138,11 @@ func _server_change_level(level_index: int) -> void:
 		push_warning("[LevelFlowManager] _server_change_level: invalid level index: %d" % level_index)
 		return
 	load_level_server(ps)
+	#if level_index == 2:
+		#GlobalVariables.level_2_cutscene.visible = true
+		#GlobalVariables.level_2_cutscene.paused = false
+		#await get_tree().create_timer(18).timeout
+		#GlobalVariables.level_2_cutscene.visible = false
 
 
 func _scene_for_index(level_index: int) -> PackedScene:

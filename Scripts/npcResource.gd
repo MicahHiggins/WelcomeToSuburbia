@@ -6,8 +6,6 @@ class_name npcStats
 @export var health: int = 100
 @export var move_speed: float = 150.0
 
-
-
 var bob_local := 0
 var abi_local := 0
 var camp_local := 0
@@ -59,7 +57,6 @@ func bobDial():
 			
 		bob_local += 1
 		
-		print(bob_local)
 		
 		
 		
@@ -112,6 +109,7 @@ func dialogueMan(npc_name):
 				if camp_local == 3:
 					camp_local = 2
 				campDial()
+				
 			"Isaac":
 				if iss_local == 0:
 					iss_local = 0
@@ -131,7 +129,7 @@ func enter_dialogue():
 		talking = true
 		dialogue.toggle = true
 		print("Curr Iteration: ", GlobalVariables.iterations)
-		
+
 		match(npc_name):
 			"Bob":
 				number = bob_local
@@ -181,3 +179,25 @@ func _on_talk_detection_body_exited(body: Node3D) -> void:
 		tutorial.interact = false
 		in_area = false
 		print("FALSE")
+
+func find_descendant_in_group(node: Node, group: String) -> Node:
+	if node.is_in_group(group):
+		return node
+		
+	for child in node.get_children():
+		var result = find_descendant_in_group(child, group)
+		if result:
+			return result
+			
+	return null
+	
+	#To find the animation for talking and playing it
+	#var npc: CharacterBody3D
+	#var npc3d := npc as NPC
+	#if npc3d == null:
+		#return
+	#var model_node = find_descendant_in_group(npc3d, "NPC_Body")
+	#if model_node:
+		#var anim_player = find_descendant_in_group(model_node, "NPC_Animation")
+		#if anim_player:
+			#anim_player.play("NewTalking")

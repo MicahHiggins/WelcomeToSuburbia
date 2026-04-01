@@ -9,6 +9,7 @@ func _ready() -> void:
 	animation_player.play("DogWalk")
 	questHub.iteration_changed.connect(iterationChange)
 	questHub.questTalk.connect(talkedTo)
+	quest_marker_.visible = false
 	if questMarker.campbells == true:
 		visible = false
 		quest_marker_.visible = true
