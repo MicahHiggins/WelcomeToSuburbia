@@ -1,7 +1,8 @@
-[gd_scene load_steps=8 format=3 uid="uid://b6qdycemud1gt"]
+[gd_scene load_steps=9 format=3 uid="uid://b6qdycemud1gt"]
 
 [ext_resource type="Script" uid="uid://65w16ihxkc3h" path="res://lobby.gd" id="1_ym4ib"]
 [ext_resource type="PackedScene" uid="uid://bs2jm62cmkbrk" path="res://addons/instant-realistic-light/light_scene.tscn" id="2_sknj8"]
+[ext_resource type="PackedScene" uid="uid://d1ibgfwne281y" path="res://GameLevelsETC/Level1.tscn" id="2_yosgk"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_sknj8"]
 
@@ -41,6 +42,8 @@ auto_exposure_min_sensitivity = 8.01
 
 [node name="Lobby" type="Node3D"]
 script = ExtResource("1_ym4ib")
+start_level_scene = ExtResource("2_yosgk")
+start_countdown_seconds = 8
 
 [node name="Spawn" type="Marker3D" parent="."]
 
