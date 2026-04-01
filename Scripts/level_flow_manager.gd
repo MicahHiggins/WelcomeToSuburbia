@@ -1,3 +1,4 @@
+# res://level_flow_manager.gd (or res://lobby.gd in your project)
 extends Node
 class_name LevelFlowManager
 
@@ -7,8 +8,11 @@ const SERVER_ID: int = 1
 @export var level_container_path: NodePath = NodePath("../LevelContainer")
 @export var players_root_path: NodePath = NodePath("../PlayersRoot")
 
-# Optional: initial level to load once lobby starts
+# Optional: initial level to load once lobby starts (usually leave null now)
 @export var default_level: PackedScene
+
+# lobby level scene (we load this first while waiting for players)
+@export var lobby_level_scene: PackedScene = preload("res://GameLevelsETC/lobby.tscn")
 
 # Spawn marker inside each level
 @export var spawn_marker_path_in_level: NodePath = NodePath("Spawn")
@@ -40,20 +44,14 @@ var _has_split_spawns: bool = false
 var _spawn_host_xform: Transform3D = Transform3D.IDENTITY
 var _spawn_join_xform: Transform3D = Transform3D.IDENTITY
 
-# Level-load readiness handshake.
+# Level-load readiness handshake
 var _ready_peers: Dictionary = {} # int(peer_id) -> bool
 var _waiting_for_ready: bool = false
 
-# ------------------------------------------------------------
 # witness tracking (server stores what each peer is looking at)
-# peer_id -> NodePath string ("" means looking at nothing)
-# ------------------------------------------------------------
 var _peer_look_target: Dictionary = {} # int(peer_id) -> String
 
-# ------------------------------------------------------------
 # camera look sync (server stores each peer's Camera3D global transform)
-# peer_id -> Transform3D
-# ------------------------------------------------------------
 var _peer_cam_xforms: Dictionary = {} # int(peer_id) -> Transform3D
 
 
@@ -68,7 +66,7 @@ func _ready() -> void:
 		push_error("[LevelFlowManager] PlayersRoot not found. Fix players_root_path.")
 		return
 
-	# Server re-sends current level to late joiners so their node tree matches.
+	# server re-sends current level to late joiners so their node tree matches
 	if multiplayer.has_multiplayer_peer() and multiplayer.is_server():
 		if not multiplayer.peer_connected.is_connected(_on_peer_connected):
 			multiplayer.peer_connected.connect(_on_peer_connected)
@@ -77,7 +75,7 @@ func _ready() -> void:
 		if not multiplayer.peer_disconnected.is_connected(_on_peer_disconnected):
 			multiplayer.peer_disconnected.connect(_on_peer_disconnected)
 
-	# Optional auto-load (server only in multiplayer)
+	# optional auto-load (usually keep default_level null now)
 	if default_level != null:
 		if multiplayer.has_multiplayer_peer():
 			if multiplayer.is_server():
@@ -96,8 +94,6 @@ func _on_peer_connected(peer_id: int) -> void:
 
 	# init witness state for new peer
 	_peer_look_target[peer_id] = ""
-
-	# init camera state (identity until they start sending real camera transforms)
 	_peer_cam_xforms[peer_id] = Transform3D.IDENTITY
 
 	rpc_id(peer_id, "_rpc_load_level_all", _current_level_scene_path)
@@ -109,7 +105,7 @@ func _on_peer_disconnected(peer_id: int) -> void:
 
 
 func request_level_change(level_index: int) -> void:
-	# Singleplayer: keep your existing behavior
+	# singleplayer
 	if not multiplayer.has_multiplayer_peer():
 		var ps_local: PackedScene = _scene_for_index(level_index)
 		if ps_local == null:
@@ -119,7 +115,7 @@ func request_level_change(level_index: int) -> void:
 		_place_all_players_local_to_spawn()
 		return
 
-	# Multiplayer: server decides
+	# multiplayer: server decides
 	if multiplayer.is_server():
 		_server_change_level(level_index)
 	else:
@@ -238,12 +234,29 @@ func _server_try_finish_ready() -> void:
 	call_deferred("_deferred_server_place_all")
 
 
-func _load_level_local(scene: PackedScene) -> void:
+# ------------------------------------------------------------
+# ADDED: safe clear (fixes "Object is locked and can't be freed")
+# we remove children now, then queue_free them (safe during RPC)
+# ------------------------------------------------------------
+func _clear_level_container_safely() -> void:
+	if _level_container == null:
+		return
+
 	var kids: Array = _level_container.get_children()
 	for c_any in kids:
 		var c: Node = c_any as Node
-		if c != null and is_instance_valid(c):
-			c.free()
+		if c == null or not is_instance_valid(c):
+			continue
+
+		# pull it out immediately so we don't have 2 levels in the container at once
+		_level_container.remove_child(c)
+
+		# queue_free is safe (free() is what causes the locked-object error)
+		c.queue_free()
+
+
+func _load_level_local(scene: PackedScene) -> void:
+	_clear_level_container_safely()
 
 	_current_level = null
 
@@ -295,6 +308,13 @@ func teleport_all_players_to_current_spawn_server() -> void:
 func on_lobby_ready_server() -> void:
 	if multiplayer.has_multiplayer_peer() and not multiplayer.is_server():
 		return
+
+	# start in the lobby level first
+	if lobby_level_scene != null:
+		load_level_server(lobby_level_scene)
+		return
+
+	# fallback
 	if default_level != null:
 		load_level_server(default_level)
 
@@ -391,19 +411,14 @@ func _place_all_players_local_to_spawn() -> void:
 		p.global_transform = _cached_spawn_xform
 
 
-# ------------------------------------------------------------
-# witness API (player reports look target to server)
-# Player will call this later from ProtoController.
-# ------------------------------------------------------------
+# witness API
 @rpc("any_peer", "unreliable")
 func _rpc_witness_set_look_target(target_path: String) -> void:
 	if not multiplayer.is_server():
 		return
-
 	var sender: int = multiplayer.get_remote_sender_id()
 	if sender <= 0:
 		return
-
 	_peer_look_target[sender] = target_path
 
 
@@ -422,12 +437,9 @@ func witness_get_iters() -> float:
 	return float(GlobalVariables.ITERS)
 
 
-# ------------------------------------------------------------
 # camera look sync API
-# Player will send their Camera3D.global_transform here.
-# ------------------------------------------------------------
 
-# this is just a helper so the host can update itself without rpc-ing itself
+# helper so host can update itself without rpc-ing itself
 func _server_set_peer_camera(peer_id: int, cam_xform: Transform3D) -> void:
 	if not multiplayer.is_server():
 		return
@@ -437,11 +449,9 @@ func _server_set_peer_camera(peer_id: int, cam_xform: Transform3D) -> void:
 func _rpc_update_peer_camera(cam_xform: Transform3D) -> void:
 	if not multiplayer.is_server():
 		return
-
 	var sender: int = multiplayer.get_remote_sender_id()
 	if sender <= 0:
 		return
-
 	_peer_cam_xforms[sender] = cam_xform
 
 
