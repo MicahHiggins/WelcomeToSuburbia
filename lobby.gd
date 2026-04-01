@@ -1,7 +1,7 @@
 extends Node3D
 class_name LobbyReady
 
-const SERVER_ID: int = 1 # ADDED: host is peer 1 in our setup
+const SERVER_ID: int = 1 # host is peer 1 in our setup
 
 @export var level_flow_path: NodePath = NodePath("/root/Main/LevelFlowManager")
 @export var min_players_to_start: int = 2
@@ -23,6 +23,9 @@ var _votes: Dictionary = {} # int(peer_id) -> bool
 
 # local cache so we know if *this* player already voted (for button color/text)
 var _local_peer_id: int = -1
+
+# ADDED: simple "start once" guard so we don't double-trigger level change
+var _starting: bool = false
 
 
 func _ready() -> void:
@@ -46,7 +49,14 @@ func _ready() -> void:
 	if _ready_popup != null:
 		_ready_popup.visible = false
 
-	_update_status()
+	# ADDED: server should always track the host id too
+	if multiplayer.has_multiplayer_peer() and multiplayer.is_server():
+		var host_id := multiplayer.get_unique_id()
+		if not _votes.has(host_id):
+			_votes[host_id] = false
+
+	# ADDED: if we spawn into the lobby with players already connected, sync now
+	_on_peer_change(-1)
 
 	# server listens for joins/leaves
 	if multiplayer.has_multiplayer_peer() and multiplayer.is_server():
@@ -55,17 +65,14 @@ func _ready() -> void:
 		if not multiplayer.peer_disconnected.is_connected(_on_peer_change):
 			multiplayer.peer_disconnected.connect(_on_peer_change)
 
-		# make sure host is tracked for voting
-		var host_id := multiplayer.get_unique_id()
-		if not _votes.has(host_id):
-			_votes[host_id] = false
+	_update_status()
 
 
 func _on_peer_change(id: int) -> void:
-	# keep vote list clean when people join/leave
-	if multiplayer.is_server():
+	# keep vote list clean when people join/leave (server only)
+	if multiplayer.has_multiplayer_peer() and multiplayer.is_server():
 		# if someone joined, add them (not voted yet)
-		if not _votes.has(id):
+		if id != -1 and not _votes.has(id):
 			_votes[id] = false
 
 		# remove votes for peers that no longer exist
@@ -78,7 +85,12 @@ func _on_peer_change(id: int) -> void:
 			if not alive.has(int(k)):
 				_votes.erase(k)
 
-		# send the current vote state to everyone so UI stays in sync
+		# always keep host in the dict
+		var host_id := multiplayer.get_unique_id()
+		if not _votes.has(host_id):
+			_votes[host_id] = false
+
+		# push vote state to everyone so UI stays in sync
 		_broadcast_votes()
 
 	_update_status()
@@ -119,6 +131,14 @@ func _update_button_visuals() -> void:
 	if _start_btn == null:
 		return
 
+	# if we're already starting, lock the button
+	if _starting:
+		_start_btn.visible = true
+		_start_btn.disabled = true
+		_start_btn.text = "Starting..."
+		_start_btn.modulate = Color(1, 1, 1, 1)
+		return
+
 	if _get_player_count() < min_players_to_start:
 		_start_btn.disabled = true
 		_start_btn.text = "Vote to Start"
@@ -140,8 +160,14 @@ func _update_button_visuals() -> void:
 
 
 func _on_start_pressed() -> void:
+	# if we're already starting, ignore extra presses
+	if _starting:
+		return
+
 	# singleplayer: start immediately
 	if not multiplayer.has_multiplayer_peer():
+		_starting = true
+		_update_button_visuals()
 		if _lfm != null and _lfm.has_method("request_level_change"):
 			_lfm.call("request_level_change", 1)
 		return
@@ -168,10 +194,12 @@ func _register_vote(peer_id: int, display_name: String) -> void:
 	if not multiplayer.is_server():
 		return
 
+	# don't allow votes before lobby is full
 	if _get_player_count() < min_players_to_start:
 		_broadcast_votes()
 		return
 
+	# ignore repeat votes
 	if _votes.has(peer_id) and bool(_votes[peer_id]) == true:
 		_broadcast_votes()
 		return
@@ -183,10 +211,33 @@ func _register_vote(peer_id: int, display_name: String) -> void:
 
 	_broadcast_votes()
 
-	# if everyone voted, start level 1
-	if _get_vote_count() >= min_players_to_start:
-		if _lfm != null and _lfm.has_method("request_level_change"):
-			_lfm.call("request_level_change", 1)
+	# if everyone voted, start level 1 (server only, one time)
+	if _get_vote_count() >= min_players_to_start and not _starting:
+		_starting = true
+		_broadcast_starting()
+		# give UI a tiny moment to show "Starting..." before the level swap
+		call_deferred("_server_start_level_1")
+
+
+func _server_start_level_1() -> void:
+	if not multiplayer.is_server():
+		return
+	if _lfm != null and _lfm.has_method("request_level_change"):
+		_lfm.call("request_level_change", 1)
+
+
+# ADDED: server tells everyone we're starting so all UIs lock + show text
+func _broadcast_starting() -> void:
+	if not multiplayer.has_multiplayer_peer():
+		return
+	if not multiplayer.is_server():
+		return
+	rpc("_rpc_set_starting", true)
+
+@rpc("any_peer", "call_local", "reliable")
+func _rpc_set_starting(v: bool) -> void:
+	_starting = v
+	_update_button_visuals()
 
 
 func _broadcast_votes() -> void:

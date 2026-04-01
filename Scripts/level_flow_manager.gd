@@ -8,10 +8,10 @@ const SERVER_ID: int = 1
 @export var level_container_path: NodePath = NodePath("../LevelContainer")
 @export var players_root_path: NodePath = NodePath("../PlayersRoot")
 
-# Optional: initial level to load once lobby starts
+# Optional: initial level to load once lobby starts (singleplayer fallback)
 @export var default_level: PackedScene
 
-# ADDED: lobby level scene (this is what we load first while waiting for players)
+# lobby level scene (this is what we load first while waiting for players)
 @export var lobby_level_scene: PackedScene = preload("res://GameLevelsETC/lobby.tscn")
 
 # Spawn marker inside each level
@@ -48,16 +48,12 @@ var _spawn_join_xform: Transform3D = Transform3D.IDENTITY
 var _ready_peers: Dictionary = {} # int(peer_id) -> bool
 var _waiting_for_ready: bool = false
 
-# ------------------------------------------------------------
 # witness tracking (server stores what each peer is looking at)
 # peer_id -> NodePath string ("" means looking at nothing)
-# ------------------------------------------------------------
 var _peer_look_target: Dictionary = {} # int(peer_id) -> String
 
-# ------------------------------------------------------------
 # camera look sync (server stores each peer's Camera3D global transform)
 # peer_id -> Transform3D
-# ------------------------------------------------------------
 var _peer_cam_xforms: Dictionary = {} # int(peer_id) -> Transform3D
 
 
@@ -81,12 +77,15 @@ func _ready() -> void:
 		if not multiplayer.peer_disconnected.is_connected(_on_peer_disconnected):
 			multiplayer.peer_disconnected.connect(_on_peer_disconnected)
 
-	# Optional auto-load (server only in multiplayer)
+	# ADDED: in multiplayer, the host ALWAYS loads the lobby first (prevents the "flash into level1")
+	if multiplayer.has_multiplayer_peer() and multiplayer.is_server():
+		if lobby_level_scene != null:
+			load_level_server(lobby_level_scene)
+			return
+
+	# Singleplayer fallback: keep your old default_level behavior
 	if default_level != null:
-		if multiplayer.has_multiplayer_peer():
-			if multiplayer.is_server():
-				load_level_server(default_level)
-		else:
+		if not multiplayer.has_multiplayer_peer():
 			_load_level_local(default_level)
 
 
@@ -232,6 +231,9 @@ func _server_try_finish_ready() -> void:
 			return
 
 	_waiting_for_ready = false
+
+	# ADDED: double-pass teleport catches late player nodes / race-y spawns
+	call_deferred("_deferred_server_place_all")
 	call_deferred("_deferred_server_place_all")
 
 
@@ -293,7 +295,7 @@ func on_lobby_ready_server() -> void:
 	if multiplayer.has_multiplayer_peer() and not multiplayer.is_server():
 		return
 
-	# ADDED: when the Steam lobby becomes "real", we start in the lobby level first
+	# when the Steam lobby becomes "real", we start in the lobby level first
 	if lobby_level_scene != null:
 		load_level_server(lobby_level_scene)
 		return
@@ -307,6 +309,14 @@ func _deferred_server_place_all() -> void:
 	teleport_all_players_to_current_spawn_server()
 
 
+# ADDED: helper so we can stop the auto-snap while we're in the lobby
+func _is_lobby_loaded() -> bool:
+	if lobby_level_scene == null:
+		return false
+	var rp := lobby_level_scene.resource_path
+	return rp != "" and _current_level_scene_path == rp
+
+
 func server_place_player_if_needed(player: Node3D) -> void:
 	if player == null:
 		return
@@ -317,6 +327,10 @@ func server_place_player_if_needed(player: Node3D) -> void:
 	if not snap_late_joiners_to_spawn:
 		return
 	if _current_level == null:
+		return
+
+	# ADDED: lobby handles placement; don't auto-snap people while waiting
+	if _is_lobby_loaded():
 		return
 
 	_cache_spawn_transform()
@@ -395,10 +409,8 @@ func _place_all_players_local_to_spawn() -> void:
 		p.global_transform = _cached_spawn_xform
 
 
-# ------------------------------------------------------------
 # witness API (player reports look target to server)
 # Player will call this later from ProtoController.
-# ------------------------------------------------------------
 @rpc("any_peer", "unreliable")
 func _rpc_witness_set_look_target(target_path: String) -> void:
 	if not multiplayer.is_server():
@@ -426,10 +438,8 @@ func witness_get_iters() -> float:
 	return float(GlobalVariables.ITERS)
 
 
-# ------------------------------------------------------------
 # camera look sync API
 # Player will send their Camera3D.global_transform here.
-# ------------------------------------------------------------
 
 # this is just a helper so the host can update itself without rpc-ing itself
 func _server_set_peer_camera(peer_id: int, cam_xform: Transform3D) -> void:
