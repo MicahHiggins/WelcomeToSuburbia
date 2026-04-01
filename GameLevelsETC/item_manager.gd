@@ -366,12 +366,12 @@ func apply_pickup(item_key: NodePath, player_path: NodePath, new_owner_id: int) 
 
 	item.set_meta("item_key", String(item_key))
 
-	# NEW: remember current scale just in case
+	# i keep the original scale saved so the item stays the same size when held
 	var saved_scale := Vector3.ONE
-	if item is Node3D:
-		saved_scale = (item as Node3D).scale
 	if _original_scale.has(item_key):
 		saved_scale = _original_scale[item_key]
+	elif item is Node3D:
+		saved_scale = (item as Node3D).scale
 
 	_freeze_for_hold(item)
 
@@ -379,23 +379,21 @@ func apply_pickup(item_key: NodePath, player_path: NodePath, new_owner_id: int) 
 
 	var marker: Node = player.get_node_or_null("Head/CarryObjectMarker")
 	if marker != null and marker is Node3D:
-		item.reparent(marker as Node3D)
+		# IMPORTANT: don't keep global transform here, it can mess up scale like crazy
+		item.reparent(marker as Node3D, false)
 
-		# IMPORTANT FIX:
-		# Don't wipe scale by setting Transform3D.IDENTITY.
-		# Just snap position/rotation, then restore scale.
+		# now i just snap it to the marker and apply the scale i want
 		if item is Node3D:
 			var n3 := item as Node3D
-			n3.position = Vector3.ZERO
-			n3.rotation = Vector3.ZERO
+			n3.transform = Transform3D.IDENTITY
 			n3.scale = saved_scale
 	else:
-		item.reparent(player)
+		# fallback if marker is missing
+		item.reparent(player, false)
 
 		if item is Node3D:
 			var n3b := item as Node3D
-			n3b.position = Vector3.ZERO
-			n3b.rotation = Vector3.ZERO
+			n3b.transform = Transform3D.IDENTITY
 			n3b.scale = saved_scale
 
 	if "set_held" in item:
