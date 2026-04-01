@@ -57,8 +57,8 @@ shape = SubResource("SphereShape3D_g4ita")
 script = ExtResource("5_j5jp7")
 npc_name = "Abigail"
 
-[node name="newAbigailModel" parent="." groups=["NPC_Body"] instance=ExtResource("7_qmemm")]
-transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, -0.89566183, 0)
+[node name="abigial" parent="." groups=["NPC_Body"] instance=ExtResource("7_qmemm")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, -0.8926997, 0)
 
 [connection signal="body_entered" from="interact" to="." method="_on_interact_body_entered"]
 [connection signal="body_exited" from="interact" to="." method="_on_interact_body_exited"]

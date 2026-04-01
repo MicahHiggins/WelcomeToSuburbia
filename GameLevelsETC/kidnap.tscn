@@ -1,6 +1,6 @@
 [gd_scene load_steps=43 format=3 uid="uid://dw6fx71adu107"]
 
-[ext_resource type="Script" uid="uid://duigu086blnlq" path="res://GameLevelsETC/kidnap.gd" id="1_6rn1s"]
+[ext_resource type="Script" path="res://GameLevelsETC/kidnap.gd" id="1_6rn1s"]
 [ext_resource type="PackedScene" uid="uid://bs2jm62cmkbrk" path="res://addons/instant-realistic-light/light_scene.tscn" id="1_wff52"]
 [ext_resource type="Script" uid="uid://bkb35cbdsgdbh" path="res://addons/instant-realistic-light/light_scene.gd" id="2_itlhn"]
 [ext_resource type="PackedScene" uid="uid://becgpkre4p052" path="res://Assets/RandomObjects/bedrooms/bedroom_copy.tscn" id="3_6rn1s"]
