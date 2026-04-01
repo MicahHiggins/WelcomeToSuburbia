@@ -1,6 +1,7 @@
-[gd_scene load_steps=6 format=3 uid="uid://csta168r01yq1"]
+[gd_scene load_steps=8 format=3 uid="uid://csta168r01yq1"]
 
 [ext_resource type="PackedScene" uid="uid://putiwhktl8b8" path="res://Assets/RandomObjects/humans/new_isaac_model.glb" id="1_ij4l5"]
+[ext_resource type="Material" uid="uid://uq5vftafyueb" path="res://Assets/RandomObjects/humans/humanMaterials/isaac.tres" id="2_eaex1"]
 
 [sub_resource type="Animation" id="Animation_eaex1"]
 resource_name = "NewStanding"
@@ -3535,6 +3536,30 @@ tracks/503/path = NodePath("rig/Cube_002/Cube")
 tracks/503/interp = 1
 tracks/503/loop_wrap = true
 tracks/503/keys = PackedFloat32Array(0, 1, 0.29577348, 0.05791443, 0.11000007)
+tracks/504/type = "value"
+tracks/504/imported = false
+tracks/504/enabled = true
+tracks/504/path = NodePath("rig/Cube_002:position")
+tracks/504/interp = 1
+tracks/504/loop_wrap = true
+tracks/504/keys = {
+"times": PackedFloat32Array(0, 2),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector3(0, 0.099, 0.495), Vector3(0, 0.099, 0.495)]
+}
+tracks/505/type = "value"
+tracks/505/imported = false
+tracks/505/enabled = true
+tracks/505/path = NodePath("rig/Cube_002:rotation")
+tracks/505/interp = 1
+tracks/505/loop_wrap = true
+tracks/505/keys = {
+"times": PackedFloat32Array(0, 2),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector3(-0.3700098, 0, 0), Vector3(-0.3700098, 0, 0)]
+}
 
 [sub_resource type="Animation" id="Animation_t4veh"]
 resource_name = "NewTalking"
@@ -7069,6 +7094,30 @@ tracks/503/path = NodePath("rig/Cube_002/Cylinder")
 tracks/503/interp = 1
 tracks/503/loop_wrap = true
 tracks/503/keys = PackedFloat32Array(0, 1, 1, 1, 1, 0.6666667, 1, 1, 1, 1, 0.7916667, 1, 1, 1, 0.56, 0.8333333, 1, 1, 1, 1, 2, 1, 1, 1, 1)
+tracks/504/type = "value"
+tracks/504/imported = false
+tracks/504/enabled = true
+tracks/504/path = NodePath("rig/Cube_002:position")
+tracks/504/interp = 1
+tracks/504/loop_wrap = true
+tracks/504/keys = {
+"times": PackedFloat32Array(0, 2),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector3(0, 0, 0), Vector3(0, 0, 0)]
+}
+tracks/505/type = "value"
+tracks/505/imported = false
+tracks/505/enabled = true
+tracks/505/path = NodePath("rig/Cube_002:rotation")
+tracks/505/interp = 1
+tracks/505/loop_wrap = true
+tracks/505/keys = {
+"times": PackedFloat32Array(0, 2),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector3(0, 0, 0), Vector3(0, 0, 0)]
+}
 
 [sub_resource type="Animation" id="Animation_j66ny"]
 resource_name = "NewWalking"
@@ -10604,17 +10653,45 @@ tracks/503/interp = 1
 tracks/503/loop_wrap = true
 tracks/503/keys = PackedFloat32Array(0, 1, 0.29577348, 0.05791443, 0.11000007)
 
+[sub_resource type="Animation" id="Animation_ij4l5"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("rig/Cube_002:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(0, 0, 0)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("rig/Cube_002:rotation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(0, 0, 0)]
+}
+
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_cwncp"]
 _data = {
 &"NewStanding": SubResource("Animation_eaex1"),
 &"NewTalking": SubResource("Animation_t4veh"),
-&"NewWalking": SubResource("Animation_j66ny")
+&"NewWalking": SubResource("Animation_j66ny"),
+&"RESET": SubResource("Animation_ij4l5")
 }
 
 [node name="new_isaac_model" instance=ExtResource("1_ij4l5")]
 
 [node name="Cube" parent="rig/Cube_002" index="0"]
-transform = Transform3D(0.2957735, 0, 0, 0, 0.046294533, -0.066093676, 0, 0.034797955, 0.087929755, 0, 1.6104954, 0.20637234)
+transform = Transform3D(0.2957735, 0, 0, 0, 0.046294536, -0.06609367, 0, 0.034797955, 0.08792976, 0, 1.6104954, 0.20637234)
 
 [node name="Cylinder" parent="rig/Cube_002" index="1"]
 transform = Transform3D(1, 0, 0, 0, -0.39342815, -0.9193554, 0, 0.9193554, -0.39342815, 0.047305994, 1.7215889, 0.24909902)
@@ -11108,7 +11185,10 @@ bones/700/rotation = Quaternion(0.96124864, -0.00016129386, 0.0005623989, -0.275
 bones/703/rotation = Quaternion(-5.820764e-11, -3.3881306e-21, 1, -3.1554436e-30)
 bones/704/position = Vector3(0.12842369, 0.5027417, 0.73546875)
 
-[node name="AnimationPlayer" parent="." index="222"]
+[node name="Cube_002" parent="rig/Skeleton3D" index="0"]
+surface_material_override/2 = ExtResource("2_eaex1")
+
+[node name="AnimationPlayer" parent="." index="222" groups=["NPC_Animation"]]
 libraries = {
 &"": SubResource("AnimationLibrary_cwncp")
 }
