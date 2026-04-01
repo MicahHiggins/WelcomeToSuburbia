@@ -3,12 +3,10 @@ class_name LobbyReady
 
 const SERVER_ID: int = 1 # host is peer 1 in our setup
 
-# -------------------------
-# what level do we start?
-# -------------------------
-@export var start_level_scene: PackedScene # drag ANY level scene here in the inspector
+# drag any scene here and this is what the lobby will start
+@export var start_level_scene: PackedScene
 
-# if true, host can force start even if only 1 player is in (good for testing)
+# lets me test alone (singleplayer or host-only)
 @export var allow_force_start_with_one_player: bool = true
 
 @export var level_flow_path: NodePath = NodePath("/root/Main/LevelFlowManager")
@@ -17,6 +15,7 @@ const SERVER_ID: int = 1 # host is peer 1 in our setup
 # UI nodes in the lobby scene
 @export var lobby_ui_root_path: NodePath = NodePath("LobbyUI")
 @export var start_button_path: NodePath = NodePath("LobbyUI/VoteStart")
+@export var force_start_button_path: NodePath = NodePath("LobbyUI/ForceStart") # NEW button
 @export var status_label_path: NodePath = NodePath("LobbyUI/PlayerCount")
 
 # shared popup/countdown label (LobbyUI/Ready)
@@ -27,21 +26,23 @@ const SERVER_ID: int = 1 # host is peer 1 in our setup
 @export var ready_popup_fade_seconds: float = 1.4
 @export var countdown_end_hold_seconds: float = 0.75
 
-# -------------------------
-# ADDED: hook for a "Force Start" button later
-# - you can connect a UI button to call request_force_start()
-# - or connect to this signal from another script if you want
-# -------------------------
+# if you want to hook other stuff to force start later
 signal force_start_requested
 
 var _lfm: Node = null
 var _ui_root: CanvasItem = null
 var _start_btn: Button = null
+var _force_btn: Button = null
 var _status: Label = null
 var _ready_popup: Label = null
 
+# server keeps track of who voted
 var _votes: Dictionary = {} # int(peer_id) -> bool
+
+# local cache so we know if *this* player already voted (for button color/text)
 var _local_peer_id: int = -1
+
+# stop double-starts
 var _starting: bool = false
 var _popup_tween: Tween = null
 
@@ -51,12 +52,13 @@ func _ready() -> void:
 
 	_ui_root = get_node_or_null(lobby_ui_root_path) as CanvasItem
 	_start_btn = get_node_or_null(start_button_path) as Button
+	_force_btn = get_node_or_null(force_start_button_path) as Button
 	_status = get_node_or_null(status_label_path) as Label
 	_ready_popup = get_node_or_null(ready_popup_label_path) as Label
 
 	_local_peer_id = multiplayer.get_unique_id()
 
-	# hide everything until we are actually hosted/joined
+	# IMPORTANT: we hide the UI until the player actually exists in this level
 	if _ui_root != null:
 		_ui_root.visible = false
 
@@ -66,10 +68,17 @@ func _ready() -> void:
 		if not _start_btn.pressed.is_connected(_on_start_pressed):
 			_start_btn.pressed.connect(_on_start_pressed)
 
+	if _force_btn != null:
+		_force_btn.visible = false
+		_force_btn.disabled = false
+		_force_btn.text = "Force Start"
+		if not _force_btn.pressed.is_connected(_on_force_start_pressed):
+			_force_btn.pressed.connect(_on_force_start_pressed)
+
 	if _ready_popup != null:
 		_ready_popup.visible = false
 
-	# server listens for joins/leaves
+	# server listens for joins/leaves (votes only matter on server)
 	if multiplayer.has_multiplayer_peer() and multiplayer.is_server():
 		if not multiplayer.peer_connected.is_connected(_on_peer_change):
 			multiplayer.peer_connected.connect(_on_peer_change)
@@ -81,17 +90,17 @@ func _ready() -> void:
 		if not _votes.has(host_id):
 			_votes[host_id] = false
 
-	# refresh when client connects
+	# refresh when the client actually connects
 	if not multiplayer.connected_to_server.is_connected(_on_connected_refresh):
 		multiplayer.connected_to_server.connect(_on_connected_refresh)
 
-	# host doesn't fire connected_to_server, so refresh next frame too
-	call_deferred("_deferred_refresh_after_host_or_join")
+	# host doesn't get connected_to_server, so do one refresh next frame too
+	call_deferred("_deferred_refresh")
 
 	_update_status()
 
 
-func _deferred_refresh_after_host_or_join() -> void:
+func _deferred_refresh() -> void:
 	_local_peer_id = multiplayer.get_unique_id()
 	_on_peer_change(-1)
 
@@ -117,7 +126,7 @@ func _find_level_flow_manager() -> Node:
 
 func _on_peer_change(id: int) -> void:
 	# keep vote list clean when people join/leave
-	if _is_server_session_active() and multiplayer.is_server():
+	if multiplayer.has_multiplayer_peer() and multiplayer.is_server():
 		if id != -1 and not _votes.has(id):
 			_votes[id] = false
 
@@ -135,29 +144,10 @@ func _on_peer_change(id: int) -> void:
 	_update_status()
 
 
-# are we hosted/joined yet?
-func _is_session_active() -> bool:
-	var mp: MultiplayerPeer = multiplayer.multiplayer_peer
-	if mp == null:
-		return false
-
-	# host counts as active as soon as the peer exists
-	if multiplayer.is_server():
-		return true
-
-	# clients only count as active once actually connected
-	return mp.get_connection_status() == MultiplayerPeer.CONNECTION_CONNECTED
-
-
-func _is_server_session_active() -> bool:
-	return multiplayer.multiplayer_peer != null
-
-
-# lobby player count uses NETWORK peers, not the "player" group
+# players in lobby = actual spawned players (this fixes "1/2 before host")
 func _get_player_count() -> int:
-	if not _is_session_active():
-		return 0
-	return 1 + multiplayer.get_peers().size()
+	var players := get_tree().get_nodes_in_group("player")
+	return players.size()
 
 
 func _get_vote_count() -> int:
@@ -168,65 +158,76 @@ func _get_vote_count() -> int:
 	return c
 
 
+# show UI only after at least 1 player is really in this lobby level
 func _update_status() -> void:
-	var active := _is_session_active()
-
-	# no hosting/joining = UI stays hidden and blank
-	if _ui_root != null:
-		_ui_root.visible = active
-
-	if not active:
-		if _start_btn != null:
-			_start_btn.visible = false
-		if _status != null:
-			_status.text = ""
-		return
-
 	var count := _get_player_count()
 	var votes := _get_vote_count()
+
+	var player_exists := count >= 1
 	var lobby_full := count >= min_players_to_start
+	var can_force := allow_force_start_with_one_player and count == 1
 
-	# show the vote button only when lobby is full (2/2)
-	if _start_btn != null:
-		_start_btn.visible = lobby_full
+	if _ui_root != null:
+		_ui_root.visible = player_exists
 
+	if not player_exists:
+		# nothing shows before host/join spawns the player
+		if _status != null:
+			_status.text = ""
+		if _start_btn != null:
+			_start_btn.visible = false
+		if _force_btn != null:
+			_force_btn.visible = false
+		return
+
+	# status line
 	if _status != null:
 		if lobby_full:
 			_status.text = "Players: %d / %d   Votes: %d / %d" % [count, min_players_to_start, votes, min_players_to_start]
 		else:
 			_status.text = "Players: %d / %d" % [count, min_players_to_start]
 
+	# vote button only when both are in
+	if _start_btn != null:
+		_start_btn.visible = lobby_full
+
+	# force start only when you're alone (singleplayer testing)
+	if _force_btn != null:
+		_force_btn.visible = can_force
+		_force_btn.disabled = _starting
+
 	_update_button_visuals()
 
 
 func _update_button_visuals() -> void:
-	if _start_btn == null:
-		return
+	if _start_btn != null:
+		if _starting:
+			_start_btn.disabled = true
+			_start_btn.text = "Starting..."
+			_start_btn.modulate = Color(1, 1, 1, 1)
+			return
 
-	if _starting:
-		_start_btn.disabled = true
-		_start_btn.text = "Starting..."
-		_start_btn.modulate = Color(1, 1, 1, 1)
-		return
+		if _get_player_count() < min_players_to_start:
+			_start_btn.disabled = true
+			_start_btn.text = "Vote to Start"
+			_start_btn.modulate = Color(1, 1, 1, 1)
+			return
 
-	if _get_player_count() < min_players_to_start:
-		_start_btn.disabled = true
-		_start_btn.text = "Vote to Start"
-		_start_btn.modulate = Color(1, 1, 1, 1)
-		return
+		var i_voted := false
+		if _local_peer_id != -1 and _votes.has(_local_peer_id):
+			i_voted = bool(_votes[_local_peer_id])
 
-	var i_voted := false
-	if _local_peer_id != -1 and _votes.has(_local_peer_id):
-		i_voted = bool(_votes[_local_peer_id])
+		if i_voted:
+			_start_btn.text = "Voted ✓"
+			_start_btn.disabled = true
+			_start_btn.modulate = Color(0.55, 1.0, 0.55, 1.0)
+		else:
+			_start_btn.text = "Vote to Start"
+			_start_btn.disabled = false
+			_start_btn.modulate = Color(1, 1, 1, 1)
 
-	if i_voted:
-		_start_btn.text = "Voted ✓"
-		_start_btn.disabled = true
-		_start_btn.modulate = Color(0.55, 1.0, 0.55, 1.0)
-	else:
-		_start_btn.text = "Vote to Start"
-		_start_btn.disabled = false
-		_start_btn.modulate = Color(1, 1, 1, 1)
+	if _force_btn != null:
+		_force_btn.text = "Starting..." if _starting else "Force Start"
 
 
 func _on_start_pressed() -> void:
@@ -235,7 +236,7 @@ func _on_start_pressed() -> void:
 
 	var my_name := _get_local_display_name()
 
-	# singleplayer/offline: just start after countdown
+	# if we aren't in multiplayer, just start locally
 	if not multiplayer.has_multiplayer_peer():
 		_starting = true
 		_update_button_visuals()
@@ -243,7 +244,7 @@ func _on_start_pressed() -> void:
 		_try_start_scene_server()
 		return
 
-	# multiplayer: clients send a vote to the server
+	# clients send a vote to the server
 	if not multiplayer.is_server():
 		rpc_id(SERVER_ID, "_rpc_submit_vote", my_name)
 		return
@@ -252,57 +253,27 @@ func _on_start_pressed() -> void:
 	_register_vote(multiplayer.get_unique_id(), my_name)
 
 
-# -------------------------
-# ADDED: this is what you call from a future "Force Start" button
-# - it emits a signal so you can hook UI however you want later
-# - it also does the actual server-side force start right now if allowed
-# -------------------------
+func _on_force_start_pressed() -> void:
+	request_force_start()
+
+
 func request_force_start() -> void:
 	emit_signal("force_start_requested")
 
-	if not allow_force_start_with_one_player:
-		return
-
-	# singleplayer/offline
-	if not multiplayer.has_multiplayer_peer():
-		if _starting:
-			return
-		_starting = true
-		_update_button_visuals()
-		await _do_countdown_local(start_countdown_seconds)
-		_try_start_scene_server()
-		return
-
-	# multiplayer: only server can force start
-	if not multiplayer.is_server():
-		rpc_id(SERVER_ID, "_rpc_request_force_start")
-		return
-
-	_force_start_server()
-
-
-@rpc("any_peer", "reliable")
-func _rpc_request_force_start() -> void:
-	if not multiplayer.is_server():
-		return
-	_force_start_server()
-
-
-func _force_start_server() -> void:
 	if _starting:
 		return
 	if not allow_force_start_with_one_player:
 		return
 
-	# only allow force start if at least 1 player is actually in the session
-	if _get_player_count() < 1:
+	# only allow when you're alone in the lobby
+	if _get_player_count() != 1:
 		return
 
 	_starting = true
-	rpc("_rpc_set_starting", true)
-	rpc("_rpc_start_countdown", start_countdown_seconds)
+	_update_button_visuals()
 
-	await _server_wait_seconds(float(start_countdown_seconds) + countdown_end_hold_seconds)
+	# run countdown on local (works in singleplayer + host-only)
+	await _do_countdown_local(start_countdown_seconds)
 	_try_start_scene_server()
 
 
@@ -351,6 +322,7 @@ func _try_start_scene_server() -> void:
 	if start_level_scene == null:
 		push_warning("[LobbyReady] start_level_scene is empty. Drag a scene into it in the inspector.")
 		_starting = false
+		_update_status()
 		return
 
 	if _lfm == null:
@@ -359,14 +331,16 @@ func _try_start_scene_server() -> void:
 	if _lfm == null:
 		push_warning("[LobbyReady] LevelFlowManager not found, can't start.")
 		_starting = false
+		_update_status()
 		return
 
-	# this uses the SAME load pipeline as everything else (rpc + ready handshake)
+	# we use load_level_server so everyone loads + the ready-handshake still works
 	if _lfm.has_method("load_level_server"):
 		_lfm.call("load_level_server", start_level_scene)
 	else:
 		push_warning("[LobbyReady] LevelFlowManager missing load_level_server(scene).")
 		_starting = false
+		_update_status()
 
 
 func _broadcast_votes() -> void:
@@ -430,9 +404,6 @@ func _do_countdown_local(seconds: int = 3) -> void:
 
 	_ready_popup.text = "Starting..."
 	await tree.create_timer(countdown_end_hold_seconds).timeout
-
-	if not is_inside_tree():
-		return
 	_ready_popup.visible = false
 
 
@@ -450,7 +421,6 @@ func _rpc_show_ready_popup(msg: String) -> void:
 	if _ready_popup == null:
 		return
 
-	# stop old tween so messages don't fight each other
 	if _popup_tween != null and is_instance_valid(_popup_tween):
 		_popup_tween.kill()
 	_popup_tween = null

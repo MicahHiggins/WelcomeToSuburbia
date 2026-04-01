@@ -76,8 +76,16 @@ offset_top = 270.0
 offset_right = 668.0
 offset_bottom = 324.0
 
+[node name="ForceStart" type="Button" parent="LobbyUI"]
+offset_left = 990.0
+offset_top = 177.0
+offset_right = 1131.0
+offset_bottom = 229.0
+text = "Force Start"
+
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." instance=ExtResource("2_sknj8")]
 environment = SubResource("Environment_f8w8m")
 camera_attributes = SubResource("CameraAttributesPractical_qo5hu")
 
 [connection signal="pressed" from="LobbyUI/VoteStart" to="." method="_on_start_pressed"]
+[connection signal="pressed" from="LobbyUI/ForceStart" to="." method="_on_force_start_pressed"]
