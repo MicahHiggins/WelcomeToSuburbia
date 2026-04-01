@@ -37,6 +37,18 @@ import_script/path=""
 materials/extract=0
 materials/extract_format=0
 materials/extract_path=""
-_subresources={}
+_subresources={
+"meshes": {
+"toy_piano_2_walrus_guy_2": {
+"generate/lightmap_uv": 0,
+"generate/lods": 0,
+"generate/shadow_meshes": 0,
+"lods/normal_merge_angle": 20.0,
+"save_to_file/enabled": true,
+"save_to_file/fallback_path": "res://aidan_stuff/walrus_guy.res",
+"save_to_file/path": "uid://76c4i32epv27"
+}
+}
+}
 gltf/naming_version=2
 gltf/embedded_image_handling=1
