@@ -1,7 +1,10 @@
-[gd_scene load_steps=8 format=3 uid="uid://csta168r01yq1"]
+[gd_scene load_steps=9 format=3 uid="uid://csta168r01yq1"]
 
 [ext_resource type="PackedScene" uid="uid://putiwhktl8b8" path="res://Assets/RandomObjects/humans/new_isaac_model.glb" id="1_ij4l5"]
 [ext_resource type="Material" uid="uid://uq5vftafyueb" path="res://Assets/RandomObjects/humans/humanMaterials/isaac.tres" id="2_eaex1"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_eaex1"]
+albedo_color = Color(0.21476123, 0.19279376, 0.18500212, 1)
 
 [sub_resource type="Animation" id="Animation_eaex1"]
 resource_name = "NewStanding"
@@ -11187,6 +11190,7 @@ bones/704/position = Vector3(0.12842369, 0.5027417, 0.73546875)
 
 [node name="Cube_002" parent="rig/Skeleton3D" index="0"]
 surface_material_override/2 = ExtResource("2_eaex1")
+surface_material_override/3 = SubResource("StandardMaterial3D_eaex1")
 
 [node name="AnimationPlayer" parent="." index="222" groups=["NPC_Animation"]]
 libraries = {
