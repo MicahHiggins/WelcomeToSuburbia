@@ -14,7 +14,10 @@ const SERVER_ID: int = 1 # host is peer 1 in our setup
 # shared popup/countdown label (LobbyUI/Ready)
 @export var ready_popup_label_path: NodePath = NodePath("LobbyUI/Ready")
 
-@export var start_countdown_seconds: int = 3 # countdown before starting Level 1
+@export var start_countdown_seconds: int = 5 # CHANGED: a bit longer by default
+@export var ready_popup_hold_seconds: float = 2.2 # ADDED: "X ready" stays up longer
+@export var ready_popup_fade_seconds: float = 1.4 # ADDED: slower fade
+@export var countdown_end_hold_seconds: float = 0.75 # ADDED: "Starting..." shows a bit longer
 
 var _lfm: Node = null
 var _ui_root: CanvasItem = null
@@ -30,6 +33,9 @@ var _local_peer_id: int = -1
 
 # stop double-starts
 var _starting: bool = false
+
+# ADDED: used to stop popups from overlapping weirdly
+var _popup_tween: Tween = null
 
 
 func _ready() -> void:
@@ -67,12 +73,21 @@ func _ready() -> void:
 		if not _votes.has(host_id):
 			_votes[host_id] = false
 
-	# refresh when client connects
+	# ADDED: refresh when client connects (joiner)
 	if not multiplayer.connected_to_server.is_connected(_on_connected_refresh):
 		multiplayer.connected_to_server.connect(_on_connected_refresh)
 
+	# ADDED: host does NOT get connected_to_server, so we refresh on the next frame too
+	call_deferred("_deferred_refresh_after_host_or_join")
+
 	# one initial refresh (stays hidden if not hosted/joined)
 	_update_status()
+
+
+func _deferred_refresh_after_host_or_join() -> void:
+	# If host just created the peer, we want UI to show 1/2 immediately.
+	_local_peer_id = multiplayer.get_unique_id()
+	_on_peer_change(-1)
 
 
 func _on_connected_refresh() -> void:
@@ -115,7 +130,7 @@ func _on_peer_change(id: int) -> void:
 
 
 # -------------------------
-# ADDED: this is the real "are we hosted/joined yet?" check
+# are we hosted/joined yet?
 # -------------------------
 func _is_session_active() -> bool:
 	var mp: MultiplayerPeer = multiplayer.multiplayer_peer
@@ -130,7 +145,7 @@ func _is_session_active() -> bool:
 	return mp.get_connection_status() == MultiplayerPeer.CONNECTION_CONNECTED
 
 
-# server-side flavor (same thing but reads nicer in code)
+# server-side flavor
 func _is_server_session_active() -> bool:
 	return multiplayer.multiplayer_peer != null
 
@@ -139,7 +154,6 @@ func _is_server_session_active() -> bool:
 func _get_player_count() -> int:
 	if not _is_session_active():
 		return 0
-
 	return 1 + multiplayer.get_peers().size()
 
 
@@ -220,7 +234,7 @@ func _on_start_pressed() -> void:
 	if not multiplayer.has_multiplayer_peer():
 		_starting = true
 		_update_button_visuals()
-		await _do_countdown_local()
+		await _do_countdown_local(start_countdown_seconds)
 		_try_start_level_1_server()
 		return
 
@@ -257,7 +271,7 @@ func _register_vote(peer_id: int, display_name: String) -> void:
 
 	_votes[peer_id] = true
 
-	# popup for everyone
+	# popup for everyone (now lasts longer)
 	rpc("_rpc_show_ready_popup", "%s ready" % display_name)
 
 	_broadcast_votes()
@@ -268,7 +282,7 @@ func _register_vote(peer_id: int, display_name: String) -> void:
 		rpc("_rpc_set_starting", true)
 		rpc("_rpc_start_countdown", start_countdown_seconds)
 
-		await _server_wait_seconds(float(start_countdown_seconds))
+		await _server_wait_seconds(float(start_countdown_seconds) + countdown_end_hold_seconds)
 		_try_start_level_1_server()
 
 
@@ -322,10 +336,20 @@ func _rpc_set_starting(v: bool) -> void:
 
 @rpc("any_peer", "call_local", "reliable")
 func _rpc_start_countdown(seconds: int) -> void:
+	# ADDED: if this node got unloaded, don't crash
+	if not is_inside_tree():
+		return
 	await _do_countdown_local(seconds)
 
 
 func _do_countdown_local(seconds: int = 3) -> void:
+	# ADDED: protect against level switching while we are counting down
+	if not is_inside_tree():
+		return
+	var tree := get_tree()
+	if tree == null:
+		return
+
 	if _ready_popup == null:
 		return
 
@@ -333,22 +357,41 @@ func _do_countdown_local(seconds: int = 3) -> void:
 	_ready_popup.modulate = Color(1, 1, 1, 1)
 
 	for i in range(seconds, 0, -1):
+		if not is_inside_tree():
+			return
+		if tree == null:
+			return
+
 		_ready_popup.text = "Starting in %d..." % i
-		await get_tree().create_timer(1.0).timeout
+		await tree.create_timer(1.0).timeout
 
 	_ready_popup.text = "Starting..."
-	await get_tree().create_timer(0.3).timeout
+	await tree.create_timer(countdown_end_hold_seconds).timeout
+
+	if not is_inside_tree():
+		return
 	_ready_popup.visible = false
 
 
 func _server_wait_seconds(s: float) -> void:
-	await get_tree().create_timer(s).timeout
+	# ADDED: don't crash if server swaps levels mid-wait
+	if not is_inside_tree():
+		return
+	var tree := get_tree()
+	if tree == null:
+		return
+	await tree.create_timer(s).timeout
 
 
 @rpc("any_peer", "call_local", "unreliable")
 func _rpc_show_ready_popup(msg: String) -> void:
 	if _ready_popup == null:
 		return
+
+	# ADDED: stop any old tween so messages don't fight each other
+	if _popup_tween != null and is_instance_valid(_popup_tween):
+		_popup_tween.kill()
+	_popup_tween = null
 
 	_ready_popup.text = msg
 	_ready_popup.visible = true
@@ -357,9 +400,11 @@ func _rpc_show_ready_popup(msg: String) -> void:
 	c.a = 1.0
 	_ready_popup.modulate = c
 
-	var tw := create_tween()
-	tw.tween_property(_ready_popup, "modulate:a", 0.0, 1.2).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
-	tw.tween_callback(func():
+	# ADDED: keep it visible longer, then fade slower
+	_popup_tween = create_tween()
+	_popup_tween.tween_interval(ready_popup_hold_seconds)
+	_popup_tween.tween_property(_ready_popup, "modulate:a", 0.0, ready_popup_fade_seconds).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+	_popup_tween.tween_callback(func():
 		if _ready_popup != null and not _starting:
 			_ready_popup.visible = false
 	)
