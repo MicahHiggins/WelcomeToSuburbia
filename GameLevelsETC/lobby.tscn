@@ -43,7 +43,6 @@ auto_exposure_min_sensitivity = 8.01
 [node name="Lobby" type="Node3D"]
 script = ExtResource("1_ym4ib")
 start_level_scene = ExtResource("2_yosgk")
-start_countdown_seconds = 8
 
 [node name="Spawn" type="Marker3D" parent="."]
 
