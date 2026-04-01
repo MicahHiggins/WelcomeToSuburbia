@@ -14,9 +14,9 @@ extends Node3D
 @onready var note_5: AudioStreamPlayer3D = $Audio/note5
 @onready var note_6: AudioStreamPlayer3D = $Audio/note6
 @onready var note_7: AudioStreamPlayer3D = $Audio/note7
-@onready var notesArr = [note_1, note_5, note_3, note_7, note_4, note_6, note_2]
+@onready var notesArr = [note_1, note_5, note_3, note_7, note_4, note_6, note_6, note_2]
 @onready var animArr = ["Cube_001Action","Cube_005Action", "Cube_003Action", "Cube_007Action", "Cube_004Action", "Cube_006Action",
- "Cube_006Action"]
+ "Cube_006Action", "Cube_002Action"]
 
 signal puzzleOneComplete
 
@@ -50,7 +50,8 @@ func _on_mousefree_body_exited(body: Node3D) -> void:
 
 func _on_area_3d_input_event(camera: Node, event: InputEvent, event_position: Vector3, normal: Vector3, shape_idx: int) -> void:
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
-		for i in range(7):
+		for i in range(8):
 			notesArr[i].play()
+			animation_player_2.stop()
 			animation_player_2.play(animArr[i])
 			await get_tree().create_timer(1).timeout
