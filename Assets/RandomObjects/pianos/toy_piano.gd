@@ -10,7 +10,8 @@ extends Node3D
 @onready var note_6: AudioStreamPlayer3D = $Audio/note6
 @onready var note_7: AudioStreamPlayer3D = $Audio/note7
 
-
+var puzzleArr = [1, 5, 3, 7, 4, 6, 6, 2]
+var arrPlay = []
 signal puzzleOneComplete
 # Called when the node enters the scene tree for the first time.
 #func _on_mousefree_input_event(camera: Node, event: InputEvent, event_position: Vector3, normal: Vector3, shape_idx: int) -> void:
@@ -19,7 +20,8 @@ signal puzzleOneComplete
 		#print("The object was clicked!")
 		# Call whatever logic you want here
 
-
+func puzzleCheck(value: int):
+	
 func _on_mousefree_body_entered(body: Node3D) -> void:
 	if body.is_in_group("player"):
 		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
