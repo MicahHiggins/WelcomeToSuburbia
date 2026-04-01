@@ -1,0 +1,117 @@
+[gd_scene load_steps=9 format=3 uid="uid://diyfna0mvebm4"]
+
+[ext_resource type="Script" uid="uid://0g5ofuvrj67f" path="res://Assets/RandomObjects/quest_marker!.gd" id="1_r121f"]
+
+[sub_resource type="Animation" id="Animation_r121f"]
+resource_name = "Move!"
+length = 1.5
+loop_mode = 2
+tracks/0/type = "bezier"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("exc:position:x")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"handle_modes": PackedInt32Array(2, 0, 0),
+"points": PackedFloat32Array(0, 0, 0, 0.25, 0, 0, -0.25, 0, 0.25, 0, 0, -0.25, 0, 0, 0),
+"times": PackedFloat32Array(0, 0.76666665, 1.5)
+}
+tracks/1/type = "bezier"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("exc:position:y")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"handle_modes": PackedInt32Array(2, 0, 0),
+"points": PackedFloat32Array(0, 0, 0, 0.25, 0.16666667, 1, -0.25, 0, 0.25, 0, 0, -0.25, 0.16666667, 0, 0),
+"times": PackedFloat32Array(0, 0.76666665, 1.5)
+}
+tracks/2/type = "bezier"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("exc:position:z")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"handle_modes": PackedInt32Array(2, 0, 0),
+"points": PackedFloat32Array(0, 0, 0, 0.25, 0, 0, -0.25, 0, 0.25, 0, 0, -0.25, 0, 0, 0),
+"times": PackedFloat32Array(0, 0.76666665, 1.5)
+}
+
+[sub_resource type="Animation" id="Animation_kgh5g"]
+length = 0.001
+tracks/0/type = "bezier"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("exc:position:x")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"handle_modes": PackedInt32Array(0),
+"points": PackedFloat32Array(0, -0.25, 0, 0.25, 0),
+"times": PackedFloat32Array(0)
+}
+tracks/1/type = "bezier"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("exc:position:y")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"handle_modes": PackedInt32Array(0),
+"points": PackedFloat32Array(1, -0.25, 0, 0.25, 0),
+"times": PackedFloat32Array(0)
+}
+tracks/2/type = "bezier"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("exc:position:z")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"handle_modes": PackedInt32Array(0),
+"points": PackedFloat32Array(0, -0.25, 0, 0.25, 0),
+"times": PackedFloat32Array(0)
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_y5pgh"]
+_data = {
+&"Move!": SubResource("Animation_r121f"),
+&"RESET": SubResource("Animation_kgh5g")
+}
+
+[sub_resource type="BoxMesh" id="BoxMesh_kgh5g"]
+size = Vector3(1, 3, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_y5pgh"]
+albedo_color = Color(1, 0, 0, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_f8vu3"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_he252"]
+albedo_color = Color(1, 0, 0, 1)
+
+[node name="QuestMarker!" type="Node3D"]
+script = ExtResource("1_r121f")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+&"": SubResource("AnimationLibrary_y5pgh")
+}
+
+[node name="exc" type="Node3D" parent="."]
+transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 0, 1, 0)
+
+[node name="long" type="MeshInstance3D" parent="exc"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.5974627, 0)
+mesh = SubResource("BoxMesh_kgh5g")
+skeleton = NodePath("../..")
+surface_material_override/0 = SubResource("StandardMaterial3D_y5pgh")
+
+[node name="short" type="MeshInstance3D" parent="exc"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
+mesh = SubResource("BoxMesh_f8vu3")
+skeleton = NodePath("../..")
+surface_material_override/0 = SubResource("StandardMaterial3D_he252")

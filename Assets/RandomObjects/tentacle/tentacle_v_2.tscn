@@ -1,0 +1,20 @@
+[gd_scene load_steps=3 format=3 uid="uid://cdnciukj27aok"]
+
+[ext_resource type="PackedScene" uid="uid://dd0s156funjlr" path="res://Assets/RandomObjects/tentacle/TentacleV2.glb" id="1_tbxqs"]
+[ext_resource type="Script" uid="uid://b2yyvqemomigg" path="res://Assets/RandomObjects/tentacle/tentacle_v_2.gd" id="2_xyel8"]
+
+[node name="TentacleV2" instance=ExtResource("1_tbxqs")]
+transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0)
+script = ExtResource("2_xyel8")
+bend_strength = 8.0
+side_bend_strength = 3.0
+twist_strength = 10.0
+
+[node name="Armature" parent="." index="0"]
+transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, -0.018712588, -0.93206936, 0.1156296)
+
+[node name="Skeleton3D" parent="Armature" index="0"]
+transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0)
+
+[node name="Cylinder" parent="Armature/Skeleton3D" index="0"]
+transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0)

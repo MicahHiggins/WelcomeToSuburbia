@@ -84,6 +84,7 @@ _data = {
 
 [node name="Level1" type="Node3D"]
 script = ExtResource("1_oh3op")
+spawn_radius = 200.0
 
 [node name="PCGAttempt" parent="." instance=ExtResource("7_d084q")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.1072845, 9.536743e-07, -0.011600018)

@@ -1,8 +1,10 @@
-[gd_scene load_steps=4 format=3 uid="uid://wa1g4ojo4bnp"]
+[gd_scene load_steps=6 format=3 uid="uid://wa1g4ojo4bnp"]
 
 [ext_resource type="Script" uid="uid://b8lerjmagqkl4" path="res://GameLevelsETC/patrol_path.gd" id="1_5k6rd"]
 [ext_resource type="PackedScene" uid="uid://c11d0ync6fj8o" path="res://NPC/npc_campbells.tscn" id="2_bvngj"]
 [ext_resource type="AudioStream" uid="uid://cqelxa4fjpjps" path="res://Audio/SFX/toddlerCrying.wav" id="3_5k6rd"]
+[ext_resource type="Script" uid="uid://c1bnlyaj1lygf" path="res://NPC/audio_cue.gd" id="3_bvngj"]
+[ext_resource type="AudioStream" uid="uid://cb5on36hl4m05" path="res://Audio/SFX/Dog1.wav" id="5_uxm5b"]
 
 [node name="PatrolBundleCampbells" type="Node3D"]
 
@@ -10,23 +12,53 @@
 script = ExtResource("1_5k6rd")
 
 [node name="WP_1" type="Marker3D" parent="patrol_path" groups=["patrol_path"]]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.686433, 0.6372285, -9.094014)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.693846, 0.5410094, -8.447145)
 
 [node name="WP_2" type="Marker3D" parent="patrol_path" groups=["patrol_path"]]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.468415, 0.6372285, 8.927204)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.447079, 0.6372285, 8.12391)
 
 [node name="WP_3" type="Marker3D" parent="patrol_path"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.364651, 0.48744488, 9.081257)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.339064, 0.6372285, 8.358163)
 
 [node name="WP_4" type="Marker3D" parent="patrol_path"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.415075, 0.48744488, 9.081257)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.296562, 0.6372285, -9.659606)
 
 [node name="NPC_Campbells" parent="." instance=ExtResource("2_bvngj")]
-transform = Transform3D(0.25, 0, 0, 0, 0.25, 0, 0, 0, 0.25, -0.9027457, 0.4424472, -9.722223)
+transform = Transform3D(0.25, 0, 0, 0, 0.25, 0, 0, 0, 0.25, 8.151035, 0.4424472, -8.379852)
 
-[node name="AudioCue" type="Node3D" parent="."]
+[node name="man" parent="NPC_Campbells" index="6"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2204516, 0, 0.014076233)
 
-[node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="AudioCue"]
+[node name="child2" parent="NPC_Campbells" index="7"]
+transform = Transform3D(0.65, 0, 0, 0, 0.65, 0, 0, 0, 0.65, 1.0461545, -0.2974286, 0.8191109)
+
+[node name="Dog" parent="NPC_Campbells" index="9"]
+transform = Transform3D(0.15, 0, 0, 0, 0.14940616, -0.013334145, 0, 0.013334145, 0.14940616, 0.0371325, -0.46881258, 1.1357918)
+
+[node name="AudioCue" type="Node3D" parent="NPC_Campbells"]
+transform = Transform3D(4, 0, 0, 0, 4, 0, 0, 0, 4, 3.610983, -1.7697887, 38.888893)
+script = ExtResource("3_bvngj")
+
+[node name="toddlerCrying" type="AudioStreamPlayer3D" parent="NPC_Campbells/AudioCue"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.9622278, 0, -10.077015)
 stream = ExtResource("3_5k6rd")
+attenuation_model = 2
+volume_db = -8.542
+unit_size = 47.13
+max_db = -1.136
+max_distance = 81.3
+panning_strength = 1.2
+bus = &"SFX"
+
+[node name="DogBark1" type="AudioStreamPlayer3D" parent="NPC_Campbells/AudioCue"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.59571457, 0, -10.494152)
+stream = ExtResource("5_uxm5b")
+attenuation_model = 2
+volume_db = -8.0
+unit_size = 17.86
+max_db = -0.903
+max_distance = 397.67
+panning_strength = 1.14
+bus = &"SFX"
 
 [editable path="NPC_Campbells"]

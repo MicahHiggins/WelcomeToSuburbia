@@ -18,5 +18,11 @@ static var abigailDialogue = [
 static var campbellsDialogue = [
 	["Hey there neighbors!", "We haven't seen you guys lately", "Are you trying to find your home?\n It's 130"],
 	["This old dog just can't keep up anymore!", "Old Mutt!", "*the daughter starts to sob*"],
-	["Have you seen Fido?", "He ran away and we can't find him!", "Can you find him for us?"]
+	["Have you seen Fido?", "He ran away and we can't find him!", "Can you find him for us?"], 
+	["Fido is where?", "Oh my goodness, thank you!", "We will go look for him right now!"]
+]
+static var issDialogue = [
+	["..."],
+	["..."], 
+	["..."]
 ]

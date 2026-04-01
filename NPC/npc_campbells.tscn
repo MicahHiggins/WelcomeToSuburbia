@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3 uid="uid://c11d0ync6fj8o"]
+[gd_scene load_steps=14 format=3 uid="uid://c11d0ync6fj8o"]
 
 [ext_resource type="Script" uid="uid://csc5bob5s77t" path="res://Scripts/npc_bob.gd" id="1_k38it"]
 [ext_resource type="Script" uid="uid://cicakuq5a1gle" path="res://Scripts/state_machine.gd" id="2_76l8o"]
@@ -6,9 +6,10 @@
 [ext_resource type="Script" uid="uid://cvv6jryec78f3" path="res://Scripts/talk_state.gd" id="4_2ka8d"]
 [ext_resource type="Script" uid="uid://bdyreatjqakvi" path="res://Scripts/npcResource.gd" id="5_u5i8w"]
 [ext_resource type="PackedScene" uid="uid://bcggylgytgib6" path="res://Models/dog.tscn" id="6_u5i8w"]
+[ext_resource type="PackedScene" uid="uid://diyfna0mvebm4" path="res://Assets/RandomObjects/quest_marker!.tscn" id="7_2ka8d"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_g4ita"]
-radius = 2.0
+radius = 1.0
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_5x2h4"]
 
@@ -27,6 +28,7 @@ albedo_color = Color(0.6627451, 1, 1, 1)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.9027457, 0, 0)
 collision_mask = 3
 script = ExtResource("1_k38it")
+move_speed = 2.5
 
 [node name="interact" type="Area3D" parent="."]
 collision_layer = 0
@@ -99,6 +101,9 @@ transform = Transform3D(0.65, 0, 0, 0, 0.65, 0, 0, 0, 0.65, 0.49134994, -0.29742
 [node name="body" type="CollisionShape3D" parent="Dog/body"]
 shape = SubResource("CapsuleShape3D_5x2h4")
 debug_color = Color(0.65632045, 0.5013817, 0.35583058, 0.41960785)
+
+[node name="QuestMarker!" parent="." instance=ExtResource("7_2ka8d")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.9475939, 0, 0)
 
 [connection signal="body_entered" from="interact" to="." method="_on_interact_body_entered"]
 [connection signal="body_exited" from="interact" to="." method="_on_interact_body_exited"]

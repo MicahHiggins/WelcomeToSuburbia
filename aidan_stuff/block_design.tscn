@@ -1,4 +1,4 @@
-[gd_scene load_steps=28 format=3 uid="uid://r8vqf0qcnkdn"]
+[gd_scene load_steps=30 format=3 uid="uid://r8vqf0qcnkdn"]
 
 [ext_resource type="Script" uid="uid://4p6bc6ac8elf" path="res://aidan_stuff/block_design.gd" id="1_jmv40"]
 [ext_resource type="Texture2D" uid="uid://but80wsucm4q2" path="res://textures/GrassTextures/GrassAlbedo.png" id="2_bkv0n"]
@@ -21,6 +21,7 @@
 [ext_resource type="PackedScene" uid="uid://d2rvqfwj71ucv" path="res://Assets/RandomObjects/billboard/billboard.tscn" id="18_vslbx"]
 [ext_resource type="PackedScene" uid="uid://bjq42iea72mgn" path="res://AudioCues/heart_beat_detector.tscn" id="20_u2ehm"]
 [ext_resource type="PackedScene" uid="uid://bhne50eu8g2mb" path="res://Assets/RandomObjects/pineTree/pine_tree.tscn" id="21_u2ehm"]
+[ext_resource type="PackedScene" uid="uid://655t81u48joy" path="res://NPC/fido.tscn" id="22_ga440"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_0wadw"]
 albedo_color = Color(0.60271376, 0.7674062, 0.73615, 1)
@@ -59,6 +60,9 @@ size = Vector3(5.892517, 1.1880493, 5.880554)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_milrp"]
 size = Vector3(30, 10, 1)
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_ga440"]
+radius = 10.976
 
 [node name="Block Design" type="Node3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.043141365)
@@ -2512,7 +2516,7 @@ shape = SubResource("BoxShape3D_milrp")
 [node name="AudioCues" type="Node3D" parent="."]
 
 [node name="heartBeatDetector" parent="AudioCues" instance=ExtResource("20_u2ehm")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.692812, 1.4082727, 10.9122305)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.802187, 0.6931386, 4.6977787)
 priority = 1
 
 [node name="PineTrees" type="Node3D" parent="."]
@@ -2568,9 +2572,24 @@ transform = Transform3D(0.1, 0, 0, 0, 0.1, 0, 0, 0, 0.1, 1.0495567, 0, -11.19676
 [node name="PineTree_BEFORE_JOIN16" parent="PineTrees" instance=ExtResource("21_u2ehm")]
 transform = Transform3D(0.1, 0, 0, 0, 0.1, 0, 0, 0, 0.1, 0.849617, 0, -0.8997407)
 
+[node name="Dog" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.7971344, 0.29864478, 15.185915)
+
+[node name="Area3D" type="Area3D" parent="Dog"]
+transform = Transform3D(0.05, 0, 0, 0, 0.05, 0, 0, 0, 0.05, 0, 0, 0)
+collision_layer = 0
+collision_mask = 8
+
+[node name="FidoCollision" type="CollisionShape3D" parent="Dog/Area3D"]
+shape = SubResource("SphereShape3D_ga440")
+
+[node name="Fido" parent="Dog" instance=ExtResource("22_ga440")]
+transform = Transform3D(0.05, 0, 0, 0, 0.05, 0, 0, 0, 0.05, 0, 0, 0)
+
 [connection signal="body_entered" from="LoadingSystem" to="." method="_on_area_3d_body_entered"]
 [connection signal="body_exited" from="LoadingSystem" to="." method="_on_area_3d_body_exited"]
 [connection signal="body_entered" from="IterationDetector" to="IterationDetector" method="_on_body_entered"]
 [connection signal="timeout" from="IterationDetector/Timer" to="IterationDetector" method="_on_timer_timeout"]
+[connection signal="body_entered" from="Dog/Area3D" to="Dog/Fido" method="_on_area_3d_body_entered"]
 
 [editable path="AudioCues/heartBeatDetector"]

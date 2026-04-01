@@ -18,12 +18,16 @@ func iterationChange(value: int):
 	print(value)
 	if value == 1:
 		#print("itrationChanged! Heartbeat!")
+		#questHub.it_change()
+		
 		collision_shape_3d.set_deferred("disabled", false) 
 	elif value > 1:
 		queue_free()
 		print("itereationChanged! Heartbeat! Error/DQ!")
 			
 func _on_body_entered(body: Node3D) -> void:
-	if body.is_multiplayer_authority() && body.is_in_group("player"):
+	if  body.is_in_group("player"):
+		GlobalVariables.iterations += 1
+		questHub.it_change()
 		GlobalVariables.heart_beat = true
 	

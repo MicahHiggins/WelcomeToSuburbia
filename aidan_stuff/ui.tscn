@@ -1,7 +1,6 @@
-[gd_scene load_steps=9 format=3 uid="uid://dwgaejjewy8s5"]
+[gd_scene load_steps=8 format=3 uid="uid://dwgaejjewy8s5"]
 
 [ext_resource type="Script" uid="uid://bbitif1hr07eg" path="res://aidan_stuff/ui.gd" id="1_8pkb0"]
-[ext_resource type="PackedScene" uid="uid://b3tivaphj7o57" path="res://aidan_stuff/button4Iteration.tscn" id="2_dd0l5"]
 [ext_resource type="Texture2D" uid="uid://dbjeeu2hjcp4e" path="res://Assets/Images/Arrow.png" id="2_e0qpt"]
 [ext_resource type="FontFile" uid="uid://g7ve53wy4c3c" path="res://addons/Font/MADE TOMMY Medium_PERSONAL USE.otf" id="3_q5pv1"]
 [ext_resource type="Script" uid="uid://cnfd8g3v8lobu" path="res://GameLevelsETC/pop_up.gd" id="4_n0eaf"]
@@ -132,7 +131,7 @@ theme_override_fonts/font = ExtResource("3_q5pv1")
 theme_override_font_sizes/font_size = 25
 text = "Current Objectives:"
 
-[node name="Label2" type="Label" parent="CurrObj"]
+[node name="Objectives" type="Label" parent="CurrObj"]
 layout_mode = 2
 size_flags_horizontal = 6
 size_flags_vertical = 8
@@ -157,5 +156,3 @@ offset_bottom = 23.0
 grow_horizontal = 2
 text = "Curr Iteration: "
 script = ExtResource("6_d3d0q")
-
-[node name="IterationChanngeButton" parent="." instance=ExtResource("2_dd0l5")]

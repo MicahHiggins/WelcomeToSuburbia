@@ -4,12 +4,13 @@ class_name questHub
 
 
 signal iterationManipulation(value: int)
+signal questManipulation(value: int)
 
 
  # Global signal
 static var singleton := questHub.new()
 static var iteration_changed := Signal(singleton, "iterationManipulation")
-
+static var questTalk := Signal(singleton, "questManipulation")
 #func set_value(new_value: int) -> void:
 	## ... update state ...
 	#iteration_changed.emit(GlobalVariables.iterations)
@@ -20,6 +21,11 @@ static func it_change():
 	print("Iteration Change Detected!?: ")
 	print(GlobalVariables.iterations)
 	iteration_changed.emit(GlobalVariables.iterations)
+
+static func campbellTalk():
+	print("Iteration Change Detected!?: ")
+	print(GlobalVariables.iterations)
+	questTalk.emit(GlobalVariables.iterations)
 
 
 #Ok lets do this
@@ -43,6 +49,7 @@ static func it_change():
 #Issac: silence
 #Pass 124 with heartbeat loud and cool visuals
 
+
 #3rd Iteration
 #Abigail warns the player, and vaguely refers to the dog quest
 #Campbells: Find dog quest (w/ no dog)
@@ -62,9 +69,9 @@ static func it_change():
 #Abigial HOA reveal, tells the player what's coming
 #Campbell Outcome:
 	#if player found and told campbell about dog befre they talk on 5th iteration
-		#bus = true
-	#else
 		#bus = false
+	#else
+		#bus = true
 
 #Campbells outcome plays (either bus or dog eating them)
 

@@ -1,4 +1,7 @@
 extends CharacterBody3D
+
+
+class_name player
 # --------------------------------------------
 # Networked first-person player controller:
 # - Local movement + camera look
@@ -7,6 +10,7 @@ extends CharacterBody3D
 # - Drop is "drop" (bind to G)
 # - Use/Attack is "use-attack" (plays "swing" locally + server broadcasts via ItemManager)
 # --------------------------------------------
+
 
 # =========================
 #        CONFIG / TOGGLES
