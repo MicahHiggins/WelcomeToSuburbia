@@ -7,13 +7,17 @@ const SERVER_ID: int = 1 # host is peer 1 in our setup
 @export var min_players_to_start: int = 2
 
 # UI nodes in the lobby scene
+@export var lobby_ui_root_path: NodePath = NodePath("LobbyUI") # ADDED: hide/show the whole lobby UI
 @export var start_button_path: NodePath = NodePath("LobbyUI/VoteStart")
 @export var status_label_path: NodePath = NodePath("LobbyUI/PlayerCount")
 
-# quick popup label that fades out (LobbyUI/Ready)
+# shared popup/countdown label (LobbyUI/Ready)
 @export var ready_popup_label_path: NodePath = NodePath("LobbyUI/Ready")
 
+@export var start_countdown_seconds: int = 3 # ADDED: countdown before starting Level 1
+
 var _lfm: Node = null
+var _ui_root: CanvasItem = null
 var _start_btn: Button = null
 var _status: Label = null
 var _ready_popup: Label = null
@@ -24,21 +28,25 @@ var _votes: Dictionary = {} # int(peer_id) -> bool
 # local cache so we know if *this* player already voted (for button color/text)
 var _local_peer_id: int = -1
 
-# ADDED: simple "start once" guard so we don't double-trigger level change
+# ADDED: stop double-starts
 var _starting: bool = false
 
 
 func _ready() -> void:
-	_lfm = get_node_or_null(level_flow_path)
+	_lfm = _find_level_flow_manager()
 
+	_ui_root = get_node_or_null(lobby_ui_root_path) as CanvasItem
 	_start_btn = get_node_or_null(start_button_path) as Button
 	_status = get_node_or_null(status_label_path) as Label
 	_ready_popup = get_node_or_null(ready_popup_label_path) as Label
 
 	_local_peer_id = multiplayer.get_unique_id()
 
+	# ADDED: hide the whole lobby UI at first
+	if _ui_root != null:
+		_ui_root.visible = false
+
 	if _start_btn != null:
-		# start hidden until enough players are in
 		_start_btn.visible = false
 		_start_btn.disabled = true
 
@@ -49,15 +57,6 @@ func _ready() -> void:
 	if _ready_popup != null:
 		_ready_popup.visible = false
 
-	# ADDED: server should always track the host id too
-	if multiplayer.has_multiplayer_peer() and multiplayer.is_server():
-		var host_id := multiplayer.get_unique_id()
-		if not _votes.has(host_id):
-			_votes[host_id] = false
-
-	# ADDED: if we spawn into the lobby with players already connected, sync now
-	_on_peer_change(-1)
-
 	# server listens for joins/leaves
 	if multiplayer.has_multiplayer_peer() and multiplayer.is_server():
 		if not multiplayer.peer_connected.is_connected(_on_peer_change):
@@ -65,17 +64,35 @@ func _ready() -> void:
 		if not multiplayer.peer_disconnected.is_connected(_on_peer_change):
 			multiplayer.peer_disconnected.connect(_on_peer_change)
 
-	_update_status()
+		# make sure host is tracked for voting
+		var host_id := multiplayer.get_unique_id()
+		if not _votes.has(host_id):
+			_votes[host_id] = false
+
+	# one initial refresh
+	_on_peer_change(-1)
+
+
+func _find_level_flow_manager() -> Node:
+	var n := get_node_or_null(level_flow_path)
+	if n != null:
+		return n
+
+	var scene := get_tree().current_scene
+	if scene != null:
+		var found := scene.find_child("LevelFlowManager", true, false)
+		if found != null:
+			return found
+
+	return null
 
 
 func _on_peer_change(id: int) -> void:
-	# keep vote list clean when people join/leave (server only)
+	# keep vote list clean when people join/leave
 	if multiplayer.has_multiplayer_peer() and multiplayer.is_server():
-		# if someone joined, add them (not voted yet)
 		if id != -1 and not _votes.has(id):
 			_votes[id] = false
 
-		# remove votes for peers that no longer exist
 		var alive := {}
 		alive[multiplayer.get_unique_id()] = true
 		for pid in multiplayer.get_peers():
@@ -85,18 +102,13 @@ func _on_peer_change(id: int) -> void:
 			if not alive.has(int(k)):
 				_votes.erase(k)
 
-		# always keep host in the dict
-		var host_id := multiplayer.get_unique_id()
-		if not _votes.has(host_id):
-			_votes[host_id] = false
-
-		# push vote state to everyone so UI stays in sync
 		_broadcast_votes()
 
 	_update_status()
 
 
 func _get_player_count() -> int:
+	# keeping your original logic (works for you already)
 	var players := get_tree().get_nodes_in_group("player")
 	return players.size()
 
@@ -113,16 +125,21 @@ func _update_status() -> void:
 	var count := _get_player_count()
 	var votes := _get_vote_count()
 
+	# ADDED: only show the UI once BOTH players are actually in the lobby level
+	var lobby_full := count >= min_players_to_start
+	if _ui_root != null:
+		_ui_root.visible = lobby_full
+
 	# button hidden until lobby is full
 	if _start_btn != null:
-		_start_btn.visible = count >= min_players_to_start
+		_start_btn.visible = lobby_full
 
 	# status text
 	if _status != null:
-		if _start_btn != null and _start_btn.visible:
+		if lobby_full:
 			_status.text = "Players: %d / %d   Votes: %d / %d" % [count, min_players_to_start, votes, min_players_to_start]
 		else:
-			_status.text = "Players: %d / %d" % [count, min_players_to_start]
+			_status.text = "" # ADDED: no UI text before the lobby is really full
 
 	_update_button_visuals()
 
@@ -131,9 +148,7 @@ func _update_button_visuals() -> void:
 	if _start_btn == null:
 		return
 
-	# if we're already starting, lock the button
 	if _starting:
-		_start_btn.visible = true
 		_start_btn.disabled = true
 		_start_btn.text = "Starting..."
 		_start_btn.modulate = Color(1, 1, 1, 1)
@@ -160,25 +175,25 @@ func _update_button_visuals() -> void:
 
 
 func _on_start_pressed() -> void:
-	# if we're already starting, ignore extra presses
 	if _starting:
 		return
 
-	# singleplayer: start immediately
+	# singleplayer: just start
 	if not multiplayer.has_multiplayer_peer():
 		_starting = true
 		_update_button_visuals()
-		if _lfm != null and _lfm.has_method("request_level_change"):
-			_lfm.call("request_level_change", 1)
+		await _do_countdown_local()
+		_try_start_level_1_server()
 		return
 
-	# multiplayer: clients send a vote to the server, host just records it
 	var my_name := _get_local_display_name()
 
+	# clients send a vote to the server
 	if not multiplayer.is_server():
 		rpc_id(SERVER_ID, "_rpc_submit_vote", my_name)
 		return
 
+	# host vote
 	_register_vote(multiplayer.get_unique_id(), my_name)
 
 
@@ -194,12 +209,10 @@ func _register_vote(peer_id: int, display_name: String) -> void:
 	if not multiplayer.is_server():
 		return
 
-	# don't allow votes before lobby is full
 	if _get_player_count() < min_players_to_start:
 		_broadcast_votes()
 		return
 
-	# ignore repeat votes
 	if _votes.has(peer_id) and bool(_votes[peer_id]) == true:
 		_broadcast_votes()
 		return
@@ -211,33 +224,35 @@ func _register_vote(peer_id: int, display_name: String) -> void:
 
 	_broadcast_votes()
 
-	# if everyone voted, start level 1 (server only, one time)
+	# if everyone voted, start countdown + level change
 	if _get_vote_count() >= min_players_to_start and not _starting:
 		_starting = true
-		_broadcast_starting()
-		# give UI a tiny moment to show "Starting..." before the level swap
-		call_deferred("_server_start_level_1")
+		rpc("_rpc_set_starting", true)
+
+		# run the countdown on EVERYONE using the same Ready label
+		rpc("_rpc_start_countdown", start_countdown_seconds)
+
+		# server waits too, then starts Level 1
+		await _server_wait_seconds(float(start_countdown_seconds))
+		_try_start_level_1_server()
 
 
-func _server_start_level_1() -> void:
-	if not multiplayer.is_server():
+func _try_start_level_1_server() -> void:
+	# server only
+	if multiplayer.has_multiplayer_peer() and not multiplayer.is_server():
 		return
-	if _lfm != null and _lfm.has_method("request_level_change"):
+
+	if _lfm == null:
+		_lfm = _find_level_flow_manager()
+
+	if _lfm == null:
+		push_warning("[LobbyReady] LevelFlowManager not found, can't start.")
+		return
+
+	if _lfm.has_method("request_level_change"):
 		_lfm.call("request_level_change", 1)
-
-
-# ADDED: server tells everyone we're starting so all UIs lock + show text
-func _broadcast_starting() -> void:
-	if not multiplayer.has_multiplayer_peer():
-		return
-	if not multiplayer.is_server():
-		return
-	rpc("_rpc_set_starting", true)
-
-@rpc("any_peer", "call_local", "reliable")
-func _rpc_set_starting(v: bool) -> void:
-	_starting = v
-	_update_button_visuals()
+	else:
+		push_warning("[LobbyReady] LevelFlowManager missing request_level_change(level_index).")
 
 
 func _broadcast_votes() -> void:
@@ -267,6 +282,38 @@ func _rpc_apply_votes(payload: Array) -> void:
 	_update_status()
 
 
+@rpc("any_peer", "call_local", "reliable")
+func _rpc_set_starting(v: bool) -> void:
+	_starting = v
+	_update_button_visuals()
+
+
+@rpc("any_peer", "call_local", "reliable")
+func _rpc_start_countdown(seconds: int) -> void:
+	await _do_countdown_local(seconds)
+
+
+func _do_countdown_local(seconds: int = 3) -> void:
+	if _ready_popup == null:
+		return
+
+	_ready_popup.visible = true
+	_ready_popup.modulate = Color(1, 1, 1, 1)
+
+	for i in range(seconds, 0, -1):
+		_ready_popup.text = "Starting in %d..." % i
+		await get_tree().create_timer(1.0).timeout
+
+	_ready_popup.text = "Starting..."
+	await get_tree().create_timer(0.3).timeout
+	_ready_popup.visible = false
+
+
+func _server_wait_seconds(s: float) -> void:
+	# tiny helper so server can await cleanly
+	await get_tree().create_timer(s).timeout
+
+
 @rpc("any_peer", "call_local", "unreliable")
 func _rpc_show_ready_popup(msg: String) -> void:
 	if _ready_popup == null:
@@ -275,16 +322,14 @@ func _rpc_show_ready_popup(msg: String) -> void:
 	_ready_popup.text = msg
 	_ready_popup.visible = true
 
-	# reset alpha
 	var c := _ready_popup.modulate
 	c.a = 1.0
 	_ready_popup.modulate = c
 
-	# fade out
 	var tw := create_tween()
 	tw.tween_property(_ready_popup, "modulate:a", 0.0, 1.2).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
 	tw.tween_callback(func():
-		if _ready_popup != null:
+		if _ready_popup != null and not _starting:
 			_ready_popup.visible = false
 	)
 
@@ -292,7 +337,6 @@ func _rpc_show_ready_popup(msg: String) -> void:
 func _get_local_display_name() -> String:
 	var pid := multiplayer.get_unique_id()
 
-	# try to pull Steam persona name if Steam singleton exists
 	if Engine.has_singleton("Steam"):
 		var steam := Engine.get_singleton("Steam")
 		if steam != null and steam.has_method("getPersonaName"):
