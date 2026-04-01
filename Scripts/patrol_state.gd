@@ -18,6 +18,17 @@ var _loop: bool = true
 var _retry_t: float = 0.0
 var _retry_left: float = 0.0
 
+# -------------------------------
+# ADDED: super small multiplayer sync
+# - server runs the AI
+# - server tells everyone what anim to play
+# - server tells everyone when to change to TalkState
+# -------------------------------
+@export var net_sync_anim: bool = true
+
+var _anim_player: AnimationPlayer = null
+var _last_anim: StringName = &""
+
 
 func enter(msg := {}) -> void:
 	_wps.clear()
@@ -28,29 +39,41 @@ func enter(msg := {}) -> void:
 	_retry_t = 0.0
 	_retry_left = retry_max_seconds
 
+	_last_anim = &""
+	_cache_anim_player()
+
 	if npc == null:
 		return
 
 	_try_build_path()
+
+	# ADDED: when we enter patrol, make sure everyone starts the same anim
+	_play_anim_local(&"NewWalking")
+	_net_broadcast_anim(&"NewWalking")
 
 
 func physics_update(delta: float) -> void:
 	var npc3d := npc as NPC
 	if npc3d == null:
 		return
-	
-	#Find and play animations for NPC models
-	var model_node = find_descendant_in_group(npc3d, "NPC_Body")
-	if model_node:
-		var anim_player = find_descendant_in_group(model_node, "NPC_Animation")
-		if anim_player:
-			anim_player.play("NewWalking")
-	
+
+	# ADDED: clients do NOT run patrol AI (server is the boss)
+	# clients will still see movement if your NPC transform is already synced somewhere else
+	if multiplayer.has_multiplayer_peer() and not multiplayer.is_server():
+		return
+
+	# Find and play animations for NPC models (but don't restart it every frame)
+	_play_anim_local(&"NewWalking")
+	_net_broadcast_anim(&"NewWalking")
+
 	# talk interrupt (optional)
 	if _is_player_in_talk_range():
 		npc3d.save_patrol_resume(_idx, _wait_t)
 		npc3d.velocity.x = 0.0
 		npc3d.velocity.z = 0.0
+
+		# ADDED: make everyone switch to TalkState at the same time
+		_net_broadcast_state_change(&"TalkState", {})
 		change_state.emit(&"TalkState", {})
 		return
 
@@ -71,7 +94,7 @@ func physics_update(delta: float) -> void:
 
 	_idx = clampi(_idx, 0, _wps.size() - 1)
 
-	#  read current waypoint global position each frame
+	# read current waypoint global position each frame
 	var wp := _wps[_idx]
 	if wp == null or not is_instance_valid(wp):
 		_wps.clear()
@@ -98,7 +121,7 @@ func _try_build_path() -> void:
 	if npc3d == null:
 		return
 
-	# LOCAL ONLY: NPC already bound to its own PatrolPath via patrol_path_node
+	# NPC already bound to its own PatrolPath via patrol_path_node
 	var path := npc3d.patrol_path
 	if path == null or not is_instance_valid(path):
 		return
@@ -145,15 +168,89 @@ func _is_player_in_talk_range() -> bool:
 		if b != null and b.is_in_group("player"):
 			return true
 	return false
-	
-#For finding nodes within nodes using groups
+
+
+# -------------------------------
+# ADDED: animation helpers (so we don't search every frame)
+# -------------------------------
+func _cache_anim_player() -> void:
+	_anim_player = null
+	if npc == null:
+		return
+
+	var npc3d := npc as NPC
+	if npc3d == null:
+		return
+
+	var model_node := find_descendant_in_group(npc3d, "NPC_Body")
+	if model_node:
+		_anim_player = find_descendant_in_group(model_node, "NPC_Animation") as AnimationPlayer
+
+
+func _play_anim_local(anim_name: StringName) -> void:
+	if _anim_player == null:
+		_cache_anim_player()
+	if _anim_player == null:
+		return
+
+	# don't spam play() every frame (it restarts the anim)
+	if _last_anim == anim_name and _anim_player.is_playing():
+		return
+
+	_last_anim = anim_name
+	_anim_player.play(String(anim_name))
+
+
+# -------------------------------
+# ADDED: tiny net sync for animation + state changes
+# -------------------------------
+func _net_broadcast_anim(anim_name: StringName) -> void:
+	if not net_sync_anim:
+		return
+	if not multiplayer.has_multiplayer_peer():
+		return
+	if not multiplayer.is_server():
+		return
+
+	# only send when it changes
+	if _last_anim != anim_name:
+		return
+
+	rpc("_rpc_play_anim", String(anim_name))
+
+
+@rpc("any_peer", "call_local", "unreliable")
+func _rpc_play_anim(anim_name: String) -> void:
+	# server doesn't need its own packet
+	if multiplayer.has_multiplayer_peer() and multiplayer.is_server():
+		return
+	_play_anim_local(StringName(anim_name))
+
+
+func _net_broadcast_state_change(state_name: StringName, msg: Dictionary) -> void:
+	if not multiplayer.has_multiplayer_peer():
+		return
+	if not multiplayer.is_server():
+		return
+	rpc("_rpc_force_state", String(state_name), msg)
+
+
+@rpc("any_peer", "call_local", "reliable")
+func _rpc_force_state(state_name: String, msg: Dictionary) -> void:
+	# server already did it locally
+	if multiplayer.has_multiplayer_peer() and multiplayer.is_server():
+		return
+	change_state.emit(StringName(state_name), msg)
+
+
+# For finding nodes within nodes using groups
 func find_descendant_in_group(node: Node, group: String) -> Node:
 	if node.is_in_group(group):
 		return node
-		
+
 	for child in node.get_children():
 		var result = find_descendant_in_group(child, group)
 		if result:
 			return result
-			
+
 	return null
