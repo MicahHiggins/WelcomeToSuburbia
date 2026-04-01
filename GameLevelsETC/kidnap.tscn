@@ -1,6 +1,6 @@
 [gd_scene load_steps=45 format=3 uid="uid://dw6fx71adu107"]
 
-[ext_resource type="Script" path="res://GameLevelsETC/kidnap.gd" id="1_6rn1s"]
+[ext_resource type="Script" uid="uid://duigu086blnlq" path="res://GameLevelsETC/kidnap.gd" id="1_6rn1s"]
 [ext_resource type="PackedScene" uid="uid://bs2jm62cmkbrk" path="res://addons/instant-realistic-light/light_scene.tscn" id="1_wff52"]
 [ext_resource type="Script" uid="uid://bkb35cbdsgdbh" path="res://addons/instant-realistic-light/light_scene.gd" id="2_itlhn"]
 [ext_resource type="PackedScene" uid="uid://becgpkre4p052" path="res://Assets/RandomObjects/bedrooms/bedroom_copy.tscn" id="3_6rn1s"]
@@ -330,14 +330,16 @@ shape = SubResource("BoxShape3D_kiafm")
 [node name="Desk Light" parent="Bedrooms/bedroom1" instance=ExtResource("9_lobfv")]
 transform = Transform3D(1.0656065, 0, 0.65343946, 0, 1.4999999, 0, -0.65343946, 0, 1.0656065, -3.0751352, -0.87845737, -3.1189904)
 
-[node name="SpotLight3D" type="SpotLight3D" parent="Bedrooms/bedroom1/Desk Light"]
+[node name="R1SpotLight3D" type="SpotLight3D" parent="Bedrooms/bedroom1/Desk Light"]
+unique_name_in_owner = true
 transform = Transform3D(-0.056468636, 0.3765753, 0.011550225, 0.29990894, 0.037212964, 0.25717744, 0.24300523, 0.045371965, -0.28984177, 0.00620842, 0.43400103, 0.2660551)
 light_color = Color(0.90588236, 0.9137255, 0.49803922, 1)
 spot_range = 10.0
 spot_attenuation = 0.5
 spot_angle = 30.0
 
-[node name="OmniLight3D" type="OmniLight3D" parent="Bedrooms/bedroom1/Desk Light"]
+[node name="R1OmniLight3D" type="OmniLight3D" parent="Bedrooms/bedroom1/Desk Light"]
+unique_name_in_owner = true
 transform = Transform3D(-2.9802322e-08, 0, 0.38095242, 0, 0.39682543, 0, -0.38095242, 0, -2.9802322e-08, -0.024466991, 0.4400298, 0.1774826)
 light_color = Color(0.8863026, 0.7930651, 0.62317014, 1)
 light_energy = 0.1
@@ -441,7 +443,8 @@ shape = SubResource("BoxShape3D_kiafm")
 [node name="Desk Light" parent="Bedrooms/bedroom2" instance=ExtResource("9_lobfv")]
 transform = Transform3D(0.69893664, 0, 1.0363338, 0, 1.5, 0, -1.0363338, 0, 0.69893664, -3.0250435, -0.87845737, -3.0714893)
 
-[node name="SpotLight3D" type="SpotLight3D" parent="Bedrooms/bedroom2/Desk Light"]
+[node name="R2SpotLight3D" type="SpotLight3D" parent="Bedrooms/bedroom2/Desk Light"]
+unique_name_in_owner = true
 transform = Transform3D(-0.37490138, 0.06170456, -0.021212742, 0.033683658, 0.28090996, 0.28028628, 0.059166357, 0.25822657, -0.27249223, 0.0092282295, 0.43507248, 0.21996796)
 light_color = Color(0.9317113, 0.8669089, 0.53411645, 1)
 light_energy = 0.7
@@ -449,7 +452,8 @@ light_specular = 3.0
 spot_attenuation = 0.5
 spot_angle = 30.0
 
-[node name="OmniLight3D" type="OmniLight3D" parent="Bedrooms/bedroom2/Desk Light"]
+[node name="R2OmniLight3D" type="OmniLight3D" parent="Bedrooms/bedroom2/Desk Light"]
+unique_name_in_owner = true
 transform = Transform3D(1.0430813e-07, 2.910383e-10, 0.3809524, -2.0372681e-10, 0.39682537, -1.1641532e-10, -0.38095242, -8.440111e-10, 1.4901161e-07, -0.01854515, 0.41153648, 0.19041395)
 light_color = Color(0.8863026, 0.7930651, 0.62317014, 1)
 light_energy = 0.1
