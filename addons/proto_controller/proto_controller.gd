@@ -322,9 +322,9 @@ func _server_start_talk(peer_id: int, npc_path_str: String) -> void:
 	if not multiplayer.is_server():
 		return
 
-	# this is the main reason joiner wasn't working (server never saw this)
+	# CHANGED: this stays SERVER-ONLY so we don't freeze everyone.
+	# i only want the server to know "someone is talking" so the NPC stays in SpeakState.
 	GlobalVariables.playerTalking = true
-	rpc("_rpc_set_player_talking", true)
 
 	_force_npc_state_server(npc_path_str, &"SpeakState", peer_id)
 
@@ -332,12 +332,8 @@ func _server_stop_talk(_peer_id: int, _npc_path_str: String) -> void:
 	if not multiplayer.is_server():
 		return
 
+	# CHANGED: server-only again
 	GlobalVariables.playerTalking = false
-	rpc("_rpc_set_player_talking", false)
-
-@rpc("any_peer", "call_local", "reliable")
-func _rpc_set_player_talking(v: bool) -> void:
-	GlobalVariables.playerTalking = v
 
 func _force_npc_state_local(npc_path: NodePath, state_name: StringName) -> void:
 	var npc_node: Node = get_tree().current_scene.get_node_or_null(npc_path)
@@ -657,7 +653,7 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed(input_use_attack):
 		_try_use_attack()
 
-	# ADDED: interact = talk (server authoritative)
+	# interact = talk (server authoritative)
 	if event.is_action_pressed(input_interact):
 		_try_talk_interact()
 
@@ -690,12 +686,13 @@ func _play_attack_local() -> void:
 #      FRAME / PHYSICS
 # =========================
 func _process(_dt: float) -> void:
-	if GlobalVariables.playerTalking == true:
-		base_speed = 0
-		sprint_speed = 0
+	# CHANGED: only *my* player stops when i'm talking (not the whole lobby)
+	if _is_talking_local:
+		base_speed = 0.0
+		sprint_speed = 0.0
 	else:
 		base_speed = 3.2
-		sprint_speed = 5
+		sprint_speed = 5.0
 
 	# keep sending my camera look to the server (so "watched objects" works)
 	_net_maybe_send_camera_look()
