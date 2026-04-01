@@ -1,0 +1,22 @@
+[gd_scene load_steps=5 format=3 uid="uid://d2m2lxpbjx2mq"]
+
+[ext_resource type="PackedScene" uid="uid://b2y6atqg36300" path="res://Assets/RandomObjects/Beds/RedBed.glb" id="1_bjyxo"]
+[ext_resource type="Texture2D" uid="uid://d3glrw7gkc8ua" path="res://Assets/RandomObjects/Beds/RedBed_Blanket.png" id="2_n3ndh"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_e4br6"]
+albedo_color = Color(0.99999624, 0.004200467, 0.15719599, 1)
+albedo_texture = ExtResource("2_n3ndh")
+uv1_triplanar = true
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_5mh6e"]
+
+[node name="RedBed" instance=ExtResource("1_bjyxo")]
+
+[node name="Cube_009" parent="." index="3"]
+surface_material_override/0 = SubResource("StandardMaterial3D_e4br6")
+
+[node name="Cube_012" parent="." index="6"]
+surface_material_override/0 = SubResource("StandardMaterial3D_5mh6e")
+
+[node name="Cube_013" parent="." index="7"]
+surface_material_override/0 = SubResource("StandardMaterial3D_5mh6e")
