@@ -1,6 +1,8 @@
 extends Node3D
 
-@onready var piano_result: AnimationPlayer = $pianoResult
+
+
+@onready var piano_failure: AnimationPlayer = $pianoFailure
 
 @onready var animation_player: AnimationPlayer = $AnimationPlayer
 @onready var note_1: AudioStreamPlayer3D = $Audio/note1
@@ -10,6 +12,10 @@ extends Node3D
 @onready var note_5: AudioStreamPlayer3D = $Audio/note5
 @onready var note_6: AudioStreamPlayer3D = $Audio/note6
 @onready var note_7: AudioStreamPlayer3D = $Audio/note7
+
+@onready var notesArr = [note_1, note_5, note_3, note_7, note_4, note_6, note_2]
+@onready var animArr = ["Cube_001Action","Cube_005Action", "Cube_003Action", "Cube_007Action", "Cube_004Action", "Cube_006Action",
+ "Cube_006Action"]
 
 var puzzleArr = [1, 5, 3, 7, 4, 6, 6, 2]
 var arrPlay = []
@@ -27,10 +33,12 @@ signal puzzleOneComplete
 func puzzleCheck(value: int):
 	if globalPuzzleChecker < 7:
 		
-		if value == puzzleArr[globalPuzzleChecker]:
+		if value == puzzleArr[globalPuzzleChecker] && puzzleFail != true:
+			print("Value: ", value)
+			print("puzzle: ", puzzleArr[globalPuzzleChecker])
 			globalPuzzleChecker += 1
 			puzzleFail = false
-			return
+			
 		else:
 			globalPuzzleChecker += 1
 			puzzleFail = true
@@ -39,15 +47,27 @@ func puzzleCheck(value: int):
 		globalPuzzleChecker = 0
 		puzzleSolved(puzzleFail)
 		
+	print(puzzleFail)
 	
 
 func puzzleSolved(fail: bool):
 	print("PuzzleSolved")
 	if fail == true:
-		pass
+		animation_player.stop()
+		piano_failure.play("pianoSuccess")
+		puzzleFail = false
+		
+		
 	else:
 		puzzleOneComplete.emit()
+		piano_failure.play("green")
+		for i in range(7):
+			
+			notesArr[i].play()
 		
+			animation_player.play(animArr[i])
+			await get_tree().create_timer(.15).timeout
+			
 		
 	
 func _on_mousefree_body_entered(body: Node3D) -> void:
