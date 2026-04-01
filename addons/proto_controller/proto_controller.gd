@@ -1,6 +1,4 @@
 extends CharacterBody3D
-
-
 class_name player
 # --------------------------------------------
 # Networked first-person player controller:
@@ -10,7 +8,6 @@ class_name player
 # - Drop is "drop" (bind to G)
 # - Use/Attack is "use-attack" (plays "swing" locally + server broadcasts via ItemManager)
 # --------------------------------------------
-
 
 # =========================
 #        CONFIG / TOGGLES
@@ -66,6 +63,15 @@ const SERVER_ID: int = 1
 #Breathing Audio
 const BREATHING_THRESHOLD := 0.5  # 50%
 var breathing_active := false
+
+# =========================
+#        TALK SYNC
+# =========================
+@export var talk_ray_length: float = 3.5
+@export var npc_group_name: StringName = &"npc" # put your npc root node in this group
+
+var _is_talking_local: bool = false
+var _talking_target_path: NodePath = NodePath("")
 
 # =========================
 #         RUNTIME STATE
@@ -181,7 +187,7 @@ func _scene_root() -> Node:
 #    LEVEL FLOW LOOK SYNC
 # =========================
 func _get_level_flow() -> Node:
-	# ADDED: tiny cache so we don't keep searching every frame
+	# tiny cache so we don't keep searching every frame
 	if _level_flow_cached != null and is_instance_valid(_level_flow_cached):
 		return _level_flow_cached
 
@@ -197,7 +203,7 @@ func _get_level_flow() -> Node:
 	return null
 
 func _net_maybe_send_camera_look() -> void:
-	# ADDED: only the local player should report their camera
+	# only the local player should report their camera
 	if not multiplayer.has_multiplayer_peer():
 		return
 	if not is_multiplayer_authority():
@@ -217,12 +223,134 @@ func _net_maybe_send_camera_look() -> void:
 		return
 	_look_last_send_time = now
 
-	# This calls the rpc you added in LevelFlowManager (server stores my camera transform)
-		# ADDED: host can't rpc_id to itself unless the rpc is call_local, so just call it directly
+	# host can't rpc_id to itself so we call the helper directly
 	if multiplayer.is_server():
 		lf.call("_server_set_peer_camera", multiplayer.get_unique_id(), cam.global_transform)
 	else:
 		lf.rpc_id(SERVER_ID, "_rpc_update_peer_camera", cam.global_transform)
+
+# =========================
+#      TALK / NPC INTERACT
+# =========================
+func _try_talk_interact() -> void:
+	# only the local player can start this
+	if multiplayer.has_multiplayer_peer() and not is_multiplayer_authority():
+		return
+
+	var npc_node: Node = _raycast_find_npc()
+	if npc_node == null:
+		return
+
+	var npc_path: NodePath = npc_node.get_path()
+
+	# toggle talk on/off
+	if not _is_talking_local:
+		_is_talking_local = true
+		_talking_target_path = npc_path
+		_request_start_talk(npc_path)
+	else:
+		_is_talking_local = false
+		_request_stop_talk(_talking_target_path)
+		_talking_target_path = NodePath("")
+
+func _raycast_find_npc() -> Node:
+	if cam == null:
+		return null
+
+	var from_pos: Vector3 = cam.global_position
+	var to_pos: Vector3 = from_pos + (-cam.global_transform.basis.z).normalized() * talk_ray_length
+
+	var space := get_world_3d().direct_space_state
+	var q := PhysicsRayQueryParameters3D.create(from_pos, to_pos)
+	q.exclude = [self]
+	var hit := space.intersect_ray(q)
+	if hit.is_empty():
+		return null
+
+	var n: Node = hit.get("collider") as Node
+	if n == null:
+		return null
+
+	# walk up until we find a node in the npc group
+	var cur: Node = n
+	while cur != null:
+		if cur.is_in_group(String(npc_group_name)):
+			return cur
+		cur = cur.get_parent()
+
+	return null
+
+func _request_start_talk(npc_path: NodePath) -> void:
+	# singleplayer
+	if not multiplayer.has_multiplayer_peer():
+		GlobalVariables.playerTalking = true
+		_force_npc_state_local(npc_path, &"SpeakState")
+		return
+
+	# multiplayer (server is boss)
+	if multiplayer.is_server():
+		_server_start_talk(multiplayer.get_unique_id(), String(npc_path))
+	else:
+		rpc_id(SERVER_ID, "_rpc_request_start_talk", String(npc_path))
+
+func _request_stop_talk(npc_path: NodePath) -> void:
+	# singleplayer
+	if not multiplayer.has_multiplayer_peer():
+		GlobalVariables.playerTalking = false
+		return
+
+	if multiplayer.is_server():
+		_server_stop_talk(multiplayer.get_unique_id(), String(npc_path))
+	else:
+		rpc_id(SERVER_ID, "_rpc_request_stop_talk", String(npc_path))
+
+@rpc("any_peer", "reliable")
+func _rpc_request_start_talk(npc_path_str: String) -> void:
+	if not multiplayer.is_server():
+		return
+	var sender: int = multiplayer.get_remote_sender_id()
+	_server_start_talk(sender, npc_path_str)
+
+@rpc("any_peer", "reliable")
+func _rpc_request_stop_talk(npc_path_str: String) -> void:
+	if not multiplayer.is_server():
+		return
+	var sender: int = multiplayer.get_remote_sender_id()
+	_server_stop_talk(sender, npc_path_str)
+
+func _server_start_talk(peer_id: int, npc_path_str: String) -> void:
+	if not multiplayer.is_server():
+		return
+
+	# CHANGED: this stays SERVER-ONLY so we don't freeze everyone.
+	# i only want the server to know "someone is talking" so the NPC stays in SpeakState.
+	GlobalVariables.playerTalking = true
+
+	_force_npc_state_server(npc_path_str, &"SpeakState", peer_id)
+
+func _server_stop_talk(_peer_id: int, _npc_path_str: String) -> void:
+	if not multiplayer.is_server():
+		return
+
+	# CHANGED: server-only again
+	GlobalVariables.playerTalking = false
+
+func _force_npc_state_local(npc_path: NodePath, state_name: StringName) -> void:
+	var npc_node: Node = get_tree().current_scene.get_node_or_null(npc_path)
+	if npc_node == null:
+		return
+	var sm: Node = npc_node.find_child("NPCStateMachine", true, false)
+	if sm != null and sm.has_method("change_state"):
+		sm.call("change_state", state_name, {})
+
+func _force_npc_state_server(npc_path_str: String, state_name: StringName, by_peer: int) -> void:
+	var npc_node: Node = get_tree().current_scene.get_node_or_null(NodePath(npc_path_str))
+	if npc_node == null:
+		return
+	var sm: Node = npc_node.find_child("NPCStateMachine", true, false)
+	if sm != null and sm.has_method("change_state"):
+		sm.call("change_state", state_name, {"by_peer": by_peer})
+
 # =========================
 #      ITEM MANAGER HOOK
 # =========================
@@ -426,8 +554,8 @@ func _setup_sanity_fx_ui() -> void:
 		_sanity_fx_rect.z_index = 999
 		ui.add_child(_sanity_fx_rect)
 
-		var sh := Shader.new()
-		sh.code = """
+	var sh := Shader.new()
+	sh.code = """
 shader_type canvas_item;
 render_mode unshaded;
 
@@ -487,10 +615,9 @@ void fragment() {
 	COLOR = col;
 }
 """
-		_sanity_fx_mat = ShaderMaterial.new()
-		_sanity_fx_mat.shader = sh
-		_sanity_fx_rect.material = _sanity_fx_mat
-
+	_sanity_fx_mat = ShaderMaterial.new()
+	_sanity_fx_mat.shader = sh
+	_sanity_fx_rect.material = _sanity_fx_mat
 	_sanity_fx_rect.visible = false
 
 # =========================
@@ -526,6 +653,10 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed(input_use_attack):
 		_try_use_attack()
 
+	# interact = talk (server authoritative)
+	if event.is_action_pressed(input_interact):
+		_try_talk_interact()
+
 func _try_use_attack() -> void:
 	if not _is_holding_item():
 		return
@@ -555,14 +686,15 @@ func _play_attack_local() -> void:
 #      FRAME / PHYSICS
 # =========================
 func _process(_dt: float) -> void:
-	if GlobalVariables.playerTalking == true:
-		base_speed = 0
-		sprint_speed = 0
+	# CHANGED: only *my* player stops when i'm talking (not the whole lobby)
+	if _is_talking_local:
+		base_speed = 0.0
+		sprint_speed = 0.0
 	else:
 		base_speed = 3.2
-		sprint_speed = 5
+		sprint_speed = 5.0
 
-	# ADDED: keep sending my camera look to the server (so "watched objects" works)
+	# keep sending my camera look to the server (so "watched objects" works)
 	_net_maybe_send_camera_look()
 
 	if multiplayer.has_multiplayer_peer() and not is_multiplayer_authority():
