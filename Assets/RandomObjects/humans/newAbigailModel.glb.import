@@ -3,13 +3,13 @@
 importer="scene"
 importer_version=1
 type="PackedScene"
-uid="uid://bnrwkv6qxylda"
-path="res://.godot/imported/isaac.glb-ca13f6d3a1aa3ce913f3d4c2db8e54d1.scn"
+uid="uid://blsrwx8gasx5a"
+path="res://.godot/imported/newAbigailModel.glb-fb66a5bee577405878b980075b759b3f.scn"
 
 [deps]
 
-source_file="res://Assets/RandomObjects/humans/isaac.glb"
-dest_files=["res://.godot/imported/isaac.glb-ca13f6d3a1aa3ce913f3d4c2db8e54d1.scn"]
+source_file="res://Assets/RandomObjects/humans/newAbigailModel.glb"
+dest_files=["res://.godot/imported/newAbigailModel.glb-fb66a5bee577405878b980075b759b3f.scn"]
 
 [params]
 
@@ -29,7 +29,7 @@ meshes/lightmap_texel_size=0.2
 meshes/force_disable_compression=false
 skins/use_named_skins=true
 animation/import=true
-animation/fps=30
+animation/fps=24.0
 animation/trimming=false
 animation/remove_immutable_tracks=true
 animation/import_rest_as_RESET=false
@@ -40,9 +40,9 @@ materials/extract_path=""
 _subresources={
 "animations": {
 "NewStanding": {
-"save_to_file/enabled": false,
+"save_to_file/enabled": true,
 "save_to_file/fallback_path": "",
-"save_to_file/keep_custom_tracks": "",
+"save_to_file/keep_custom_tracks": true,
 "save_to_file/path": "",
 "settings/loop_mode": 1,
 "slice_1/end_frame": 0,
@@ -2096,9 +2096,9 @@ _subresources={
 "slices/amount": 0
 },
 "NewTalking": {
-"save_to_file/enabled": false,
+"save_to_file/enabled": true,
 "save_to_file/fallback_path": "",
-"save_to_file/keep_custom_tracks": "",
+"save_to_file/keep_custom_tracks": true,
 "save_to_file/path": "",
 "settings/loop_mode": 1,
 "slice_1/end_frame": 0,
@@ -4152,9 +4152,9 @@ _subresources={
 "slices/amount": 0
 },
 "NewWalking": {
-"save_to_file/enabled": false,
+"save_to_file/enabled": true,
 "save_to_file/fallback_path": "",
-"save_to_file/keep_custom_tracks": "",
+"save_to_file/keep_custom_tracks": true,
 "save_to_file/path": "",
 "settings/loop_mode": 1,
 "slice_1/end_frame": 0,
@@ -6206,13 +6206,6 @@ _subresources={
 "slice_99/save_to_file/path": "",
 "slice_99/start_frame": 0,
 "slices/amount": 0
-}
-},
-"materials": {
-"Shirt": {
-"use_external/enabled": true,
-"use_external/fallback_path": "res://Assets/RandomObjects/humans/humanMaterials/hoa.tres",
-"use_external/path": "uid://br1wwr3o2vh8l"
 }
 }
 }

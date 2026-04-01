@@ -40,6 +40,18 @@ tracks/0/keys = {
 "update": 0,
 "values": [Vector3(2.5068974, -0.8876658, -0.029426575)]
 }
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Bedrooms/bedroom1/Dresser:position")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(-2.1563776, -0.8876659, 2.5052242)]
+}
 
 [sub_resource type="Animation" id="Animation_pm42j"]
 resource_name = "puzzle1Complete"
@@ -55,6 +67,18 @@ tracks/0/keys = {
 "transitions": PackedFloat32Array(1, 1),
 "update": 0,
 "values": [Vector3(2.5068974, -0.8876658, -0.029426575), Vector3(2.5068977, -0.8876658, -1.773798)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Bedrooms/bedroom1/Dresser:position")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 3),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector3(-2.1563776, -0.8876659, 2.5052242), Vector3(-0.32465905, -0.8876659, 2.5052242)]
 }
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_lyc4m"]
@@ -286,7 +310,7 @@ light_color = Color(0.8863026, 0.7930651, 0.62317014, 1)
 light_energy = 0.2
 
 [node name="Dresser" parent="Bedrooms/bedroom1" instance=ExtResource("7_dwtrd")]
-transform = Transform3D(-5.2453718e-08, 0, -1.2000009, 0, 1.5, 0, 1.2000009, 0, -5.2453718e-08, -0.10741777, -0.8876659, 2.5052242)
+transform = Transform3D(-5.245373e-08, 0, -1.2000009, 0, 1.5, 0, 1.2000009, 0, -5.245373e-08, -2.1563776, -0.8876659, 2.5052242)
 
 [node name="StaticBody3D" type="StaticBody3D" parent="Bedrooms/bedroom1/Dresser"]
 

@@ -1,44 +1,10 @@
-[gd_scene load_steps=9 format=3 uid="uid://b6qdycemud1gt"]
+[gd_scene load_steps=5 format=3 uid="uid://b6qdycemud1gt"]
 
 [ext_resource type="Script" uid="uid://65w16ihxkc3h" path="res://lobby.gd" id="1_ym4ib"]
 [ext_resource type="PackedScene" uid="uid://bs2jm62cmkbrk" path="res://addons/instant-realistic-light/light_scene.tscn" id="2_sknj8"]
 [ext_resource type="PackedScene" uid="uid://d1ibgfwne281y" path="res://GameLevelsETC/Level1.tscn" id="2_yosgk"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_sknj8"]
-
-[sub_resource type="PhysicalSkyMaterial" id="PhysicalSkyMaterial_gn88m"]
-ground_color = Color(0, 0, 0, 1)
-
-[sub_resource type="Sky" id="Sky_tyhie"]
-sky_material = SubResource("PhysicalSkyMaterial_gn88m")
-radiance_size = 2
-
-[sub_resource type="Environment" id="Environment_f8w8m"]
-background_mode = 2
-background_intensity = 100000.0
-sky = SubResource("Sky_tyhie")
-tonemap_mode = 3
-tonemap_white = 8.0
-ssao_enabled = true
-ssao_detail = 2.0
-sdfgi_enabled = true
-sdfgi_bounce_feedback = 0.9
-glow_enabled = true
-glow_normalized = true
-glow_bloom = 0.2
-volumetric_fog_density = 0.01
-volumetric_fog_gi_inject = 1.14
-volumetric_fog_anisotropy = 0.7
-volumetric_fog_sky_affect = 0.295
-adjustment_saturation = 1.17
-
-[sub_resource type="CameraAttributesPractical" id="CameraAttributesPractical_qo5hu"]
-exposure_multiplier = 3.069
-auto_exposure_scale = 0.22
-auto_exposure_speed = 0.8
-dof_blur_far_distance = 1.44
-dof_blur_near_distance = 0.01
-auto_exposure_min_sensitivity = 8.01
 
 [node name="Lobby" type="Node3D"]
 script = ExtResource("1_ym4ib")
@@ -57,10 +23,10 @@ shape = SubResource("BoxShape3D_sknj8")
 [node name="LobbyUI" type="CanvasLayer" parent="."]
 
 [node name="PlayerCount" type="Label" parent="LobbyUI"]
-offset_left = 999.0
-offset_top = 29.0
-offset_right = 1072.0
-offset_bottom = 64.0
+offset_left = 865.0
+offset_top = 35.0
+offset_right = 1111.0
+offset_bottom = 70.0
 
 [node name="VoteStart" type="Button" parent="LobbyUI"]
 offset_left = 986.0
@@ -83,9 +49,7 @@ offset_right = 1131.0
 offset_bottom = 229.0
 text = "Force Start"
 
-[node name="WorldEnvironment" type="WorldEnvironment" parent="." instance=ExtResource("2_sknj8")]
-environment = SubResource("Environment_f8w8m")
-camera_attributes = SubResource("CameraAttributesPractical_qo5hu")
+[node name="WorldEnvironment" parent="." instance=ExtResource("2_sknj8")]
 
 [connection signal="pressed" from="LobbyUI/VoteStart" to="." method="_on_start_pressed"]
 [connection signal="pressed" from="LobbyUI/ForceStart" to="." method="_on_force_start_pressed"]
