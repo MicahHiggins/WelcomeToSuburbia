@@ -19,7 +19,7 @@ var _retry_t: float = 0.0
 var _retry_left: float = 0.0
 
 # -------------------------------
-# ADDED: super small multiplayer sync
+# super small multiplayer sync
 # - server runs the AI
 # - server tells everyone what anim to play
 # - server tells everyone when to change to TalkState
@@ -47,7 +47,7 @@ func enter(msg := {}) -> void:
 
 	_try_build_path()
 
-	# ADDED: when we enter patrol, make sure everyone starts the same anim
+	# when we enter patrol, make sure everyone starts the same anim
 	_play_anim_local(&"NewWalking")
 	_net_broadcast_anim(&"NewWalking")
 
@@ -57,8 +57,7 @@ func physics_update(delta: float) -> void:
 	if npc3d == null:
 		return
 
-	# ADDED: clients do NOT run patrol AI (server is the boss)
-	# clients will still see movement if your NPC transform is already synced somewhere else
+	# clients do NOT run patrol AI (server is the boss)
 	if multiplayer.has_multiplayer_peer() and not multiplayer.is_server():
 		return
 
@@ -72,19 +71,18 @@ func physics_update(delta: float) -> void:
 		npc3d.velocity.x = 0.0
 		npc3d.velocity.z = 0.0
 
-		# ADDED: make everyone switch to TalkState at the same time
+		# make everyone switch to TalkState at the same time
 		_net_broadcast_state_change(&"TalkState", {})
 		change_state.emit(&"TalkState", {})
 		return
 
-	# If no waypoints, retry (PCG timing)
+	# ------------------------------------------------------------
+	# ADDED: if we have no waypoints, just fall back to TalkState
+	# (keeps the NPC from doing nothing when PCG didn't make a path)
+	# ------------------------------------------------------------
 	if _wps.size() == 0:
-		if retry_autofind and _retry_left > 0.0:
-			_retry_left -= delta
-			_retry_t -= delta
-			if _retry_t <= 0.0:
-				_retry_t = retry_interval
-				_try_build_path()
+		_net_broadcast_state_change(&"TalkState", {})
+		change_state.emit(&"TalkState", {})
 		return
 
 	# wait at waypoint
@@ -171,7 +169,7 @@ func _is_player_in_talk_range() -> bool:
 
 
 # -------------------------------
-# ADDED: animation helpers (so we don't search every frame)
+# animation helpers (so we don't search every frame)
 # -------------------------------
 func _cache_anim_player() -> void:
 	_anim_player = null
@@ -202,7 +200,7 @@ func _play_anim_local(anim_name: StringName) -> void:
 
 
 # -------------------------------
-# ADDED: tiny net sync for animation + state changes
+# tiny net sync for animation + state changes
 # -------------------------------
 func _net_broadcast_anim(anim_name: StringName) -> void:
 	if not net_sync_anim:
