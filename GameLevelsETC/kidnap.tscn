@@ -1,6 +1,6 @@
-[gd_scene load_steps=43 format=3 uid="uid://dw6fx71adu107"]
+[gd_scene load_steps=45 format=3 uid="uid://dw6fx71adu107"]
 
-[ext_resource type="Script" uid="uid://duigu086blnlq" path="res://GameLevelsETC/kidnap.gd" id="1_6rn1s"]
+[ext_resource type="Script" path="res://GameLevelsETC/kidnap.gd" id="1_6rn1s"]
 [ext_resource type="PackedScene" uid="uid://bs2jm62cmkbrk" path="res://addons/instant-realistic-light/light_scene.tscn" id="1_wff52"]
 [ext_resource type="Script" uid="uid://bkb35cbdsgdbh" path="res://addons/instant-realistic-light/light_scene.gd" id="2_itlhn"]
 [ext_resource type="PackedScene" uid="uid://becgpkre4p052" path="res://Assets/RandomObjects/bedrooms/bedroom_copy.tscn" id="3_6rn1s"]
@@ -12,10 +12,12 @@
 [ext_resource type="PackedScene" uid="uid://bjmnpch456whw" path="res://Assets/RandomObjects/Placeholder_Bedroom/Light Desk.glb" id="9_lobfv"]
 [ext_resource type="PackedScene" uid="uid://cin0qg3kj3yj2" path="res://Assets/RandomObjects/chair/Chair.glb" id="10_ppsdj"]
 [ext_resource type="PackedScene" uid="uid://b2qs55r6f7vro" path="res://Assets/RandomObjects/pianos/toy_piano_listen.tscn" id="12_6rn1s"]
+[ext_resource type="PackedScene" uid="uid://d2m2lxpbjx2mq" path="res://Assets/RandomObjects/Beds/red_bed.tscn" id="13_2uf5w"]
 [ext_resource type="PackedScene" uid="uid://odknx6p0jv2f" path="res://Assets/RandomObjects/pianos/toy_piano.tscn" id="13_itlhn"]
 [ext_resource type="PackedScene" uid="uid://d0082o2yj0qb2" path="res://Assets/RandomObjects/bedrooms/bedroom_2.tscn" id="13_vmkem"]
 [ext_resource type="PackedScene" uid="uid://c4o2j15yoqaln" path="res://HouseModel/surb_house_v_1.tscn" id="14_mgih5"]
 [ext_resource type="Texture2D" uid="uid://but80wsucm4q2" path="res://textures/GrassTextures/GrassAlbedo.png" id="15_ii0sn"]
+[ext_resource type="PackedScene" uid="uid://d0amtgbo2s5el" path="res://Assets/RandomObjects/Beds/blue_bed.tscn" id="15_lyc4m"]
 [ext_resource type="Texture2D" uid="uid://do7xmc15vdxif" path="res://textures/GrassTextures/GrassAO.png" id="16_5x2wp"]
 [ext_resource type="Texture2D" uid="uid://cgxv1p4pfa1ju" path="res://textures/GrassTextures/GrassTransluc.png" id="17_iegcu"]
 [ext_resource type="Texture2D" uid="uid://btkv156gx2ymr" path="res://textures/GrassTextures/GrassNormal.png" id="18_mipa5"]
@@ -228,7 +230,7 @@ libraries = {
 transform = Transform3D(1.4, 0, 0, 0, 1.4, 0, 0, 0, 1.4, 0, 0, 0)
 
 [node name="bedroom1" parent="Bedrooms" instance=ExtResource("3_6rn1s")]
-transform = Transform3D(1.5, 0, 0, 0, 1.2, 0, 0, 0, 1.5, -0.12646402, 0.087929964, 13.246087)
+transform = Transform3D(1.5, 0, 0, 0, 1.2, 0, 0, 0, 1.5, -0.14364243, 0.08792979, 13.247937)
 
 [node name="Collisions" type="StaticBody3D" parent="Bedrooms/bedroom1"]
 collision_layer = 2
@@ -256,11 +258,14 @@ shape = SubResource("BoxShape3D_2lyw5")
 
 [node name="Bed" parent="Bedrooms/bedroom1" instance=ExtResource("4_pm42j")]
 transform = Transform3D(-0.80000055, 0, -6.993827e-08, 0, 0.80000013, 0, 6.993827e-08, 0, -0.80000055, 2.5384, -2.027907, 1.7765894)
+visible = false
 
 [node name="StaticBody3D" type="StaticBody3D" parent="Bedrooms/bedroom1/Bed"]
+visible = false
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Bedrooms/bedroom1/Bed/StaticBody3D"]
 transform = Transform3D(1, 0, 8.0717655e-12, 0, 1, 0, -8.0717655e-12, 0, 1, 0.0006723404, 0.35276818, -0.07090807)
+visible = false
 shape = SubResource("BoxShape3D_asrhd")
 
 [node name="Nightstand" parent="Bedrooms/bedroom1" instance=ExtResource("5_2uf5w")]
@@ -274,6 +279,11 @@ shape = SubResource("BoxShape3D_lvd32")
 
 [node name="Lamp" parent="Bedrooms/bedroom1" instance=ExtResource("6_lyc4m")]
 transform = Transform3D(0.60000044, 0, -7.105431e-15, 0, 0.6000001, 0, 7.105431e-15, 0, 0.60000044, 1.2545395, -1.0862061, 3.0131636)
+
+[node name="OmniLight3D" type="OmniLight3D" parent="Bedrooms/bedroom1/Lamp"]
+transform = Transform3D(-3.469158e-08, 0, 0.7936503, 0, 0.99206334, 0, -0.7936503, 0, -3.469158e-08, -0.07956445, 1.1074953, -0.050771713)
+light_color = Color(0.8863026, 0.7930651, 0.62317014, 1)
+light_energy = 0.2
 
 [node name="Dresser" parent="Bedrooms/bedroom1" instance=ExtResource("7_dwtrd")]
 transform = Transform3D(-5.2453718e-08, 0, -1.2000009, 0, 1.5, 0, 1.2000009, 0, -5.2453718e-08, -0.10741777, -0.8876659, 2.5052242)
@@ -294,10 +304,22 @@ transform = Transform3D(0.99997854, 0, -1.2221335e-12, 0, 0.99999917, 0, 1.22213
 shape = SubResource("BoxShape3D_kiafm")
 
 [node name="Desk Light" parent="Bedrooms/bedroom1" instance=ExtResource("9_lobfv")]
-transform = Transform3D(0.81363344, 0, 0.94894737, 0, 1.2500002, 0, -0.94894737, 0, 0.81363344, -3.0751343, -0.87845737, -3.11899)
+transform = Transform3D(1.0656065, 0, 0.65343946, 0, 1.4999999, 0, -0.65343946, 0, 1.0656065, -3.0751352, -0.87845737, -3.1189904)
+
+[node name="SpotLight3D" type="SpotLight3D" parent="Bedrooms/bedroom1/Desk Light"]
+transform = Transform3D(-0.056468636, 0.3765753, 0.011550225, 0.29990894, 0.037212964, 0.25717744, 0.24300523, 0.045371965, -0.28984177, 0.00620842, 0.43400103, 0.2660551)
+light_color = Color(0.90588236, 0.9137255, 0.49803922, 1)
+spot_range = 10.0
+spot_attenuation = 0.5
+spot_angle = 30.0
+
+[node name="OmniLight3D" type="OmniLight3D" parent="Bedrooms/bedroom1/Desk Light"]
+transform = Transform3D(-2.9802322e-08, 0, 0.38095242, 0, 0.39682543, 0, -0.38095242, 0, -2.9802322e-08, -0.024466991, 0.4400298, 0.1774826)
+light_color = Color(0.8863026, 0.7930651, 0.62317014, 1)
+light_energy = 0.1
 
 [node name="Chair" parent="Bedrooms/bedroom1" instance=ExtResource("10_ppsdj")]
-transform = Transform3D(-1.3131986, 0, -0.72492445, 0, 1.5, 0, 0.72492445, 0, -1.3131986, -1.2762998, -1.9826562, -4.800614)
+transform = Transform3D(-1.3621511, 0, -0.6281332, 0, 1.5, 0, 0.6281332, 0, -1.3621511, -1.4257864, -1.9826562, -4.6658034)
 
 [node name="StaticBody3D" type="StaticBody3D" parent="Bedrooms/bedroom1/Chair"]
 
@@ -306,10 +328,17 @@ transform = Transform3D(1, 0, -4.4703484e-08, 0, 1, 0, 4.4703484e-08, 0, 1, 0.90
 shape = SubResource("BoxShape3D_pe1yd")
 
 [node name="toy_pianoListen" parent="Bedrooms/bedroom1" instance=ExtResource("12_6rn1s")]
-transform = Transform3D(-0.07346906, 0, -0.13077593, 0, 0.15000002, 0, 0.13077593, 0, -0.07346906, -2.4769094, -0.8305659, -1.5111351)
+transform = Transform3D(0.019856678, 0, -0.1486801, 0, 0.15000002, 0, 0.1486801, 0, 0.019856678, -2.5266912, -0.8230621, -2.1686707)
+
+[node name="RedBed" parent="Bedrooms/bedroom1" instance=ExtResource("13_2uf5w")]
+transform = Transform3D(-1.223919e-08, 0, 0.28000006, 0, 0.28000003, 0, -0.28000006, 0, -1.223919e-08, 4.78642, -1.9862005, 0.79205513)
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="Bedrooms/bedroom1"]
+transform = Transform3D(6.244485e-08, 0.47619054, -3.9714537e-16, 5.6785154e-09, -2.4821567e-16, 0.5952381, 0.47619054, -6.244485e-08, -4.542813e-09, 0.33711377, 1.3663076, 0.40435696)
+visible = false
 
 [node name="bedroom2" parent="Bedrooms" instance=ExtResource("13_vmkem")]
-transform = Transform3D(-1.5, 0, -2.2649371e-07, 0, 1.2, 0, 2.2649371e-07, 0, -1.5, 0.3168704, 0.11224883, -13.854978)
+transform = Transform3D(-1.4999993, 0.0011538021, 9.1280155e-05, 0.0014421464, 1.1999987, -0.0017605099, -9.294293e-05, -0.0014083382, -1.4999992, 0.3168704, 0.11224883, -13.854978)
 
 [node name="Collisions" type="StaticBody3D" parent="Bedrooms/bedroom2"]
 collision_layer = 2
@@ -335,17 +364,23 @@ shape = SubResource("BoxShape3D_2lyw5")
 transform = Transform3D(-4.371138e-08, 0, 1.0000002, 0, 1, 0, -1.0000002, 0, -4.371138e-08, 3.539886, 0.010992043, 0.052934647)
 shape = SubResource("BoxShape3D_2lyw5")
 
+[node name="BlueBed" parent="Bedrooms/bedroom2" instance=ExtResource("15_lyc4m")]
+transform = Transform3D(0.2800001, 0, -1.7763568e-14, 0, 0.28000003, 0, 1.7763568e-14, 0, 0.2800001, -1.011759, -2.027907, 4.8093195)
+
 [node name="Bed" parent="Bedrooms/bedroom2" instance=ExtResource("4_pm42j")]
 transform = Transform3D(-3.4969077e-08, 0, 0.80000025, 0, 0.80000013, 0, -0.80000025, 0, -3.4969077e-08, -1.7701185, -2.027907, 2.557747)
+visible = false
 
 [node name="StaticBody3D" type="StaticBody3D" parent="Bedrooms/bedroom2/Bed"]
+visible = false
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Bedrooms/bedroom2/Bed/StaticBody3D"]
 transform = Transform3D(1, 0, 8.0717655e-12, 0, 1, 0, -8.0717655e-12, 0, 1, 0.0006723404, 0.35276818, -0.07090807)
+visible = false
 shape = SubResource("BoxShape3D_asrhd")
 
 [node name="Nightstand" parent="Bedrooms/bedroom2" instance=ExtResource("5_2uf5w")]
-transform = Transform3D(-4.371141e-08, 0, 1.0000006, 0, 1, 0, -1.0000006, 0, -4.371141e-08, -2.9400105, -2.0381522, 1.2181511)
+transform = Transform3D(-4.3711413e-08, 0, 1.0000006, 0, 1, 0, -1.0000006, 0, -4.3711413e-08, -2.9400105, -2.0381522, 1.2181511)
 
 [node name="StaticBody3D" type="StaticBody3D" parent="Bedrooms/bedroom2/Nightstand"]
 
@@ -354,7 +389,12 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.01880169, 0.44482422, 0.003
 shape = SubResource("BoxShape3D_lvd32")
 
 [node name="Lamp" parent="Bedrooms/bedroom2" instance=ExtResource("6_lyc4m")]
-transform = Transform3D(0.6000004, 0, -7.1054274e-15, 0, 0.6000001, 0, 7.1054274e-15, 0, 0.6000004, -3.1121984, -1.0862061, 1.2192068)
+transform = Transform3D(0.6000004, 0, -7.105427e-15, 0, 0.6000001, 0, 7.105427e-15, 0, 0.6000004, -3.1121984, -1.0862061, 1.2192068)
+
+[node name="OmniLight3D" type="OmniLight3D" parent="Bedrooms/bedroom2/Lamp"]
+transform = Transform3D(-3.4691766e-08, -9.674039e-12, 0.79365027, 0, 0.9920632, -1.1689067e-09, -0.7936502, -6.9849193e-10, -1.8895662e-08, -0.009194374, 1.1074951, -0.002193451)
+light_color = Color(0.8863026, 0.7930651, 0.62317014, 1)
+light_energy = 0.2
 
 [node name="Dresser" parent="Bedrooms/bedroom2" instance=ExtResource("7_dwtrd")]
 transform = Transform3D(1.2000009, 0, -2.842171e-14, 0, 1.5, 0, 2.842171e-14, 0, 1.2000009, 2.5068974, -0.8876658, -0.029426575)
@@ -375,7 +415,20 @@ transform = Transform3D(0.99997854, 0, -1.2221335e-12, 0, 0.99999917, 0, 1.22213
 shape = SubResource("BoxShape3D_kiafm")
 
 [node name="Desk Light" parent="Bedrooms/bedroom2" instance=ExtResource("9_lobfv")]
-transform = Transform3D(0.8136333, 0, 0.94894725, 0, 1.2500001, 0, -0.94894725, 0, 0.8136333, -3.0250432, -0.87845737, -2.9995542)
+transform = Transform3D(0.69893664, 0, 1.0363338, 0, 1.5, 0, -1.0363338, 0, 0.69893664, -3.0250435, -0.87845737, -3.0714893)
+
+[node name="SpotLight3D" type="SpotLight3D" parent="Bedrooms/bedroom2/Desk Light"]
+transform = Transform3D(-0.37490138, 0.06170456, -0.021212742, 0.033683658, 0.28090996, 0.28028628, 0.059166357, 0.25822657, -0.27249223, 0.0092282295, 0.43507248, 0.21996796)
+light_color = Color(0.9317113, 0.8669089, 0.53411645, 1)
+light_energy = 0.7
+light_specular = 3.0
+spot_attenuation = 0.5
+spot_angle = 30.0
+
+[node name="OmniLight3D" type="OmniLight3D" parent="Bedrooms/bedroom2/Desk Light"]
+transform = Transform3D(1.0430813e-07, 2.910383e-10, 0.3809524, -2.0372681e-10, 0.39682537, -1.1641532e-10, -0.38095242, -8.440111e-10, 1.4901161e-07, -0.01854515, 0.41153648, 0.19041395)
+light_color = Color(0.8863026, 0.7930651, 0.62317014, 1)
+light_energy = 0.1
 
 [node name="Chair" parent="Bedrooms/bedroom2" instance=ExtResource("10_ppsdj")]
 transform = Transform3D(0.28300056, 0, 1.4730628, 0, 1.5, 0, -1.4730628, 0, 0.28300056, -0.79377145, -1.9826559, -0.10930538)
@@ -387,7 +440,7 @@ transform = Transform3D(1, 0, -4.4703484e-08, 0, 1, 0, 4.4703484e-08, 0, 1, 0.90
 shape = SubResource("BoxShape3D_pe1yd")
 
 [node name="toy_piano" parent="Bedrooms/bedroom2" instance=ExtResource("13_itlhn")]
-transform = Transform3D(-0.12406217, 0, -0.084312536, 0, 0.15000002, 0, 0.084312536, 0, -0.12406217, -1.5369843, -0.77872807, -2.5860863)
+transform = Transform3D(-0.14895703, 0, 0.017659249, 0, 0.15000002, 0, -0.017659249, 0, -0.14895703, -2.2380548, -0.77872807, -2.5860882)
 
 [node name="Neighborhood" type="Node3D" parent="."]
 transform = Transform3D(1.5, 0, 0, 0, 1.5, 0, 0, 0, 1.5, 0, 0, 0)
