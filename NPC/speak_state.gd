@@ -1,18 +1,20 @@
 extends NPCState
-class_name TalkState
+class_name SpeakState
+
 
 @export var talk_detection: Area3D
-@export var exit_delay_sec: float = 0.35
 
 var _empty_time: float = 0.0
 
-func enter(_msg := {}) -> void:
+# Called when the node enters the scene tree for the first time.
+func _ready() -> void:
 	_empty_time = 0.0
 	_stop_npc()
 	
 	if npc == null:
 		return
 
+# Called every frame. 'delta' is the elapsed time since the previous frame.
 func physics_update(delta: float) -> void:
 	_stop_npc()
 	var npc3d := npc as NPC
@@ -22,30 +24,19 @@ func physics_update(delta: float) -> void:
 	var model_node = find_descendant_in_group(npc3d, "NPC_Body")
 	if model_node:
 		var anim_player = find_descendant_in_group(model_node, "NPC_Animation")
-		if anim_player:
-			anim_player.play("NewStanding")
-	
-	# If the area isn't set, just "stay talking" (prevents ping-pong).
-	if talk_detection == null or not is_instance_valid(talk_detection):
-		_empty_time = 0.0
-		return
-
-	# Check if ANY player is still inside the area
-	var player_in_range := false
+		if anim_player and GlobalVariables.playerTalking == true:
+			anim_player.play("NewTalking")
+			
+	if GlobalVariables.playerTalking == false:
+		change_state.emit(&"TalkState")
+		
 	for b in talk_detection.get_overlapping_bodies():
 		if b != null and b.is_in_group("player"):
-			player_in_range = true
-			break
+			var target := b.global_position
+			var look_target := target
+			look_target.y += 1.5
+			npc3d.look_at(look_target)
 
-	if player_in_range:
-		_empty_time = 0.0
-	else:
-		_empty_time += delta
-		if _empty_time >= exit_delay_sec:
-			change_state.emit(&"PatrolState")
-			
-	if GlobalVariables.playerTalking == true:
-		change_state.emit(&"SpeakState")
 
 func _stop_npc() -> void:
 	if npc == null:

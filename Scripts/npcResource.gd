@@ -6,8 +6,6 @@ class_name npcStats
 @export var health: int = 100
 @export var move_speed: float = 150.0
 
-var npc: CharacterBody3D
-
 var bob_local := 0
 var abi_local := 0
 var camp_local := 0
@@ -194,6 +192,7 @@ func find_descendant_in_group(node: Node, group: String) -> Node:
 	return null
 	
 	#To find the animation for talking and playing it
+	#var npc: CharacterBody3D
 	#var npc3d := npc as NPC
 	#if npc3d == null:
 		#return
