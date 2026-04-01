@@ -57,4 +57,5 @@ func _on_area_3d_input_event(camera: Node, event: InputEvent, event_position: Ve
 			animation_player_2.stop()
 			animation_player_2.play(animArr[i])
 			await get_tree().create_timer(1).timeout
+			
 		collision_shape_3d.set_deferred("disabled", false)
