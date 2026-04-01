@@ -31,18 +31,18 @@ var _uv_on: bool = false
 var _revealed_this_frame: Dictionary = {}
 var _previous_reveals: Array[UvRevealTarget] = []
 
-# ADDED: server id (host)
+# server id (host)
 const SERVER_ID: int = 1
 
-# ADDED: reveal replication (owner broadcasts which targets are being hit)
+# reveal replication (owner broadcasts which targets are being hit)
 @export var replicate_reveal: bool = true
 @export var reveal_send_rate_hz: float = 20.0
 var _reveal_last_send_time: float = 0.0
 
-# ADDED: receiver-side cache so we can turn off ones not in the latest packet
+# receiver-side cache so we can turn off ones not in the latest packet
 var _net_prev_reveals: Dictionary = {} # String(path) -> bool
 
-# ADDED: replicate flashlight aim (rotation) so all peers see same beam direction
+# replicate flashlight aim (rotation) so all peers see same beam direction
 @export var replicate_aim: bool = true
 @export var aim_send_rate_hz: float = 20.0
 @export var aim_lerp_alpha: float = 0.35
@@ -74,7 +74,8 @@ func _ready() -> void:
 	if uv_light != null:
 		uv_light.visible = false
 
-	_aim_target_basis = global_transform.basis
+	# ADDED: make sure our starting aim basis is "clean rotation" (no scale)
+	_aim_target_basis = global_transform.basis.orthonormalized()
 
 
 func set_hovered(v: bool) -> void:
@@ -170,10 +171,8 @@ func _reveal_in_beam() -> void:
 	# Default beam center is max range straight ahead
 	var hit_pos := global_transform.origin + (-global_transform.basis.z.normalized() * uv_range_m)
 
-	# ADDED: Only accept collisions that belong to uv_reveal targets
-	# This prevents near collisions (walls/player) from forcing you to get close.
+	# Only accept collisions that belong to uv_reveal targets
 	if uv_cast != null and uv_cast.is_colliding():
-		var found_valid := false
 		var best_d := -INF
 
 		for i in range(uv_cast.get_collision_count()):
@@ -197,9 +196,6 @@ func _reveal_in_beam() -> void:
 			if d > best_d:
 				best_d = d
 				hit_pos = p
-				found_valid = true
-
-		# If no valid uv_reveal collider is hit, keep default hit_pos
 
 	var targets: Array = get_tree().get_nodes_in_group("uv_reveal")
 	var count := 0
@@ -254,7 +250,7 @@ func _rpc_set_uv_visible(v: bool) -> void:
 		uv_light.visible = v
 
 
-# ADDED: send revealed targets to everyone (owner authoritative)
+# send revealed targets to everyone (owner authoritative)
 func _net_maybe_send_reveals() -> void:
 	if not replicate_reveal:
 		return
@@ -279,7 +275,7 @@ func _net_maybe_send_reveals() -> void:
 	rpc("_rpc_apply_reveals", paths)
 
 
-# ADDED: apply reveal list on all peers (including host)
+# apply reveal list on all peers (including host)
 @rpc("any_peer", "call_local", "unreliable")
 func _rpc_apply_reveals(paths: Array[String]) -> void:
 	# Turn ON any targets in the list
@@ -315,14 +311,20 @@ func _net_maybe_send_aim() -> void:
 		return
 
 	_aim_last_send_time = now
-	rpc("_rpc_set_aim_basis", global_transform.basis)
+
+	# CHANGED: always send a clean rotation basis (no scale) so slerp won't explode
+	var clean_basis: Basis = global_transform.basis.orthonormalized()
+	rpc("_rpc_set_aim_basis", clean_basis)
 
 
 @rpc("any_peer", "call_local", "unreliable")
 func _rpc_set_aim_basis(b: Basis) -> void:
+	# owner ignores its own packets
 	if is_multiplayer_authority():
 		return
-	_aim_target_basis = b
+
+	# CHANGED: sanitize incoming basis so it's a real rotation
+	_aim_target_basis = b.orthonormalized()
 	_aim_has_target = true
 
 
@@ -330,6 +332,10 @@ func _net_interpolate_remote_aim() -> void:
 	if not _aim_has_target:
 		return
 
+	# CHANGED: sanitize both bases before slerp (fixes the "Basis must be normalized" error)
 	var gt := global_transform
-	gt.basis = gt.basis.slerp(_aim_target_basis, aim_lerp_alpha)
+	var cur_basis: Basis = gt.basis.orthonormalized()
+	var tgt_basis: Basis = _aim_target_basis.orthonormalized()
+
+	gt.basis = cur_basis.slerp(tgt_basis, aim_lerp_alpha)
 	global_transform = gt
