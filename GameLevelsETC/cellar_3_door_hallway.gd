@@ -1,3 +1,4 @@
+# res://CellarThreeDoorHallway.gd
 extends Node3D
 class_name CellarThreeDoorHallway
 
@@ -20,7 +21,6 @@ class_name CellarThreeDoorHallway
 
 @export var hall_width_cells: int = 7
 @export var entry_len_before_doors: int = 10
-
 @export var back_hall_len: int = 70
 
 @export var door_x_offsets: Array[int] = [-2, 0, 2]
@@ -55,7 +55,7 @@ class_name CellarThreeDoorHallway
 @export var symbol_inside_offset_m: float = 0.35
 @export var symbol_extra_y_offset_m: float = 0.0
 
-# NEW: make symbols easier to see
+# make symbols easier to see
 @export var symbol_up_blocks: int = 1              # move up by N blocks
 @export var symbol_forward_extra_m: float = 0.85   # push further toward player (in front of doorway)
 
@@ -136,6 +136,7 @@ var _phase: Dictionary = {}       # String -> float
 
 var _seed: int = 0
 var _built: bool = false
+var _network_started: bool = false # PATCH: prevent early RPC spam before clients have the node
 
 var _cursor: Vector2i = Vector2i(0, 0)
 var _forward: Vector2i = Vector2i(0, 1)
@@ -187,6 +188,10 @@ const SERVER_ID: int = 1
 func _ready() -> void:
 	_rng.randomize()
 
+	# PATCH: LevelFlowManager will call on_level_post_ready() via group after everyone loads.
+	# This prevents "requested node not found" RPC spam.
+	add_to_group("level_post_ready")
+
 	if _world_root == null:
 		push_error("[Cellar] world root not found. Fix world_root_path.")
 		return
@@ -214,16 +219,32 @@ func _ready() -> void:
 	caught_grace_cells = maxi(0, caught_grace_cells)
 
 	_bind_trigger_signals()
+	set_process(true)
 
-	if multiplayer.has_multiplayer_peer():
-		if multiplayer.is_server():
-			_seed = int(Time.get_ticks_msec()) ^ randi()
-			rpc("_rpc_build_initial", _seed)
-	else:
+	# SINGLEPLAYER: build immediately (no networking race)
+	if not multiplayer.has_multiplayer_peer():
 		_seed = int(Time.get_ticks_msec()) ^ randi()
 		_build_initial(_seed)
 
-	set_process(true)
+
+# PATCH: called by LevelFlowManager AFTER level is loaded + players placed.
+func on_level_post_ready() -> void:
+	# everyone can animate constrict locally already; but only server should build + start chase.
+	if multiplayer.has_multiplayer_peer():
+		if not multiplayer.is_server():
+			return
+		if _network_started:
+			return
+		_network_started = true
+
+		_seed = int(Time.get_ticks_msec()) ^ randi()
+		rpc("_rpc_build_initial", _seed)
+	else:
+		# singleplayer fallback
+		if _built:
+			return
+		_seed = int(Time.get_ticks_msec()) ^ randi()
+		_build_initial(_seed)
 
 
 func _resolve_symbols_root() -> void:
@@ -291,7 +312,6 @@ func _process(_dt: float) -> void:
 # ============================================================
 func _apply_constrict() -> void:
 	var t: float = float(Time.get_ticks_msec()) * 0.001
-
 	var pulse: float = 0.5 + 0.5 * sin(t * constrict_speed)
 	pulse = pow(pulse, 1.6)
 
@@ -330,10 +350,8 @@ func _apply_constrict() -> void:
 		var thick: float = constrict_thickness_scale * local_pulse
 
 		var dir_x: float = 0.0
-		if cx < 0:
-			dir_x = 1.0
-		elif cx > 0:
-			dir_x = -1.0
+		if cx < 0: dir_x = 1.0
+		elif cx > 0: dir_x = -1.0
 
 		var dir_y: float = 0.0
 		if yb == wall_height_blocks + 1:
@@ -432,14 +450,13 @@ func _world_to_cell(pos: Vector3) -> Vector2i:
 	return Vector2i(cx, cz)
 
 
-# PATCH: restart full level even in singleplayer (rpc() alone isn't enough there)
+# restart full level even in singleplayer too
 func _server_restart_with_fade() -> void:
 	if multiplayer.has_multiplayer_peer() and not multiplayer.is_server():
 		return
 	if _restart_in_progress:
 		return
 	_restart_in_progress = true
-
 	_chase_running = false
 
 	if fade_enabled:
@@ -592,7 +609,6 @@ func _rpc_slam_wall_face(wall_cell: Vector2i, forward: Vector2i, drop_h: float, 
 func _rpc_shake_local(duration_sec: float, strength_pos_m: float, strength_rot_deg: float) -> void:
 	var cam: Camera3D = null
 
-	# Prefer local player camera
 	var players: Array = get_tree().get_nodes_in_group("player")
 	for p_any in players:
 		var p: Node = p_any as Node
@@ -609,7 +625,6 @@ func _rpc_shake_local(duration_sec: float, strength_pos_m: float, strength_rot_d
 		if cam != null:
 			break
 
-	# Fallback: viewport camera
 	if cam == null:
 		cam = get_viewport().get_camera_3d()
 	if cam == null:
@@ -867,7 +882,6 @@ func _server_like_enter_door(door_idx: int, player_owner_id: int) -> void:
 		_watch_owner_id = player_owner_id
 		return
 
-	# WRONG: reroll answer + reroll symbols; gust pushback
 	_reroll_nonce += 1
 	_revealed = [false, false, false]
 	_progress_door = _pick_progress_door_for_current_hub()
@@ -921,7 +935,6 @@ func _rpc_build_next_hub_at_cursor(new_cursor: Vector2i, new_forward: Vector2i, 
 	_correct_count = correct_count_passthrough
 	_reroll_nonce = reroll_passthrough
 	_rng.seed = seed_passthrough
-
 	_build_hub_geometry()
 	_move_triggers_to_hub()
 
@@ -975,9 +988,7 @@ func _rpc_open_door_anim_cached() -> void:
 		var end_p: Vector3 = blk.global_position + slide_vec
 		var tw: Tween = create_tween()
 		tw.tween_interval(float(i) * door_stagger)
-		tw.tween_property(blk, "global_position", end_p, door_open_seconds)\
-			.set_trans(Tween.TRANS_SINE)\
-			.set_ease(Tween.EASE_IN_OUT)
+		tw.tween_property(blk, "global_position", end_p, door_open_seconds).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 		i += 1
 
 
@@ -996,8 +1007,8 @@ func _rpc_delete_many(keys: Array[String]) -> void:
 
 
 # ============================================================
-# SYMBOLS: correct symbol ALWAYS on _progress_door
-# (PATCH: moved UP + pushed FORWARD so you can actually see them)
+# SYMBOLS: correct ALWAYS on _progress_door
+# (moved UP + pushed FORWARD so you can see them)
 # ============================================================
 func _spawn_symbols_for_current_hub(door_wall_cell: Vector2i, forward: Vector2i, hub_id: int) -> void:
 	if _symbols_root == null:
@@ -1005,7 +1016,6 @@ func _spawn_symbols_for_current_hub(door_wall_cell: Vector2i, forward: Vector2i,
 	if correct_symbol_scene == null or wrong_symbol_scene_a == null:
 		return
 
-	# remove any existing symbols for this hub
 	for ch in _symbols_root.get_children():
 		var n := ch as Node
 		if n != null and n.has_meta("hub_id") and int(n.get_meta("hub_id")) == hub_id:
@@ -1016,7 +1026,6 @@ func _spawn_symbols_for_current_hub(door_wall_cell: Vector2i, forward: Vector2i,
 
 	var wrong_scene_2: PackedScene = (wrong_symbol_scene_b if wrong_symbol_scene_b != null else wrong_symbol_scene_a)
 
-	# stable mapping: correct on progress door, the other two are wrong A / wrong B
 	var wrong_a_door: int = (_progress_door + 1) % 3
 	var wrong_b_door: int = (_progress_door + 2) % 3
 
@@ -1043,7 +1052,6 @@ func _spawn_symbols_for_current_hub(door_wall_cell: Vector2i, forward: Vector2i,
 		inst.name = "DoorSymbol_%d_%d" % [hub_id, door_i]
 		_symbols_root.add_child(inst)
 
-		# base on door column, but PUSH toward player so it's in front of the opening
 		var door_cell: Vector2i = door_wall_cell + right * door_x_offsets[door_i]
 		var base: Vector3 = _cell_to_world(door_cell)
 
