@@ -35,7 +35,10 @@ const SERVER_ID: int = 1
 @export var flashlight_group_name: String = "pickup"
 @export var flashlight_name_contains: String = "flashlight"
 
+# PATCH: include CarryObjectMarker paths first for reliability
 @export var player_hand_paths: Array[NodePath] = [
+	NodePath("Head/CarryObjectMarker"),
+	NodePath("Head/Camera3D/CarryObjectMarker"),
 	NodePath("Head/Camera3D/Hand"),
 	NodePath("Head/Hand"),
 	NodePath("Camera3D/Hand"),
@@ -48,6 +51,9 @@ const SERVER_ID: int = 1
 # NEW: add flashlight to joiner inventory on load (requires player.gd server_add_inventory_item)
 @export var give_joiner_flashlight_inventory: bool = true
 @export var flashlight_inventory_id: StringName = &"flashlight"
+
+# NEW: delay so flashlight node exists before attach (important)
+@export var flashlight_attach_delay_sec: float = 0.15
 
 # Optional: call this group after level load & spawn (to start HallwayGen safely)
 @export var post_level_ready_group: String = "level_post_ready"
@@ -403,7 +409,7 @@ func _place_all_players_local_to_spawn() -> void:
 
 
 # ------------------------------------------------------------
-# Post-spawn rules: cellar roles + flashlight handoff
+# Post-spawn rules: cellar roles + flashlight inventory + attach
 # ------------------------------------------------------------
 func _is_cellar_level() -> bool:
 	if _current_level_scene_path == "":
@@ -418,25 +424,35 @@ func _server_apply_post_spawn_rules() -> void:
 		return
 	if _current_level == null:
 		return
+	if not _is_cellar_level():
+		return
 
-	if _is_cellar_level():
-		_apply_cellar_roles_server()
+	_apply_cellar_roles_server()
 
-		var joiner_id: int = _pick_joiner_peer_id_server()
+	var joiner_id: int = _pick_joiner_peer_id_server()
 
-		if give_joiner_flashlight_inventory:
-			_server_give_inventory_flashlight(joiner_id)
+	# PATCH: delay then do both inventory + physical attach
+	call_deferred("_deferred_give_and_attach_flashlight", joiner_id)
 
-		if give_flashlight_to_joining_player:
-			# optional physical attach (your old behavior)
-			rpc("_rpc_assign_flashlight_to_owner", joiner_id)
+
+func _deferred_give_and_attach_flashlight(joiner_id: int) -> void:
+	if not multiplayer.is_server():
+		return
+
+	var t := get_tree().create_timer(maxf(0.0, flashlight_attach_delay_sec))
+	await t.timeout
+
+	if give_joiner_flashlight_inventory:
+		_server_give_inventory_flashlight(joiner_id)
+
+	if give_flashlight_to_joining_player:
+		rpc("_rpc_assign_flashlight_to_owner", joiner_id)
 
 
 func _apply_post_spawn_rules_local() -> void:
 	if _is_cellar_level():
 		_apply_cellar_roles_local()
-		# singleplayer: you can just add locally if you want
-		# (multiplayer inventory is server-authoritative)
+		# singleplayer: optional
 		if not multiplayer.has_multiplayer_peer():
 			var p: Node3D = _find_player_by_owner(SERVER_ID)
 			if p != null and p.has_method("server_add_inventory_item"):
@@ -502,7 +518,6 @@ func _apply_cellar_roles_local() -> void:
 
 
 func _pick_joiner_peer_id_server() -> int:
-	# "Joiner/top" = lowest non-host peer id; fallback host
 	var joiner_id: int = SERVER_ID
 	for pid_any in multiplayer.get_peers():
 		var pid: int = int(pid_any)
@@ -595,7 +610,8 @@ func _attach_flashlight_to_player_local(flashlight: Node3D, player: Node3D) -> v
 	attach_to.add_child(flashlight)
 	flashlight.global_transform = xf
 
-	flashlight.position = Vector3.ZERO
+	# slight forward offset so it doesn't sit inside the camera if attached to CarryObjectMarker
+	flashlight.position = Vector3(0.12, -0.10, -0.25)
 	flashlight.rotation = Vector3.ZERO
 
 	var rb: RigidBody3D = flashlight as RigidBody3D
