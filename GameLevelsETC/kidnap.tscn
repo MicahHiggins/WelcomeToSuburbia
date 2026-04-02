@@ -1,6 +1,6 @@
 [gd_scene load_steps=43 format=3 uid="uid://dw6fx71adu107"]
 
-[ext_resource type="Script" path="res://GameLevelsETC/kidnap.gd" id="1_6rn1s"]
+[ext_resource type="Script" uid="uid://duigu086blnlq" path="res://GameLevelsETC/kidnap.gd" id="1_6rn1s"]
 [ext_resource type="PackedScene" uid="uid://bs2jm62cmkbrk" path="res://addons/instant-realistic-light/light_scene.tscn" id="1_wff52"]
 [ext_resource type="Script" uid="uid://bkb35cbdsgdbh" path="res://addons/instant-realistic-light/light_scene.gd" id="2_itlhn"]
 [ext_resource type="PackedScene" uid="uid://becgpkre4p052" path="res://Assets/RandomObjects/bedrooms/bedroom_copy.tscn" id="3_6rn1s"]
@@ -330,7 +330,7 @@ transform = Transform3D(1, 0, -4.4703484e-08, 0, 1, 0, 4.4703484e-08, 0, 1, 0.90
 shape = SubResource("BoxShape3D_pe1yd")
 
 [node name="toy_pianoListen" parent="Bedrooms/bedroom1" instance=ExtResource("12_6rn1s")]
-transform = Transform3D(-0.07346906, 0, -0.13077593, 0, 0.15000002, 0, 0.13077593, 0, -0.07346906, -2.4769094, -0.8305659, -1.5111351)
+transform = Transform3D(0.00091631734, 0, -0.14999743, 0, 0.15000004, 0, 0.14999743, 0, 0.00091631734, -2.5166962, -0.8161694, -2.30835)
 
 [node name="bedroom2" parent="Bedrooms" instance=ExtResource("13_vmkem")]
 transform = Transform3D(-1.5, 0, -2.2649371e-07, 0, 1.2, 0, 2.2649371e-07, 0, -1.5, 0.3168704, 0.11224883, -13.854978)
@@ -411,7 +411,7 @@ transform = Transform3D(1, 0, -4.4703484e-08, 0, 1, 0, 4.4703484e-08, 0, 1, 0.90
 shape = SubResource("BoxShape3D_pe1yd")
 
 [node name="toy_piano" parent="Bedrooms/bedroom2" instance=ExtResource("13_itlhn")]
-transform = Transform3D(-0.12406217, 0, -0.084312536, 0, 0.15000002, 0, 0.084312536, 0, -0.12406217, -1.5369843, -0.77872807, -2.5860863)
+transform = Transform3D(-0.15000011, 0, 2.0962343e-05, 0, 0.15000002, 0, -2.0962343e-05, 0, -0.15000011, -2.2025387, -0.77872807, -2.5126305)
 
 [node name="Neighborhood" type="Node3D" parent="."]
 transform = Transform3D(1.5, 0, 0, 0, 1.5, 0, 0, 0, 1.5, 0, 0, 0)
