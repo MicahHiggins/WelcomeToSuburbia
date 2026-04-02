@@ -29,6 +29,8 @@ block_scene = ExtResource("2_3njtq")
 correct_symbol_scene = ExtResource("3_720kl")
 wrong_symbol_scene_a = ExtResource("3_3njtq")
 wrong_symbol_scene_b = ExtResource("3_3njtq")
+chase_cells_to_spawn_close = 20
+shake_strength_pos_m = 3.0
 
 [node name="TriggerArea" type="Node3D" parent="."]
 
