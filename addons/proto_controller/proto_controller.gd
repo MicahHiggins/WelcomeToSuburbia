@@ -121,6 +121,26 @@ var cellar_leader_speed_mult: float = 1.0
 var forced_pose_active: bool = false
 var forced_pose_target: Vector3 = Vector3.ZERO
 
+# --- PATCH: follower camera-relative follow tuning + body hide ---
+var cellar_follow_speed: float = 1.0  # not used to slow movement; used as responsiveness if you later want
+var cellar_follow_dist: float = 2.2
+var cellar_follow_lerp: float = 0.25
+
+@export var cellar_follow_up_m: float = 0.9
+@export var cellar_follow_back_m: float = 1.4
+@export var cellar_follow_side_m: float = 0.0
+
+@export var cellar_hide_body_for_follower: bool = true
+@export var cellar_hide_paths: Array[NodePath] = [
+	NodePath("Body"),
+	NodePath("Mesh"),
+	NodePath("CharacterMesh"),
+	NodePath("Model"),
+	NodePath("Armature"),
+	NodePath("Rig")
+]
+# ---------------------------------------------------------------
+
 # =========================
 #    NETWORK SYNC CONFIG
 # =========================
@@ -730,13 +750,41 @@ func _physics_authority(delta: float) -> void:
 		move_and_collide(motion)
 		return
 
-	# follower is locked in place but can still look around
+	# --- PATCH: follower follows leader CAMERA transform from LevelFlowManager ---
 	if cellar_active and not cellar_is_leader:
 		velocity = Vector3.ZERO
+
+		# If forced pose was set explicitly, respect it.
 		if forced_pose_active:
 			global_position = forced_pose_target
+			move_and_slide()
+			return
+
+		# Follow leader camera transform (server-synced via LevelFlowManager)
+		var lf: Node = _get_level_flow()
+		if lf != null and lf.has_method("get_peer_camera_xform") and cellar_leader_peer_id > 0:
+			var leader_cam_xf: Transform3D = lf.call("get_peer_camera_xform", cellar_leader_peer_id) as Transform3D
+
+			# Camera basis vectors
+			var forward: Vector3 = (-leader_cam_xf.basis.z).normalized()
+			var right: Vector3 = (leader_cam_xf.basis.x).normalized()
+
+			# Target behind+above camera
+			var target_pos: Vector3 = leader_cam_xf.origin \
+				- forward * cellar_follow_back_m \
+				+ Vector3.UP * cellar_follow_up_m \
+				+ right * cellar_follow_side_m
+
+			# Smooth follow
+			var a: float = 1.0 - pow(1.0 - clampf(cellar_follow_lerp, 0.01, 0.95), delta * 60.0)
+			global_position = global_position.lerp(target_pos, a)
+
+			# Match yaw with camera (optional but feels right)
+			global_rotation = Vector3(0.0, leader_cam_xf.basis.get_euler().y, 0.0)
+
 		move_and_slide()
 		return
+	# ---------------------------------------------------------------------------
 
 	if has_gravity and not is_on_floor():
 		velocity += get_gravity() * delta
@@ -905,12 +953,14 @@ func _play_footstep_audio() -> void:
 # =========================
 #  CELLAR ROLE RPCs
 # =========================
+# PATCH: signature now matches LevelFlowManager:
+# server_set_cellar_role(is_leader, follow_speed, follow_dist, follow_lerp, leader_peer_id)
 @rpc("any_peer", "call_local", "reliable")
 func server_set_cellar_role(
 	is_leader: bool,
-	leader_mult: float,
-	_hover_h: float,
-	_fwd_off: float,
+	follow_speed: float,
+	follow_dist: float,
+	follow_lerp: float,
 	leader_peer_id: int
 ) -> void:
 	if multiplayer.has_multiplayer_peer() and not is_multiplayer_authority():
@@ -919,9 +969,20 @@ func server_set_cellar_role(
 	cellar_active = true
 	cellar_is_leader = is_leader
 	cellar_leader_peer_id = leader_peer_id
-	cellar_leader_speed_mult = leader_mult
+
+	# keep leader speed unchanged (no slowing)
+	cellar_leader_speed_mult = 1.0
+
+	# follow tuning for follower
+	cellar_follow_speed = follow_speed
+	cellar_follow_dist = follow_dist
+	cellar_follow_lerp = follow_lerp
 
 	velocity = Vector3.ZERO
+
+	# hide follower body locally (leader stays visible)
+	if cellar_hide_body_for_follower:
+		_set_body_visible(is_leader)
 
 @rpc("any_peer", "call_local", "unreliable")
 func server_set_forced_pose(enabled: bool, target_pos: Vector3) -> void:
@@ -1052,3 +1113,40 @@ func _check_input_mappings() -> void:
 		push_error("Missing action: " + input_drop + " (bind it to G)")
 	if not InputMap.has_action(input_use_attack):
 		push_error("Missing action: " + input_use_attack + " (bind it in InputMap)")
+
+# =========================
+#   PATCH HELPERS (minimal)
+# =========================
+func _set_body_visible(visible: bool) -> void:
+	# Hide typical model nodes by path if present
+	for np in cellar_hide_paths:
+		var n: Node = get_node_or_null(np)
+		if n == null:
+			continue
+		if n is Node3D:
+			(n as Node3D).visible = visible
+		elif n is CanvasItem:
+			(n as CanvasItem).visible = visible
+
+	# Fallback: hide MeshInstance3D children (but never hide Head/Camera)
+	_hide_meshes_recursive(self, visible)
+
+func _hide_meshes_recursive(root: Node, visible: bool) -> void:
+	for ch_any in root.get_children():
+		var ch: Node = ch_any as Node
+		if ch == null:
+			continue
+
+		# Don't hide the camera/head hierarchy (keeps FPS camera intact)
+		if ch == head or ch == cam:
+			continue
+		if ch.get_parent() == head:
+			# allow head children like camera to stay; still recurse
+			_hide_meshes_recursive(ch, visible)
+			continue
+
+		var mi := ch as MeshInstance3D
+		if mi != null:
+			mi.visible = visible
+
+		_hide_meshes_recursive(ch, visible)
