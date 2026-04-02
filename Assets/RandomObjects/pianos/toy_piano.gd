@@ -61,6 +61,10 @@ func puzzleSolved(fail: bool):
 	else:
 		puzzleOneComplete.emit()
 		piano_failure.play("green")
+		%R2SpotLight3D.visible = false
+		%R1SpotLight3D.visible = false
+		%R2OmniLight3D.visible = false
+		%R1OmniLight3D.visible = false
 		for i in range(7):
 			
 			notesArr[i].play()
