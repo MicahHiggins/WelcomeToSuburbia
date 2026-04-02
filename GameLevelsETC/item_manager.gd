@@ -286,7 +286,7 @@ func _find_item_anim_player(item: Node) -> AnimationPlayer:
 	return found as AnimationPlayer
 
 # ============================================================
-#   NEW: SERVER FORCE PICKUP (for LevelFlow auto-equip + restart)
+#   SERVER FORCE PICKUP (for LevelFlow auto-equip + restart)
 # ============================================================
 @rpc("any_peer", "reliable")
 func server_force_pickup_for_peer(item_path: NodePath, peer_id: int) -> void:
@@ -296,7 +296,6 @@ func server_force_pickup_for_peer(item_path: NodePath, peer_id: int) -> void:
 		return
 	_server_pickup_for_peer(item_path, peer_id)
 
-# Internal helper so request_pickup + force_pickup share logic
 func _server_pickup_for_peer(item_path: NodePath, peer_id: int) -> void:
 	if not multiplayer.is_server():
 		return
@@ -322,8 +321,7 @@ func _server_pickup_for_peer(item_path: NodePath, peer_id: int) -> void:
 	if not _held_by.has(item_key):
 		_held_by[item_key] = -1
 
-	# If we think it's held but the node isn't actually attached, clear the stale hold.
-	# (This fixes level restart cases where nodes got re-instanced and the dict is stale.)
+	# If we think it's held but the node isn't actually attached, clear stale hold.
 	if int(_held_by[item_key]) != -1:
 		var holder: int = int(_held_by[item_key])
 		var p_check: Node3D = _player_for_peer(holder)
@@ -339,11 +337,9 @@ func _server_pickup_for_peer(item_path: NodePath, peer_id: int) -> void:
 			if item.has_meta("locked"):
 				item.set_meta("locked", false)
 
-	# Re-check after cleanup
 	if int(_held_by[item_key]) != -1:
 		return
 
-	# Don't allow locked (unless it's our own stale lock)
 	if item.has_meta("locked") and bool(item.get_meta("locked")):
 		return
 	item.set_meta("locked", true)
@@ -353,7 +349,6 @@ func _server_pickup_for_peer(item_path: NodePath, peer_id: int) -> void:
 		item.set_meta("locked", false)
 		return
 
-	# Inventory cap
 	if "inventory" in p:
 		var inv_any: Array = p.inventory
 		if inv_any.size() >= max_inventory_slots:
@@ -370,10 +365,8 @@ func _server_pickup_for_peer(item_path: NodePath, peer_id: int) -> void:
 		item.set_meta("locked", false)
 		return
 
-	# Apply on all peers (sets authority, reparents to marker, set_held(true))
 	rpc("apply_pickup", item_key, player_rel, peer_id)
 
-	# Inventory push (to the owner only)
 	if "inventory" in p and p.has_method("server_set_inventory"):
 		var new_inv: Array[StringName] = (p.inventory as Array[StringName]).duplicate()
 		if new_inv.find(StringName(item.name)) == -1:
@@ -432,13 +425,8 @@ func apply_pickup(item_key: NodePath, player_path: NodePath, new_owner_id: int) 
 			n3b.transform = Transform3D.IDENTITY
 			n3b.scale = saved_scale
 
-	# IMPORTANT: clear stale drop replication targets when re-equipping
-	# (Flashlight has aim/drop replication; this prevents “stuck pointing wrong”.)
-	if item.has_method("_rpc_set_drop_state"):
-		# do nothing here; just a hint that method exists
-		pass
-
-	if "set_held" in item:
+	# PATCH: this must be has_method, not `"set_held" in item`
+	if item.has_method("set_held"):
 		item.call_deferred("set_held", true)
 
 # =========================
@@ -475,7 +463,6 @@ func request_drop(item_key: NodePath) -> void:
 	var drop_xform: Transform3D = Transform3D(item.global_transform.basis, drop_pos)
 
 	item.set_multiplayer_authority(SERVER_ID)
-
 	_last_world_xform[item_key] = drop_xform
 
 	rpc("apply_drop", item_key, drop_xform, forward)
@@ -522,7 +509,8 @@ func apply_drop(item_key: NodePath, world_xform: Transform3D, impulse_forward: V
 
 	_unfreeze_for_drop(item, impulse_forward)
 
-	if "set_held" in item:
+	# PATCH: this must be has_method, not `"set_held" in item`
+	if item.has_method("set_held"):
 		item.call_deferred("set_held", false)
 
 	call_deferred("_deferred_finalize_drop", item_key)

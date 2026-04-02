@@ -25,6 +25,24 @@ var _gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity")
 @export var toggle_action: StringName = &"toggle_flashlight"
 @export var replicate_light_toggle: bool = true
 
+# -------------------------
+# BRIGHTNESS / VISUAL BOOST
+# (PATCH: keep ORIGINAL beam width; only boost brightness + range a bit)
+# -------------------------
+@export var beam_brightness_multiplier: float = 8.0
+@export var beam_energy_on: float = 40.0
+@export var beam_range_on: float = 18.0
+# NOTE: we do NOT override spot_angle / attenuation so beam width stays like the scene.
+
+# -------------------------
+# PATCH: BEAM-VOLUME REVEAL (works even up-close / looking up)
+# -------------------------
+@export var reveal_use_beam_volume: bool = true
+@export var beam_radius_near_m: float = 0.20
+@export var beam_radius_growth_per_m: float = 0.06
+@export var beam_extra_slop_m: float = 0.12
+@export var beam_require_in_front: bool = true
+
 var _held: bool = false
 var _hovered: bool = false
 var _uv_on: bool = false
@@ -65,6 +83,12 @@ var _base_scale: Vector3 = Vector3.ONE
 # PATCH: when equipping after a level restart, clear stale net targets so it doesn't "lock" wrong.
 var _just_equipped_reset: bool = false
 
+# cache original light parameters so we can safely boost/restore
+var _light_base_energy: float = 1.0
+var _light_base_range: float = 10.0
+var _light_base_spot_angle: float = 45.0
+var _light_base_spot_atten: float = 1.0
+
 
 func _ready() -> void:
 	add_to_group("pickup")
@@ -89,7 +113,14 @@ func _ready() -> void:
 		uv_cast.target_position = Vector3(0, 0, -uv_range_m)
 
 	if uv_light != null:
+		# cache base (SpotLight3D only)
+		_light_base_energy = uv_light.light_energy
+		_light_base_range = uv_light.spot_range
+		_light_base_spot_angle = uv_light.spot_angle
+		_light_base_spot_atten = uv_light.spot_attenuation
+
 		uv_light.visible = false
+		_apply_light_visuals(false)
 
 	_reset_net_targets_to_current()
 
@@ -106,15 +137,11 @@ func set_held(v: bool) -> void:
 		outline_mesh.visible = false
 
 	if v:
-		# PATCH: equip = clear stale interpolation targets (restart-safe)
 		_reset_net_targets_to_current()
 		_just_equipped_reset = true
-
-		# When held, the drop interpolation should not keep pulling us around on clients
 		_drop_has_target = false
 	else:
 		_set_uv_on(false)
-		# if dropped, we start drop targets from where we are now
 		_reset_drop_targets_to_current()
 
 
@@ -177,7 +204,7 @@ func _physics_process(delta: float) -> void:
 		velocity = Vector3.ZERO
 		return
 
-	var has_peer := multiplayer.has_multiplayer_peer()
+	var has_peer: bool = multiplayer.has_multiplayer_peer()
 	if authority_only_physics and has_peer:
 		if is_multiplayer_authority():
 			_do_drop_physics(delta)
@@ -195,71 +222,181 @@ func _do_drop_physics(delta: float) -> void:
 
 	move_and_slide()
 
-	# server streams dropped motion so everyone sees it fall
 	if replicate_drop_motion and multiplayer.has_multiplayer_peer() and multiplayer.is_server() and not _held:
 		_net_maybe_send_drop()
 
 
+# =========================
+#   REVEAL LOGIC (PATCHED)
+# =========================
 func _reveal_in_beam() -> void:
-	var origin := global_transform.origin
-	var forward := (-global_transform.basis.z).normalized()
+	if reveal_use_beam_volume:
+		_reveal_in_beam_volume()
+		return
 
-	# default hit = straight ahead max range
-	var hit_pos := origin + forward * uv_range_m
-
-	# PATCH: choose CLOSEST valid uv_reveal collision (more stable / consistent)
-	if uv_cast != null and uv_cast.is_colliding():
-		var best_d := INF
-		for i in range(uv_cast.get_collision_count()):
-			var col := uv_cast.get_collider(i)
-
-			var ok := false
-			if col != null and col is Node:
-				var n := col as Node
-				if n.is_in_group("uv_reveal"):
-					ok = true
-				elif n.get_parent() != null and n.get_parent().is_in_group("uv_reveal"):
-					ok = true
-
-			if not ok:
-				continue
-
-			var p := uv_cast.get_collision_point(i)
-			var d := origin.distance_to(p)
-			if d < best_d:
-				best_d = d
-				hit_pos = p
+	# fallback: your old point-hit radius logic
+	var hit_pos: Vector3 = _find_uv_hit_point()
 
 	var targets: Array = get_tree().get_nodes_in_group("uv_reveal")
-	var count := 0
+	var count: int = 0
 
-	for t in targets:
+	for t_any in targets:
 		if count >= reveal_max_targets_per_frame:
 			break
 
-		var rt := t as UvRevealTarget
+		var rt: UvRevealTarget = t_any as UvRevealTarget
 		if rt == null or not is_instance_valid(rt):
 			continue
 
-		var d := rt.global_position.distance_to(hit_pos)
+		var d: float = rt.global_position.distance_to(hit_pos)
 		if d <= reveal_radius_m:
 			rt.set_reveal(true)
 			_revealed_this_frame[rt] = true
 			count += 1
 
 	_previous_reveals = _previous_reveals.filter(func(x): return x != null and is_instance_valid(x))
-	for k in _revealed_this_frame.keys():
-		var rr := k as UvRevealTarget
+	for k_any in _revealed_this_frame.keys():
+		var rr: UvRevealTarget = k_any as UvRevealTarget
 		if rr != null and _previous_reveals.find(rr) == -1:
 			_previous_reveals.append(rr)
 
 
+func _reveal_in_beam_volume() -> void:
+	var origin: Vector3 = global_transform.origin
+	var dir: Vector3 = (-global_transform.basis.z).normalized()
+
+	var targets: Array = get_tree().get_nodes_in_group("uv_reveal")
+	var count: int = 0
+
+	for t_any in targets:
+		if count >= reveal_max_targets_per_frame:
+			break
+
+		var rt: UvRevealTarget = t_any as UvRevealTarget
+		if rt == null or not is_instance_valid(rt):
+			continue
+
+		var p: Vector3 = rt.global_position
+
+		if beam_require_in_front:
+			if (p - origin).dot(dir) < 0.0:
+				continue
+
+		var cp: Dictionary = _closest_point_on_ray(origin, dir, p)
+		var t: float = float(cp["t"])
+		if t > uv_range_m:
+			continue
+
+		var closest: Vector3 = cp["p"] as Vector3
+		var lateral: float = p.distance_to(closest)
+
+		var beam_r: float = _beam_radius_at_distance(t)
+		var effective_r: float = maxf(beam_r, reveal_radius_m)
+
+		if lateral <= effective_r:
+			rt.set_reveal(true)
+			_revealed_this_frame[rt] = true
+			count += 1
+
+	_previous_reveals = _previous_reveals.filter(func(x): return x != null and is_instance_valid(x))
+	for k_any in _revealed_this_frame.keys():
+		var rr: UvRevealTarget = k_any as UvRevealTarget
+		if rr != null and _previous_reveals.find(rr) == -1:
+			_previous_reveals.append(rr)
+
+
+func _closest_point_on_ray(origin: Vector3, dir: Vector3, point: Vector3) -> Dictionary:
+	# dir must be normalized
+	var v: Vector3 = point - origin
+	var t: float = v.dot(dir)
+	if t < 0.0:
+		t = 0.0
+	return {"t": t, "p": origin + dir * t}
+
+
+func _beam_radius_at_distance(t: float) -> float:
+	return beam_radius_near_m + beam_radius_growth_per_m * t + beam_extra_slop_m
+
+
+func _find_uv_hit_point() -> Vector3:
+	var origin: Vector3 = global_transform.origin
+	var forward: Vector3 = (-global_transform.basis.z).normalized()
+	var fallback_hit: Vector3 = origin + forward * uv_range_m
+
+	# 1) ShapeCast: find CLOSEST valid uv_reveal collider
+	if uv_cast != null and uv_cast.is_colliding():
+		var best_d: float = INF
+		var best_p: Vector3 = Vector3.ZERO
+		var found: bool = false
+
+		for i: int in range(uv_cast.get_collision_count()):
+			var col_obj: Object = uv_cast.get_collider(i)
+			var col_node: Node = col_obj as Node
+			if col_node == null:
+				continue
+
+			var ok: bool = col_node.is_in_group("uv_reveal") \
+				or (col_node.get_parent() != null and col_node.get_parent().is_in_group("uv_reveal"))
+			if not ok:
+				continue
+
+			var p: Vector3 = uv_cast.get_collision_point(i)
+			var d: float = origin.distance_to(p)
+			if d < best_d:
+				best_d = d
+				best_p = p
+				found = true
+
+		if found:
+			return best_p
+
+	# 2) Raycast fallback
+	var space: PhysicsDirectSpaceState3D = get_world_3d().direct_space_state
+	var q: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(origin, fallback_hit)
+	q.exclude = [self]
+	var hit: Dictionary = space.intersect_ray(q)
+
+	if not hit.is_empty():
+		var col_obj2: Object = hit.get("collider")
+		var col_node2: Node = col_obj2 as Node
+		if col_node2 != null:
+			var ok2: bool = col_node2.is_in_group("uv_reveal") \
+				or (col_node2.get_parent() != null and col_node2.get_parent().is_in_group("uv_reveal"))
+			if ok2:
+				var pos_any: Variant = hit.get("position")
+				if typeof(pos_any) == TYPE_VECTOR3:
+					return pos_any as Vector3
+
+	return fallback_hit
+
+
 func _clear_previous_reveals() -> void:
-	for rt in _previous_reveals:
+	for rt_any in _previous_reveals:
+		var rt: UvRevealTarget = rt_any as UvRevealTarget
 		if rt == null or not is_instance_valid(rt):
 			continue
 		if not _revealed_this_frame.has(rt):
 			rt.set_reveal(false)
+
+
+# =========================
+#   LIGHT VISUALS (PATCHED)
+# =========================
+func _apply_light_visuals(on: bool) -> void:
+	if uv_light == null:
+		return
+
+	if on:
+		# keep original width/shape; only boost energy (+ a bit of range)
+		uv_light.light_energy = maxf(_light_base_energy * beam_brightness_multiplier, beam_energy_on)
+		uv_light.spot_range = maxf(_light_base_range, beam_range_on)
+		uv_light.spot_angle = _light_base_spot_angle
+		uv_light.spot_attenuation = _light_base_spot_atten
+	else:
+		uv_light.light_energy = _light_base_energy
+		uv_light.spot_range = _light_base_range
+		uv_light.spot_angle = _light_base_spot_angle
+		uv_light.spot_attenuation = _light_base_spot_atten
 
 
 func _set_uv_on(v: bool) -> void:
@@ -267,10 +404,11 @@ func _set_uv_on(v: bool) -> void:
 
 	if uv_light != null:
 		uv_light.visible = v
+	_apply_light_visuals(v)
+
 	if uv_cast != null:
 		uv_cast.enabled = v
 
-	# PATCH: only the authority should replicate the toggle, otherwise remote clients can spam it.
 	if replicate_light_toggle and multiplayer.has_multiplayer_peer() and is_multiplayer_authority():
 		var mp: MultiplayerPeer = multiplayer.multiplayer_peer
 		if mp == null or mp.get_connection_status() != MultiplayerPeer.CONNECTION_CONNECTED:
@@ -282,9 +420,12 @@ func _set_uv_on(v: bool) -> void:
 func _rpc_set_uv_visible(v: bool) -> void:
 	if uv_light != null:
 		uv_light.visible = v
+	_apply_light_visuals(v)
 
 
-# send revealed targets to everyone (owner authoritative)
+# =========================
+#   NET REVEAL REPLICATION
+# =========================
 func _net_maybe_send_reveals() -> void:
 	if not replicate_reveal:
 		return
@@ -300,8 +441,8 @@ func _net_maybe_send_reveals() -> void:
 	_reveal_last_send_time = now
 
 	var paths: Array[String] = []
-	for k in _revealed_this_frame.keys():
-		var rt := k as UvRevealTarget
+	for k_any in _revealed_this_frame.keys():
+		var rt: UvRevealTarget = k_any as UvRevealTarget
 		if rt != null and is_instance_valid(rt):
 			paths.append(String(rt.get_path()))
 
@@ -314,24 +455,24 @@ func _rpc_apply_reveals(paths: Array[String]) -> void:
 	for pstr in paths:
 		seen[pstr] = true
 		var n: Node = get_node_or_null(NodePath(pstr))
-		var rt := n as UvRevealTarget
+		var rt: UvRevealTarget = n as UvRevealTarget
 		if rt != null and is_instance_valid(rt):
 			rt.set_reveal(true)
 
-	for old_key in _net_prev_reveals.keys():
-		var kstr: String = String(old_key)
+	for old_key_any in _net_prev_reveals.keys():
+		var kstr: String = String(old_key_any)
 		if not seen.has(kstr):
 			var n2: Node = get_node_or_null(NodePath(kstr))
-			var rt2 := n2 as UvRevealTarget
+			var rt2: UvRevealTarget = n2 as UvRevealTarget
 			if rt2 != null and is_instance_valid(rt2):
 				rt2.set_reveal(false)
 
 	_net_prev_reveals = seen
 
 
-# -------------------------
-# AIM REPLICATION (QUAT)
-# -------------------------
+# =========================
+#   AIM REPLICATION (QUAT)
+# =========================
 func _net_maybe_send_aim() -> void:
 	var mp: MultiplayerPeer = multiplayer.multiplayer_peer
 	if mp == null or mp.get_connection_status() != MultiplayerPeer.CONNECTION_CONNECTED:
@@ -344,7 +485,6 @@ func _net_maybe_send_aim() -> void:
 
 	_aim_last_send_time = now
 
-	# send only a clean rotation (quat), never a raw basis
 	var q: Quaternion = global_transform.basis.orthonormalized().get_rotation_quaternion()
 	rpc("_rpc_set_aim_quat", q)
 
@@ -358,7 +498,6 @@ func _rpc_set_aim_quat(q: Quaternion) -> void:
 
 
 func _net_interpolate_remote_aim() -> void:
-	# PATCH: if we were just equipped (scene restart), don't interpolate old target for a frame
 	if _just_equipped_reset:
 		_just_equipped_reset = false
 		return
@@ -369,14 +508,13 @@ func _net_interpolate_remote_aim() -> void:
 	var cur_q: Quaternion = global_transform.basis.orthonormalized().get_rotation_quaternion()
 	var new_q: Quaternion = cur_q.slerp(_aim_target_q, aim_lerp_alpha)
 
-	# keep the same scale every time (prevents "big flashlight")
 	var b: Basis = Basis(new_q).scaled(_base_scale)
 	global_transform = Transform3D(b, global_position)
 
 
-# -------------------------
-# DROP REPLICATION (POS + QUAT)
-# -------------------------
+# =========================
+#   DROP REPLICATION (POS + QUAT)
+# =========================
 func _net_maybe_send_drop() -> void:
 	var mp: MultiplayerPeer = multiplayer.multiplayer_peer
 	if mp == null or mp.get_connection_status() != MultiplayerPeer.CONNECTION_CONNECTED:
@@ -394,7 +532,6 @@ func _net_maybe_send_drop() -> void:
 
 @rpc("any_peer", "call_local", "unreliable")
 func _rpc_set_drop_state(pos: Vector3, q: Quaternion) -> void:
-	# server doesn't need its own packet
 	if multiplayer.has_multiplayer_peer() and multiplayer.is_server():
 		return
 
@@ -407,31 +544,29 @@ func _net_interpolate_remote_drop() -> void:
 	if not _drop_has_target:
 		return
 
-	var pos := global_position.lerp(_drop_target_pos, drop_lerp_alpha)
+	var pos: Vector3 = global_position.lerp(_drop_target_pos, drop_lerp_alpha)
 	var cur_q: Quaternion = global_transform.basis.orthonormalized().get_rotation_quaternion()
 	var new_q: Quaternion = cur_q.slerp(_drop_target_q, drop_lerp_alpha)
 
-	# rebuild a clean basis + keep our original scale
 	var b: Basis = Basis(new_q).scaled(_base_scale)
 	global_transform = Transform3D(b, pos)
+
 
 # =========================
 #   PATCH HELPERS
 # =========================
 func _reset_net_targets_to_current() -> void:
-	# aim targets
 	_aim_target_q = global_transform.basis.orthonormalized().get_rotation_quaternion()
 	_aim_has_target = false
 	_aim_last_send_time = 0.0
 
-	# reveal targets
 	_reveal_last_send_time = 0.0
 	_net_prev_reveals.clear()
 	_revealed_this_frame.clear()
 	_previous_reveals.clear()
 
-	# drop targets
 	_reset_drop_targets_to_current()
+
 
 func _reset_drop_targets_to_current() -> void:
 	_drop_target_pos = global_position
