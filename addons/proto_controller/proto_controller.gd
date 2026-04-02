@@ -119,11 +119,12 @@ var cellar_leader_speed_mult: float = 1.0
 var forced_pose_active: bool = false
 var forced_pose_target: Vector3 = Vector3.ZERO
 
-# follower camera-relative follow tuning + body hide
+# follower follow tuning
 var cellar_follow_speed: float = 1.0
 var cellar_follow_dist: float = 2.2
 var cellar_follow_lerp: float = 0.25
 
+# These are your “piggyback” offsets (tune in inspector)
 @export var cellar_follow_up_m: float = 0.9
 @export var cellar_follow_back_m: float = 1.4
 @export var cellar_follow_side_m: float = 0.0
@@ -138,8 +139,13 @@ var cellar_follow_lerp: float = 0.25
 	NodePath("Rig")
 ]
 
-# NEW: follower look clamp around leader forward (±deg => 180 total when 90)
+# follower look clamp around leader forward (±deg => 180 total when 90)
 @export var cellar_follower_yaw_limit_deg: float = 90.0
+
+# NEW: choose what we "orient around" for piggyback
+# true = piggyback uses leader PLAYER body facing (recommended)
+# false = fallback to leader camera yaw
+@export var cellar_piggyback_use_leader_body_yaw: bool = true
 
 # =========================
 #    NETWORK SYNC CONFIG
@@ -249,6 +255,28 @@ func _find_player_by_owner(owner_id: int) -> Node3D:
 		if p3 != null and int(p3.get_multiplayer_authority()) == owner_id:
 			return p3
 	return null
+
+# NEW: leader yaw + flat basis for piggyback
+func _get_leader_yaw_rad() -> float:
+	# Prefer leader body yaw (piggyback anchored to the host body, not camera)
+	if cellar_piggyback_use_leader_body_yaw:
+		var leader_node: Node3D = _find_player_by_owner(cellar_leader_peer_id)
+		if leader_node != null:
+			return leader_node.global_transform.basis.get_euler().y
+
+	# Fallback: leader camera yaw (from LevelFlowManager camera replication)
+	var lf: Node = _get_level_flow()
+	if lf != null and lf.has_method("get_peer_camera_xform") and cellar_leader_peer_id > 0:
+		var leader_cam_xf: Transform3D = lf.call("get_peer_camera_xform", cellar_leader_peer_id) as Transform3D
+		return leader_cam_xf.basis.get_euler().y
+
+	return global_transform.basis.get_euler().y
+
+func _flat_forward_right_from_yaw(yaw: float) -> Dictionary:
+	# yaw-only flat vectors
+	var f := Vector3(-sin(yaw), 0.0, -cos(yaw)).normalized()
+	var r := Vector3(f.z, 0.0, -f.x).normalized()
+	return {"f": f, "r": r}
 
 # =========================
 #      TALK / NPC INTERACT
@@ -729,7 +757,12 @@ func _physics_authority(delta: float) -> void:
 		move_and_collide(motion)
 		return
 
-	# follower: follow leader MOVEMENT (leader position) and constrain look (handled in _rotate_look)
+	# -------------------------
+	# PATCH: PIGGYBACK FOLLOW
+	# - position is anchored to the host PLAYER body direction (not camera)
+	# - we DO NOT force our rotation to match the host camera
+	# - look yaw is only clamped to ±limit around host facing
+	# -------------------------
 	if cellar_active and not cellar_is_leader:
 		velocity = Vector3.ZERO
 
@@ -738,33 +771,39 @@ func _physics_authority(delta: float) -> void:
 			move_and_slide()
 			return
 
-		var lf: Node = _get_level_flow()
-		if lf != null and lf.has_method("get_peer_camera_xform") and cellar_leader_peer_id > 0:
-			var leader_cam_xf: Transform3D = lf.call("get_peer_camera_xform", cellar_leader_peer_id) as Transform3D
+		var leader_node: Node3D = _find_player_by_owner(cellar_leader_peer_id)
+		var anchor_pos: Vector3 = global_position
 
-			# leader yaw only (ignore pitch)
-			var leader_yaw: float = leader_cam_xf.basis.get_euler().y
-			var forward_flat := Vector3(-sin(leader_yaw), 0.0, -cos(leader_yaw)).normalized()
-			var right_flat := Vector3(forward_flat.z, 0.0, -forward_flat.x).normalized()
+		if leader_node != null:
+			anchor_pos = leader_node.global_position
+		else:
+			# fallback: use leader camera origin if player node not found yet
+			var lf: Node = _get_level_flow()
+			if lf != null and lf.has_method("get_peer_camera_xform") and cellar_leader_peer_id > 0:
+				var leader_cam_xf: Transform3D = lf.call("get_peer_camera_xform", cellar_leader_peer_id) as Transform3D
+				anchor_pos = leader_cam_xf.origin
 
-			# anchor pos = leader player position if possible, else camera origin
-			var anchor_pos: Vector3 = leader_cam_xf.origin
-			var leader_node: Node3D = _find_player_by_owner(cellar_leader_peer_id)
-			if leader_node != null:
-				anchor_pos = leader_node.global_position
+		# Use leader yaw (body preferred) to compute offset directions
+		var leader_yaw := _get_leader_yaw_rad()
+		var basis := _flat_forward_right_from_yaw(leader_yaw)
+		var forward_flat: Vector3 = basis["f"]
+		var right_flat: Vector3 = basis["r"]
 
-			anchor_pos += Vector3.UP * cellar_follow_up_m
+		# Target = “on their back”: mostly up, small back
+		# (you will tune cellar_follow_dist / back / up in inspector)
+		var back_amt: float = maxf(0.0, cellar_follow_dist) + maxf(0.0, cellar_follow_back_m)
 
-			var back_amt: float = maxf(0.2, cellar_follow_dist)
-			var target_pos: Vector3 = anchor_pos \
-				- forward_flat * (back_amt + cellar_follow_back_m) \
-				+ right_flat * cellar_follow_side_m
+		var target_pos: Vector3 = anchor_pos \
+			+ Vector3.UP * cellar_follow_up_m \
+			- forward_flat * back_amt \
+			+ right_flat * cellar_follow_side_m
 
-			var a: float = 1.0 - pow(1.0 - clampf(cellar_follow_lerp, 0.01, 0.95), delta * 60.0)
-			global_position = global_position.lerp(target_pos, a)
+		var a: float = 1.0 - pow(1.0 - clampf(cellar_follow_lerp, 0.01, 0.95), delta * 60.0)
+		global_position = global_position.lerp(target_pos, a)
 
 		move_and_slide()
 		return
+	# -------------------------
 
 	if has_gravity and not is_on_floor():
 		velocity += get_gravity() * delta
@@ -918,7 +957,7 @@ func server_teleport_to(xform: Transform3D) -> void:
 	global_transform = xform
 	velocity = Vector3.ZERO
 
-# NEW: server can add 1 item to inventory (used for joiner flashlight)
+# (still fine to keep, even if LevelFlow no longer needs it)
 @rpc("any_peer", "call_local", "reliable")
 func server_add_inventory_item(item_id: StringName) -> void:
 	var sender: int = multiplayer.get_remote_sender_id()
@@ -1047,17 +1086,14 @@ func _rotate_look(delta_rel: Vector2) -> void:
 	look_rotation.x = clamp(look_rotation.x, deg_to_rad(-85.0), deg_to_rad(85.0))
 	look_rotation.y -= delta_rel.x * look_speed
 
-	# follower yaw clamp around leader yaw (prevents full 360)
+	# PATCH: follower yaw clamp around leader BODY facing (piggyback feel)
 	if cellar_active and not cellar_is_leader and cellar_leader_peer_id > 0:
-		var lf: Node = _get_level_flow()
-		if lf != null and lf.has_method("get_peer_camera_xform"):
-			var leader_cam_xf: Transform3D = lf.call("get_peer_camera_xform", cellar_leader_peer_id) as Transform3D
-			var leader_yaw: float = leader_cam_xf.basis.get_euler().y
+		var leader_yaw: float = _get_leader_yaw_rad()
 
-			var dy: float = wrapf(look_rotation.y - leader_yaw, -PI, PI)
-			var lim: float = deg_to_rad(maxf(1.0, cellar_follower_yaw_limit_deg))
-			dy = clamp(dy, -lim, lim)
-			look_rotation.y = leader_yaw + dy
+		var dy: float = wrapf(look_rotation.y - leader_yaw, -PI, PI)
+		var lim: float = deg_to_rad(maxf(1.0, cellar_follower_yaw_limit_deg))
+		dy = clamp(dy, -lim, lim)
+		look_rotation.y = leader_yaw + dy
 
 	transform.basis = Basis()
 	rotate_y(look_rotation.y)
