@@ -27,7 +27,7 @@ class_name player
 @export var stamina_max: float = 100.0
 @export var stamina_drain_per_sec: float = 18.0
 @export var stamina_regen_per_sec: float = 12.0
-@export var stamina_regen_delay: float = 0.75 # seconds after sprint stops before regen starts
+@export var stamina_regen_delay: float = 0.75
 @export var mouse_sensitivity: float = 0.002
 
 var stamina_current: float
@@ -43,13 +43,12 @@ var is_sprinting: bool = false
 @export var input_sprint := "sprint"
 @export var input_freefly := "freefly"
 @export var input_interact := "interact"
-@export var input_drop := "drop"               # bind to G
-@export var input_use_attack := "use-attack"   # bind to whatever you want
+@export var input_drop := "drop"
+@export var input_use_attack := "use-attack"
 
 # Attack animation config
 @export var attack_anim_name: StringName = &"swing"
 @export var attack_cooldown: float = 0.35
-
 @export var swing_animplayer_path: NodePath = NodePath("AnimationPlayer")
 
 # Multiplayer footsteps (audible to nearby players)
@@ -60,15 +59,15 @@ var is_sprinting: bool = false
 
 const SERVER_ID: int = 1
 
-#Breathing Audio
-const BREATHING_THRESHOLD := 0.5  # 50%
+# Breathing Audio
+const BREATHING_THRESHOLD := 0.5
 var breathing_active := false
 
 # =========================
 #        TALK SYNC
 # =========================
 @export var talk_ray_length: float = 3.5
-@export var npc_group_name: StringName = &"npc" # put your npc root node in this group
+@export var npc_group_name: StringName = &"npc"
 
 var _is_talking_local: bool = false
 var _talking_target_path: NodePath = NodePath("")
@@ -101,12 +100,11 @@ var tether_speed_mult: float = 1.0
 var tether_hard_lock: bool = false
 
 var stamina_bar: ProgressBar
+var _sanity_fx_rect: ColorRect = null
+var _sanity_fx_mat: ShaderMaterial = null
 
-var _sanity_fx_rect: ColorRect
-var _sanity_fx_mat: ShaderMaterial
-
-var _hint_timer: Timer
-var hint_label: Label
+var _hint_timer: Timer = null
+var hint_label: Label = null
 
 var _last_footstep_time: float = -9999.0
 
@@ -121,8 +119,8 @@ var cellar_leader_speed_mult: float = 1.0
 var forced_pose_active: bool = false
 var forced_pose_target: Vector3 = Vector3.ZERO
 
-# --- PATCH: follower camera-relative follow tuning + body hide ---
-var cellar_follow_speed: float = 1.0  # not used to slow movement; used as responsiveness if you later want
+# follower camera-relative follow tuning + body hide
+var cellar_follow_speed: float = 1.0
 var cellar_follow_dist: float = 2.2
 var cellar_follow_lerp: float = 0.25
 
@@ -139,7 +137,6 @@ var cellar_follow_lerp: float = 0.25
 	NodePath("Armature"),
 	NodePath("Rig")
 ]
-# ---------------------------------------------------------------
 
 # =========================
 #    NETWORK SYNC CONFIG
@@ -152,9 +149,9 @@ var _net_target_transform: Transform3D = Transform3D.IDENTITY
 var _net_has_target: bool = false
 
 # =========================
-#      LOOK SYNC (Step 2)
+#      LOOK SYNC
 # =========================
-@export var look_send_rate_hz: float = 20.0 # how often I tell the server where my camera is pointing
+@export var look_send_rate_hz: float = 20.0
 var _look_last_send_time: float = 0.0
 var _level_flow_cached: Node = null
 
@@ -165,7 +162,6 @@ var _level_flow_cached: Node = null
 @onready var collider: CollisionShape3D = $Collider
 @onready var cam: Camera3D = $Head/Camera3D
 @onready var footstep: AudioStreamPlayer3D = $PlayerAudios/Footstep
-
 @onready var carry_marker: Node3D = ($Head/CarryObjectMarker if $Head.has_node("CarryObjectMarker") else null)
 
 var _swing_anim: AnimationPlayer = null
@@ -176,16 +172,12 @@ signal interact_object(target: Node)
 #       MULTIPLAYER SETUP
 # =========================
 func _enter_tree() -> void:
-	# Your spawner sets node name to peer id string, so this is fine.
-	# only set authority if the name is actually a number (singleplayer scenes sometimes aren't)
 	if String(name).is_valid_int():
 		set_multiplayer_authority(name.to_int())
 
 func _ready() -> void:
 	add_to_group("player")
 
-	# in singleplayer we always want our camera active
-	# in multiplayer, only the authority gets the camera
 	cam.current = (not multiplayer.has_multiplayer_peer()) or is_multiplayer_authority()
 
 	_net_target_transform = global_transform
@@ -207,7 +199,6 @@ func _scene_root() -> Node:
 #    LEVEL FLOW LOOK SYNC
 # =========================
 func _get_level_flow() -> Node:
-	# tiny cache so we don't keep searching every frame
 	if _level_flow_cached != null and is_instance_valid(_level_flow_cached):
 		return _level_flow_cached
 
@@ -223,7 +214,6 @@ func _get_level_flow() -> Node:
 	return null
 
 func _net_maybe_send_camera_look() -> void:
-	# only the local player should report their camera
 	if not multiplayer.has_multiplayer_peer():
 		return
 	if not is_multiplayer_authority():
@@ -243,7 +233,6 @@ func _net_maybe_send_camera_look() -> void:
 		return
 	_look_last_send_time = now
 
-	# host can't rpc_id to itself so we call the helper directly
 	if multiplayer.is_server():
 		lf.call("_server_set_peer_camera", multiplayer.get_unique_id(), cam.global_transform)
 	else:
@@ -253,7 +242,6 @@ func _net_maybe_send_camera_look() -> void:
 #      TALK / NPC INTERACT
 # =========================
 func _try_talk_interact() -> void:
-	# only the local player can start this
 	if multiplayer.has_multiplayer_peer() and not is_multiplayer_authority():
 		return
 
@@ -263,7 +251,6 @@ func _try_talk_interact() -> void:
 
 	var npc_path: NodePath = npc_node.get_path()
 
-	# toggle talk on/off
 	if not _is_talking_local:
 		_is_talking_local = true
 		_talking_target_path = npc_path
@@ -291,7 +278,6 @@ func _raycast_find_npc() -> Node:
 	if n == null:
 		return null
 
-	# walk up until we find a node in the npc group
 	var cur: Node = n
 	while cur != null:
 		if cur.is_in_group(String(npc_group_name)):
@@ -301,20 +287,17 @@ func _raycast_find_npc() -> Node:
 	return null
 
 func _request_start_talk(npc_path: NodePath) -> void:
-	# singleplayer
 	if not multiplayer.has_multiplayer_peer():
 		GlobalVariables.playerTalking = true
 		_force_npc_state_local(npc_path, &"SpeakState")
 		return
 
-	# multiplayer (server is boss)
 	if multiplayer.is_server():
 		_server_start_talk(multiplayer.get_unique_id(), String(npc_path))
 	else:
 		rpc_id(SERVER_ID, "_rpc_request_start_talk", String(npc_path))
 
 func _request_stop_talk(npc_path: NodePath) -> void:
-	# singleplayer
 	if not multiplayer.has_multiplayer_peer():
 		GlobalVariables.playerTalking = false
 		return
@@ -341,18 +324,12 @@ func _rpc_request_stop_talk(npc_path_str: String) -> void:
 func _server_start_talk(peer_id: int, npc_path_str: String) -> void:
 	if not multiplayer.is_server():
 		return
-
-	# CHANGED: this stays SERVER-ONLY so we don't freeze everyone.
-	# i only want the server to know "someone is talking" so the NPC stays in SpeakState.
 	GlobalVariables.playerTalking = true
-
 	_force_npc_state_server(npc_path_str, &"SpeakState", peer_id)
 
 func _server_stop_talk(_peer_id: int, _npc_path_str: String) -> void:
 	if not multiplayer.is_server():
 		return
-
-	# CHANGED: server-only again
 	GlobalVariables.playerTalking = false
 
 func _force_npc_state_local(npc_path: NodePath, state_name: StringName) -> void:
@@ -412,14 +389,11 @@ func _get_held_item_key() -> NodePath:
 	var held: Node = _get_held_node()
 	if held == null:
 		return NodePath("")
-
 	if not held.has_meta("item_key"):
 		return NodePath("")
-
 	var key_str: String = String(held.get_meta("item_key"))
 	if key_str == "":
 		return NodePath("")
-
 	return NodePath(key_str)
 
 # =========================
@@ -434,9 +408,7 @@ func _setup_hint_ui() -> void:
 		ui.name = "UI"
 		add_child(ui)
 
-	var h: Label = null
-	if ui.has_node("Hint"):
-		h = ui.get_node("Hint") as Label
+	var h: Label = ui.get_node_or_null("Hint") as Label
 	if h == null:
 		h = Label.new()
 		h.name = "Hint"
@@ -451,7 +423,6 @@ func _setup_hint_ui() -> void:
 		h.anchor_bottom = 0.0
 		h.position = Vector2(0, 40)
 		ui.add_child(h)
-
 	hint_label = h
 
 	_hint_timer = ui.get_node_or_null("HintTimer") as Timer
@@ -460,10 +431,12 @@ func _setup_hint_ui() -> void:
 		_hint_timer.name = "HintTimer"
 		_hint_timer.one_shot = true
 		ui.add_child(_hint_timer)
-	_hint_timer.timeout.connect(_on_hint_timeout)
+	if not _hint_timer.timeout.is_connected(_on_hint_timeout):
+		_hint_timer.timeout.connect(_on_hint_timeout)
 
 func _on_hint_timeout() -> void:
-	pass
+	if hint_label != null:
+		hint_label.visible = false
 
 func _show_hint_temp(msg: String, seconds: float = 1.25) -> void:
 	if hint_label == null:
@@ -539,9 +512,9 @@ func _setup_stamina_ui() -> void:
 		fill.corner_radius_bottom_right = 3
 		stamina_bar.add_theme_stylebox_override("fill", fill)
 
-		stamina_bar.min_value = 0
-		stamina_bar.max_value = stamina_max
-		stamina_bar.value = stamina_current
+	stamina_bar.min_value = 0
+	stamina_bar.max_value = stamina_max
+	stamina_bar.value = stamina_current
 
 # =========================
 #     SANITY SCREEN FX UI
@@ -673,19 +646,16 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed(input_use_attack):
 		_try_use_attack()
 
-	# interact = talk (server authoritative)
 	if event.is_action_pressed(input_interact):
 		_try_talk_interact()
 
 func _try_use_attack() -> void:
 	if not _is_holding_item():
 		return
-
 	var now: float = Time.get_ticks_msec() * 0.001
 	if now - _last_attack_time < attack_cooldown:
 		return
 	_last_attack_time = now
-
 	_play_attack_local()
 	request_use_attack_rpc()
 
@@ -706,7 +676,6 @@ func _play_attack_local() -> void:
 #      FRAME / PHYSICS
 # =========================
 func _process(_dt: float) -> void:
-	# CHANGED: only *my* player stops when i'm talking (not the whole lobby)
 	if _is_talking_local:
 		base_speed = 0.0
 		sprint_speed = 0.0
@@ -714,7 +683,6 @@ func _process(_dt: float) -> void:
 		base_speed = 3.2
 		sprint_speed = 5.0
 
-	# keep sending my camera look to the server (so "watched objects" works)
 	_net_maybe_send_camera_look()
 
 	if multiplayer.has_multiplayer_peer() and not is_multiplayer_authority():
@@ -730,12 +698,10 @@ func _process(_dt: float) -> void:
 		stamina_bar.get_parent().visible = stamina_current < stamina_max
 
 func _physics_process(delta: float) -> void:
-	# singleplayer should still move
 	if not multiplayer.has_multiplayer_peer():
 		_physics_authority(delta)
 		return
 
-	# Multiplayer path
 	if is_multiplayer_authority():
 		_physics_authority(delta)
 		_net_maybe_send_state()
@@ -750,41 +716,37 @@ func _physics_authority(delta: float) -> void:
 		move_and_collide(motion)
 		return
 
-	# --- PATCH: follower follows leader CAMERA transform from LevelFlowManager ---
+	# follower follows leader camera
 	if cellar_active and not cellar_is_leader:
 		velocity = Vector3.ZERO
 
-		# If forced pose was set explicitly, respect it.
 		if forced_pose_active:
 			global_position = forced_pose_target
 			move_and_slide()
 			return
 
-		# Follow leader camera transform (server-synced via LevelFlowManager)
 		var lf: Node = _get_level_flow()
 		if lf != null and lf.has_method("get_peer_camera_xform") and cellar_leader_peer_id > 0:
 			var leader_cam_xf: Transform3D = lf.call("get_peer_camera_xform", cellar_leader_peer_id) as Transform3D
 
-			# Camera basis vectors
 			var forward: Vector3 = (-leader_cam_xf.basis.z).normalized()
 			var right: Vector3 = (leader_cam_xf.basis.x).normalized()
 
-			# Target behind+above camera
+			var back_amt: float = maxf(0.1, cellar_follow_dist) + cellar_follow_back_m
+
 			var target_pos: Vector3 = leader_cam_xf.origin \
-				- forward * cellar_follow_back_m \
+				- forward * back_amt \
 				+ Vector3.UP * cellar_follow_up_m \
 				+ right * cellar_follow_side_m
 
-			# Smooth follow
 			var a: float = 1.0 - pow(1.0 - clampf(cellar_follow_lerp, 0.01, 0.95), delta * 60.0)
 			global_position = global_position.lerp(target_pos, a)
 
-			# Match yaw with camera (optional but feels right)
-			global_rotation = Vector3(0.0, leader_cam_xf.basis.get_euler().y, 0.0)
+			var yaw: float = leader_cam_xf.basis.get_euler().y
+			global_rotation = Vector3(0.0, yaw, 0.0)
 
 		move_and_slide()
 		return
-	# ---------------------------------------------------------------------------
 
 	if has_gravity and not is_on_floor():
 		velocity += get_gravity() * delta
@@ -810,13 +772,11 @@ func _physics_authority(delta: float) -> void:
 			stamina_current += stamina_regen_per_sec * delta
 
 	stamina_current = clamp(stamina_current, 0.0, stamina_max)
-
 	if stamina_current <= 0.0:
 		is_sprinting = false
 
 	const BREATH_START := 0.5
 	const BREATH_STOP  := 0.6
-
 	var stamina_ratio := stamina_current / stamina_max
 
 	if not breathing_active and stamina_ratio <= BREATH_START:
@@ -827,7 +787,6 @@ func _physics_authority(delta: float) -> void:
 		breathing_active = false
 
 	move_speed *= tether_speed_mult
-
 	if cellar_active and cellar_is_leader:
 		move_speed *= cellar_leader_speed_mult
 
@@ -857,10 +816,11 @@ func _physics_authority(delta: float) -> void:
 		velocity.y = 0.0
 
 	if is_on_floor() and velocity != Vector3.ZERO:
-		if is_sprinting:
-			%FootstepAnimation.play("run")
-		else:
-			%FootstepAnimation.play("walk")
+		if has_node("%FootstepAnimation"):
+			if is_sprinting:
+				%FootstepAnimation.play("run")
+			else:
+				%FootstepAnimation.play("walk")
 
 	move_and_slide()
 
@@ -933,28 +893,16 @@ func server_set_tether_state(
 	sanity = new_sanity
 	sanity_fx_intensity = fx_intensity
 
-# ✅ REQUIRED for LevelFlowManager teleport
 @rpc("any_peer", "call_local", "reliable")
 func server_teleport_to(xform: Transform3D) -> void:
-	# in singleplayer this should still work
 	if multiplayer.has_multiplayer_peer() and not is_multiplayer_authority():
 		return
 	global_transform = xform
 	velocity = Vector3.ZERO
 
-func _play_footstep_audio() -> void:
-	if footstep == null:
-		return
-	if multiplayer.has_multiplayer_peer() and not is_multiplayer_authority():
-		return
-	footstep.pitch_scale = randf_range(0.85, 1.25)
-	footstep.play()
-
 # =========================
 #  CELLAR ROLE RPCs
 # =========================
-# PATCH: signature now matches LevelFlowManager:
-# server_set_cellar_role(is_leader, follow_speed, follow_dist, follow_lerp, leader_peer_id)
 @rpc("any_peer", "call_local", "reliable")
 func server_set_cellar_role(
 	is_leader: bool,
@@ -970,17 +918,14 @@ func server_set_cellar_role(
 	cellar_is_leader = is_leader
 	cellar_leader_peer_id = leader_peer_id
 
-	# keep leader speed unchanged (no slowing)
 	cellar_leader_speed_mult = 1.0
 
-	# follow tuning for follower
 	cellar_follow_speed = follow_speed
 	cellar_follow_dist = follow_dist
 	cellar_follow_lerp = follow_lerp
 
 	velocity = Vector3.ZERO
 
-	# hide follower body locally (leader stays visible)
 	if cellar_hide_body_for_follower:
 		_set_body_visible(is_leader)
 
@@ -988,10 +933,8 @@ func server_set_cellar_role(
 func server_set_forced_pose(enabled: bool, target_pos: Vector3) -> void:
 	if multiplayer.has_multiplayer_peer() and not is_multiplayer_authority():
 		return
-
 	forced_pose_active = enabled
 	forced_pose_target = target_pos
-
 	if enabled:
 		velocity = Vector3.ZERO
 
@@ -1023,7 +966,7 @@ func server_show_hint(msg: String, seconds: float = 1.25) -> void:
 func request_pickup_rpc(item_path: NodePath) -> void:
 	var im: Node = _get_item_manager()
 	if im == null:
-		push_error("ItemManager not found in current_scene (direct or nested). Check its name and that clients load it too.")
+		push_error("ItemManager not found in current_scene (direct or nested).")
 		return
 
 	if multiplayer.is_server():
@@ -1115,10 +1058,9 @@ func _check_input_mappings() -> void:
 		push_error("Missing action: " + input_use_attack + " (bind it in InputMap)")
 
 # =========================
-#   PATCH HELPERS (minimal)
+#   BODY VISIBILITY HELPERS
 # =========================
 func _set_body_visible(visible: bool) -> void:
-	# Hide typical model nodes by path if present
 	for np in cellar_hide_paths:
 		var n: Node = get_node_or_null(np)
 		if n == null:
@@ -1128,7 +1070,6 @@ func _set_body_visible(visible: bool) -> void:
 		elif n is CanvasItem:
 			(n as CanvasItem).visible = visible
 
-	# Fallback: hide MeshInstance3D children (but never hide Head/Camera)
 	_hide_meshes_recursive(self, visible)
 
 func _hide_meshes_recursive(root: Node, visible: bool) -> void:
@@ -1137,11 +1078,10 @@ func _hide_meshes_recursive(root: Node, visible: bool) -> void:
 		if ch == null:
 			continue
 
-		# Don't hide the camera/head hierarchy (keeps FPS camera intact)
+		# never hide camera/head chain
 		if ch == head or ch == cam:
 			continue
 		if ch.get_parent() == head:
-			# allow head children like camera to stay; still recurse
 			_hide_meshes_recursive(ch, visible)
 			continue
 

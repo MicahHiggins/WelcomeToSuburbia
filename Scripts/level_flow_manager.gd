@@ -273,9 +273,7 @@ func _deferred_server_place_all() -> void:
 func _deferred_server_post_spawn_apply() -> void:
 	_server_apply_post_spawn_rules()
 
-	# ✅ NOW it is safe to start level gameplay systems on all peers.
-	# Put HallwayGen (or your cellar generator) in group "level_post_ready"
-	# and it can start its networking here (after the client definitely loaded the level).
+	# Start level systems after everyone loaded
 	if post_level_ready_group != "":
 		rpc("_rpc_call_group_post_ready", post_level_ready_group)
 
@@ -536,14 +534,10 @@ func _find_flashlight_in_world() -> Node3D:
 			if flashlight_name_contains == "" or String(n.name).to_lower().find(flashlight_name_contains.to_lower()) != -1:
 				return n
 
-	# Deep search current level (typed stack avoids Variant warnings treated as errors)
 	if _current_level != null:
 		var stack: Array[Node] = [_current_level]
 		while not stack.is_empty():
-			var cur: Node = stack.pop_back() as Node
-			if cur == null:
-				continue
-
+			var cur: Node = stack.pop_back()
 			for ch_any in cur.get_children():
 				var ch: Node = ch_any as Node
 				if ch == null:
@@ -585,7 +579,7 @@ func _attach_flashlight_to_player_local(flashlight: Node3D, player: Node3D) -> v
 
 
 # ------------------------------------------------------------
-# witness API (FIXED: accept Variant to avoid Transform3D->String crash)
+# witness API (guard against wrong types)
 # ------------------------------------------------------------
 @rpc("any_peer", "unreliable")
 func _rpc_witness_set_look_target(target_path) -> void:
@@ -597,7 +591,6 @@ func _rpc_witness_set_look_target(target_path) -> void:
 		return
 
 	if typeof(target_path) != TYPE_STRING:
-		# ignore garbage / wrong rpc usage safely
 		return
 
 	_peer_look_target[sender] = String(target_path)
@@ -617,20 +610,34 @@ func witness_get_lookers_count(target_path: String) -> int:
 # ------------------------------------------------------------
 # camera look sync API
 # ------------------------------------------------------------
+
+# ✅ NEW: broadcast camera xforms so clients can follow leader camera
+@rpc("any_peer", "call_local", "unreliable")
+func _rpc_broadcast_peer_camera(peer_id: int, cam_xform: Transform3D) -> void:
+	_peer_cam_xforms[peer_id] = cam_xform
+
+
+# helper so host can update itself without rpc-ing itself
 func _server_set_peer_camera(peer_id: int, cam_xform: Transform3D) -> void:
 	if not multiplayer.is_server():
 		return
 	_peer_cam_xforms[peer_id] = cam_xform
+	# ✅ broadcast to all clients too
+	rpc("_rpc_broadcast_peer_camera", peer_id, cam_xform)
 
 
 @rpc("any_peer", "unreliable")
 func _rpc_update_peer_camera(cam_xform: Transform3D) -> void:
 	if not multiplayer.is_server():
 		return
+
 	var sender: int = multiplayer.get_remote_sender_id()
 	if sender <= 0:
 		return
+
 	_peer_cam_xforms[sender] = cam_xform
+	# ✅ broadcast to all clients too
+	rpc("_rpc_broadcast_peer_camera", sender, cam_xform)
 
 
 func get_peer_camera_xform(peer_id: int) -> Transform3D:
