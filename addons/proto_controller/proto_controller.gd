@@ -138,6 +138,9 @@ var cellar_follow_lerp: float = 0.25
 	NodePath("Rig")
 ]
 
+# NEW: follower look clamp around leader forward (±deg => 180 total when 90)
+@export var cellar_follower_yaw_limit_deg: float = 90.0
+
 # =========================
 #    NETWORK SYNC CONFIG
 # =========================
@@ -237,6 +240,15 @@ func _net_maybe_send_camera_look() -> void:
 		lf.call("_server_set_peer_camera", multiplayer.get_unique_id(), cam.global_transform)
 	else:
 		lf.rpc_id(SERVER_ID, "_rpc_update_peer_camera", cam.global_transform)
+
+# helper: find player node by owner id (used for follower anchoring)
+func _find_player_by_owner(owner_id: int) -> Node3D:
+	var players := get_tree().get_nodes_in_group("player")
+	for p_any in players:
+		var p3 := p_any as Node3D
+		if p3 != null and int(p3.get_multiplayer_authority()) == owner_id:
+			return p3
+	return null
 
 # =========================
 #      TALK / NPC INTERACT
@@ -695,7 +707,8 @@ func _process(_dt: float) -> void:
 	if stamina_bar != null:
 		stamina_bar.max_value = stamina_max
 		stamina_bar.value = stamina_current
-		stamina_bar.get_parent().visible = stamina_current < stamina_max
+		if stamina_bar.get_parent() != null:
+			stamina_bar.get_parent().visible = stamina_current < stamina_max
 
 func _physics_process(delta: float) -> void:
 	if not multiplayer.has_multiplayer_peer():
@@ -716,7 +729,7 @@ func _physics_authority(delta: float) -> void:
 		move_and_collide(motion)
 		return
 
-	# follower follows leader camera
+	# follower: follow leader MOVEMENT (leader position) and constrain look (handled in _rotate_look)
 	if cellar_active and not cellar_is_leader:
 		velocity = Vector3.ZERO
 
@@ -729,21 +742,26 @@ func _physics_authority(delta: float) -> void:
 		if lf != null and lf.has_method("get_peer_camera_xform") and cellar_leader_peer_id > 0:
 			var leader_cam_xf: Transform3D = lf.call("get_peer_camera_xform", cellar_leader_peer_id) as Transform3D
 
-			var forward: Vector3 = (-leader_cam_xf.basis.z).normalized()
-			var right: Vector3 = (leader_cam_xf.basis.x).normalized()
+			# leader yaw only (ignore pitch)
+			var leader_yaw: float = leader_cam_xf.basis.get_euler().y
+			var forward_flat := Vector3(-sin(leader_yaw), 0.0, -cos(leader_yaw)).normalized()
+			var right_flat := Vector3(forward_flat.z, 0.0, -forward_flat.x).normalized()
 
-			var back_amt: float = maxf(0.1, cellar_follow_dist) + cellar_follow_back_m
+			# anchor pos = leader player position if possible, else camera origin
+			var anchor_pos: Vector3 = leader_cam_xf.origin
+			var leader_node: Node3D = _find_player_by_owner(cellar_leader_peer_id)
+			if leader_node != null:
+				anchor_pos = leader_node.global_position
 
-			var target_pos: Vector3 = leader_cam_xf.origin \
-				- forward * back_amt \
-				+ Vector3.UP * cellar_follow_up_m \
-				+ right * cellar_follow_side_m
+			anchor_pos += Vector3.UP * cellar_follow_up_m
+
+			var back_amt: float = maxf(0.2, cellar_follow_dist)
+			var target_pos: Vector3 = anchor_pos \
+				- forward_flat * (back_amt + cellar_follow_back_m) \
+				+ right_flat * cellar_follow_side_m
 
 			var a: float = 1.0 - pow(1.0 - clampf(cellar_follow_lerp, 0.01, 0.95), delta * 60.0)
 			global_position = global_position.lerp(target_pos, a)
-
-			var yaw: float = leader_cam_xf.basis.get_euler().y
-			global_rotation = Vector3(0.0, yaw, 0.0)
 
 		move_and_slide()
 		return
@@ -900,6 +918,23 @@ func server_teleport_to(xform: Transform3D) -> void:
 	global_transform = xform
 	velocity = Vector3.ZERO
 
+# NEW: server can add 1 item to inventory (used for joiner flashlight)
+@rpc("any_peer", "call_local", "reliable")
+func server_add_inventory_item(item_id: StringName) -> void:
+	var sender: int = multiplayer.get_remote_sender_id()
+	if multiplayer.has_multiplayer_peer():
+		if sender != 0 and sender != SERVER_ID:
+			return
+		if sender == 0 and not multiplayer.is_server():
+			return
+
+	for it in inventory:
+		if it == item_id:
+			return
+
+	inventory.append(item_id)
+	inventory_changed.emit(inventory)
+
 # =========================
 #  CELLAR ROLE RPCs
 # =========================
@@ -1011,6 +1046,18 @@ func _rotate_look(delta_rel: Vector2) -> void:
 	look_rotation.x -= delta_rel.y * look_speed
 	look_rotation.x = clamp(look_rotation.x, deg_to_rad(-85.0), deg_to_rad(85.0))
 	look_rotation.y -= delta_rel.x * look_speed
+
+	# follower yaw clamp around leader yaw (prevents full 360)
+	if cellar_active and not cellar_is_leader and cellar_leader_peer_id > 0:
+		var lf: Node = _get_level_flow()
+		if lf != null and lf.has_method("get_peer_camera_xform"):
+			var leader_cam_xf: Transform3D = lf.call("get_peer_camera_xform", cellar_leader_peer_id) as Transform3D
+			var leader_yaw: float = leader_cam_xf.basis.get_euler().y
+
+			var dy: float = wrapf(look_rotation.y - leader_yaw, -PI, PI)
+			var lim: float = deg_to_rad(maxf(1.0, cellar_follower_yaw_limit_deg))
+			dy = clamp(dy, -lim, lim)
+			look_rotation.y = leader_yaw + dy
 
 	transform.basis = Basis()
 	rotate_y(look_rotation.y)

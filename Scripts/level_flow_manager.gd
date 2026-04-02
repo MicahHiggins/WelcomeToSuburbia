@@ -45,6 +45,10 @@ const SERVER_ID: int = 1
 	NodePath("Camera3D")
 ]
 
+# NEW: add flashlight to joiner inventory on load (requires player.gd server_add_inventory_item)
+@export var give_joiner_flashlight_inventory: bool = true
+@export var flashlight_inventory_id: StringName = &"flashlight"
+
 # Optional: call this group after level load & spawn (to start HallwayGen safely)
 @export var post_level_ready_group: String = "level_post_ready"
 
@@ -417,15 +421,26 @@ func _server_apply_post_spawn_rules() -> void:
 
 	if _is_cellar_level():
 		_apply_cellar_roles_server()
+
+		var joiner_id: int = _pick_joiner_peer_id_server()
+
+		if give_joiner_flashlight_inventory:
+			_server_give_inventory_flashlight(joiner_id)
+
 		if give_flashlight_to_joining_player:
-			_server_assign_flashlight_to_joiner()
+			# optional physical attach (your old behavior)
+			rpc("_rpc_assign_flashlight_to_owner", joiner_id)
 
 
 func _apply_post_spawn_rules_local() -> void:
 	if _is_cellar_level():
 		_apply_cellar_roles_local()
-		if give_flashlight_to_joining_player:
-			_rpc_assign_flashlight_to_owner(SERVER_ID)
+		# singleplayer: you can just add locally if you want
+		# (multiplayer inventory is server-authoritative)
+		if not multiplayer.has_multiplayer_peer():
+			var p: Node3D = _find_player_by_owner(SERVER_ID)
+			if p != null and p.has_method("server_add_inventory_item"):
+				p.call("server_add_inventory_item", flashlight_inventory_id)
 
 
 func _apply_cellar_roles_server() -> void:
@@ -486,31 +501,37 @@ func _apply_cellar_roles_local() -> void:
 			p3.call("server_set_cellar_role", is_leader, cellar_follow_speed, cellar_follow_dist, cellar_follow_lerp, leader_id)
 
 
-func _server_assign_flashlight_to_joiner() -> void:
-	if multiplayer.has_multiplayer_peer() and not multiplayer.is_server():
-		return
-
+func _pick_joiner_peer_id_server() -> int:
 	# "Joiner/top" = lowest non-host peer id; fallback host
 	var joiner_id: int = SERVER_ID
 	for pid_any in multiplayer.get_peers():
 		var pid: int = int(pid_any)
 		if pid != SERVER_ID and (joiner_id == SERVER_ID or pid < joiner_id):
 			joiner_id = pid
+	return joiner_id
 
-	rpc("_rpc_assign_flashlight_to_owner", joiner_id)
+
+func _server_give_inventory_flashlight(owner_id: int) -> void:
+	if not multiplayer.is_server():
+		return
+	var p: Node3D = _find_player_by_owner(owner_id)
+	if p == null:
+		return
+	if p.has_method("server_add_inventory_item"):
+		p.rpc_id(owner_id, "server_add_inventory_item", flashlight_inventory_id)
 
 
 @rpc("any_peer", "call_local", "reliable")
 func _rpc_assign_flashlight_to_owner(owner_id: int) -> void:
-	var player: Node3D = _find_player_by_owner(owner_id)
-	if player == null:
+	var p: Node3D = _find_player_by_owner(owner_id)
+	if p == null:
 		return
 
 	var flashlight: Node3D = _find_flashlight_in_world()
 	if flashlight == null:
 		return
 
-	_attach_flashlight_to_player_local(flashlight, player)
+	_attach_flashlight_to_player_local(flashlight, p)
 
 
 func _find_player_by_owner(owner_id: int) -> Node3D:
@@ -525,6 +546,7 @@ func _find_player_by_owner(owner_id: int) -> Node3D:
 
 
 func _find_flashlight_in_world() -> Node3D:
+	# 1) via group
 	if flashlight_group_name != "":
 		var nodes: Array = get_tree().get_nodes_in_group(flashlight_group_name)
 		for n_any in nodes:
@@ -534,10 +556,13 @@ func _find_flashlight_in_world() -> Node3D:
 			if flashlight_name_contains == "" or String(n.name).to_lower().find(flashlight_name_contains.to_lower()) != -1:
 				return n
 
+	# 2) deep search under current level
 	if _current_level != null:
 		var stack: Array[Node] = [_current_level]
 		while not stack.is_empty():
 			var cur: Node = stack.pop_back()
+			if cur == null:
+				continue
 			for ch_any in cur.get_children():
 				var ch: Node = ch_any as Node
 				if ch == null:
@@ -611,7 +636,7 @@ func witness_get_lookers_count(target_path: String) -> int:
 # camera look sync API
 # ------------------------------------------------------------
 
-# ✅ NEW: broadcast camera xforms so clients can follow leader camera
+# broadcast camera xforms so clients can follow leader camera
 @rpc("any_peer", "call_local", "unreliable")
 func _rpc_broadcast_peer_camera(peer_id: int, cam_xform: Transform3D) -> void:
 	_peer_cam_xforms[peer_id] = cam_xform
@@ -622,7 +647,6 @@ func _server_set_peer_camera(peer_id: int, cam_xform: Transform3D) -> void:
 	if not multiplayer.is_server():
 		return
 	_peer_cam_xforms[peer_id] = cam_xform
-	# ✅ broadcast to all clients too
 	rpc("_rpc_broadcast_peer_camera", peer_id, cam_xform)
 
 
@@ -636,7 +660,6 @@ func _rpc_update_peer_camera(cam_xform: Transform3D) -> void:
 		return
 
 	_peer_cam_xforms[sender] = cam_xform
-	# ✅ broadcast to all clients too
 	rpc("_rpc_broadcast_peer_camera", sender, cam_xform)
 
 
