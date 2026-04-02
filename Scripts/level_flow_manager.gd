@@ -23,19 +23,18 @@ const SERVER_ID: int = 1
 @export var apply_cellar_roles_only_on_level_3: bool = true
 @export var cellar_level_scene_path_hint: String = "CellarLevel" # substring match
 
-# Keep everything except slowing movement
 @export var cellar_follow_speed: float = 1.0
 @export var cellar_follow_dist: float = 2.2
 @export var cellar_follow_lerp: float = 0.25
 
 # ----------------------------
-# Flashlight attach (give to joiner/top player)
+# Flashlight: give to joiner/top player
 # ----------------------------
 @export var give_flashlight_to_joining_player: bool = true
 @export var flashlight_group_name: String = "pickup"
 @export var flashlight_name_contains: String = "flashlight"
 
-# PATCH: include CarryObjectMarker paths first for reliability
+# Put CarryObjectMarker first so Player sees it as "held"
 @export var player_hand_paths: Array[NodePath] = [
 	NodePath("Head/CarryObjectMarker"),
 	NodePath("Head/Camera3D/CarryObjectMarker"),
@@ -48,14 +47,14 @@ const SERVER_ID: int = 1
 	NodePath("Camera3D")
 ]
 
-# NEW: add flashlight to joiner inventory on load (requires player.gd server_add_inventory_item)
+# Add flashlight to joiner inventory on load (requires player.gd server_add_inventory_item)
 @export var give_joiner_flashlight_inventory: bool = true
 @export var flashlight_inventory_id: StringName = &"flashlight"
 
-# NEW: delay so flashlight node exists before attach (important)
+# Delay so flashlight node exists before attach
 @export var flashlight_attach_delay_sec: float = 0.15
 
-# Optional: call this group after level load & spawn (to start HallwayGen safely)
+# Optional: call this group after level load & spawn
 @export var post_level_ready_group: String = "level_post_ready"
 
 # Cached nodes
@@ -115,7 +114,6 @@ func _on_peer_connected(peer_id: int) -> void:
 	_peer_look_target[peer_id] = ""
 	_peer_cam_xforms[peer_id] = Transform3D.IDENTITY
 
-	# Send current level to late joiner
 	rpc_id(peer_id, "_rpc_load_level_all", _current_level_scene_path)
 
 
@@ -283,7 +281,6 @@ func _deferred_server_place_all() -> void:
 func _deferred_server_post_spawn_apply() -> void:
 	_server_apply_post_spawn_rules()
 
-	# Start level systems after everyone loaded
 	if post_level_ready_group != "":
 		rpc("_rpc_call_group_post_ready", post_level_ready_group)
 
@@ -430,8 +427,6 @@ func _server_apply_post_spawn_rules() -> void:
 	_apply_cellar_roles_server()
 
 	var joiner_id: int = _pick_joiner_peer_id_server()
-
-	# PATCH: delay then do both inventory + physical attach
 	call_deferred("_deferred_give_and_attach_flashlight", joiner_id)
 
 
@@ -452,11 +447,6 @@ func _deferred_give_and_attach_flashlight(joiner_id: int) -> void:
 func _apply_post_spawn_rules_local() -> void:
 	if _is_cellar_level():
 		_apply_cellar_roles_local()
-		# singleplayer: optional
-		if not multiplayer.has_multiplayer_peer():
-			var p: Node3D = _find_player_by_owner(SERVER_ID)
-			if p != null and p.has_method("server_add_inventory_item"):
-				p.call("server_add_inventory_item", flashlight_inventory_id)
 
 
 func _apply_cellar_roles_server() -> void:
@@ -561,7 +551,6 @@ func _find_player_by_owner(owner_id: int) -> Node3D:
 
 
 func _find_flashlight_in_world() -> Node3D:
-	# 1) via group
 	if flashlight_group_name != "":
 		var nodes: Array = get_tree().get_nodes_in_group(flashlight_group_name)
 		for n_any in nodes:
@@ -571,11 +560,10 @@ func _find_flashlight_in_world() -> Node3D:
 			if flashlight_name_contains == "" or String(n.name).to_lower().find(flashlight_name_contains.to_lower()) != -1:
 				return n
 
-	# 2) deep search under current level
 	if _current_level != null:
 		var stack: Array[Node] = [_current_level]
 		while not stack.is_empty():
-			var cur: Node = stack.pop_back()
+			var cur: Node = stack.pop_back() as Node
 			if cur == null:
 				continue
 			for ch_any in cur.get_children():
@@ -593,47 +581,67 @@ func _find_flashlight_in_world() -> Node3D:
 	return null
 
 
+# ----------------------------
+# PATCH: attach so joiner can actually USE/DROP it
+# - attaches under CarryObjectMarker (so player._get_held_node() finds it)
+# - sets meta item_key AFTER reparent (so drop/use works)
+# ----------------------------
 func _attach_flashlight_to_player_local(flashlight: Node3D, player: Node3D) -> void:
 	var attach_to: Node3D = null
-	for np in player_hand_paths:
-		var h: Node3D = player.get_node_or_null(np) as Node3D
-		if h != null:
-			attach_to = h
-			break
+
+	# Prefer CarryObjectMarker explicitly
+	var carry: Node3D = player.get_node_or_null(NodePath("Head/CarryObjectMarker")) as Node3D
+	if carry != null:
+		attach_to = carry
+	else:
+		for np in player_hand_paths:
+			var h: Node3D = player.get_node_or_null(np) as Node3D
+			if h != null:
+				attach_to = h
+				break
+
 	if attach_to == null:
 		attach_to = player
 
+	# Preserve global transform through reparent
 	var xf: Transform3D = flashlight.global_transform
 	var old_parent: Node = flashlight.get_parent()
 	if old_parent != null:
 		old_parent.remove_child(flashlight)
+
 	attach_to.add_child(flashlight)
 	flashlight.global_transform = xf
 
-	# slight forward offset so it doesn't sit inside the camera if attached to CarryObjectMarker
+	# Put it in view nicely (tweak in inspector later if you want)
 	flashlight.position = Vector3(0.12, -0.10, -0.25)
 	flashlight.rotation = Vector3.ZERO
 
+	# CRITICAL: make it a valid held item for your player script
+	flashlight.set_meta("item_key", String(flashlight.get_path()))
+
+	# Physics safety
 	var rb: RigidBody3D = flashlight as RigidBody3D
 	if rb != null:
 		rb.freeze = true
 
+	var col: CollisionObject3D = flashlight as CollisionObject3D
+	if col != null:
+		col.collision_layer = 0
+		col.collision_mask = 0
+
 
 # ------------------------------------------------------------
-# witness API (guard against wrong types)
+# witness API
 # ------------------------------------------------------------
 @rpc("any_peer", "unreliable")
 func _rpc_witness_set_look_target(target_path) -> void:
 	if not multiplayer.is_server():
 		return
-
 	var sender: int = multiplayer.get_remote_sender_id()
 	if sender <= 0:
 		return
-
 	if typeof(target_path) != TYPE_STRING:
 		return
-
 	_peer_look_target[sender] = String(target_path)
 
 
@@ -649,16 +657,13 @@ func witness_get_lookers_count(target_path: String) -> int:
 
 
 # ------------------------------------------------------------
-# camera look sync API
+# camera look sync API (broadcast so clients can follow leader camera)
 # ------------------------------------------------------------
-
-# broadcast camera xforms so clients can follow leader camera
 @rpc("any_peer", "call_local", "unreliable")
 func _rpc_broadcast_peer_camera(peer_id: int, cam_xform: Transform3D) -> void:
 	_peer_cam_xforms[peer_id] = cam_xform
 
 
-# helper so host can update itself without rpc-ing itself
 func _server_set_peer_camera(peer_id: int, cam_xform: Transform3D) -> void:
 	if not multiplayer.is_server():
 		return
