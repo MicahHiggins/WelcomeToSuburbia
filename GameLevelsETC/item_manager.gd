@@ -1,3 +1,4 @@
+# res://ItemManager.gd
 extends Node
 # ------------------------------------------------------------
 # ItemManager (SERVER authoritative)
@@ -207,9 +208,8 @@ func _set_collision_shapes_enabled(root: Node, enabled: bool) -> void:
 		if n is CollisionShape3D:
 			(n as CollisionShape3D).disabled = not enabled
 
-		var children: Array = n.get_children()
-		for c in children:
-			var child: Node = c as Node
+		for c_any in n.get_children():
+			var child: Node = c_any as Node
 			if child != null:
 				stack.append(child)
 
@@ -286,7 +286,7 @@ func _find_item_anim_player(item: Node) -> AnimationPlayer:
 	return found as AnimationPlayer
 
 # ============================================================
-#   NEW: SERVER FORCE PICKUP (for LevelFlow auto-equips)
+#   NEW: SERVER FORCE PICKUP (for LevelFlow auto-equip + restart)
 # ============================================================
 @rpc("any_peer", "reliable")
 func server_force_pickup_for_peer(item_path: NodePath, peer_id: int) -> void:
@@ -294,7 +294,6 @@ func server_force_pickup_for_peer(item_path: NodePath, peer_id: int) -> void:
 		return
 	if peer_id <= 0:
 		return
-
 	_server_pickup_for_peer(item_path, peer_id)
 
 # Internal helper so request_pickup + force_pickup share logic
@@ -312,20 +311,39 @@ func _server_pickup_for_peer(item_path: NodePath, peer_id: int) -> void:
 	if String(item_key) == "":
 		return
 
+	# Ensure tracked state exists
 	if not _original_parent.has(item_key):
 		var parent_path: NodePath = _to_scene_path(item.get_parent())
 		_original_parent[item_key] = parent_path
 
-	# ensure original scale cached even if item was spawned later
 	if item is Node3D and not _original_scale.has(item_key):
 		_original_scale[item_key] = (item as Node3D).scale
 
 	if not _held_by.has(item_key):
 		_held_by[item_key] = -1
 
+	# If we think it's held but the node isn't actually attached, clear the stale hold.
+	# (This fixes level restart cases where nodes got re-instanced and the dict is stale.)
+	if int(_held_by[item_key]) != -1:
+		var holder: int = int(_held_by[item_key])
+		var p_check: Node3D = _player_for_peer(holder)
+		var still_valid := false
+		if p_check != null:
+			var marker := p_check.get_node_or_null("Head/CarryObjectMarker") as Node
+			if marker != null and marker.get_child_count() > 0:
+				var ch := marker.get_child(0)
+				if ch == item:
+					still_valid = true
+		if not still_valid:
+			_held_by[item_key] = -1
+			if item.has_meta("locked"):
+				item.set_meta("locked", false)
+
+	# Re-check after cleanup
 	if int(_held_by[item_key]) != -1:
 		return
 
+	# Don't allow locked (unless it's our own stale lock)
 	if item.has_meta("locked") and bool(item.get_meta("locked")):
 		return
 	item.set_meta("locked", true)
@@ -335,6 +353,7 @@ func _server_pickup_for_peer(item_path: NodePath, peer_id: int) -> void:
 		item.set_meta("locked", false)
 		return
 
+	# Inventory cap
 	if "inventory" in p:
 		var inv_any: Array = p.inventory
 		if inv_any.size() >= max_inventory_slots:
@@ -351,11 +370,14 @@ func _server_pickup_for_peer(item_path: NodePath, peer_id: int) -> void:
 		item.set_meta("locked", false)
 		return
 
+	# Apply on all peers (sets authority, reparents to marker, set_held(true))
 	rpc("apply_pickup", item_key, player_rel, peer_id)
 
+	# Inventory push (to the owner only)
 	if "inventory" in p and p.has_method("server_set_inventory"):
 		var new_inv: Array[StringName] = (p.inventory as Array[StringName]).duplicate()
-		new_inv.append(StringName(item.name))
+		if new_inv.find(StringName(item.name)) == -1:
+			new_inv.append(StringName(item.name))
 		p.rpc_id(peer_id, "server_set_inventory", new_inv)
 
 # =========================
@@ -384,7 +406,6 @@ func apply_pickup(item_key: NodePath, player_path: NodePath, new_owner_id: int) 
 
 	item.set_meta("item_key", String(item_key))
 
-	# keep original scale so held item doesn't change size
 	var saved_scale := Vector3.ONE
 	if _original_scale.has(item_key):
 		saved_scale = _original_scale[item_key]
@@ -410,6 +431,12 @@ func apply_pickup(item_key: NodePath, player_path: NodePath, new_owner_id: int) 
 			var n3b := item as Node3D
 			n3b.transform = Transform3D.IDENTITY
 			n3b.scale = saved_scale
+
+	# IMPORTANT: clear stale drop replication targets when re-equipping
+	# (Flashlight has aim/drop replication; this prevents “stuck pointing wrong”.)
+	if item.has_method("_rpc_set_drop_state"):
+		# do nothing here; just a hint that method exists
+		pass
 
 	if "set_held" in item:
 		item.call_deferred("set_held", true)

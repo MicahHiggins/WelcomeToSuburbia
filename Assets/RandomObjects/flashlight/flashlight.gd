@@ -1,3 +1,4 @@
+# res://UVFlashlight.gd
 extends CharacterBody3D
 class_name UVFlashlight
 
@@ -58,14 +59,17 @@ var _drop_target_pos: Vector3 = Vector3.ZERO
 var _drop_target_q: Quaternion = Quaternion.IDENTITY
 var _drop_has_target: bool = false
 
-# ADDED: remember how big the flashlight is supposed to be (prevents "huge flashlight" bugs)
+# remember how big the flashlight is supposed to be (prevents "huge flashlight" bugs)
 var _base_scale: Vector3 = Vector3.ONE
+
+# PATCH: when equipping after a level restart, clear stale net targets so it doesn't "lock" wrong.
+var _just_equipped_reset: bool = false
 
 
 func _ready() -> void:
 	add_to_group("pickup")
 
-	# ADDED: cache our intended scale from the scene file
+	# cache intended scale from the scene file
 	_base_scale = scale
 
 	if outline_mesh_path != NodePath(""):
@@ -87,12 +91,7 @@ func _ready() -> void:
 	if uv_light != null:
 		uv_light.visible = false
 
-	# start aim target from our current rotation
-	_aim_target_q = global_transform.basis.orthonormalized().get_rotation_quaternion()
-
-	# start drop targets too
-	_drop_target_pos = global_position
-	_drop_target_q = global_transform.basis.orthonormalized().get_rotation_quaternion()
+	_reset_net_targets_to_current()
 
 
 func set_hovered(v: bool) -> void:
@@ -105,12 +104,23 @@ func set_held(v: bool) -> void:
 	_held = v
 	if outline_mesh != null:
 		outline_mesh.visible = false
-	if not v:
+
+	if v:
+		# PATCH: equip = clear stale interpolation targets (restart-safe)
+		_reset_net_targets_to_current()
+		_just_equipped_reset = true
+
+		# When held, the drop interpolation should not keep pulling us around on clients
+		_drop_has_target = false
+	else:
 		_set_uv_on(false)
+		# if dropped, we start drop targets from where we are now
+		_reset_drop_targets_to_current()
 
 
 func _unhandled_input(event: InputEvent) -> void:
-	if not _held:
+	# only allow the flashlight owner to toggle it
+	if not _held or not is_multiplayer_authority():
 		return
 	if event.is_action_pressed(String(toggle_action)):
 		_set_uv_on(not _uv_on)
@@ -256,7 +266,8 @@ func _set_uv_on(v: bool) -> void:
 	if uv_cast != null:
 		uv_cast.enabled = v
 
-	if replicate_light_toggle and multiplayer.has_multiplayer_peer():
+	# PATCH: only the authority should replicate the toggle, otherwise remote clients can spam it.
+	if replicate_light_toggle and multiplayer.has_multiplayer_peer() and is_multiplayer_authority():
 		var mp: MultiplayerPeer = multiplayer.multiplayer_peer
 		if mp == null or mp.get_connection_status() != MultiplayerPeer.CONNECTION_CONNECTED:
 			return
@@ -343,6 +354,11 @@ func _rpc_set_aim_quat(q: Quaternion) -> void:
 
 
 func _net_interpolate_remote_aim() -> void:
+	# PATCH: if we were just equipped (scene restart), don't interpolate old target for a frame
+	if _just_equipped_reset:
+		_just_equipped_reset = false
+		return
+
 	if not _aim_has_target:
 		return
 
@@ -394,3 +410,27 @@ func _net_interpolate_remote_drop() -> void:
 	# rebuild a clean basis + keep our original scale
 	var b: Basis = Basis(new_q).scaled(_base_scale)
 	global_transform = Transform3D(b, pos)
+
+# =========================
+#   PATCH HELPERS
+# =========================
+func _reset_net_targets_to_current() -> void:
+	# aim targets
+	_aim_target_q = global_transform.basis.orthonormalized().get_rotation_quaternion()
+	_aim_has_target = false
+	_aim_last_send_time = 0.0
+
+	# reveal targets
+	_reveal_last_send_time = 0.0
+	_net_prev_reveals.clear()
+	_revealed_this_frame.clear()
+	_previous_reveals.clear()
+
+	# drop targets
+	_reset_drop_targets_to_current()
+
+func _reset_drop_targets_to_current() -> void:
+	_drop_target_pos = global_position
+	_drop_target_q = global_transform.basis.orthonormalized().get_rotation_quaternion()
+	_drop_has_target = false
+	_drop_last_send_time = 0.0

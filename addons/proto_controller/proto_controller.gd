@@ -1,3 +1,4 @@
+# res://player.gd
 extends CharacterBody3D
 class_name player
 # --------------------------------------------
@@ -144,6 +145,10 @@ var cellar_follow_lerp: float = 0.25
 # NEW: slow leader turn rate while piggybacking so movement feels less “snappy”
 @export var cellar_leader_turn_mult: float = 0.65 # <1.0 = slower look
 
+# NEW: follower camera view tuning (local camera offset)
+@export var cellar_follower_cam_local_offset: Vector3 = Vector3(0.0, 0.0, 0.0)
+@export var cellar_follower_cam_lerp: float = 0.25
+
 @export var cellar_hide_body_for_follower: bool = true
 @export var cellar_hide_paths: Array[NodePath] = [
 	NodePath("Body"),
@@ -157,6 +162,9 @@ var cellar_follow_lerp: float = 0.25
 # piggyback yaw smoothing state (follower only)
 var _pb_yaw_smoothed: float = 0.0
 var _pb_yaw_has: bool = false
+
+# follower camera base pos
+var _cam_local_base_pos: Vector3 = Vector3.ZERO
 
 # =========================
 #    NETWORK SYNC CONFIG
@@ -199,6 +207,7 @@ func _ready() -> void:
 	add_to_group("player")
 
 	cam.current = (not multiplayer.has_multiplayer_peer()) or is_multiplayer_authority()
+	_cam_local_base_pos = cam.position
 
 	_net_target_transform = global_transform
 	_swing_anim = get_node_or_null(swing_animplayer_path) as AnimationPlayer
@@ -307,6 +316,19 @@ func _flat_forward_right_from_yaw(yaw: float) -> Dictionary:
 	var f := Vector3(-sin(yaw), 0.0, -cos(yaw)).normalized()
 	var r := Vector3(f.z, 0.0, -f.x).normalized()
 	return {"f": f, "r": r}
+
+func _update_follower_camera_offset(delta: float) -> void:
+	if cam == null:
+		return
+
+	var is_follower := cellar_active and not cellar_is_leader
+	var target := _cam_local_base_pos
+
+	if is_follower:
+		target = _cam_local_base_pos + cellar_follower_cam_local_offset
+
+	var a := 1.0 - pow(1.0 - clampf(cellar_follower_cam_lerp, 0.01, 0.95), delta * 60.0)
+	cam.position = cam.position.lerp(target, a)
 
 # =========================
 #      TALK / NPC INTERACT
@@ -755,6 +777,8 @@ func _process(_dt: float) -> void:
 
 	_net_maybe_send_camera_look()
 
+	_update_follower_camera_offset(_dt)
+
 	if multiplayer.has_multiplayer_peer() and not is_multiplayer_authority():
 		return
 
@@ -814,7 +838,7 @@ func _physics_authority(delta: float) -> void:
 
 		var leader_yaw := _get_leader_yaw_for_piggyback()
 
-		# smooth the yaw used for positioning + clamp so we don’t “whip”
+		# smooth the yaw used for positioning so we don’t “whip”
 		if not _pb_yaw_has:
 			_pb_yaw_smoothed = leader_yaw
 			_pb_yaw_has = true
