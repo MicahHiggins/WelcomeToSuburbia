@@ -109,7 +109,7 @@ stamina_drain_per_sec = 14.0
 stamina_regen_per_sec = 15.0
 attack_cooldown = 5.0
 cellar_follow_up_m = 0.3
-cellar_follow_back_m = 0.1
+cellar_follow_back_m = 0.05
 
 [node name="Mesh" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
