@@ -1,8 +1,9 @@
-[gd_scene load_steps=5 format=3 uid="uid://b6qdycemud1gt"]
+[gd_scene load_steps=6 format=3 uid="uid://b6qdycemud1gt"]
 
 [ext_resource type="Script" uid="uid://65w16ihxkc3h" path="res://lobby.gd" id="1_ym4ib"]
 [ext_resource type="PackedScene" uid="uid://bs2jm62cmkbrk" path="res://addons/instant-realistic-light/light_scene.tscn" id="2_sknj8"]
 [ext_resource type="PackedScene" uid="uid://d1ibgfwne281y" path="res://GameLevelsETC/Level1.tscn" id="2_yosgk"]
+[ext_resource type="PackedScene" uid="uid://cye2gxb62vbcy" path="res://Assets/RandomObjects/bus/BUS_SOLID.tscn" id="4_e65vb"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_sknj8"]
 
@@ -50,6 +51,8 @@ offset_bottom = 229.0
 text = "Force Start"
 
 [node name="WorldEnvironment" parent="." instance=ExtResource("2_sknj8")]
+
+[node name="BUS_with_Interior_SOLIDIFIED" parent="." instance=ExtResource("4_e65vb")]
 
 [connection signal="pressed" from="LobbyUI/VoteStart" to="." method="_on_start_pressed"]
 [connection signal="pressed" from="LobbyUI/ForceStart" to="." method="_on_force_start_pressed"]
