@@ -53,6 +53,7 @@ text = "Force Start"
 [node name="WorldEnvironment" parent="." instance=ExtResource("2_sknj8")]
 
 [node name="BUS_with_Interior_SOLIDIFIED" parent="." instance=ExtResource("4_e65vb")]
+transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, 6.277981, 1.3463354, 0)
 
 [connection signal="pressed" from="LobbyUI/VoteStart" to="." method="_on_start_pressed"]
 [connection signal="pressed" from="LobbyUI/ForceStart" to="." method="_on_force_start_pressed"]
