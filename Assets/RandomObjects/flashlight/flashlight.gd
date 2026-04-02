@@ -201,11 +201,15 @@ func _do_drop_physics(delta: float) -> void:
 
 
 func _reveal_in_beam() -> void:
-	var hit_pos := global_transform.origin + (-global_transform.basis.z.normalized() * uv_range_m)
+	var origin := global_transform.origin
+	var forward := (-global_transform.basis.z).normalized()
 
-	# only accept collisions that belong to uv_reveal targets
+	# default hit = straight ahead max range
+	var hit_pos := origin + forward * uv_range_m
+
+	# PATCH: choose CLOSEST valid uv_reveal collision (more stable / consistent)
 	if uv_cast != null and uv_cast.is_colliding():
-		var best_d := -INF
+		var best_d := INF
 		for i in range(uv_cast.get_collision_count()):
 			var col := uv_cast.get_collider(i)
 
@@ -221,8 +225,8 @@ func _reveal_in_beam() -> void:
 				continue
 
 			var p := uv_cast.get_collision_point(i)
-			var d := global_transform.origin.distance_to(p)
-			if d > best_d:
+			var d := origin.distance_to(p)
+			if d < best_d:
 				best_d = d
 				hit_pos = p
 

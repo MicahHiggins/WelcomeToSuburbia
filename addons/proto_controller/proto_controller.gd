@@ -8,6 +8,12 @@ class_name player
 # - Pickup/drop/use routed through ItemManager ONLY
 # - Drop is "drop" (bind to G)
 # - Use/Attack is "use-attack" (plays "swing" locally + server broadcasts via ItemManager)
+#
+# PATCHES IN THIS VERSION:
+# - Fix missing deferred '_play_footstep_audio' error by implementing it again.
+# - Footsteps are proximity-audible (3D sound) + broadcast to all peers.
+# - Sprint footsteps play faster (separate interval) + optional pitch boost.
+# - Keeps your piggyback camera offsets + smoothing logic.
 # --------------------------------------------
 
 # =========================
@@ -52,9 +58,16 @@ var is_sprinting: bool = false
 @export var attack_cooldown: float = 0.35
 @export var swing_animplayer_path: NodePath = NodePath("AnimationPlayer")
 
-# Multiplayer footsteps (audible to nearby players)
+# =========================
+#   FOOTSTEP AUDIO (3D)
+# =========================
 @export var footstep_hear_radius: float = 18.0
-@export var footstep_min_interval: float = 0.12
+@export var footstep_min_interval_walk: float = 0.42
+@export var footstep_min_interval_run: float = 0.26
+@export var footstep_pitch_walk: float = 1.0
+@export var footstep_pitch_run: float = 1.12
+@export var footstep_min_speed_to_trigger: float = 0.35
+@export var footstep_play_only_on_floor: bool = true
 
 @export var item_manager_name: StringName = &"ItemManager"
 
@@ -130,22 +143,22 @@ var cellar_follow_lerp: float = 0.25
 @export var cellar_follow_back_m: float = 1.4
 @export var cellar_follow_side_m: float = 0.0
 
-# NEW: optionally override distance from inspector (set -1 to use server value)
+# optionally override distance from inspector (set -1 to use server value)
 @export var cellar_piggyback_dist_override: float = -1.0
 
-# NEW: follower look clamp around leader forward (±deg => total arc; 95 => ~190°)
+# follower look clamp around leader forward (±deg => total arc; 95 => ~190°)
 @export var cellar_follower_yaw_limit_deg: float = 95.0
 
-# NEW: piggyback should be based on leader BODY yaw (recommended)
+# piggyback should be based on leader BODY yaw (recommended)
 @export var cellar_piggyback_use_leader_body_yaw: bool = true
 
-# NEW: smooth the leader yaw used for piggyback so quick turns don’t whip the joiner
+# smooth the leader yaw used for piggyback so quick turns don’t whip the joiner
 @export var cellar_piggyback_yaw_smooth: float = 0.12 # 0.05..0.25 is a good range
 
-# NEW: slow leader turn rate while piggybacking so movement feels less “snappy”
+# slow leader turn rate while piggybacking so movement feels less “snappy”
 @export var cellar_leader_turn_mult: float = 0.65 # <1.0 = slower look
 
-# NEW: follower camera view tuning (local camera offset)
+# follower camera view tuning (local camera offset)
 @export var cellar_follower_cam_local_offset: Vector3 = Vector3(0.0, 0.0, 0.0)
 @export var cellar_follower_cam_lerp: float = 0.25
 
@@ -217,6 +230,8 @@ func _ready() -> void:
 	_setup_sanity_fx_ui()
 	stamina_current = stamina_max
 	_setup_stamina_ui()
+
+	_configure_footstep_audio_3d()
 
 # =========================
 #        PATH HELPERS
@@ -329,6 +344,84 @@ func _update_follower_camera_offset(delta: float) -> void:
 
 	var a := 1.0 - pow(1.0 - clampf(cellar_follower_cam_lerp, 0.01, 0.95), delta * 60.0)
 	cam.position = cam.position.lerp(target, a)
+
+# =========================
+#   FOOTSTEP HELPERS
+# =========================
+func _configure_footstep_audio_3d() -> void:
+	if footstep == null:
+		return
+	# "proximity" = 3D attenuation based on distance
+	footstep.max_distance = footstep_hear_radius
+	footstep.attenuation_model = AudioStreamPlayer3D.ATTENUATION_INVERSE_DISTANCE
+	# optional but helps: keep it from getting too loud close-up
+	footstep.unit_size = 1.0
+
+func _should_trigger_footstep() -> bool:
+	if footstep_play_only_on_floor and not is_on_floor():
+		return false
+
+	# movement magnitude, ignore vertical
+	var v := velocity
+	v.y = 0.0
+	if v.length() < footstep_min_speed_to_trigger:
+		return false
+
+	# don't trigger while piggyback follower (they're "on back")
+	if cellar_active and not cellar_is_leader:
+		return false
+
+	return true
+
+func _footstep_interval() -> float:
+	return footstep_min_interval_run if is_sprinting else footstep_min_interval_walk
+
+# This method existed in your old proto_controller and was called deferred.
+# We re-add it so the error goes away.
+func _play_footstep_audio() -> void:
+	if footstep == null:
+		return
+	if footstep.stream == null:
+		return
+
+	footstep.pitch_scale = footstep_pitch_run if is_sprinting else footstep_pitch_walk
+
+	# restart cleanly so rapid footsteps sound consistent
+	if footstep.playing:
+		footstep.stop()
+	footstep.play()
+
+	# broadcast so other clients hear it too (proximity via AudioStreamPlayer3D)
+	if multiplayer.has_multiplayer_peer():
+		rpc("_rpc_play_footstep", global_position, footstep.pitch_scale)
+
+@rpc("any_peer", "call_local", "unreliable")
+func _rpc_play_footstep(pos: Vector3, pitch: float) -> void:
+	# owner already played locally; don't double-play
+	if multiplayer.has_multiplayer_peer() and is_multiplayer_authority():
+		return
+	if footstep == null or footstep.stream == null:
+		return
+	footstep.global_position = pos
+	footstep.pitch_scale = pitch
+	if footstep.playing:
+		footstep.stop()
+	footstep.play()
+
+func _net_maybe_step_audio() -> void:
+	# only the authoritative player should decide when a footstep happens
+	if multiplayer.has_multiplayer_peer() and not is_multiplayer_authority():
+		return
+
+	if not _should_trigger_footstep():
+		return
+
+	var now: float = float(Time.get_ticks_msec()) / 1000.0
+	if now - _last_footstep_time < _footstep_interval():
+		return
+
+	_last_footstep_time = now
+	call_deferred("_play_footstep_audio")
 
 # =========================
 #      TALK / NPC INTERACT
@@ -767,7 +860,7 @@ func _play_attack_local() -> void:
 # =========================
 #      FRAME / PHYSICS
 # =========================
-func _process(_dt: float) -> void:
+func _process(dt: float) -> void:
 	if _is_talking_local:
 		base_speed = 0.0
 		sprint_speed = 0.0
@@ -776,8 +869,7 @@ func _process(_dt: float) -> void:
 		sprint_speed = 5.0
 
 	_net_maybe_send_camera_look()
-
-	_update_follower_camera_offset(_dt)
+	_update_follower_camera_offset(dt)
 
 	if multiplayer.has_multiplayer_peer() and not is_multiplayer_authority():
 		return
@@ -795,11 +887,13 @@ func _process(_dt: float) -> void:
 func _physics_process(delta: float) -> void:
 	if not multiplayer.has_multiplayer_peer():
 		_physics_authority(delta)
+		_net_maybe_step_audio()
 		return
 
 	if is_multiplayer_authority():
 		_physics_authority(delta)
 		_net_maybe_send_state()
+		_net_maybe_step_audio()
 		return
 
 	_net_interpolate_remote()
@@ -813,9 +907,6 @@ func _physics_authority(delta: float) -> void:
 
 	# ---------------------------------------
 	# PIGGYBACK FOLLOW (follower only)
-	# - anchor to leader PLAYER position
-	# - offset based on SMOOTHED leader BODY yaw
-	# - does NOT force follower rotation to leader camera
 	# ---------------------------------------
 	if cellar_active and not cellar_is_leader:
 		velocity = Vector3.ZERO
@@ -838,7 +929,6 @@ func _physics_authority(delta: float) -> void:
 
 		var leader_yaw := _get_leader_yaw_for_piggyback()
 
-		# smooth the yaw used for positioning so we don’t “whip”
 		if not _pb_yaw_has:
 			_pb_yaw_smoothed = leader_yaw
 			_pb_yaw_has = true
@@ -1156,8 +1246,6 @@ func _rotate_look(delta_rel: Vector2) -> void:
 	# follower yaw clamp around leader BODY (smoothed) so we get “on back” feel
 	if cellar_active and not cellar_is_leader and cellar_leader_peer_id > 0:
 		var leader_yaw := _get_leader_yaw_for_piggyback()
-
-		# use smoothed yaw if we have it (matches the follow position yaw)
 		if _pb_yaw_has:
 			leader_yaw = _pb_yaw_smoothed
 
