@@ -1,4 +1,3 @@
-# res://level_flow_manager.gd
 extends Node
 class_name LevelFlowManager
 
@@ -89,7 +88,6 @@ func _ready() -> void:
 		else:
 			_load_level_local(default_level)
 
-
 # ----------------------------
 # basic helpers
 # ----------------------------
@@ -114,12 +112,16 @@ func _find_item_manager() -> Node:
 	var scene: Node = _scene_root()
 	if scene == null:
 		return null
+
 	var direct: Node = scene.get_node_or_null("ItemManager")
 	if direct != null:
 		return direct
+
 	return scene.find_child("ItemManager", true, false)
 
-
+# ----------------------------
+# multiplayer events
+# ----------------------------
 func _on_peer_connected(peer_id: int) -> void:
 	if not multiplayer.is_server():
 		return
@@ -132,12 +134,13 @@ func _on_peer_connected(peer_id: int) -> void:
 	# send current level to late joiner
 	rpc_id(peer_id, "_rpc_load_level_all", _current_level_scene_path)
 
-
 func _on_peer_disconnected(peer_id: int) -> void:
 	_peer_look_target.erase(peer_id)
 	_peer_cam_xforms.erase(peer_id)
 
-
+# ----------------------------
+# level change entrypoint
+# ----------------------------
 func request_level_change(level_index: int) -> void:
 	if not multiplayer.has_multiplayer_peer():
 		var ps_local: PackedScene = _scene_for_index(level_index)
@@ -157,13 +160,11 @@ func request_level_change(level_index: int) -> void:
 			return
 		rpc_id(SERVER_ID, "_rpc_request_level_change", level_index)
 
-
 @rpc("any_peer", "reliable")
 func _rpc_request_level_change(level_index: int) -> void:
 	if not multiplayer.is_server():
 		return
 	_server_change_level(level_index)
-
 
 func _server_change_level(level_index: int) -> void:
 	var ps: PackedScene = _scene_for_index(level_index)
@@ -172,7 +173,6 @@ func _server_change_level(level_index: int) -> void:
 		return
 	load_level_server(ps)
 
-
 func _scene_for_index(level_index: int) -> PackedScene:
 	match level_index:
 		1: return level_1_scene
@@ -180,7 +180,9 @@ func _scene_for_index(level_index: int) -> PackedScene:
 		3: return level_3_scene
 		_: return null
 
-
+# ----------------------------
+# server load -> broadcast
+# ----------------------------
 func load_level_server(scene: PackedScene) -> void:
 	if scene == null:
 		push_error("[LevelFlowManager] load_level_server got null scene.")
@@ -202,7 +204,6 @@ func load_level_server(scene: PackedScene) -> void:
 
 	rpc("_rpc_load_level_all", _current_level_scene_path)
 
-
 @rpc("any_peer", "call_local", "reliable")
 func _rpc_load_level_all(scene_path: String) -> void:
 	if scene_path == "":
@@ -222,7 +223,6 @@ func _rpc_load_level_all(scene_path: String) -> void:
 		else:
 			rpc_id(SERVER_ID, "_rpc_client_level_ready", scene_path)
 
-
 @rpc("any_peer", "reliable")
 func _rpc_client_level_ready(scene_path: String) -> void:
 	if not multiplayer.is_server():
@@ -236,7 +236,6 @@ func _rpc_client_level_ready(scene_path: String) -> void:
 
 	_ready_peers[sender] = true
 	_server_try_finish_ready()
-
 
 func _server_try_finish_ready() -> void:
 	if not multiplayer.is_server():
@@ -254,7 +253,9 @@ func _server_try_finish_ready() -> void:
 	_waiting_for_ready = false
 	call_deferred("_deferred_server_place_all")
 
-
+# ----------------------------
+# local instantiate
+# ----------------------------
 func _clear_level_container_safely() -> void:
 	if _level_container == null:
 		return
@@ -265,7 +266,6 @@ func _clear_level_container_safely() -> void:
 			continue
 		_level_container.remove_child(c)
 		c.queue_free()
-
 
 func _load_level_local(scene: PackedScene) -> void:
 	_clear_level_container_safely()
@@ -288,11 +288,12 @@ func _load_level_local(scene: PackedScene) -> void:
 
 	print("[LevelFlowManager] Loaded level:", scene.resource_path)
 
-
+# ----------------------------
+# server place players
+# ----------------------------
 func _deferred_server_place_all() -> void:
 	teleport_all_players_to_current_spawn_server()
 	call_deferred("_deferred_server_post_spawn_apply")
-
 
 func _deferred_server_post_spawn_apply() -> void:
 	_server_apply_post_spawn_rules()
@@ -300,13 +301,11 @@ func _deferred_server_post_spawn_apply() -> void:
 	if post_level_ready_group != "":
 		rpc("_rpc_call_group_post_ready", post_level_ready_group)
 
-
 @rpc("any_peer", "call_local", "reliable")
 func _rpc_call_group_post_ready(group_name: String) -> void:
 	if group_name == "":
 		return
 	get_tree().call_group(group_name, "on_level_post_ready")
-
 
 func teleport_all_players_to_current_spawn_server() -> void:
 	if multiplayer.has_multiplayer_peer() and not multiplayer.is_server():
@@ -333,7 +332,6 @@ func teleport_all_players_to_current_spawn_server() -> void:
 			p.rpc_id(owner_id, "server_teleport_to", target_xf)
 		else:
 			p.global_transform = target_xf
-
 
 func server_place_player_if_needed(player: Node3D) -> void:
 	if player == null:
@@ -365,7 +363,9 @@ func server_place_player_if_needed(player: Node3D) -> void:
 
 	call_deferred("_deferred_server_post_spawn_apply")
 
-
+# ----------------------------
+# spawn cache
+# ----------------------------
 func _cache_spawn_transform() -> void:
 	_has_spawn_xform = false
 	_cached_spawn_xform = Transform3D.IDENTITY
@@ -383,7 +383,6 @@ func _cache_spawn_transform() -> void:
 
 	_cached_spawn_xform = xform
 	_has_spawn_xform = true
-
 
 func _cache_split_spawns() -> void:
 	_has_split_spawns = false
@@ -408,7 +407,6 @@ func _cache_split_spawns() -> void:
 	_spawn_join_xform.origin.y += spawn_y_lift
 	_has_split_spawns = true
 
-
 func _place_all_players_local_to_spawn() -> void:
 	_cache_spawn_transform()
 	if not _has_spawn_xform:
@@ -420,9 +418,8 @@ func _place_all_players_local_to_spawn() -> void:
 			continue
 		p.global_transform = _cached_spawn_xform
 
-
 # ------------------------------------------------------------
-# Post-spawn rules: cellar roles + flashlight auto-pickup (REAL pickup)
+# Post-spawn rules: cellar roles + flashlight auto-pickup (SERVER FORCE)
 # ------------------------------------------------------------
 func _is_cellar_level() -> bool:
 	if _current_level_scene_path == "":
@@ -431,9 +428,8 @@ func _is_cellar_level() -> bool:
 		return _current_level_scene_path.findn(cellar_level_scene_path_hint) != -1
 	return true
 
-
 func _server_apply_post_spawn_rules() -> void:
-	if multiplayer.has_multiplayer_peer() and not multiplayer.is_server():
+	if not multiplayer.is_server():
 		return
 	if _current_level == null:
 		return
@@ -444,20 +440,26 @@ func _server_apply_post_spawn_rules() -> void:
 
 	if give_flashlight_to_joining_player:
 		var joiner_id: int = _pick_joiner_peer_id_server()
-		call_deferred("_deferred_force_joiner_pickup_flashlight", joiner_id)
-
+		call_deferred("_deferred_server_force_pickup_flashlight", joiner_id)
 
 func _apply_post_spawn_rules_local() -> void:
 	if _is_cellar_level():
 		_apply_cellar_roles_local()
 
-
-func _deferred_force_joiner_pickup_flashlight(joiner_id: int) -> void:
+func _deferred_server_force_pickup_flashlight(joiner_id: int) -> void:
 	if not multiplayer.is_server():
 		return
 
 	var t := get_tree().create_timer(maxf(0.0, flashlight_pickup_delay_sec))
 	await t.timeout
+
+	var im: Node = _find_item_manager()
+	if im == null:
+		push_error("[LevelFlowManager] ItemManager not found on server for auto-pickup.")
+		return
+	if not im.has_method("server_force_pickup_for_peer"):
+		push_error("[LevelFlowManager] ItemManager missing server_force_pickup_for_peer (did you paste the ItemManager patch?).")
+		return
 
 	var flashlight: Node3D = _find_flashlight_in_world()
 	if flashlight == null:
@@ -469,27 +471,19 @@ func _deferred_force_joiner_pickup_flashlight(joiner_id: int) -> void:
 		push_warning("[LevelFlowManager] Flashlight had no valid scene path to auto-pickup.")
 		return
 
-	# Tell the joiner client to request pickup from the server ItemManager.
-	# This makes ItemManager set authority, set_held(true), inventory, and reparent correctly.
-	rpc_id(joiner_id, "_rpc_client_auto_pickup_item", item_path)
+	# ✅ Server authoritative: ItemManager will:
+	# - set held_by
+	# - set authority to joiner
+	# - reparent to CarryObjectMarker
+	# - call set_held(true)
+	# - update inventory via server_set_inventory
+	im.call("server_force_pickup_for_peer", item_path, joiner_id)
 
-
-@rpc("any_peer", "call_local", "reliable")
-func _rpc_client_auto_pickup_item(item_path: NodePath) -> void:
-	# Only the owning client should do this
-	if multiplayer.has_multiplayer_peer() and not is_multiplayer_authority():
-		return
-
-	var im: Node = _find_item_manager()
-	if im == null:
-		push_error("[LevelFlowManager] ItemManager not found on client for auto-pickup.")
-		return
-
-	im.rpc_id(SERVER_ID, "request_pickup", item_path)
-
-
+# ----------------------------
+# cellar roles
+# ----------------------------
 func _apply_cellar_roles_server() -> void:
-	if multiplayer.has_multiplayer_peer() and not multiplayer.is_server():
+	if not multiplayer.is_server():
 		return
 
 	var players: Array = get_tree().get_nodes_in_group("player")
@@ -518,7 +512,6 @@ func _apply_cellar_roles_server() -> void:
 		if p3.has_method("server_set_cellar_role"):
 			p3.rpc_id(pid, "server_set_cellar_role", is_leader, cellar_follow_speed, cellar_follow_dist, cellar_follow_lerp, leader_id)
 
-
 func _apply_cellar_roles_local() -> void:
 	var players: Array = get_tree().get_nodes_in_group("player")
 	var leader_id: int = 999999
@@ -545,7 +538,6 @@ func _apply_cellar_roles_local() -> void:
 		if p3.has_method("server_set_cellar_role"):
 			p3.call("server_set_cellar_role", is_leader, cellar_follow_speed, cellar_follow_dist, cellar_follow_lerp, leader_id)
 
-
 func _pick_joiner_peer_id_server() -> int:
 	var joiner_id: int = SERVER_ID
 	for pid_any in multiplayer.get_peers():
@@ -553,7 +545,6 @@ func _pick_joiner_peer_id_server() -> int:
 		if pid != SERVER_ID and (joiner_id == SERVER_ID or pid < joiner_id):
 			joiner_id = pid
 	return joiner_id
-
 
 func _find_flashlight_in_world() -> Node3D:
 	if flashlight_group_name != "":
@@ -585,7 +576,6 @@ func _find_flashlight_in_world() -> Node3D:
 
 	return null
 
-
 # ------------------------------------------------------------
 # witness API
 # ------------------------------------------------------------
@@ -600,7 +590,6 @@ func _rpc_witness_set_look_target(target_path) -> void:
 		return
 	_peer_look_target[sender] = String(target_path)
 
-
 func witness_get_lookers_count(target_path: String) -> int:
 	if not multiplayer.is_server():
 		return 0
@@ -611,21 +600,18 @@ func witness_get_lookers_count(target_path: String) -> int:
 			count += 1
 	return count
 
-
 # ------------------------------------------------------------
-# camera look sync API (broadcast so clients can clamp yaw, etc.)
+# camera look sync API
 # ------------------------------------------------------------
 @rpc("any_peer", "call_local", "unreliable")
 func _rpc_broadcast_peer_camera(peer_id: int, cam_xform: Transform3D) -> void:
 	_peer_cam_xforms[peer_id] = cam_xform
-
 
 func _server_set_peer_camera(peer_id: int, cam_xform: Transform3D) -> void:
 	if not multiplayer.is_server():
 		return
 	_peer_cam_xforms[peer_id] = cam_xform
 	rpc("_rpc_broadcast_peer_camera", peer_id, cam_xform)
-
 
 @rpc("any_peer", "unreliable")
 func _rpc_update_peer_camera(cam_xform: Transform3D) -> void:
@@ -639,12 +625,10 @@ func _rpc_update_peer_camera(cam_xform: Transform3D) -> void:
 	_peer_cam_xforms[sender] = cam_xform
 	rpc("_rpc_broadcast_peer_camera", sender, cam_xform)
 
-
 func get_peer_camera_xform(peer_id: int) -> Transform3D:
 	if _peer_cam_xforms.has(peer_id):
 		return _peer_cam_xforms[peer_id] as Transform3D
 	return Transform3D.IDENTITY
-
 
 func get_all_peer_camera_xforms() -> Array[Transform3D]:
 	var out: Array[Transform3D] = []
