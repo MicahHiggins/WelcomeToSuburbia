@@ -1,6 +1,6 @@
 [gd_scene load_steps=5 format=3 uid="uid://b6qdycemud1gt"]
 
-[ext_resource type="Script" uid="uid://65w16ihxkc3h" path="res://lobby.gd" id="1_ym4ib"]
+[ext_resource type="Script" path="res://Scripts/lobby.gd" id="1_ym4ib"]
 [ext_resource type="PackedScene" uid="uid://bs2jm62cmkbrk" path="res://addons/instant-realistic-light/light_scene.tscn" id="2_sknj8"]
 [ext_resource type="PackedScene" uid="uid://d1ibgfwne281y" path="res://GameLevelsETC/Level1.tscn" id="2_yosgk"]
 
