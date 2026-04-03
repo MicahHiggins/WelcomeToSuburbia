@@ -1,4 +1,4 @@
-[gd_scene load_steps=45 format=3 uid="uid://dw6fx71adu107"]
+[gd_scene load_steps=46 format=3 uid="uid://dw6fx71adu107"]
 
 [ext_resource type="Script" uid="uid://duigu086blnlq" path="res://GameLevelsETC/kidnap.gd" id="1_6rn1s"]
 [ext_resource type="PackedScene" uid="uid://bs2jm62cmkbrk" path="res://addons/instant-realistic-light/light_scene.tscn" id="1_wff52"]
@@ -306,7 +306,7 @@ shape = SubResource("BoxShape3D_lvd32")
 transform = Transform3D(0.60000044, 0, -7.105431e-15, 0, 0.6000001, 0, 7.105431e-15, 0, 0.60000044, 1.2545395, -1.0862061, 3.0131636)
 
 [node name="OmniLight3D" type="OmniLight3D" parent="Bedrooms/bedroom1/Lamp"]
-transform = Transform3D(-3.469158e-08, 0, 0.7936503, 0, 0.99206334, 0, -0.7936503, 0, -3.469158e-08, -0.07956445, 1.1074953, -0.050771713)
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -0.07956445, 1.1074953, -0.050771713)
 light_color = Color(0.8863026, 0.7930651, 0.62317014, 1)
 light_energy = 0.2
 
@@ -333,7 +333,7 @@ transform = Transform3D(1.0656065, 0, 0.65343946, 0, 1.4999999, 0, -0.65343946, 
 
 [node name="R1SpotLight3D" type="SpotLight3D" parent="Bedrooms/bedroom1/Desk Light"]
 unique_name_in_owner = true
-transform = Transform3D(-0.056468636, 0.3765753, 0.011550225, 0.29990894, 0.037212964, 0.25717744, 0.24300523, 0.045371965, -0.28984177, 0.00620842, 0.43400103, 0.2660551)
+transform = Transform3D(-0.14475064, 0.98899174, 0.030701207, 0.768781, 0.092878334, 0.6327317, 0.6229149, 0.11519082, -0.7737622, 0.00620842, 0.43400103, 0.2660551)
 light_color = Color(0.90588236, 0.9137255, 0.49803922, 1)
 spot_range = 10.0
 spot_attenuation = 0.5
@@ -341,7 +341,7 @@ spot_angle = 30.0
 
 [node name="R1OmniLight3D" type="OmniLight3D" parent="Bedrooms/bedroom1/Desk Light"]
 unique_name_in_owner = true
-transform = Transform3D(-2.9802322e-08, 0, 0.38095242, 0, 0.39682543, 0, -0.38095242, 0, -2.9802322e-08, -0.024466991, 0.4400298, 0.1774826)
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -0.024466991, 0.4400298, 0.1774826)
 light_color = Color(0.8863026, 0.7930651, 0.62317014, 1)
 light_energy = 0.1
 
@@ -357,16 +357,15 @@ shape = SubResource("BoxShape3D_pe1yd")
 [node name="toy_pianoListen" parent="Bedrooms/bedroom1" instance=ExtResource("12_6rn1s")]
 transform = Transform3D(0.00091631734, 0, -0.14999743, 0, 0.15000004, 0, 0.14999743, 0, 0.00091631734, -2.5166962, -0.8161694, -2.30835)
 
-[node name="doorway" parent="Bedrooms/bedroom1" instance=ExtResource("13_pm42j")]
-transform = Transform3D(-1.4861872e-08, 0, 0.34, 0, 0.426, 0, -0.34, 0, -1.4861872e-08, -3.1451666, -1.9475207, 0.7588978)
-transform = Transform3D(0.019856678, 0, -0.1486801, 0, 0.15000002, 0, 0.1486801, 0, 0.019856678, -2.5266912, -0.8230621, -2.1686707)
-
 [node name="RedBed" parent="Bedrooms/bedroom1" instance=ExtResource("13_2uf5w")]
 transform = Transform3D(-1.223919e-08, 0, 0.28000006, 0, 0.28000003, 0, -0.28000006, 0, -1.223919e-08, 4.78642, -1.9862005, 0.79205513)
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="Bedrooms/bedroom1"]
-transform = Transform3D(6.244485e-08, 0.47619054, -3.9714537e-16, 5.6785154e-09, -2.4821567e-16, 0.5952381, 0.47619054, -6.244485e-08, -4.542813e-09, 0.33711377, 1.3663076, 0.40435696)
+transform = Transform3D(7.54979e-08, 1, 4.371139e-08, 0, -4.371139e-08, 1, 1, -7.54979e-08, -3.300118e-15, 0.33711377, 1.3663076, 0.40435696)
 visible = false
+
+[node name="doorway" parent="Bedrooms/bedroom1" instance=ExtResource("13_pm42j")]
+transform = Transform3D(-1.486188e-08, 0, 0.34000015, 0, 0.34, 0, -0.34000015, 0, -1.486188e-08, -3.1386063, -1.9812669, 0.41458416)
 
 [node name="bedroom2" parent="Bedrooms" instance=ExtResource("13_vmkem")]
 transform = Transform3D(-1.4999993, 0.0011538021, 9.1280155e-05, 0.0014421464, 1.1999987, -0.0017605099, -9.294293e-05, -0.0014083382, -1.4999992, 0.3168704, 0.11224883, -13.854978)
@@ -423,7 +422,7 @@ shape = SubResource("BoxShape3D_lvd32")
 transform = Transform3D(0.6000004, 0, -7.105427e-15, 0, 0.6000001, 0, 7.105427e-15, 0, 0.6000004, -3.1121984, -1.0862061, 1.2192068)
 
 [node name="OmniLight3D" type="OmniLight3D" parent="Bedrooms/bedroom2/Lamp"]
-transform = Transform3D(-3.4691766e-08, -9.674039e-12, 0.79365027, 0, 0.9920632, -1.1689067e-09, -0.7936502, -6.9849193e-10, -1.8895662e-08, -0.009194374, 1.1074951, -0.002193451)
+transform = Transform3D(-4.371139e-08, -9.751466e-12, 1, 0, 1, 9.751466e-12, -1, 4.2625012e-19, -4.371139e-08, -0.009194374, 1.1074951, -0.002193451)
 light_color = Color(0.8863026, 0.7930651, 0.62317014, 1)
 light_energy = 0.2
 
@@ -450,7 +449,7 @@ transform = Transform3D(0.69893664, 0, 1.0363338, 0, 1.5, 0, -1.0363338, 0, 0.69
 
 [node name="R2SpotLight3D" type="SpotLight3D" parent="Bedrooms/bedroom2/Desk Light"]
 unique_name_in_owner = true
-transform = Transform3D(-0.37490138, 0.06170456, -0.021212742, 0.033683658, 0.28090996, 0.28028628, 0.059166357, 0.25822657, -0.27249223, 0.0092282295, 0.43507248, 0.21996796)
+transform = Transform3D(-0.9839074, 0.17038856, -0.05379564, 0.088400856, 0.7258427, 0.6821566, 0.15527886, 0.6664233, -0.7292245, 0.0092282295, 0.43507248, 0.21996796)
 light_color = Color(0.9317113, 0.8669089, 0.53411645, 1)
 light_energy = 0.7
 light_specular = 3.0
@@ -459,7 +458,7 @@ spot_angle = 30.0
 
 [node name="R2OmniLight3D" type="OmniLight3D" parent="Bedrooms/bedroom2/Desk Light"]
 unique_name_in_owner = true
-transform = Transform3D(1.0430813e-07, 2.910383e-10, 0.3809524, -2.0372681e-10, 0.39682537, -1.1641532e-10, -0.38095242, -8.440111e-10, 1.4901161e-07, -0.01854515, 0.41153648, 0.19041395)
+transform = Transform3D(3.1391647e-07, 7.334162e-10, 1, -5.3478283e-10, 1, -7.3341605e-10, -1, -5.347826e-10, 3.1391647e-07, -0.01854515, 0.41153648, 0.19041395)
 light_color = Color(0.8863026, 0.7930651, 0.62317014, 1)
 light_energy = 0.1
 
@@ -476,8 +475,7 @@ shape = SubResource("BoxShape3D_pe1yd")
 transform = Transform3D(-0.15000011, 0, 2.0962343e-05, 0, 0.15000002, 0, -2.0962343e-05, 0, -0.15000011, -2.2025387, -0.77872807, -2.5126305)
 
 [node name="doorway" parent="Bedrooms/bedroom2" instance=ExtResource("13_pm42j")]
-transform = Transform3D(-0.34, 0, -5.1338574e-08, 0, 0.425, 0, 5.1338574e-08, 0, -0.34, 1.6876898, -1.9475207, 3.1397085)
-transform = Transform3D(-0.14895703, 0, 0.017659249, 0, 0.15000002, 0, -0.017659249, 0, -0.14895703, -2.2380548, -0.77872807, -2.5860882)
+transform = Transform3D(-0.34000015, 2.4563462e-11, -2.9725925e-08, 1.6999735e-11, 0.3400002, -5.820766e-11, 2.9718649e-08, 2.910383e-11, -0.34000027, 0.672379, -1.936038, 3.1620798)
 
 [node name="Neighborhood" type="Node3D" parent="."]
 transform = Transform3D(1.5, 0, 0, 0, 1.5, 0, 0, 0, 1.5, 0, 0, 0)
