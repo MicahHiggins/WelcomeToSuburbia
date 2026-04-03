@@ -1,10 +1,10 @@
-# res://FleshDungeonWorldEnvironment.gd
+
 extends WorldEnvironment
 class_name FleshDungeonWorldEnvironment
 
 # ============================================================
-#  Flesh Dungeon WorldEnvironment (single-scene, self-contained)
-#  - Sets Environment fog/grade/glow for "inside a stomach"
+#  Flesh Dungeon WorldEnvironment 
+#  - Sets Environment fog/grade/glow 
 #  - Spawns player-POV particles + screen overlay under Camera3D
 # ============================================================
 

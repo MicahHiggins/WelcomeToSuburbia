@@ -11,7 +11,7 @@ const SERVER_ID: int = 1
 @export var level_flow_path: NodePath = NodePath("")
 @export var min_players_to_start: int = 2
 
-# Lobby UI lookup (by names inside the loaded lobby scene)
+# Lobby UI lookup 
 @export var lobby_ui_name: StringName = &"LobbyUI"
 @export var start_button_name: StringName = &"VoteStart"
 @export var force_start_button_name: StringName = &"ForceStart"
@@ -27,7 +27,7 @@ signal force_start_requested
 
 var _lfm: Node = null
 
-# FIX: CanvasLayer != CanvasItem, so keep this as Node (or CanvasLayer/Control)
+
 var _ui_root: Node = null
 var _start_btn: Button = null
 var _force_btn: Button = null
@@ -132,7 +132,7 @@ func _find_level_flow_manager() -> Node:
 
 
 # ------------------------------------------------------------
-# Find LobbyUI inside the loaded lobby level (usually under LevelContainer)
+# Find LobbyUI inside the loaded lobby level 
 # ------------------------------------------------------------
 func _resolve_lobby_ui_nodes() -> void:
 	_ui_root = null

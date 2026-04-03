@@ -3,8 +3,7 @@ extends Node3D
 class_name LobbyWorldBlock
 
 # ============================================================
-#  LOBBY WORLD BLOCK (TREES ONLY)
-#  - NO grass/road material overrides (you handle visuals in scene)
+#  LOBBY WORLD BLOCK 
 #  - Spawns trees on the block, excluding a center "no-tree" band
 #  - Designed to work with conveyor pooling/reuse:
 #      call prepare_for_use() whenever the block is spawned/reused
