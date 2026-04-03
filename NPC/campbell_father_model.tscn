@@ -1,6 +1,10 @@
+<<<<<<< Updated upstream
 [gd_scene load_steps=8 format=3 uid="uid://bix7glsjl8lbf"]
 
 [ext_resource type="PackedScene" uid="uid://jtqi2u5qvmu2" path="res://Assets/RandomObjects/humans/campbell_father.glb" id="1_v2b5d"]
+=======
+[gd_scene load_steps=7 format=3 uid="uid://cwkjd42k7motp"]
+>>>>>>> Stashed changes
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_v2b5d"]
 albedo_color = Color(0, 1, 0, 1)
@@ -10714,7 +10718,11 @@ _data = {
 &"RESET": SubResource("Animation_v2b5d")
 }
 
+<<<<<<< Updated upstream
 [node name="campbell_father" instance=ExtResource("1_v2b5d")]
+=======
+[node name="campbell_father"]
+>>>>>>> Stashed changes
 
 [node name="Cube" parent="rig/Cube_002" index="0"]
 transform = Transform3D(0.2957735, 0, 0, 0, 0.046294533, -0.066093676, 0, 0.034797955, 0.087929755, 0, 1.6104954, 0.20637234)
