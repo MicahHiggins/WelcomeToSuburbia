@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://dqtjkvoyobno4"]
 
-[ext_resource type="Script" uid="uid://dkbubalrxkeqi" path="res://Scripts/QuestHub.gd" id="1_pisyf"]
+[ext_resource type="Script" uid="uid://dkbubalrxkeqi" path="res://QuestHub.gd" id="1_pisyf"]
 
 [node name="Questhub" type="Node2D"]
 script = ExtResource("1_pisyf")

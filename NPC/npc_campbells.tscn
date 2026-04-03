@@ -8,7 +8,7 @@
 [ext_resource type="Script" uid="uid://bdyreatjqakvi" path="res://Scripts/npcResource.gd" id="5_u5i8w"]
 [ext_resource type="PackedScene" uid="uid://bcggylgytgib6" path="res://Models/dog.tscn" id="6_u5i8w"]
 [ext_resource type="PackedScene" uid="uid://diyfna0mvebm4" path="res://Assets/RandomObjects/quest_marker!.tscn" id="7_2ka8d"]
-[ext_resource type="PackedScene" uid="uid://bix7glsjl8lbf" path="res://NPC/campbell_father_model.tscn" id="9_j5sfe"]
+[ext_resource type="PackedScene" uid="uid://bix7glsjl8lbf" path="res://campbell_father_model.tscn" id="9_j5sfe"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_g4ita"]
 radius = 1.0

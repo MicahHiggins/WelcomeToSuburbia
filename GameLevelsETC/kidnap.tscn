@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 [gd_scene load_steps=46 format=3 uid="uid://dw6fx71adu107"]
+=======
+[gd_scene load_steps=43 format=3 uid="uid://dw6fx71adu107"]
+>>>>>>> parent of 5a714e7 (added door and moved stuff around)
 
 [ext_resource type="Script" uid="uid://duigu086blnlq" path="res://GameLevelsETC/kidnap.gd" id="1_6rn1s"]
 [ext_resource type="PackedScene" uid="uid://bs2jm62cmkbrk" path="res://addons/instant-realistic-light/light_scene.tscn" id="1_wff52"]
@@ -14,7 +18,6 @@
 [ext_resource type="PackedScene" uid="uid://b2qs55r6f7vro" path="res://Assets/RandomObjects/pianos/toy_piano_listen.tscn" id="12_6rn1s"]
 [ext_resource type="PackedScene" uid="uid://d2m2lxpbjx2mq" path="res://Assets/RandomObjects/Beds/red_bed.tscn" id="13_2uf5w"]
 [ext_resource type="PackedScene" uid="uid://odknx6p0jv2f" path="res://Assets/RandomObjects/pianos/toy_piano.tscn" id="13_itlhn"]
-[ext_resource type="PackedScene" uid="uid://dghy3kpje6d1i" path="res://Assets/RandomObjects/doorway.glb" id="13_pm42j"]
 [ext_resource type="PackedScene" uid="uid://d0082o2yj0qb2" path="res://Assets/RandomObjects/bedrooms/bedroom_2.tscn" id="13_vmkem"]
 [ext_resource type="PackedScene" uid="uid://c4o2j15yoqaln" path="res://HouseModel/surb_house_v_1.tscn" id="14_mgih5"]
 [ext_resource type="Texture2D" uid="uid://but80wsucm4q2" path="res://textures/GrassTextures/GrassAlbedo.png" id="15_ii0sn"]
@@ -364,9 +367,12 @@ transform = Transform3D(-1.223919e-08, 0, 0.28000006, 0, 0.28000003, 0, -0.28000
 transform = Transform3D(6.244485e-08, 0.47619054, -3.9714537e-16, 5.6785154e-09, -2.4821567e-16, 0.5952381, 0.47619054, -6.244485e-08, -4.542813e-09, 0.33711377, 1.3663076, 0.40435696)
 visible = false
 
+<<<<<<< HEAD
 [node name="doorway" parent="Bedrooms/bedroom1" instance=ExtResource("13_pm42j")]
 transform = Transform3D(-1.48618815e-08, 0, 0.34000018, 0, 0.425, 0, -0.34000018, 0, -1.48618815e-08, -3.1372774, -1.9475207, 0.45228958)
 
+=======
+>>>>>>> parent of 5a714e7 (added door and moved stuff around)
 [node name="bedroom2" parent="Bedrooms" instance=ExtResource("13_vmkem")]
 transform = Transform3D(-1.4999993, 0.0011538021, 9.1280155e-05, 0.0014421464, 1.1999987, -0.0017605099, -9.294293e-05, -0.0014083382, -1.4999992, 0.3168704, 0.11224883, -13.854978)
 
@@ -473,9 +479,6 @@ shape = SubResource("BoxShape3D_pe1yd")
 
 [node name="toy_piano" parent="Bedrooms/bedroom2" instance=ExtResource("13_itlhn")]
 transform = Transform3D(-0.15000011, 0, 2.0962343e-05, 0, 0.15000002, 0, -2.0962343e-05, 0, -0.15000011, -2.2025387, -0.77872807, -2.5126305)
-
-[node name="doorway" parent="Bedrooms/bedroom2" instance=ExtResource("13_pm42j")]
-transform = Transform3D(-0.34, 0, -5.1338574e-08, 0, 0.425, 0, 5.1338574e-08, 0, -0.34, 1.6876898, -1.9475207, 3.1397085)
 
 [node name="Neighborhood" type="Node3D" parent="."]
 transform = Transform3D(1.5, 0, 0, 0, 1.5, 0, 0, 0, 1.5, 0, 0, 0)
