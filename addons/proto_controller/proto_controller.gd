@@ -383,7 +383,7 @@ func _play_footstep_audio() -> void:
 		return
 	if footstep.stream == null:
 		return
-
+	
 	footstep.pitch_scale = footstep_pitch_run if is_sprinting else footstep_pitch_walk
 
 	# restart cleanly so rapid footsteps sound consistent
@@ -421,7 +421,7 @@ func _net_maybe_step_audio() -> void:
 		return
 
 	_last_footstep_time = now
-	call_deferred("_play_footstep_audio")
+	#call_deferred("_play_footstep_audio")
 
 # =========================
 #      TALK / NPC INTERACT

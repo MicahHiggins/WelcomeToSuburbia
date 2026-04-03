@@ -16,9 +16,9 @@
 [sub_resource type="BoxShape3D" id="BoxShape3D_f1x8v"]
 
 [sub_resource type="Environment" id="Environment_720kl"]
-ambient_light_source = 2
-ambient_light_color = Color(0.047113635, 0.12716594, 0.2070094, 1)
-ambient_light_energy = 7.11
+ambient_light_source = 3
+ambient_light_color = Color(0.32703137, 0.3196614, 0.3215074, 1)
+ambient_light_energy = 2.0
 
 [node name="CellarLevel" type="Node3D"]
 
@@ -92,3 +92,9 @@ environment = SubResource("Environment_720kl")
 
 [node name="Spawn" type="Marker3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.2284875, 0)
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+light_color = Color(0.90731144, 0.8583678, 0.83172333, 1)
+light_energy = 0.2
+light_indirect_energy = 0.5
+light_specular = 0.2
