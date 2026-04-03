@@ -1,9 +1,10 @@
-[gd_scene load_steps=11 format=3 uid="uid://bf38tvkrxj6ds"]
+[gd_scene load_steps=12 format=3 uid="uid://bf38tvkrxj6ds"]
 
 [ext_resource type="Script" uid="uid://dqvoninhsiala" path="res://GameLevelsETC/cellar_3_door_hallway.gd" id="1_tmgbf"]
 [ext_resource type="PackedScene" uid="uid://dqbgiq51e15mw" path="res://Assets/RandomObjects/stone_block.tscn" id="2_3njtq"]
 [ext_resource type="PackedScene" uid="uid://bk12xaa431jqc" path="res://Assets/RandomObjects/symbol/symbol.tscn" id="3_3njtq"]
 [ext_resource type="PackedScene" uid="uid://b6vnu6i8g7uqc" path="res://Assets/RandomObjects/symbol/symbol_correct.tscn" id="3_720kl"]
+[ext_resource type="Script" uid="uid://drk1xq8qdpgsn" path="res://GameLevelsETC/fleshviroment.gd" id="5_4a1gr"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_720kl"]
 
@@ -16,9 +17,9 @@
 [sub_resource type="BoxShape3D" id="BoxShape3D_f1x8v"]
 
 [sub_resource type="Environment" id="Environment_720kl"]
-ambient_light_source = 2
-ambient_light_color = Color(0.047113635, 0.12716594, 0.2070094, 1)
-ambient_light_energy = 7.11
+ambient_light_source = 3
+ambient_light_color = Color(0.32703137, 0.3196614, 0.3215074, 1)
+ambient_light_energy = 2.0
 
 [node name="CellarLevel" type="Node3D"]
 
@@ -29,6 +30,8 @@ block_scene = ExtResource("2_3njtq")
 correct_symbol_scene = ExtResource("3_720kl")
 wrong_symbol_scene_a = ExtResource("3_3njtq")
 wrong_symbol_scene_b = ExtResource("3_3njtq")
+chase_cells_to_spawn_close = 20
+shake_strength_pos_m = 3.0
 
 [node name="TriggerArea" type="Node3D" parent="."]
 
@@ -85,8 +88,16 @@ shape = SubResource("BoxShape3D_f1x8v")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_720kl")
+script = ExtResource("5_4a1gr")
+heartbeat_strength = 0.7
 
 [node name="world" type="Node3D" parent="."]
 
 [node name="Spawn" type="Marker3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.2284875, 0)
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+light_color = Color(0.4670977, 0.16774693, 0.38934228, 1)
+light_energy = 0.2
+light_indirect_energy = 0.5
+light_specular = 0.2

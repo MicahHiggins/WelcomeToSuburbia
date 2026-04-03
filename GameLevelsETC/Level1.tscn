@@ -1,11 +1,10 @@
-[gd_scene load_steps=19 format=3 uid="uid://d1ibgfwne281y"]
+[gd_scene load_steps=15 format=3 uid="uid://d1ibgfwne281y"]
 
 [ext_resource type="Script" uid="uid://bw77jeuwa8wio" path="res://GameLevelsETC/level_1.gd" id="1_oh3op"]
 [ext_resource type="PackedScene" uid="uid://bs2jm62cmkbrk" path="res://addons/instant-realistic-light/light_scene.tscn" id="3_jo2a5"]
 [ext_resource type="Script" uid="uid://bkb35cbdsgdbh" path="res://addons/instant-realistic-light/light_scene.gd" id="4_d084q"]
 [ext_resource type="PackedScene" uid="uid://bst3bb8d7vieb" path="res://Max's Folder (do not touch!!!)/pcgRescaled.tscn" id="7_d084q"]
 [ext_resource type="Script" uid="uid://c5qchfyao7ahn" path="res://GameLevelsETC/tether_system.gd" id="7_ki0f2"]
-[ext_resource type="Script" uid="uid://wufby810baua" path="res://GameLevelsETC/cellar_door.gd" id="12_o8227"]
 [ext_resource type="Script" uid="uid://cjg7ws1b5cnm7" path="res://GameLevelsETC/telleport_manager.gd" id="15_vlwaf"]
 [ext_resource type="PackedScene" uid="uid://bf38tvkrxj6ds" path="res://GameLevelsETC/CellarLevel.tscn" id="16_17epn"]
 
@@ -76,12 +75,6 @@ _data = {
 &"fog_cycle": SubResource("Animation_3nbob")
 }
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_pyrst"]
-
-[sub_resource type="BoxMesh" id="BoxMesh_o8227"]
-
-[sub_resource type="BoxShape3D" id="BoxShape3D_o8227"]
-
 [node name="Level1" type="Node3D"]
 script = ExtResource("1_oh3op")
 spawn_radius = 200.0
@@ -116,34 +109,10 @@ libraries = {
 [node name="TetherSystem" type="Node" parent="."]
 script = ExtResource("7_ki0f2")
 
-[node name="CellarDoor" type="Node3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.322731, 1.8603764, 3)
-script = ExtResource("12_o8227")
-next_level = ExtResource("16_17epn")
-
-[node name="Area3D" type="Area3D" parent="CellarDoor" groups=["interactable"]]
-collision_layer = 8
-collision_mask = 0
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="CellarDoor/Area3D"]
-shape = SubResource("BoxShape3D_pyrst")
-
-[node name="MeshInstance3D" type="MeshInstance3D" parent="CellarDoor"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -32.1279, 0, -6.1118)
-mesh = SubResource("BoxMesh_o8227")
-
-[node name="StaticBody3D" type="StaticBody3D" parent="CellarDoor/MeshInstance3D"]
-collision_mask = 9
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="CellarDoor/MeshInstance3D/StaticBody3D"]
-shape = SubResource("BoxShape3D_o8227")
-
-[node name="CellarRoot" type="Node3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -242.99564, 0)
-
 [node name="TelleportManager" type="Node3D" parent="."]
 script = ExtResource("15_vlwaf")
 cellar_scene = ExtResource("16_17epn")
+cellar_root_path = NodePath("")
 
 [node name="Spawn" type="Marker3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.4970512, 47.726566)

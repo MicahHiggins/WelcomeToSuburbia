@@ -3,8 +3,8 @@ extends Node3D
 @onready var breathing: AudioStreamPlayer = %Breathing
 @onready var anim: AnimationPlayer = $AnimationPlayer
 
-const BREATH_MIN_DB := -40.0
-const BREATH_MAX_DB := 0.0
+const BREATH_MIN_DB := -80.0
+const BREATH_MAX_DB := -70.0
 
 func playBreathing() -> void:
 	# If it isn't already playing, start it quietly first.

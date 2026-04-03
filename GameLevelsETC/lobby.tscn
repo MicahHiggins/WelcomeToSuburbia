@@ -1,24 +1,17 @@
-[gd_scene load_steps=5 format=3 uid="uid://b6qdycemud1gt"]
+[gd_scene load_steps=7 format=3 uid="uid://b6qdycemud1gt"]
 
 [ext_resource type="Script" path="res://Scripts/lobby.gd" id="1_ym4ib"]
 [ext_resource type="PackedScene" uid="uid://bs2jm62cmkbrk" path="res://addons/instant-realistic-light/light_scene.tscn" id="2_sknj8"]
 [ext_resource type="PackedScene" uid="uid://d1ibgfwne281y" path="res://GameLevelsETC/Level1.tscn" id="2_yosgk"]
-
-[sub_resource type="BoxShape3D" id="BoxShape3D_sknj8"]
+[ext_resource type="Script" uid="uid://clddli10o35xf" path="res://GameLevelsETC/world_conveyor_manager.gd" id="5_pxi2p"]
+[ext_resource type="PackedScene" uid="uid://dkeoxgpjjq64q" path="res://GameLevelsETC/lobby_world_block.tscn" id="6_ca7vd"]
+[ext_resource type="PackedScene" uid="uid://cx5rbrvijd0rs" path="res://Assets/RandomObjects/bus/busssss.tscn" id="6_j8coi"]
 
 [node name="Lobby" type="Node3D"]
 script = ExtResource("1_ym4ib")
 start_level_scene = ExtResource("2_yosgk")
 
 [node name="Spawn" type="Marker3D" parent="."]
-
-[node name="StaticBody3D" type="StaticBody3D" parent="."]
-transform = Transform3D(10, 0, 0, 0, 0.1, 0, 0, 0, 10, 0, -0.09264696, 0)
-collision_layer = 15
-collision_mask = 15
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D"]
-shape = SubResource("BoxShape3D_sknj8")
 
 [node name="LobbyUI" type="CanvasLayer" parent="."]
 
@@ -50,6 +43,15 @@ offset_bottom = 229.0
 text = "Force Start"
 
 [node name="WorldEnvironment" parent="." instance=ExtResource("2_sknj8")]
+
+[node name="WorldConveyorManager" type="Node3D" parent="."]
+script = ExtResource("5_pxi2p")
+block_scene = ExtResource("6_ca7vd")
+block_length_z = 180.0
+move_speed = 10.0
+
+[node name="busssss" parent="." instance=ExtResource("6_j8coi")]
+transform = Transform3D(2.3849765e-08, 0, 2, 0, 1.5, 0, -2, 0, 2.3849765e-08, -0.27296734, 2.0131264, 5.2283483)
 
 [connection signal="pressed" from="LobbyUI/VoteStart" to="." method="_on_start_pressed"]
 [connection signal="pressed" from="LobbyUI/ForceStart" to="." method="_on_force_start_pressed"]
