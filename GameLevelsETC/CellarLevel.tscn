@@ -97,7 +97,7 @@ heartbeat_strength = 0.7
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.2284875, 0)
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
-light_color = Color(0.90731144, 0.8583678, 0.83172333, 1)
+light_color = Color(0.4670977, 0.16774693, 0.38934228, 1)
 light_energy = 0.2
 light_indirect_energy = 0.5
 light_specular = 0.2
