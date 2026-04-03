@@ -1,3 +1,4 @@
+# res://ItemManager.gd
 extends Node
 # ------------------------------------------------------------
 # ItemManager (SERVER authoritative)
@@ -33,10 +34,10 @@ const SERVER_ID: int = 1
 var _held_by: Dictionary = {}           # NodePath -> int (peer_id), -1 = free
 var _original_parent: Dictionary = {}   # NodePath -> NodePath (scene-relative parent path)
 
-# NEW: remember the original local scale so held items don't "change size"
+# remember original local scale so held items don't "change size"
 var _original_scale: Dictionary = {}    # NodePath -> Vector3
 
-# NEW: last known world transform for late-join reconstruction
+# last known world transform for late-join reconstruction
 var _last_world_xform: Dictionary = {}  # NodePath -> Transform3D
 
 # =========================
@@ -68,7 +69,6 @@ func _register_scene_items() -> void:
 			var parent_path: NodePath = _to_scene_path(item.get_parent())
 			_original_parent[key] = parent_path
 
-		# NEW: cache original scale once
 		if item is Node3D and not _original_scale.has(key):
 			_original_scale[key] = (item as Node3D).scale
 
@@ -208,9 +208,8 @@ func _set_collision_shapes_enabled(root: Node, enabled: bool) -> void:
 		if n is CollisionShape3D:
 			(n as CollisionShape3D).disabled = not enabled
 
-		var children: Array = n.get_children()
-		for c in children:
-			var child: Node = c as Node
+		for c_any in n.get_children():
+			var child: Node = c_any as Node
 			if child != null:
 				stack.append(child)
 
@@ -286,6 +285,94 @@ func _find_item_anim_player(item: Node) -> AnimationPlayer:
 	var found: Node = item.find_child("AnimationPlayer", true, false)
 	return found as AnimationPlayer
 
+# ============================================================
+#   SERVER FORCE PICKUP (for LevelFlow auto-equip + restart)
+# ============================================================
+@rpc("any_peer", "reliable")
+func server_force_pickup_for_peer(item_path: NodePath, peer_id: int) -> void:
+	if not multiplayer.is_server():
+		return
+	if peer_id <= 0:
+		return
+	_server_pickup_for_peer(item_path, peer_id)
+
+func _server_pickup_for_peer(item_path: NodePath, peer_id: int) -> void:
+	if not multiplayer.is_server():
+		return
+
+	var item: Node = _resolve_scene_path(item_path)
+	if item == null:
+		return
+	if not item.is_in_group("pickup"):
+		return
+
+	var item_key: NodePath = _stable_key_for_item(item)
+	if String(item_key) == "":
+		return
+
+	# Ensure tracked state exists
+	if not _original_parent.has(item_key):
+		var parent_path: NodePath = _to_scene_path(item.get_parent())
+		_original_parent[item_key] = parent_path
+
+	if item is Node3D and not _original_scale.has(item_key):
+		_original_scale[item_key] = (item as Node3D).scale
+
+	if not _held_by.has(item_key):
+		_held_by[item_key] = -1
+
+	# If we think it's held but the node isn't actually attached, clear stale hold.
+	if int(_held_by[item_key]) != -1:
+		var holder: int = int(_held_by[item_key])
+		var p_check: Node3D = _player_for_peer(holder)
+		var still_valid := false
+		if p_check != null:
+			var marker := p_check.get_node_or_null("Head/CarryObjectMarker") as Node
+			if marker != null and marker.get_child_count() > 0:
+				var ch := marker.get_child(0)
+				if ch == item:
+					still_valid = true
+		if not still_valid:
+			_held_by[item_key] = -1
+			if item.has_meta("locked"):
+				item.set_meta("locked", false)
+
+	if int(_held_by[item_key]) != -1:
+		return
+
+	if item.has_meta("locked") and bool(item.get_meta("locked")):
+		return
+	item.set_meta("locked", true)
+
+	var p: Node3D = _player_for_peer(peer_id)
+	if p == null:
+		item.set_meta("locked", false)
+		return
+
+	if "inventory" in p:
+		var inv_any: Array = p.inventory
+		if inv_any.size() >= max_inventory_slots:
+			if p.has_method("server_show_hint"):
+				p.rpc_id(peer_id, "server_show_hint", "Inventory Full", 1.25)
+			item.set_meta("locked", false)
+			return
+
+	_held_by[item_key] = peer_id
+
+	var player_rel: NodePath = _to_scene_path(p)
+	if String(player_rel) == "":
+		_held_by[item_key] = -1
+		item.set_meta("locked", false)
+		return
+
+	rpc("apply_pickup", item_key, player_rel, peer_id)
+
+	if "inventory" in p and p.has_method("server_set_inventory"):
+		var new_inv: Array[StringName] = (p.inventory as Array[StringName]).duplicate()
+		if new_inv.find(StringName(item.name)) == -1:
+			new_inv.append(StringName(item.name))
+		p.rpc_id(peer_id, "server_set_inventory", new_inv)
+
 # =========================
 #   SERVER: PICKUP REQUEST
 # =========================
@@ -298,61 +385,7 @@ func request_pickup(item_path: NodePath) -> void:
 	if sender == 0:
 		sender = multiplayer.get_unique_id()
 
-	var item: Node = _resolve_scene_path(item_path)
-	if item == null:
-		return
-	if not item.is_in_group("pickup"):
-		return
-
-	var item_key: NodePath = _stable_key_for_item(item)
-	if String(item_key) == "":
-		return
-
-	if not _original_parent.has(item_key):
-		var parent_path: NodePath = _to_scene_path(item.get_parent())
-		_original_parent[item_key] = parent_path
-
-	# NEW: ensure original scale cached even if item was spawned later
-	if item is Node3D and not _original_scale.has(item_key):
-		_original_scale[item_key] = (item as Node3D).scale
-
-	if not _held_by.has(item_key):
-		_held_by[item_key] = -1
-
-	if _held_by.has(item_key) and int(_held_by[item_key]) != -1:
-		return
-
-	if item.has_meta("locked") and bool(item.get_meta("locked")):
-		return
-	item.set_meta("locked", true)
-
-	var p: Node3D = _player_for_peer(sender)
-	if p == null:
-		item.set_meta("locked", false)
-		return
-
-	if "inventory" in p:
-		var inv_any: Array = p.inventory
-		if inv_any.size() >= max_inventory_slots:
-			if p.has_method("server_show_hint"):
-				p.rpc_id(sender, "server_show_hint", "Inventory Full", 1.25)
-			item.set_meta("locked", false)
-			return
-
-	_held_by[item_key] = sender
-
-	var player_rel: NodePath = _to_scene_path(p)
-	if String(player_rel) == "":
-		_held_by[item_key] = -1
-		item.set_meta("locked", false)
-		return
-
-	rpc("apply_pickup", item_key, player_rel, sender)
-
-	if "inventory" in p and p.has_method("server_set_inventory"):
-		var new_inv: Array[StringName] = (p.inventory as Array[StringName]).duplicate()
-		new_inv.append(StringName(item.name))
-		p.rpc_id(sender, "server_set_inventory", new_inv)
+	_server_pickup_for_peer(item_path, sender)
 
 # =========================
 #  ALL PEERS: APPLY PICKUP
@@ -366,7 +399,6 @@ func apply_pickup(item_key: NodePath, player_path: NodePath, new_owner_id: int) 
 
 	item.set_meta("item_key", String(item_key))
 
-	# i keep the original scale saved so the item stays the same size when held
 	var saved_scale := Vector3.ONE
 	if _original_scale.has(item_key):
 		saved_scale = _original_scale[item_key]
@@ -379,16 +411,13 @@ func apply_pickup(item_key: NodePath, player_path: NodePath, new_owner_id: int) 
 
 	var marker: Node = player.get_node_or_null("Head/CarryObjectMarker")
 	if marker != null and marker is Node3D:
-		# IMPORTANT: don't keep global transform here, it can mess up scale like crazy
 		item.reparent(marker as Node3D, false)
 
-		# now i just snap it to the marker and apply the scale i want
 		if item is Node3D:
 			var n3 := item as Node3D
 			n3.transform = Transform3D.IDENTITY
 			n3.scale = saved_scale
 	else:
-		# fallback if marker is missing
 		item.reparent(player, false)
 
 		if item is Node3D:
@@ -396,7 +425,8 @@ func apply_pickup(item_key: NodePath, player_path: NodePath, new_owner_id: int) 
 			n3b.transform = Transform3D.IDENTITY
 			n3b.scale = saved_scale
 
-	if "set_held" in item:
+	# PATCH: this must be has_method, not `"set_held" in item`
+	if item.has_method("set_held"):
 		item.call_deferred("set_held", true)
 
 # =========================
@@ -433,7 +463,6 @@ func request_drop(item_key: NodePath) -> void:
 	var drop_xform: Transform3D = Transform3D(item.global_transform.basis, drop_pos)
 
 	item.set_multiplayer_authority(SERVER_ID)
-
 	_last_world_xform[item_key] = drop_xform
 
 	rpc("apply_drop", item_key, drop_xform, forward)
@@ -468,7 +497,6 @@ func apply_drop(item_key: NodePath, world_xform: Transform3D, impulse_forward: V
 	if parent_node == null:
 		parent_node = scene if scene != null else get_tree().root
 
-	# NEW: restore original scale when dropping too (keeps it consistent)
 	var saved_scale := Vector3.ONE
 	if _original_scale.has(item_key):
 		saved_scale = _original_scale[item_key]
@@ -481,7 +509,8 @@ func apply_drop(item_key: NodePath, world_xform: Transform3D, impulse_forward: V
 
 	_unfreeze_for_drop(item, impulse_forward)
 
-	if "set_held" in item:
+	# PATCH: this must be has_method, not `"set_held" in item`
+	if item.has_method("set_held"):
 		item.call_deferred("set_held", false)
 
 	call_deferred("_deferred_finalize_drop", item_key)

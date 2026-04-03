@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=3 uid="uid://c2ocvg8ruxbbg"]
+[gd_scene load_steps=15 format=3 uid="uid://ckinm3lcyfbhx"]
 
 [ext_resource type="Script" uid="uid://dywhk2ngguw7a" path="res://GameLevelsETC/lobby_manager.gd" id="1_l5n62"]
 [ext_resource type="Script" uid="uid://l6pyeyjgkntn" path="res://GameLevelsETC/item_manager.gd" id="1_lbg40"]
