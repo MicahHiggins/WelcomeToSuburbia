@@ -1,5 +1,9 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 [gd_scene load_steps=46 format=3 uid="uid://dw6fx71adu107"]
+=======
+[gd_scene load_steps=43 format=3 uid="uid://dw6fx71adu107"]
+>>>>>>> parent of 5a714e7 (added door and moved stuff around)
 =======
 [gd_scene load_steps=43 format=3 uid="uid://dw6fx71adu107"]
 >>>>>>> parent of 5a714e7 (added door and moved stuff around)
@@ -360,6 +364,7 @@ shape = SubResource("BoxShape3D_pe1yd")
 [node name="toy_pianoListen" parent="Bedrooms/bedroom1" instance=ExtResource("12_6rn1s")]
 transform = Transform3D(0.019856678, 0, -0.1486801, 0, 0.15000002, 0, 0.1486801, 0, 0.019856678, -2.5266912, -0.8230621, -2.1686707)
 
+<<<<<<< HEAD
 [node name="RedBed" parent="Bedrooms/bedroom1" instance=ExtResource("13_2uf5w")]
 transform = Transform3D(-1.223919e-08, 0, 0.28000006, 0, 0.28000003, 0, -0.28000006, 0, -1.223919e-08, 4.78642, -1.9862005, 0.79205513)
 
@@ -371,6 +376,8 @@ visible = false
 [node name="doorway" parent="Bedrooms/bedroom1" instance=ExtResource("13_pm42j")]
 transform = Transform3D(-1.48618815e-08, 0, 0.34000018, 0, 0.425, 0, -0.34000018, 0, -1.48618815e-08, -3.1372774, -1.9475207, 0.45228958)
 
+=======
+>>>>>>> parent of 5a714e7 (added door and moved stuff around)
 =======
 >>>>>>> parent of 5a714e7 (added door and moved stuff around)
 [node name="bedroom2" parent="Bedrooms" instance=ExtResource("13_vmkem")]
