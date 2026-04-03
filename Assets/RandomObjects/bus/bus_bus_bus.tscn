@@ -1,6 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://bblt7pllqdpoo"]
-
-[ext_resource type="PackedScene" uid="uid://4rcmv4pwxlya" path="res://Assets/RandomObjects/bus/BUS_BUS_BUS.glb" id="1_km8bd"]
+[gd_scene load_steps=9 format=3 uid="uid://bblt7pllqdpoo"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_qvtmx"]
 albedo_color = Color(0.8977266, 0.7621701, 0.3644898, 1)
@@ -27,7 +25,7 @@ size = Vector3(7.5615234, 2.1445313, 0.03515625)
 [sub_resource type="BoxShape3D" id="BoxShape3D_8vvs2"]
 size = Vector3(0.44976807, 0.5793457, 0.8547363)
 
-[node name="BUS_BUS_BUS" instance=ExtResource("1_km8bd")]
+[node name="BUS_BUS_BUS"]
 
 [node name="Bus_003" parent="." index="10"]
 surface_material_override/1 = SubResource("StandardMaterial3D_qvtmx")
