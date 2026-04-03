@@ -1,9 +1,10 @@
-[gd_scene load_steps=11 format=3 uid="uid://bf38tvkrxj6ds"]
+[gd_scene load_steps=12 format=3 uid="uid://bf38tvkrxj6ds"]
 
 [ext_resource type="Script" uid="uid://dqvoninhsiala" path="res://GameLevelsETC/cellar_3_door_hallway.gd" id="1_tmgbf"]
 [ext_resource type="PackedScene" uid="uid://dqbgiq51e15mw" path="res://Assets/RandomObjects/stone_block.tscn" id="2_3njtq"]
 [ext_resource type="PackedScene" uid="uid://bk12xaa431jqc" path="res://Assets/RandomObjects/symbol/symbol.tscn" id="3_3njtq"]
 [ext_resource type="PackedScene" uid="uid://b6vnu6i8g7uqc" path="res://Assets/RandomObjects/symbol/symbol_correct.tscn" id="3_720kl"]
+[ext_resource type="Script" uid="uid://drk1xq8qdpgsn" path="res://GameLevelsETC/fleshviroment.gd" id="5_4a1gr"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_720kl"]
 
@@ -87,6 +88,8 @@ shape = SubResource("BoxShape3D_f1x8v")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_720kl")
+script = ExtResource("5_4a1gr")
+heartbeat_strength = 0.7
 
 [node name="world" type="Node3D" parent="."]
 
