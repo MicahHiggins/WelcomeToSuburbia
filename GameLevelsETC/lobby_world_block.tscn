@@ -1,0 +1,32 @@
+[gd_scene load_steps=6 format=3 uid="uid://dkeoxgpjjq64q"]
+
+[ext_resource type="PackedScene" uid="uid://ret8ne1fmk7l" path="res://Assets/RandomObjects/road/road.tscn" id="1_28dir"]
+[ext_resource type="Script" uid="uid://dkrb6xr4knxfp" path="res://GameLevelsETC/lobby_world_block.gd" id="1_cb7wj"]
+[ext_resource type="PackedScene" uid="uid://bhne50eu8g2mb" path="res://Assets/RandomObjects/pineTree/pine_tree.tscn" id="2_4nros"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_mvs8v"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_cb7wj"]
+albedo_color = Color(0.19215687, 0.21176471, 0.11764706, 1)
+
+[node name="LobbyWorldBlock" type="Node3D"]
+script = ExtResource("1_cb7wj")
+block_size_x = 200.0
+block_size_z = 200.0
+no_tree_half_width = 10.0
+tree_scene = ExtResource("2_4nros")
+trees_per_block_min = 42
+tree_min_spacing = 4.0
+tree_scale_multiplier = 0.7
+tree_scale_min_abs = 0.5
+tree_scale_max_abs = 3.0
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(200, 0, 0, 0, 1, 0, 0, 0, 200, 0, -0.5, 0)
+mesh = SubResource("BoxMesh_mvs8v")
+surface_material_override/0 = SubResource("StandardMaterial3D_cb7wj")
+
+[node name="Trees" type="Node3D" parent="."]
+
+[node name="Road" parent="." instance=ExtResource("1_28dir")]
+transform = Transform3D(24, 0, 0, 0, 1, 0, 0, 0, 12.4, 7.368889, 0, -17.959724)

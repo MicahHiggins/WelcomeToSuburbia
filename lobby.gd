@@ -1,66 +1,55 @@
+# res://LobbyReady.gd
 extends Node3D
 class_name LobbyReady
 
-const SERVER_ID: int = 1 # host is peer 1 in our setup
+const SERVER_ID: int = 1
 
-# drag any scene here and this is what the lobby will start
 @export var start_level_scene: PackedScene
-
-# lets me test alone (singleplayer or host-only)
 @export var allow_force_start_with_one_player: bool = true
 
-@export var level_flow_path: NodePath = NodePath("/root/Main/LevelFlowManager")
+# Leave empty to auto-find LevelFlowManager by name
+@export var level_flow_path: NodePath = NodePath("")
 @export var min_players_to_start: int = 2
 
-# UI nodes in the lobby scene
-@export var lobby_ui_root_path: NodePath = NodePath("LobbyUI")
-@export var start_button_path: NodePath = NodePath("LobbyUI/VoteStart")
-@export var force_start_button_path: NodePath = NodePath("LobbyUI/ForceStart") # NEW button
-@export var status_label_path: NodePath = NodePath("LobbyUI/PlayerCount")
-
-# shared popup/countdown label (LobbyUI/Ready)
-@export var ready_popup_label_path: NodePath = NodePath("LobbyUI/Ready")
+# Lobby UI lookup (by names inside the loaded lobby scene)
+@export var lobby_ui_name: StringName = &"LobbyUI"
+@export var start_button_name: StringName = &"VoteStart"
+@export var force_start_button_name: StringName = &"ForceStart"
+@export var status_label_name: StringName = &"PlayerCount"
+@export var ready_popup_label_name: StringName = &"Ready"
 
 @export var start_countdown_seconds: int = 5
 @export var ready_popup_hold_seconds: float = 2.2
 @export var ready_popup_fade_seconds: float = 1.4
 @export var countdown_end_hold_seconds: float = 0.75
 
-# if you want to hook other stuff to force start later
 signal force_start_requested
 
 var _lfm: Node = null
-var _ui_root: CanvasItem = null
+
+# FIX: CanvasLayer != CanvasItem, so keep this as Node (or CanvasLayer/Control)
+var _ui_root: Node = null
 var _start_btn: Button = null
 var _force_btn: Button = null
 var _status: Label = null
 var _ready_popup: Label = null
 
-# server keeps track of who voted
 var _votes: Dictionary = {} # int(peer_id) -> bool
-
-# local cache so we know if *this* player already voted (for button color/text)
 var _local_peer_id: int = -1
-
-# stop double-starts
 var _starting: bool = false
 var _popup_tween: Tween = null
 
+var _ui_refresh_accum: float = 0.0
+@export var ui_refresh_interval_sec: float = 0.25
+
 
 func _ready() -> void:
-	_lfm = _find_level_flow_manager()
-
-	_ui_root = get_node_or_null(lobby_ui_root_path) as CanvasItem
-	_start_btn = get_node_or_null(start_button_path) as Button
-	_force_btn = get_node_or_null(force_start_button_path) as Button
-	_status = get_node_or_null(status_label_path) as Label
-	_ready_popup = get_node_or_null(ready_popup_label_path) as Label
-
 	_local_peer_id = multiplayer.get_unique_id()
 
-	# IMPORTANT: we hide the UI until the player actually exists in this level
-	if _ui_root != null:
-		_ui_root.visible = false
+	_lfm = _find_level_flow_manager()
+	_resolve_lobby_ui_nodes()
+
+	_set_ui_visible(false)
 
 	if _start_btn != null:
 		_start_btn.visible = false
@@ -78,65 +67,129 @@ func _ready() -> void:
 	if _ready_popup != null:
 		_ready_popup.visible = false
 
-	# server listens for joins/leaves (votes only matter on server)
 	if multiplayer.has_multiplayer_peer() and multiplayer.is_server():
 		if not multiplayer.peer_connected.is_connected(_on_peer_change):
 			multiplayer.peer_connected.connect(_on_peer_change)
 		if not multiplayer.peer_disconnected.is_connected(_on_peer_change):
 			multiplayer.peer_disconnected.connect(_on_peer_change)
 
-		# make sure host is tracked for voting
-		var host_id := multiplayer.get_unique_id()
+		var host_id: int = multiplayer.get_unique_id()
 		if not _votes.has(host_id):
 			_votes[host_id] = false
 
-	# refresh when the client actually connects
 	if not multiplayer.connected_to_server.is_connected(_on_connected_refresh):
 		multiplayer.connected_to_server.connect(_on_connected_refresh)
 
-	# host doesn't get connected_to_server, so do one refresh next frame too
 	call_deferred("_deferred_refresh")
+
+
+func _process(dt: float) -> void:
+	_ui_refresh_accum += dt
+	if _ui_refresh_accum < ui_refresh_interval_sec:
+		return
+	_ui_refresh_accum = 0.0
+
+	# UI may not exist yet if level just loaded; keep trying
+	if _ui_root == null:
+		_resolve_lobby_ui_nodes()
 
 	_update_status()
 
 
 func _deferred_refresh() -> void:
 	_local_peer_id = multiplayer.get_unique_id()
+	_resolve_lobby_ui_nodes()
 	_on_peer_change(-1)
+	_update_status()
 
 
 func _on_connected_refresh() -> void:
 	_local_peer_id = multiplayer.get_unique_id()
+	_resolve_lobby_ui_nodes()
 	_on_peer_change(-1)
+	_update_status()
 
 
+# ------------------------------------------------------------
+# Find LevelFlowManager robustly
+# ------------------------------------------------------------
 func _find_level_flow_manager() -> Node:
-	var n := get_node_or_null(level_flow_path)
-	if n != null:
-		return n
+	if String(level_flow_path) != "":
+		var n1: Node = get_node_or_null(level_flow_path)
+		if n1 != null:
+			return n1
+		var n2: Node = get_tree().root.get_node_or_null(level_flow_path)
+		if n2 != null:
+			return n2
 
-	var scene := get_tree().current_scene
+	var scene: Node = get_tree().current_scene
 	if scene != null:
-		var found := scene.find_child("LevelFlowManager", true, false)
+		var found: Node = scene.find_child("LevelFlowManager", true, false)
 		if found != null:
 			return found
 
-	return null
+	return get_tree().root.find_child("LevelFlowManager", true, false)
+
+
+# ------------------------------------------------------------
+# Find LobbyUI inside the loaded lobby level (usually under LevelContainer)
+# ------------------------------------------------------------
+func _resolve_lobby_ui_nodes() -> void:
+	_ui_root = null
+	_start_btn = null
+	_force_btn = null
+	_status = null
+	_ready_popup = null
+
+	var scene: Node = get_tree().current_scene
+	if scene == null:
+		return
+
+	var ui_any: Node = scene.find_child(String(lobby_ui_name), true, false)
+	if ui_any == null:
+		ui_any = get_tree().root.find_child(String(lobby_ui_name), true, false)
+	if ui_any == null:
+		return
+
+	_ui_root = ui_any
+
+	_start_btn = ui_any.get_node_or_null(NodePath(String(start_button_name))) as Button
+	_force_btn = ui_any.get_node_or_null(NodePath(String(force_start_button_name))) as Button
+	_status = ui_any.get_node_or_null(NodePath(String(status_label_name))) as Label
+	_ready_popup = ui_any.get_node_or_null(NodePath(String(ready_popup_label_name))) as Label
+
+	if _start_btn != null and not _start_btn.pressed.is_connected(_on_start_pressed):
+		_start_btn.pressed.connect(_on_start_pressed)
+	if _force_btn != null and not _force_btn.pressed.is_connected(_on_force_start_pressed):
+		_force_btn.pressed.connect(_on_force_start_pressed)
+
+
+func _set_ui_visible(v: bool) -> void:
+	if _ui_root == null:
+		return
+	if _ui_root is CanvasLayer:
+		(_ui_root as CanvasLayer).visible = v
+	elif _ui_root is CanvasItem:
+		(_ui_root as CanvasItem).visible = v
+	elif _ui_root is Node:
+		# last resort: try property if present
+		if _ui_root.has_method("set_visible"):
+			_ui_root.call("set_visible", v)
 
 
 func _on_peer_change(id: int) -> void:
-	# keep vote list clean when people join/leave
 	if multiplayer.has_multiplayer_peer() and multiplayer.is_server():
 		if id != -1 and not _votes.has(id):
 			_votes[id] = false
 
-		var alive := {}
+		var alive: Dictionary = {}
 		alive[multiplayer.get_unique_id()] = true
-		for pid in multiplayer.get_peers():
-			alive[int(pid)] = true
+		for pid_any in multiplayer.get_peers():
+			alive[int(pid_any)] = true
 
-		for k in _votes.keys():
-			if not alive.has(int(k)):
+		for k_any in _votes.keys():
+			var k: int = int(k_any)
+			if not alive.has(k):
 				_votes.erase(k)
 
 		_broadcast_votes()
@@ -144,34 +197,30 @@ func _on_peer_change(id: int) -> void:
 	_update_status()
 
 
-# players in lobby = actual spawned players (this fixes "1/2 before host")
 func _get_player_count() -> int:
-	var players := get_tree().get_nodes_in_group("player")
+	var players: Array = get_tree().get_nodes_in_group("player")
 	return players.size()
 
 
 func _get_vote_count() -> int:
-	var c := 0
-	for k in _votes.keys():
-		if bool(_votes[k]) == true:
+	var c: int = 0
+	for k_any in _votes.keys():
+		if bool(_votes[k_any]) == true:
 			c += 1
 	return c
 
 
-# show UI only after at least 1 player is really in this lobby level
 func _update_status() -> void:
-	var count := _get_player_count()
-	var votes := _get_vote_count()
+	var count: int = _get_player_count()
+	var votes: int = _get_vote_count()
 
-	var player_exists := count >= 1
-	var lobby_full := count >= min_players_to_start
-	var can_force := allow_force_start_with_one_player and count == 1
+	var player_exists: bool = count >= 1
+	var lobby_full: bool = count >= min_players_to_start
+	var can_force: bool = allow_force_start_with_one_player and count == 1
 
-	if _ui_root != null:
-		_ui_root.visible = player_exists
+	_set_ui_visible(player_exists)
 
 	if not player_exists:
-		# nothing shows before host/join spawns the player
 		if _status != null:
 			_status.text = ""
 		if _start_btn != null:
@@ -180,18 +229,15 @@ func _update_status() -> void:
 			_force_btn.visible = false
 		return
 
-	# status line
 	if _status != null:
 		if lobby_full:
 			_status.text = "Players: %d / %d   Votes: %d / %d" % [count, min_players_to_start, votes, min_players_to_start]
 		else:
 			_status.text = "Players: %d / %d" % [count, min_players_to_start]
 
-	# vote button only when both are in
 	if _start_btn != null:
 		_start_btn.visible = lobby_full
 
-	# force start only when you're alone (singleplayer testing)
 	if _force_btn != null:
 		_force_btn.visible = can_force
 		_force_btn.disabled = _starting
@@ -213,7 +259,7 @@ func _update_button_visuals() -> void:
 			_start_btn.modulate = Color(1, 1, 1, 1)
 			return
 
-		var i_voted := false
+		var i_voted: bool = false
 		if _local_peer_id != -1 and _votes.has(_local_peer_id):
 			i_voted = bool(_votes[_local_peer_id])
 
@@ -234,9 +280,8 @@ func _on_start_pressed() -> void:
 	if _starting:
 		return
 
-	var my_name := _get_local_display_name()
+	var my_name: String = _get_local_display_name()
 
-	# if we aren't in multiplayer, just start locally
 	if not multiplayer.has_multiplayer_peer():
 		_starting = true
 		_update_button_visuals()
@@ -244,12 +289,10 @@ func _on_start_pressed() -> void:
 		_try_start_scene_server()
 		return
 
-	# clients send a vote to the server
 	if not multiplayer.is_server():
 		rpc_id(SERVER_ID, "_rpc_submit_vote", my_name)
 		return
 
-	# host vote
 	_register_vote(multiplayer.get_unique_id(), my_name)
 
 
@@ -264,15 +307,12 @@ func request_force_start() -> void:
 		return
 	if not allow_force_start_with_one_player:
 		return
-
-	# only allow when you're alone in the lobby
 	if _get_player_count() != 1:
 		return
 
 	_starting = true
 	_update_button_visuals()
 
-	# run countdown on local (works in singleplayer + host-only)
 	await _do_countdown_local(start_countdown_seconds)
 	_try_start_scene_server()
 
@@ -281,7 +321,7 @@ func request_force_start() -> void:
 func _rpc_submit_vote(display_name: String) -> void:
 	if not multiplayer.is_server():
 		return
-	var sender := multiplayer.get_remote_sender_id()
+	var sender: int = multiplayer.get_remote_sender_id()
 	_register_vote(sender, display_name)
 
 
@@ -299,12 +339,9 @@ func _register_vote(peer_id: int, display_name: String) -> void:
 
 	_votes[peer_id] = true
 
-	# popup for everyone
 	rpc("_rpc_show_ready_popup", "%s ready" % display_name)
-
 	_broadcast_votes()
 
-	# if everyone voted, start countdown + level change
 	if _get_vote_count() >= min_players_to_start and not _starting:
 		_starting = true
 		rpc("_rpc_set_starting", true)
@@ -315,7 +352,6 @@ func _register_vote(peer_id: int, display_name: String) -> void:
 
 
 func _try_start_scene_server() -> void:
-	# server only (or offline/singleplayer)
 	if multiplayer.has_multiplayer_peer() and not multiplayer.is_server():
 		return
 
@@ -327,14 +363,12 @@ func _try_start_scene_server() -> void:
 
 	if _lfm == null:
 		_lfm = _find_level_flow_manager()
-
 	if _lfm == null:
 		push_warning("[LobbyReady] LevelFlowManager not found, can't start.")
 		_starting = false
 		_update_status()
 		return
 
-	# we use load_level_server so everyone loads + the ready-handshake still works
 	if _lfm.has_method("load_level_server"):
 		_lfm.call("load_level_server", start_level_scene)
 	else:
@@ -350,8 +384,8 @@ func _broadcast_votes() -> void:
 		return
 
 	var payload: Array = []
-	for k in _votes.keys():
-		payload.append([int(k), bool(_votes[k])])
+	for k_any in _votes.keys():
+		payload.append([int(k_any), bool(_votes[k_any])])
 
 	rpc("_rpc_apply_votes", payload)
 
@@ -359,10 +393,10 @@ func _broadcast_votes() -> void:
 @rpc("any_peer", "call_local", "reliable")
 func _rpc_apply_votes(payload: Array) -> void:
 	_votes.clear()
-	for entry in payload:
-		if typeof(entry) != TYPE_ARRAY:
+	for entry_any in payload:
+		if typeof(entry_any) != TYPE_ARRAY:
 			continue
-		var a: Array = entry
+		var a: Array = entry_any
 		if a.size() != 2:
 			continue
 		_votes[int(a[0])] = bool(a[1])
@@ -386,17 +420,16 @@ func _rpc_start_countdown(seconds: int) -> void:
 func _do_countdown_local(seconds: int = 3) -> void:
 	if not is_inside_tree():
 		return
-	var tree := get_tree()
+	var tree: SceneTree = get_tree()
 	if tree == null:
 		return
-
 	if _ready_popup == null:
 		return
 
 	_ready_popup.visible = true
 	_ready_popup.modulate = Color(1, 1, 1, 1)
 
-	for i in range(seconds, 0, -1):
+	for i: int in range(seconds, 0, -1):
 		if not is_inside_tree():
 			return
 		_ready_popup.text = "Starting in %d..." % i
@@ -410,7 +443,7 @@ func _do_countdown_local(seconds: int = 3) -> void:
 func _server_wait_seconds(s: float) -> void:
 	if not is_inside_tree():
 		return
-	var tree := get_tree()
+	var tree: SceneTree = get_tree()
 	if tree == null:
 		return
 	await tree.create_timer(s).timeout
@@ -428,27 +461,27 @@ func _rpc_show_ready_popup(msg: String) -> void:
 	_ready_popup.text = msg
 	_ready_popup.visible = true
 
-	var c := _ready_popup.modulate
+	var c: Color = _ready_popup.modulate
 	c.a = 1.0
 	_ready_popup.modulate = c
 
 	_popup_tween = create_tween()
 	_popup_tween.tween_interval(ready_popup_hold_seconds)
-	_popup_tween.tween_property(_ready_popup, "modulate:a", 0.0, ready_popup_fade_seconds).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
-	_popup_tween.tween_callback(func():
+	_popup_tween.tween_property(_ready_popup, "modulate:a", 0.0, ready_popup_fade_seconds)\
+		.set_trans(Tween.TRANS_SINE)\
+		.set_ease(Tween.EASE_OUT)
+	_popup_tween.tween_callback(func() -> void:
 		if _ready_popup != null and not _starting:
 			_ready_popup.visible = false
 	)
 
 
 func _get_local_display_name() -> String:
-	var pid := multiplayer.get_unique_id()
-
+	var pid: int = multiplayer.get_unique_id()
 	if Engine.has_singleton("Steam"):
 		var steam := Engine.get_singleton("Steam")
 		if steam != null and steam.has_method("getPersonaName"):
-			var n := String(steam.call("getPersonaName"))
+			var n: String = String(steam.call("getPersonaName"))
 			if n.strip_edges() != "":
 				return n
-
 	return "Player %d" % pid

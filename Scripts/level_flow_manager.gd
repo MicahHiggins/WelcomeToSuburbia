@@ -1,3 +1,4 @@
+# res://LevelFlowManager.gd
 extends Node
 class_name LevelFlowManager
 
@@ -39,6 +40,18 @@ const SERVER_ID: int = 1
 # Optional: call this group after level load & spawn
 @export var post_level_ready_group: String = "level_post_ready"
 
+# ----------------------------
+# PATCH: make LevelFlowManager easy to find
+# - LobbyReady was likely failing to find it due to hardcoded /root/Main path or node name mismatch
+# - This guarantees:
+#   * Node name is "LevelFlowManager"
+#   * It’s in a predictable group: "level_flow_manager"
+#   * You can find it via get_tree().get_first_node_in_group("level_flow_manager")
+# ----------------------------
+@export var force_node_name_level_flow_manager: bool = true
+@export var register_in_group: bool = true
+const LEVEL_FLOW_GROUP: StringName = &"level_flow_manager"
+
 # Cached nodes
 var _level_container: Node = null
 var _players_root: Node3D = null
@@ -64,6 +77,15 @@ var _peer_look_target: Dictionary = {} # int(peer_id) -> String
 var _peer_cam_xforms: Dictionary = {}  # int(peer_id) -> Transform3D
 
 
+func _enter_tree() -> void:
+	# PATCH: guarantee a stable name so find_child("LevelFlowManager") works
+	if force_node_name_level_flow_manager and name != "LevelFlowManager":
+		name = "LevelFlowManager"
+
+	if register_in_group and not is_in_group(String(LEVEL_FLOW_GROUP)):
+		add_to_group(String(LEVEL_FLOW_GROUP))
+
+
 func _ready() -> void:
 	_level_container = get_node_or_null(level_container_path)
 	if _level_container == null:
@@ -81,6 +103,7 @@ func _ready() -> void:
 		if not multiplayer.peer_disconnected.is_connected(_on_peer_disconnected):
 			multiplayer.peer_disconnected.connect(_on_peer_disconnected)
 
+	# NOTE: default_level load only happens on server when multiplayer is active
 	if default_level != null:
 		if multiplayer.has_multiplayer_peer():
 			if multiplayer.is_server():
@@ -450,15 +473,15 @@ func _deferred_server_force_pickup_flashlight(joiner_id: int) -> void:
 	if not multiplayer.is_server():
 		return
 
-	var t := get_tree().create_timer(maxf(0.0, flashlight_pickup_delay_sec))
-	await t.timeout
+	var timer: SceneTreeTimer = get_tree().create_timer(maxf(0.0, flashlight_pickup_delay_sec))
+	await timer.timeout
 
 	var im: Node = _find_item_manager()
 	if im == null:
 		push_error("[LevelFlowManager] ItemManager not found on server for auto-pickup.")
 		return
 	if not im.has_method("server_force_pickup_for_peer"):
-		push_error("[LevelFlowManager] ItemManager missing server_force_pickup_for_peer (did you paste the ItemManager patch?).")
+		push_error("[LevelFlowManager] ItemManager missing server_force_pickup_for_peer.")
 		return
 
 	var flashlight: Node3D = _find_flashlight_in_world()
@@ -471,12 +494,6 @@ func _deferred_server_force_pickup_flashlight(joiner_id: int) -> void:
 		push_warning("[LevelFlowManager] Flashlight had no valid scene path to auto-pickup.")
 		return
 
-	# ✅ Server authoritative: ItemManager will:
-	# - set held_by
-	# - set authority to joiner
-	# - reparent to CarryObjectMarker
-	# - call set_held(true)
-	# - update inventory via server_set_inventory
 	im.call("server_force_pickup_for_peer", item_path, joiner_id)
 
 # ----------------------------
