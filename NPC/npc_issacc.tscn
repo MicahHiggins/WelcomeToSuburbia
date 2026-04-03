@@ -8,7 +8,7 @@
 [ext_resource type="Script" uid="uid://b2gxr16iemcxe" path="res://NPC/speak_state.gd" id="5_wprh3"]
 [ext_resource type="PackedScene" uid="uid://diyfna0mvebm4" path="res://Assets/RandomObjects/quest_marker!.tscn" id="7_7n7h8"]
 [ext_resource type="Script" path="res://NPC/issacQuests.gd" id="8_8kjmk"]
-[ext_resource type="PackedScene" uid="uid://csta168r01yq1" path="res://new_isaac_model.tscn" id="9_wprh3"]
+[ext_resource type="PackedScene" uid="uid://csta168r01yq1" path="res://NPC/new_isaac_model.tscn" id="9_wprh3"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_g4ita"]
 radius = 2.0

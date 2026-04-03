@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://bh8wge84bqmlq"]
 
-[ext_resource type="Script" uid="uid://dgi5u1idu5luo" path="res://cutscenes.gd" id="1_3mh18"]
+[ext_resource type="Script" uid="uid://dgi5u1idu5luo" path="res://Scripts/cutscenes.gd" id="1_3mh18"]
 [ext_resource type="VideoStream" uid="uid://c8jmabeang0oa" path="res://Assets/Videos/aidans_midterm_animation1.ogv" id="1_ao1cf"]
 
 [node name="Cutscenes" type="CanvasLayer" node_paths=PackedStringArray("level_2_cutscene")]
