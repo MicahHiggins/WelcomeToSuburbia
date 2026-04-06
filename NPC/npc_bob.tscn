@@ -65,9 +65,5 @@ transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, -
 
 [connection signal="body_entered" from="interact" to="." method="_on_interact_body_entered"]
 [connection signal="body_exited" from="interact" to="." method="_on_interact_body_exited"]
-[connection signal="body_entered" from="TalkDetection" to="." method="_on_talk_detection_body_entered"]
-[connection signal="body_entered" from="TalkDetection" to="bobDialogue" method="_on_talk_detection_body_entered"]
 [connection signal="body_entered" from="TalkDetection" to="ResourceTests" method="_on_talk_detection_body_entered"]
-[connection signal="body_exited" from="TalkDetection" to="." method="_on_talk_detection_body_exited"]
-[connection signal="body_exited" from="TalkDetection" to="bobDialogue" method="_on_talk_detection_body_exited"]
 [connection signal="body_exited" from="TalkDetection" to="ResourceTests" method="_on_talk_detection_body_exited"]

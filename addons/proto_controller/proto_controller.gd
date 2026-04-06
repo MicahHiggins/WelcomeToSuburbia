@@ -861,7 +861,7 @@ func _play_attack_local() -> void:
 #      FRAME / PHYSICS
 # =========================
 func _process(dt: float) -> void:
-	if _is_talking_local:
+	if dialogue.toggle == true:
 		base_speed = 0.0
 		sprint_speed = 0.0
 	else:

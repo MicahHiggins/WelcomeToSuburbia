@@ -6,7 +6,7 @@
 [ext_resource type="Script" uid="uid://cnfd8g3v8lobu" path="res://GameLevelsETC/pop_up.gd" id="4_n0eaf"]
 [ext_resource type="PackedScene" uid="uid://gxwo5ybv7v7s" path="res://Max's Folder (do not touch!!!)/DialogueManager/dialogue_manager.tscn" id="5_n0eaf"]
 [ext_resource type="Script" uid="uid://b04i6ar3qh87c" path="res://aidan_stuff/curr_iter.gd" id="6_d3d0q"]
-[ext_resource type="Script" path="res://aidan_stuff/curr_obj.gd" id="6_dd0l5"]
+[ext_resource type="Script" uid="uid://c8d8y0v8e3yhm" path="res://aidan_stuff/curr_obj.gd" id="6_dd0l5"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_q3uk2"]
 border_width_left = 4

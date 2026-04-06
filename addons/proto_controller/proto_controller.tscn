@@ -6,7 +6,7 @@
 [ext_resource type="Script" uid="uid://cfienyrl5pmdh" path="res://addons/proto_controller/player_audio.gd" id="3_h60nn"]
 [ext_resource type="PackedScene" uid="uid://dwgaejjewy8s5" path="res://aidan_stuff/ui.tscn" id="4_6dqce"]
 [ext_resource type="AudioStream" uid="uid://oyfj3k6hjdsi" path="res://Audio/SFX/fastHeartbeat.wav" id="5_h60nn"]
-[ext_resource type="PackedScene" uid="uid://bh8wge84bqmlq" path="res://cutscenes.tscn" id="7_ujot4"]
+[ext_resource type="PackedScene" path="res://cutscenes.tscn" id="7_ujot4"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_iof21"]
 albedo_color = Color(0.91806, 0.575202, 0.222449, 1)

@@ -32,6 +32,7 @@ patch_margin_bottom = 10
 script = ExtResource("2_80amd")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+visible = false
 position = Vector2(21.558372, 21.12285)
 scale = Vector2(0.042125292, 0.042125292)
 sprite_frames = SubResource("SpriteFrames_im15s")
