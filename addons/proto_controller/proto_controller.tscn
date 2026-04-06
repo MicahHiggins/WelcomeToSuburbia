@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=3 uid="uid://bs72ogkvdd7d6"]
+[gd_scene load_steps=16 format=3 uid="uid://bs72ogkvdd7d6"]
 
 [ext_resource type="Script" uid="uid://psbmqqwxvny5" path="res://addons/proto_controller/proto_controller.gd" id="1_ucva2"]
 [ext_resource type="Script" uid="uid://boitue63820b1" path="res://addons/proto_controller/ray_cast_3d.gd" id="2_wr06p"]
@@ -6,6 +6,7 @@
 [ext_resource type="Script" uid="uid://cfienyrl5pmdh" path="res://addons/proto_controller/player_audio.gd" id="3_h60nn"]
 [ext_resource type="PackedScene" uid="uid://dwgaejjewy8s5" path="res://aidan_stuff/ui.tscn" id="4_6dqce"]
 [ext_resource type="AudioStream" uid="uid://oyfj3k6hjdsi" path="res://Audio/SFX/fastHeartbeat.wav" id="5_h60nn"]
+[ext_resource type="PackedScene" uid="uid://bh8wge84bqmlq" path="res://cutscenes.tscn" id="7_ujot4"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_iof21"]
 albedo_color = Color(0.91806, 0.575202, 0.222449, 1)
@@ -49,7 +50,7 @@ tracks/0/path = NodePath("..")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
-"times": PackedFloat32Array(0.56666666),
+"times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "values": [{
 "args": [],
@@ -106,8 +107,11 @@ sprint_speed = 5.0
 freefly_speed = 100.0
 stamina_max = 160.0
 stamina_drain_per_sec = 14.0
-stamina_regen_per_sec = 15.0
+stamina_regen_per_sec = 35.0
 attack_cooldown = 5.0
+cellar_follow_up_m = 0.7
+cellar_follow_back_m = 0.3
+cellar_piggyback_dist_override = 0.0
 
 [node name="Mesh" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
@@ -144,7 +148,6 @@ script = ExtResource("3_h60nn")
 
 [node name="Footstep" type="AudioStreamPlayer3D" parent="PlayerAudios"]
 stream = ExtResource("3_5hfox")
-volume_db = -18.0
 
 [node name="heartBeat" type="AudioStreamPlayer3D" parent="PlayerAudios"]
 stream = ExtResource("5_h60nn")
@@ -162,3 +165,5 @@ libraries = {
 }
 
 [node name="UI" parent="." instance=ExtResource("4_6dqce")]
+
+[node name="Cutscenes" parent="." instance=ExtResource("7_ujot4")]

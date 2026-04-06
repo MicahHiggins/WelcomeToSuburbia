@@ -1,0 +1,59 @@
+[gd_scene load_steps=10 format=3 uid="uid://d0amtgbo2s5el"]
+
+[ext_resource type="PackedScene" uid="uid://b2y6atqg36300" path="res://Assets/RandomObjects/Beds/RedBed.glb" id="1_pnlb4"]
+[ext_resource type="Texture2D" uid="uid://dylfs5ddsnvs7" path="res://Assets/RandomObjects/Beds/RedBed_oak-wood-bare_albedo.png" id="2_yqeiq"]
+[ext_resource type="Texture2D" uid="uid://c1i7f257oa8gs" path="res://Assets/RandomObjects/Beds/RedBed_Pillow.jpg" id="3_ux8vj"]
+[ext_resource type="Texture2D" uid="uid://d3glrw7gkc8ua" path="res://Assets/RandomObjects/Beds/RedBed_Blanket.png" id="4_cajnf"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_affbg"]
+albedo_color = Color(0.6748318, 0.69271237, 0.7547954, 1)
+albedo_texture = ExtResource("2_yqeiq")
+uv1_triplanar = true
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ow2h2"]
+albedo_color = Color(0.22452903, 0.2885211, 0.3835533, 1)
+albedo_texture = ExtResource("3_ux8vj")
+uv1_triplanar = true
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_e4br6"]
+albedo_color = Color(0.52749765, 0.53989935, 0.6200847, 1)
+albedo_texture = ExtResource("4_cajnf")
+uv1_scale = Vector3(1, 0.2, 0.5)
+uv1_triplanar = true
+uv1_triplanar_sharpness = 1.7410964
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_5mh6e"]
+albedo_color = Color(0.33310813, 0.34607524, 0.39505365, 1)
+albedo_texture = ExtResource("3_ux8vj")
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_pnlb4"]
+size = Vector3(8.280029, 2.867859, 5.361206)
+
+[node name="RedBed" instance=ExtResource("1_pnlb4")]
+
+[node name="BedFrame_001" parent="." index="0"]
+surface_material_override/0 = SubResource("StandardMaterial3D_affbg")
+
+[node name="Cube_008" parent="." index="2"]
+surface_material_override/0 = SubResource("StandardMaterial3D_ow2h2")
+
+[node name="Cube_009" parent="." index="3"]
+surface_material_override/0 = SubResource("StandardMaterial3D_e4br6")
+
+[node name="Cube_010" parent="." index="4"]
+surface_material_override/0 = SubResource("StandardMaterial3D_affbg")
+
+[node name="Cube_011" parent="." index="5"]
+surface_material_override/0 = SubResource("StandardMaterial3D_affbg")
+
+[node name="Cube_012" parent="." index="6"]
+surface_material_override/0 = SubResource("StandardMaterial3D_5mh6e")
+
+[node name="Cube_013" parent="." index="7"]
+surface_material_override/0 = SubResource("StandardMaterial3D_5mh6e")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="." index="8"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D" index="0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.0863037, 1.309906, -8.262625)
+shape = SubResource("BoxShape3D_pnlb4")

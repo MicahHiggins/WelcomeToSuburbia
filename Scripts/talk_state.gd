@@ -6,13 +6,14 @@ class_name TalkState
 
 var _empty_time: float = 0.0
 
-# -------------------------------
-# ADDED: tiny multiplayer sync (same idea as PatrolState)
-# -------------------------------
+# tiny multiplayer sync
 @export var net_sync_anim: bool = true
 
 var _anim_player: AnimationPlayer = null
 var _last_anim: StringName = &""
+
+# ADDED: optional check to avoid bouncing if no path exists
+@export var stay_in_talk_if_no_path: bool = true
 
 
 func enter(_msg := {}) -> void:
@@ -25,7 +26,6 @@ func enter(_msg := {}) -> void:
 	if npc == null:
 		return
 
-	# ADDED: when we enter talk, make sure everyone is standing
 	_play_anim_local(&"NewStanding")
 	_net_broadcast_anim(&"NewStanding")
 
@@ -37,20 +37,17 @@ func physics_update(delta: float) -> void:
 	if npc3d == null:
 		return
 
-	# ADDED: clients do NOT run talk logic (server is the boss)
+	# clients do NOT run talk logic (server is the boss)
 	if multiplayer.has_multiplayer_peer() and not multiplayer.is_server():
 		return
 
-	# Find and play animations for NPC models (but don't restart every frame)
 	_play_anim_local(&"NewStanding")
 	_net_broadcast_anim(&"NewStanding")
 
-	# If the area isn't set, just "stay talking" (prevents ping-pong).
 	if talk_detection == null or not is_instance_valid(talk_detection):
 		_empty_time = 0.0
 		return
 
-	# Check if ANY player is still inside the area
 	var player_in_range := false
 	for b in talk_detection.get_overlapping_bodies():
 		if b != null and b.is_in_group("player"):
@@ -62,12 +59,15 @@ func physics_update(delta: float) -> void:
 	else:
 		_empty_time += delta
 		if _empty_time >= exit_delay_sec:
-			# ADDED: force everyone back to PatrolState at the same time
+			# ADDED: if no path exists, DON'T go back to Patrol (prevents ping-pong)
+			if stay_in_talk_if_no_path and (npc3d.patrol_path == null or npc3d.patrol_path.get_waypoint_nodes_sorted().size() == 0):
+				_empty_time = 0.0
+				return
+
 			_net_broadcast_state_change(&"PatrolState", {})
 			change_state.emit(&"PatrolState")
 			return
 
-	# Your global trigger (keep it server-authoritative so everyone matches)
 	if GlobalVariables.playerTalking == true:
 		_net_broadcast_state_change(&"SpeakState", {})
 		change_state.emit(&"SpeakState")
@@ -81,9 +81,6 @@ func _stop_npc() -> void:
 	npc.velocity.z = 0.0
 
 
-# -------------------------------
-# ADDED: animation helpers (so we don't search every frame)
-# -------------------------------
 func _cache_anim_player() -> void:
 	_anim_player = null
 	if npc == null:
@@ -104,7 +101,6 @@ func _play_anim_local(anim_name: StringName) -> void:
 	if _anim_player == null:
 		return
 
-	# don't spam play() every frame (it restarts the anim)
 	if _last_anim == anim_name and _anim_player.is_playing():
 		return
 
@@ -112,9 +108,6 @@ func _play_anim_local(anim_name: StringName) -> void:
 	_anim_player.play(String(anim_name))
 
 
-# -------------------------------
-# ADDED: tiny net sync for animation + state changes
-# -------------------------------
 func _net_broadcast_anim(anim_name: StringName) -> void:
 	if not net_sync_anim:
 		return
@@ -123,7 +116,6 @@ func _net_broadcast_anim(anim_name: StringName) -> void:
 	if not multiplayer.is_server():
 		return
 
-	# only send when it changes
 	if _last_anim != anim_name:
 		return
 
@@ -132,7 +124,6 @@ func _net_broadcast_anim(anim_name: StringName) -> void:
 
 @rpc("any_peer", "call_local", "unreliable")
 func _rpc_play_anim(anim_name: String) -> void:
-	# server doesn't need its own packet
 	if multiplayer.has_multiplayer_peer() and multiplayer.is_server():
 		return
 	_play_anim_local(StringName(anim_name))
@@ -148,13 +139,11 @@ func _net_broadcast_state_change(state_name: StringName, msg: Dictionary) -> voi
 
 @rpc("any_peer", "call_local", "reliable")
 func _rpc_force_state(state_name: String, msg: Dictionary) -> void:
-	# server already did it locally
 	if multiplayer.has_multiplayer_peer() and multiplayer.is_server():
 		return
 	change_state.emit(StringName(state_name), msg)
 
 
-# For finding nodes within nodes using groups
 func find_descendant_in_group(node: Node, group: String) -> Node:
 	if node.is_in_group(group):
 		return node
