@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=3 uid="uid://c5jxy2ugosnbe"]
+[gd_scene load_steps=16 format=3 uid="uid://c5jxy2ugosnbe"]
 
 [ext_resource type="Script" uid="uid://dtdv2huwkhvfh" path="res://Scripts/symbolManager.gd" id="1_tf5p5"]
 [ext_resource type="Texture2D" uid="uid://wy5xfggc16ak" path="res://Max's Folder (do not touch!!!)/Tiles/drawn.png" id="2_tkebk"]
@@ -7,8 +7,9 @@
 [ext_resource type="Texture2D" uid="uid://cs51fm4ybyunp" path="res://Max's Folder (do not touch!!!)/Tiles/empty-Sheet.png" id="3_lcf58"]
 [ext_resource type="Script" uid="uid://drdtamscdvpnk" path="res://Scripts/drawing.gd" id="4_lcf58"]
 [ext_resource type="Script" uid="uid://c42s0sbmibvcb" path="res://Scripts/Seeing.gd" id="6_nsdqc"]
-[ext_resource type="Script" path="res://Assets/RandomObjects/symbol/buttons_4_draw.gd" id="7_ymkyp"]
+[ext_resource type="Script" uid="uid://cy8r7bxw3kxbj" path="res://Assets/RandomObjects/symbol/buttons_4_draw.gd" id="7_ymkyp"]
 [ext_resource type="Texture2D" uid="uid://dohc0ilahbkwf" path="res://Assets/RandomObjects/etch-a-sketch/etchSketchPic.jpg" id="8_mf04g"]
+[ext_resource type="Script" uid="uid://brt7ixudi60mk" path="res://Assets/RandomObjects/symbol/buttons_4_see.gd" id="10_2j2dh"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_lcf58"]
 radius = 1.745
@@ -174,32 +175,35 @@ position = Vector2(1, 110)
 
 [node name="seeing" type="TileMapLayer" parent="Seeing"]
 y_sort_enabled = true
+position = Vector2(-1, -5)
 tile_set = SubResource("TileSet_nsdqc")
 script = ExtResource("6_nsdqc")
 
 [node name="Buttons4See" type="Control" parent="."]
-visible = false
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+script = ExtResource("10_2j2dh")
 
-[node name="Label" type="Label" parent="Buttons4See"]
+[node name="instr" type="Label" parent="Buttons4See"]
 layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5
-offset_left = -483.0
-offset_top = 216.0
-offset_right = -389.0
-offset_bottom = 382.0
+offset_left = -568.0
+offset_top = 167.0
+offset_right = -281.0
+offset_bottom = 333.0
 grow_horizontal = 2
 theme_override_font_sizes/font_size = 30
-text = "Hello!"
+text = "Move away to exit...
+"
 
 [node name="Exit" type="Button" parent="Buttons4See"]
+visible = false
 layout_mode = 1
 anchors_preset = 7
 anchor_left = 0.5
@@ -221,20 +225,20 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = 239.0
-offset_top = -230.0
-offset_right = 1211.0
-offset_bottom = 744.0
+offset_left = 312.00006
+offset_top = -283.0
+offset_right = 1284.0
+offset_bottom = 691.0
 grow_horizontal = 2
 grow_vertical = 2
 rotation = 1.5707964
-scale = Vector2(0.5, 0.5)
+scale = Vector2(0.6228621, 0.66976655)
 texture = ExtResource("8_mf04g")
 flip_h = true
 flip_v = true
 
-[connection signal="body_entered" from="etch-a-sketch/ObsArea" to="." method="_on_obs_area_body_entered"]
-[connection signal="body_exited" from="etch-a-sketch/ObsArea" to="." method="_on_obs_area_body_exited"]
+[connection signal="body_entered" from="etch-a-sketch/ObsArea" to="Buttons4See" method="_on_obs_area_body_entered"]
+[connection signal="body_exited" from="etch-a-sketch/ObsArea" to="Buttons4See" method="_on_obs_area_body_exited"]
 [connection signal="body_entered" from="etch-a-sketch2/DoArea" to="Buttons4Draw" method="_on_do_area_body_entered"]
 [connection signal="body_exited" from="etch-a-sketch2/DoArea" to="Buttons4Draw" method="_on_do_area_body_exited"]
 [connection signal="draw_it" from="Buttons4Draw" to="." method="_on_buttons_4_draw_draw_it"]

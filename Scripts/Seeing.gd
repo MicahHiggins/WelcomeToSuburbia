@@ -1,6 +1,7 @@
 extends TileMapLayer
 
-@onready var label: Label = $"../../Buttons4See/Label"
+@onready var label: Label = $"../../Buttons4See/instr"
+
 
 var gridSize = 30
 var Dict = {}
