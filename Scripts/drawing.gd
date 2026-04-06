@@ -1,6 +1,8 @@
 extends TileMapLayer
 @onready var clear: Button = $"../Clear"
-@onready var label: Label = $"../../Buttons4See/Label"
+
+@onready var enter: Button = $"../../Buttons4Draw/Enter"
+@onready var label: Label = $"../../Buttons4Draw/Label"
 
 
 
@@ -14,6 +16,8 @@ var drawn_tiles = []
 
 
 var can_draw: bool = true
+
+
 
 func rand_num():
 	return randi_range(1, 3)
@@ -112,11 +116,14 @@ func _drawing1():
 
 
 func _on_button_pressed() -> void:
-	print("On button pressed: ", GlobalVariables.puzzleType)
+	print("Enter! Pressed")
+	#print("On button pressed: ", GlobalVariables.puzzleType)
 	var count := 0.00
 	var perc := 0.00
 	var mask_size = mask_arr.size()
-	print(mask_arr.size())
+	print("Mask Array Size: ", mask_arr.size())
+	
+	
 	for i in mask_arr.size(): 
 		for j in drawn_tiles.size():
 			if mask_arr[i] == drawn_tiles[j]:
@@ -126,9 +133,7 @@ func _on_button_pressed() -> void:
 	
 	count = count
 	perc = count/mask_size
-	#print(mask_size)
-	#print(count)
-	#print(perc)
+
 	label.text = "Calculating Results..."
 	await get_tree().create_timer(1).timeout 
 	var percentage = perc * 100
@@ -141,3 +146,8 @@ func _on_button_pressed() -> void:
 		label.text = "You Lose: %.2f" % perc
 	
 		
+
+
+func _on_enter_pressed() -> void:
+	#print("What?")
+	_on_button_pressed()
