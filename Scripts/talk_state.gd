@@ -67,7 +67,7 @@ func physics_update(delta: float) -> void:
 			_net_broadcast_state_change(&"PatrolState", {})
 			change_state.emit(&"PatrolState")
 			return
-
+	
 	if GlobalVariables.playerTalking == true:
 		_net_broadcast_state_change(&"SpeakState", {})
 		change_state.emit(&"SpeakState")

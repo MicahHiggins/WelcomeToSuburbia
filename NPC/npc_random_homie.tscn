@@ -1,10 +1,11 @@
-[gd_scene load_steps=8 format=3 uid="uid://oljhklbdupf6"]
+[gd_scene load_steps=9 format=3 uid="uid://oljhklbdupf6"]
 
 [ext_resource type="Script" uid="uid://csc5bob5s77t" path="res://Scripts/npc_bob.gd" id="1_m8t8r"]
 [ext_resource type="Script" uid="uid://cicakuq5a1gle" path="res://Scripts/state_machine.gd" id="2_n1coq"]
 [ext_resource type="Script" uid="uid://dtisy2wdio7v" path="res://Scripts/patrol_state.gd" id="3_qxe8f"]
 [ext_resource type="Script" uid="uid://cvv6jryec78f3" path="res://Scripts/talk_state.gd" id="4_2hg57"]
-[ext_resource type="PackedScene" uid="uid://cyc74qo3u5o3v" path="res://Assets/RandomObjects/humans/HOA.tscn" id="5_n1coq"]
+[ext_resource type="PackedScene" uid="uid://dgx0072aism3g" path="res://Assets/RandomObjects/humans/HOA.tscn" id="5_n1coq"]
+[ext_resource type="Script" uid="uid://b2gxr16iemcxe" path="res://NPC/speak_state.gd" id="5_qxe8f"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_g4ita"]
 radius = 2.0
@@ -37,6 +38,10 @@ talk_range = NodePath("../../TalkDetection")
 [node name="TalkState" type="Node" parent="StateMachine" node_paths=PackedStringArray("talk_detection")]
 script = ExtResource("4_2hg57")
 talk_detection = NodePath("../../TalkDetection")
+
+[node name="SpeakState" type="Node" parent="StateMachine" node_paths=PackedStringArray("talk_detection")]
+script = ExtResource("5_qxe8f")
+talk_detection = NodePath("")
 
 [node name="NavigationAgent3D" type="NavigationAgent3D" parent="."]
 

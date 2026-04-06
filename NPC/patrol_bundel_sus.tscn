@@ -8,10 +8,7 @@
 [node name="patrol_path" type="Node3D" parent="."]
 script = ExtResource("1_qg67n")
 
-[node name="WP_1" type="Marker3D" parent="patrol_path" groups=["patrol_path"]]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.585992, 0.504493, 11.102449)
-
 [node name="NPC_SUS" parent="." instance=ExtResource("2_2cvra")]
-transform = Transform3D(0.25, 0, 0, 0, 0.25, 0, 0, 0, 0.25, -5.3341584, 0.5776011, 10.894722)
+transform = Transform3D(-0.25, 0, -2.1855694e-08, 0, 0.25, 0, 2.1855694e-08, 0, -0.25, -5.2926764, 0.4496556, 13.224584)
 
 [editable path="NPC_SUS"]
