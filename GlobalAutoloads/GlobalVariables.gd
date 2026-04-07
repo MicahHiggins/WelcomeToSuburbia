@@ -4,7 +4,6 @@ var ITERS = 0 #For Billboard
 var iterations = 0
 var conversations = 0
 
-
 var heart_beat = false
 
 var changeIterations = 0
