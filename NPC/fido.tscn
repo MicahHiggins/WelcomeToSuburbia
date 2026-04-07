@@ -90,7 +90,8 @@ libraries = {
 [node name="Bark2" type="AudioStreamPlayer3D" parent="."]
 stream = ExtResource("3_wfvho")
 attenuation_model = 2
-max_db = 2.417
+volume_db = -8.242
+max_db = -2.009
 max_distance = 1484.16
 
 [node name="QuestMarker!" parent="." instance=ExtResource("4_vuvgn")]

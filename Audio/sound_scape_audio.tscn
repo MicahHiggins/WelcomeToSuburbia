@@ -1,0 +1,101 @@
+[gd_scene load_steps=14 format=3 uid="uid://dr522dk6qis6t"]
+
+[ext_resource type="AudioStream" uid="uid://dm2idatipo1fd" path="res://Audio/soundScape/bird1.mp3" id="1_gjsy7"]
+[ext_resource type="Script" uid="uid://cb74qhlv5xtu2" path="res://Audio/sound_scape_audio.gd" id="1_lpsst"]
+[ext_resource type="AudioStream" uid="uid://d0dtlcagdtm3n" path="res://Audio/soundScape/bird2.mp3" id="2_lpsst"]
+[ext_resource type="AudioStream" uid="uid://bg4bhcl8mnmgp" path="res://Audio/soundScape/bird3.mp3" id="3_r1p7o"]
+[ext_resource type="AudioStream" uid="uid://cjqi2vu26ruj6" path="res://Audio/soundScape/bird4.mp3" id="4_qs6ed"]
+[ext_resource type="AudioStream" uid="uid://fnqpb8tq7mmv" path="res://Audio/soundScape/wind1.mp3" id="5_6v7kh"]
+[ext_resource type="AudioStream" uid="uid://c0l3o1n15g5m0" path="res://Audio/soundScape/wind2.mp3" id="6_a4ywy"]
+[ext_resource type="AudioStream" uid="uid://cg6j482vowvks" path="res://Audio/soundScape/wind3.mp3" id="7_2yf4l"]
+[ext_resource type="AudioStream" uid="uid://c5lwkfmvdnaes" path="res://Audio/soundScape/wind4.mp3" id="8_bmm62"]
+[ext_resource type="AudioStream" uid="uid://boudfvdrfgj62" path="res://Audio/soundScape/child1.mp3" id="9_1jt6n"]
+[ext_resource type="AudioStream" uid="uid://cu6mcu8hp01w3" path="res://Audio/soundScape/child2.mp3" id="10_w4csh"]
+[ext_resource type="AudioStream" uid="uid://b2vlkijj72udr" path="res://Audio/soundScape/child3.mp3" id="11_li5yv"]
+[ext_resource type="AudioStream" uid="uid://6qwggckxrxti" path="res://Audio/soundScape/child4.mp3" id="12_c25to"]
+
+[node name="soundScape Audio" type="Node3D"]
+script = ExtResource("1_lpsst")
+
+[node name="Birds" type="Node3D" parent="."]
+
+[node name="bird1" type="AudioStreamPlayer3D" parent="Birds"]
+stream = ExtResource("1_gjsy7")
+volume_db = 4.0
+max_db = 4.0
+panning_strength = 0.0
+bus = &"soundScape"
+
+[node name="bird2" type="AudioStreamPlayer3D" parent="Birds"]
+stream = ExtResource("2_lpsst")
+volume_db = 4.0
+max_db = 4.0
+bus = &"soundScape"
+
+[node name="bird3" type="AudioStreamPlayer3D" parent="Birds"]
+stream = ExtResource("3_r1p7o")
+volume_db = 4.0
+max_db = 4.0
+bus = &"soundScape"
+
+[node name="bird4" type="AudioStreamPlayer3D" parent="Birds"]
+stream = ExtResource("4_qs6ed")
+volume_db = 4.0
+max_db = 4.0
+bus = &"soundScape"
+
+[node name="Wind" type="Node3D" parent="."]
+
+[node name="wind1" type="AudioStreamPlayer3D" parent="Wind"]
+stream = ExtResource("5_6v7kh")
+volume_db = 6.0
+max_db = 6.0
+bus = &"soundScape"
+
+[node name="wind2" type="AudioStreamPlayer3D" parent="Wind"]
+stream = ExtResource("6_a4ywy")
+volume_db = 6.0
+max_db = 6.0
+bus = &"soundScape"
+
+[node name="wind3" type="AudioStreamPlayer3D" parent="Wind"]
+stream = ExtResource("7_2yf4l")
+volume_db = 6.0
+max_db = 6.0
+bus = &"soundScape"
+
+[node name="wind4" type="AudioStreamPlayer3D" parent="Wind"]
+stream = ExtResource("8_bmm62")
+volume_db = 6.0
+max_db = 6.0
+bus = &"soundScape"
+
+[node name="children" type="Node3D" parent="."]
+
+[node name="child1" type="AudioStreamPlayer3D" parent="children"]
+stream = ExtResource("9_1jt6n")
+volume_db = 11.121
+max_db = 6.0
+panning_strength = 0.0
+bus = &"soundScape"
+
+[node name="child2" type="AudioStreamPlayer3D" parent="children"]
+stream = ExtResource("10_w4csh")
+volume_db = 11.121
+max_db = 6.0
+panning_strength = 0.0
+bus = &"soundScape"
+
+[node name="child3" type="AudioStreamPlayer3D" parent="children"]
+stream = ExtResource("11_li5yv")
+volume_db = 11.121
+max_db = 6.0
+panning_strength = 0.0
+bus = &"soundScape"
+
+[node name="child4" type="AudioStreamPlayer3D" parent="children"]
+stream = ExtResource("12_c25to")
+volume_db = 11.121
+max_db = 6.0
+panning_strength = 0.0
+bus = &"soundScape"

@@ -3,6 +3,10 @@ extends Node3D
 @onready var breathing: AudioStreamPlayer = %Breathing
 @onready var anim: AnimationPlayer = $AnimationPlayer
 
+signal gameStart
+
+
+
 const BREATH_MIN_DB := -80.0
 const BREATH_MAX_DB := -70.0
 

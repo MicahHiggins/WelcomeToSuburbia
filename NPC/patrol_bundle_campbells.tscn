@@ -26,7 +26,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.296562, 0.6372285, -9.6596
 [node name="NPC_Campbells" parent="." instance=ExtResource("2_bvngj")]
 transform = Transform3D(0.25, 0, 0, 0, 0.25, 0, 0, 0, 0.25, 8.151035, 0.4424472, -8.379852)
 
-[node name="Dog" parent="NPC_Campbells" index="8"]
+[node name="Dog" parent="NPC_Campbells" index="6"]
 transform = Transform3D(0.15, 0, 0, 0, 0.14940616, -0.013334145, 0, 0.013334145, 0.14940616, 0.0371325, -0.46881258, 1.1357918)
 
 [node name="AudioCue" type="Node3D" parent="NPC_Campbells"]
@@ -37,9 +37,10 @@ script = ExtResource("3_bvngj")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.9622278, 0, -10.077015)
 stream = ExtResource("3_5k6rd")
 attenuation_model = 2
-volume_db = -8.542
+volume_db = -62.104
 unit_size = 47.13
-max_db = -1.136
+max_db = -21.094
+stream_paused = true
 max_distance = 81.3
 panning_strength = 1.2
 bus = &"SFX"
@@ -48,9 +49,10 @@ bus = &"SFX"
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.59571457, 0, -10.494152)
 stream = ExtResource("5_uxm5b")
 attenuation_model = 2
-volume_db = -8.0
+volume_db = -48.515
 unit_size = 17.86
-max_db = -0.903
+max_db = -14.937
+stream_paused = true
 max_distance = 397.67
 panning_strength = 1.14
 bus = &"SFX"

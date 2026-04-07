@@ -27,6 +27,8 @@ const SERVER_ID: int = 1
 func _ready() -> void:
 	worldBlocks2 = [world_block_1, world_block_2, world_block_3,
 	world_block_4, world_block_5]
+	
+	AudioManager.gameStart.emit()
 	#print(worldBlocks2[1])
 
 
