@@ -25,7 +25,7 @@ collision_layer = 0
 collision_mask = 8
 
 [node name="interact_shape" type="CollisionShape3D" parent="interact"]
-transform = Transform3D(5, 0, 0, 0, 5, 0, 0, 0, 5, 0, 0, 0)
+transform = Transform3D(4, 0, 0, 0, 4, 0, 0, 0, 4, 0, 0, 0)
 shape = SubResource("SphereShape3D_g4ita")
 
 [node name="body" type="CollisionShape3D" parent="."]
@@ -54,7 +54,7 @@ talk_detection = NodePath("../../TalkDetection")
 collision_mask = 8
 
 [node name="TalkDetectionShape" type="CollisionShape3D" parent="TalkDetection"]
-transform = Transform3D(1.65, 0, 0, 0, 1.65, 0, 0, 0, 1.65, 1.0070975, 0, 0.33880293)
+transform = Transform3D(1.8, 0, 0, 0, 1.8, 0, 0, 0, 1.8, 0, 0, 0.339)
 shape = SubResource("SphereShape3D_g4ita")
 
 [node name="CampbellsDialogue" type="Node3D" parent="."]
@@ -62,7 +62,7 @@ script = ExtResource("5_u5i8w")
 npc_name = "The Campbells"
 
 [node name="Dog" parent="." instance=ExtResource("6_u5i8w")]
-transform = Transform3D(0.14999999, 0, 0, 0, 0.14940615, -0.013334143, 0, 0.013334143, 0.14940615, 1.6609339, -0.86171335, -0.21240687)
+transform = Transform3D(0.14999999, 0, 0, 0, 0.14940615, -0.013334143, 0, 0.013334143, 0.14940615, 0.63112676, -0.86171335, -1.4637898)
 
 [node name="body" type="StaticBody3D" parent="Dog"]
 transform = Transform3D(-0.65, 0, -5.6824803e-08, 0, 0.65, 0, 5.6824803e-08, 0, -0.65, 0.49134994, -0.2974286, 1.3932059)
@@ -73,10 +73,9 @@ shape = SubResource("CapsuleShape3D_5x2h4")
 debug_color = Color(0.65632045, 0.5013817, 0.35583058, 0.41960785)
 
 [node name="QuestMarker!" parent="." instance=ExtResource("7_2ka8d")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.9475939, 0, 0)
 
 [node name="campbell_father" parent="." groups=["NPC_Body"] instance=ExtResource("9_j5sfe")]
-transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 1.7436124, -1.2366176, 1.3822143)
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0.62128055, -1.2366176, 1.3822143)
 
 [connection signal="body_entered" from="interact" to="." method="_on_interact_body_entered"]
 [connection signal="body_exited" from="interact" to="." method="_on_interact_body_exited"]
