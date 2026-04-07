@@ -1,0 +1,12 @@
+[gd_scene load_steps=3 format=3 uid="uid://couhu7dkhkyfi"]
+
+[ext_resource type="PackedScene" uid="uid://bix7glsjl8lbf" path="res://NPC/campbell_father_model.tscn" id="1_cyvk5"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_cyvk5"]
+albedo_color = Color(0.6790145, 2.8637796e-06, 2.8878452e-07, 1)
+
+[node name="campbell_child" instance=ExtResource("1_cyvk5")]
+transform = Transform3D(0.7, 0, 0, 0, 0.7, 0, 0, 0, 0.7, 0, 0, 0)
+
+[node name="Cube_002" parent="rig/Skeleton3D" index="0"]
+surface_material_override/2 = SubResource("StandardMaterial3D_cyvk5")
