@@ -1,7 +1,19 @@
-[gd_scene load_steps=6 format=3 uid="uid://bcggylgytgib6"]
+[gd_scene load_steps=9 format=3 uid="uid://bcggylgytgib6"]
 
 [ext_resource type="PackedScene" uid="uid://dpo5irto5t3y1" path="res://Assets/RandomObjects/dog/Dog.glb" id="1_vfhc1"]
 [ext_resource type="Script" uid="uid://bdqgvamowd717" path="res://Models/dog.gd" id="2_pxqof"]
+[ext_resource type="Texture2D" uid="uid://cmm85bmok2xx8" path="res://textures/Fur.jpg" id="3_jgf7y"]
+[ext_resource type="Texture2D" uid="uid://dqewr05tnu0cu" path="res://textures/FurNormal.jpg" id="4_lqd0o"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_01o0e"]
+albedo_color = Color(0.34955245, 0.26779997, 0.09149536, 1)
+albedo_texture = ExtResource("3_jgf7y")
+roughness = 0.87
+normal_enabled = true
+normal_scale = 0.6
+normal_texture = ExtResource("4_lqd0o")
+uv1_scale = Vector3(0.25, 0.25, 0.25)
+uv1_triplanar = true
 
 [sub_resource type="Animation" id="Animation_0w15p"]
 resource_name = "DogWalk"
@@ -44,6 +56,9 @@ _data = {
 [node name="Dog" instance=ExtResource("1_vfhc1")]
 transform = Transform3D(1, 0, 0, 0, 0.99604094, -0.088894285, 0, 0.088894285, 0.99604094, 0, 0, 0)
 script = ExtResource("2_pxqof")
+
+[node name="Cylinder" parent="." index="2"]
+surface_material_override/0 = SubResource("StandardMaterial3D_01o0e")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="." index="3"]
 libraries = {
