@@ -22,6 +22,7 @@ var entered := false
 
 func _ready() -> void:
 	GlobalVariables.iterations = 0
+	GlobalVariables.gameStart.emit()
 	houses.visible = false
 	roads.visible = false
 
