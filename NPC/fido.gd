@@ -32,13 +32,17 @@ func iterationChange(value: int):
 	
 	#If on iteration 3, turn fido on
 	if value == 2:
-		quest_marker_.visible = true
+	
 		print(fido.global_position)
 		fido_collision.set_deferred("disabled", false)
 		print("FIDO ON!")
 		fido.visible = true
 		animation_player.play("Bark")
+		quest_marker_.visible = false
 		bark_2.play()
+	if value == 3:
+			quest_marker_.visible = true
+		
 	if value > 5:
 		bark_2.stop()
 		fido.visible = false
