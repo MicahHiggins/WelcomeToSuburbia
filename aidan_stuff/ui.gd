@@ -74,7 +74,6 @@ func _ready() -> void:
 
 	_update_labels()
 	
-	#GlobalVariables.level_2_cutscene = $KidnapCutscene
 
 
 ##Iteration change (ref questHub.gd)
