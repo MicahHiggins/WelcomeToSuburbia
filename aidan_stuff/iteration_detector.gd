@@ -13,6 +13,7 @@ func _ready() -> void:
 func my_timed_function():
 	print("IterationDQ1")
 	GlobalVariables.iterations += 1
+	GlobalVariables.gameStart.emit()
 	questHub.it_change()
 	queue_free()
 	#Might use for differnt ints!

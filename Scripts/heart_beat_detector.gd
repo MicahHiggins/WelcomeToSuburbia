@@ -10,6 +10,7 @@ signal heart_beat
 func _ready() -> void:
 	collision_shape_3d.set_deferred("disabled", true)
 	questHub.iteration_changed.connect(iterationChange)
+	#GlobalVariables.gameStart.connect(_on_body_entered)
 	quest_marker_.visible = false
 
 
@@ -32,8 +33,8 @@ func iterationChange(value: int):
 func _on_body_entered(body: Node3D) -> void:
 	if  body.is_in_group("player"):
 		GlobalVariables.iterations += 1
+		print("Does it change?")
 		GlobalVariables.gameStart.emit()
-		
 		questHub.it_change()
 		GlobalVariables.heart_beat = true
 	
