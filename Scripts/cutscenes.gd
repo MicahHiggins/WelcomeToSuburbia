@@ -11,6 +11,7 @@ func _process(delta: float) -> void:
 	pass
 	
 func change_second_cutscene() -> void:
+	pass
 	level_2_cutscene.visible = true
 	level_2_cutscene.paused = false
 	await get_tree().create_timer(18).timeout

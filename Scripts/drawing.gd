@@ -1,153 +1,126 @@
 extends TileMapLayer
-@onready var clear: Button = $"../Clear"
 
+@onready var clear: Button = $"../Clear"
 @onready var enter: Button = $"../../Buttons4Draw/Enter"
 @onready var label: Label = $"../../Buttons4Draw/Label"
-
-
 
 var gridSize = 30
 var Dict = {}
 var Grid = {}
-#var Mask = {}
 var mask_arr = []
 var drawn_tiles = []
 
-
-
 var can_draw: bool = true
 
-
-
-func rand_num():
-	return randi_range(1, 3)
-	
 func _ready() -> void:
 	mask_arr.clear()
 	label.text = "Hello!"
-	#print("num: ", num)
-	_drawing1()
-
-			
 	
+	# --- STEP 1: BUILD THE GRID DATA FIRST ---
+	# We must fill Dict and Grid before calling _drawing1
 	for x in gridSize:
 		for y in gridSize:
-			for i in range(0, 30, 10):
+			# Setup the Grey Grid Lines (every 10 tiles)
+			for i in range(0, 31, 10):
 				if i > 0:
-					var grid = Vector2i(x+20, i)
-					var grid2 = Vector2i(i+20, y)
-					Grid[grid] = {
-						"Type": "Grid"
-					}
-					Grid[grid2] = {
-						"Type": "Grid"
-					}
-					
-					set_cell(grid, 2, Vector2(0, 0), 0)
-					set_cell(grid2, 2, Vector2(0, 0), 0)
+					var g_pos1 = Vector2i(x + 20, i)
+					var g_pos2 = Vector2i(i + 20, y)
+					Grid[g_pos1] = {"Type": "Grid"}
+					Grid[g_pos2] = {"Type": "Grid"}
 			
-			var pos = Vector2i(x+20, y)
-			Dict[pos] = {
-				"Type": "Blank"
-			}
-				
-			set_cell(Vector2i(x+20, y), 0, Vector2i(0, 0), 0)
+			# Setup the White Drawing Area
+			var pos = Vector2i(x + 20, y)
+			Dict[pos] = {"Type": "Blank"}
+	
+	# --- STEP 2: GENERATE THE SPIRAL MASK ---
+	# Now that Dict exists, this function will find the tiles it needs
+	_drawing1()
+	
+	# --- STEP 3: INITIALIZE THE VISUALS ---
 	_on_clear_pressed()
 
+func _process(_delta: float) -> void:
+	# Assuming 'symbol' is a global or external reference; 
+	# if it's local, ensure it's defined. Using 'can_draw' as a fallback.
+	if not can_draw: 
+		return 
 		
-
-func _process(delta: float) -> void:
-	
-	if not symbol.can_draw: 
-		return # Exit early if drawing is disabled
 	var tile = local_to_map(get_local_mouse_position())
-	#print(tile)
-	#var tile2 = local_to_map(get_local_mouse_position()) + Vector2i(1, 1)
 	
-	#print(tile)
-	if Dict.has(tile) && Input.is_action_pressed("use-attack") && !Grid.has(tile):
-		#print(tile)
-		set_cell(tile, 1, Vector2i(0, 0), 0)
-		#set_cell(tile2, 1, Vector2i(0, 0), 0)
+	# Only draw if it's a valid tile and NOT a grid line
+	if Dict.has(tile) and Input.is_action_pressed("use-attack") and not Grid.has(tile):
+		set_cell(tile, 1, Vector2i(0, 0), 0) # Draw black tile
 		if not drawn_tiles.has(tile):
 			drawn_tiles.append(tile)
-			print("Added tile: ", tile, " | Total tiles drawn: ", drawn_tiles.size())
-
-
-func _on_clear_pressed() -> void:
-	print("CLEAR")
-	
-	drawn_tiles.clear()
-	for x in gridSize:
-		for y in gridSize:
-			for i in range(0, 30, 10):
-				if i > 0:
-					var grid = Vector2i(x+20, i)
-					var grid2 = Vector2i(i+20, y)
-					Grid[grid] = {
-						"Type": "Grid"
-					}
-					Grid[grid2] = {
-						"Type": "Grid"
-					}
-					
-					set_cell(Vector2i(x+20, i), 2, Vector2(0, 0), 0)
-					set_cell(Vector2i(i+20, y), 2, Vector2(0, 0), 0)
-			
-			var pos = Vector2i(x+20, y)
-			Dict[pos] = {
-				"Type": "Blank"
-			}
-				
-			set_cell(Vector2i(x+20, y), 0, Vector2i(0, 0), 0)
 
 func _drawing1():
-	print("d1")
-	var eyes = 5
-	for x in gridSize:
-		if x != 10 && x != 20:
-			var pic = Vector2i(x+20, eyes)
-			mask_arr.append(pic)
-			var pic2 = Vector2i(eyes+20, x)
-			#set_cell(pic, 1, Vector2i(0, 0), 0)
-			mask_arr.append(pic2)
-			#set_cell(pic2, 1, Vector2i(0, 0), 0)
+	print("Generating Spiral Mask...")
+	mask_arr.clear()
+	
+	# Center of your 30x30 board (X is shifted by 20)
+	var center_x = 35 
+	var center_y = 15
+	
+	# Spiral settings for a clean shape
+	var steps = 800      # High steps to prevent gaps in the line
+	var growth = 0.08    # How fast the arms spread
+	var tightness = 0.25 # How many loops it makes
+	
+	for i in range(steps):
+		var t = i * tightness
+		var r = growth * t
+		
+		# Polar to Cartesian math
+		var x = center_x + r * cos(t)
+		var y = center_y + r * sin(t)
+		
+		var pic = Vector2i(round(x), round(y))
+		
+		# Check if tile is in the playable area and not a grey line
+		if Dict.has(pic) and not Grid.has(pic):
+			if not mask_arr.has(pic):
+				mask_arr.append(pic)
 
+	print("Spiral logic complete. Tiles to match: ", mask_arr.size())
 
+func _on_clear_pressed() -> void:
+	print("Clearing Canvas")
+	drawn_tiles.clear()
+	
+	# Reset the visual tiles on the map
+	for pos in Dict:
+		set_cell(pos, 0, Vector2i(0, 0), 0) # Set to white
+	
+	for pos in Grid:
+		set_cell(pos, 2, Vector2(0, 0), 0) # Set to grey grid
 
 func _on_button_pressed() -> void:
-	print("Enter! Pressed")
-	#print("On button pressed: ", GlobalVariables.puzzleType)
-	var count := 0.00
-	var perc := 0.00
+	print("Calculating Results...")
+	
 	var mask_size = mask_arr.size()
-	print("Mask Array Size: ", mask_arr.size())
 	
+	# Safety Check for -nan
+	if mask_size == 0:
+		label.text = "Error: Mask not generated"
+		return
+
+	var count : float = 0.0
 	
-	for i in mask_arr.size(): 
-		for j in drawn_tiles.size():
-			if mask_arr[i] == drawn_tiles[j]:
-				print("On button pressed: ", GlobalVariables.puzzleType)
-				count = count + 1
-				#print("count")
+	# Compare player drawing to the spiral mask
+	for tile in mask_arr:
+		if drawn_tiles.has(tile):
+			count += 1.0
 	
-	count = count
-	perc = count/mask_size
+	var perc = count / float(mask_size)
+	var percentage = perc * 100.0
 
 	label.text = "Calculating Results..."
-	await get_tree().create_timer(1).timeout 
-	var percentage = perc * 100
-	print(percentage)
-	if percentage >= 60:
-		#print("test")
-		label.text = "You Win:  %.2f" % perc
-	else:
-		#print("FUCk")
-		label.text = "You Lose: %.2f" % perc
+	await get_tree().create_timer(1.0).timeout 
 	
-		
-
+	if percentage >= 60.0:
+		label.text = "You Win: %.2f%%" % percentage
+	else:
+		label.text = "You Lose: %.2f%%" % percentage
 
 func _on_enter_pressed() -> void:
-	#print("What?")
 	_on_button_pressed()

@@ -2,54 +2,69 @@ extends TileMapLayer
 
 @onready var label: Label = $"../../Buttons4See/instr"
 
-
 var gridSize = 30
 var Dict = {}
 var Grid = {}
-var Mask = {}
 var mask_arr = []
-var drawn_tiles = []
 
-func rand_num():
-	return randi_range(1, 3)
+# This is just for visualization, so we don't need drawn_tiles[] here.
+
 func _ready() -> void:
-	label.text = "Hello!"
+	label.text = "Study the Sigil..."
 	
+	# --- STEP 1: SETUP THE GRID AND CANVAS ---
 	for x in gridSize:
 		for y in gridSize:
-			for i in range(0, 30, 5):
+			# Setup the Grey Grid Lines (Every 5 tiles as per your latest code)
+			for i in range(0, 31, 5):
 				if i > 0:
-					var grid = Vector2i(x+20, i)
-					var grid2 = Vector2i(i+20, y)
-					Grid[grid] = {
-						"Type": "Grid"
-					}
-					Grid[grid2] = {
-						"Type": "Grid"
-					}
+					var g_pos1 = Vector2i(x + 20, i)
+					var g_pos2 = Vector2i(i + 20, y)
+					Grid[g_pos1] = {"Type": "Grid"}
+					Grid[g_pos2] = {"Type": "Grid"}
 					
-					set_cell(grid, 2, Vector2(0, 0), 0)
-					set_cell(grid2, 2, Vector2(0, 0), 0)
+					set_cell(g_pos1, 2, Vector2(0, 0), 0)
+					set_cell(g_pos2, 2, Vector2(0, 0), 0)
 			
-			var pos = Vector2i(x+20, y)
-			Dict[pos] = {
-				"Type": "Blank"
-			}
-				
-			set_cell(Vector2i(x+20, y), 0, Vector2i(0, 0), 0)
+			# Setup the White Background
+			var pos = Vector2i(x + 20, y)
+			Dict[pos] = {"Type": "Blank"}
+			set_cell(pos, 0, Vector2i(0, 0), 0)
 	
+	# --- STEP 2: SHOW THE SPIRAL ---
 	_drawing1()
 
-			
-		
 func _drawing1():
-	print("d1")
-	var eyes = 5
-	for x in gridSize:
-		if x != 10 && x != 20:
-			var pic = Vector2i(x+20, eyes)
-			mask_arr.append(pic)
-			var pic2 = Vector2i(eyes+20, x)
-			set_cell(pic, 1, Vector2i(0, 0), 0)
-			mask_arr.append(pic2)
-			set_cell(pic2, 1, Vector2i(0, 0), 0)
+	print("Displaying Reference Spiral")
+	mask_arr.clear()
+	
+	# Match the center of the drawing canvas exactly
+	var center_x = 35 
+	var center_y = 15
+	
+	# Spiral parameters - must be identical to the drawing script
+	var steps = 800
+	var growth = 0.08
+	var tightness = 0.25
+	
+	for i in range(steps):
+		var t = i * tightness
+		var r = growth * t
+		
+		var x = center_x + r * cos(t)
+		var y = center_y + r * sin(t)
+		
+		var pic = Vector2i(round(x), round(y))
+		
+		# Check if tile is in the playable area and not a grey line
+		if Dict.has(pic) and not Grid.has(pic):
+			if not mask_arr.has(pic):
+				mask_arr.append(pic)
+				
+				# PREFILL THE BLACK TILES:
+				# This makes the spiral visible so the player can see what to draw.
+				set_cell(pic, 1, Vector2i(0, 0), 0)
+
+	print("Observer loaded with ", mask_arr.size(), " tiles.")
+
+# No _process function means the player can't interact with this layer.
