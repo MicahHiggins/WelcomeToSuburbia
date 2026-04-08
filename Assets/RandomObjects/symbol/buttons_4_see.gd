@@ -12,10 +12,12 @@ func _ready():
 	seeing.visible = false
 
 func _on_obs_area_body_entered(body: Node3D) -> void:
-	buttons_4_see.visible = true
-	seeing.visible = true
+	if body.is_multiplayer_authority() && body.is_in_group("player"):
+		buttons_4_see.visible = true
+		seeing.visible = true
 
 
 func _on_obs_area_body_exited(body: Node3D) -> void:
-	buttons_4_see.visible = false
-	seeing.visible = false
+	if body.is_multiplayer_authority() && body.is_in_group("player"):
+		buttons_4_see.visible = false
+		seeing.visible = false
