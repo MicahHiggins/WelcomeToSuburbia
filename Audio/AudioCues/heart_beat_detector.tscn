@@ -1,6 +1,6 @@
 [gd_scene load_steps=4 format=3 uid="uid://bjq42iea72mgn"]
 
-[ext_resource type="Script" uid="uid://iw1jngiadoyr" path="res://heart_beat_detector.gd" id="1_tr127"]
+[ext_resource type="Script" uid="uid://b8tctri7cie6u" path="res://Scripts/heart_beat_detector.gd" id="1_lc4wc"]
 [ext_resource type="PackedScene" uid="uid://diyfna0mvebm4" path="res://Assets/RandomObjects/quest_marker!.tscn" id="2_tpsl0"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_tr127"]
@@ -9,7 +9,7 @@ radius = 3.0
 [node name="heartBeatDetector" type="Area3D"]
 collision_layer = 0
 collision_mask = 8
-script = ExtResource("1_tr127")
+script = ExtResource("1_lc4wc")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 shape = SubResource("SphereShape3D_tr127")

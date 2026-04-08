@@ -1,26 +1,26 @@
-extends Node3D
+extends Node
 
 
 class_name soundScape
 
-@onready var birds: Node3D = $Birds
-@onready var wind: Node3D = $Wind
-@onready var children: Node3D = $children
+@onready var birds: Node = $Birds
+@onready var wind: Node = $Wind
+@onready var children: Node = $children
 
-@onready var bird_1: AudioStreamPlayer3D = $Birds/bird1
-@onready var bird_2: AudioStreamPlayer3D = $Birds/bird2
-@onready var bird_3: AudioStreamPlayer3D = $Birds/bird3
-@onready var bird_4: AudioStreamPlayer3D = $Birds/bird4
+@onready var bird_1: AudioStreamPlayer = $Birds/bird1
+@onready var bird_2: AudioStreamPlayer = $Birds/bird2
+@onready var bird_3: AudioStreamPlayer = $Birds/bird3
+@onready var bird_4: AudioStreamPlayer = $Birds/bird4
 
-@onready var wind_1: AudioStreamPlayer3D = $Wind/wind1
-@onready var wind_2: AudioStreamPlayer3D = $Wind/wind2
-@onready var wind_3: AudioStreamPlayer3D = $Wind/wind3
-@onready var wind_4: AudioStreamPlayer3D = $Wind/wind4
+@onready var wind_1: AudioStreamPlayer = $Wind/wind1
+@onready var wind_2: AudioStreamPlayer = $Wind/wind2
+@onready var wind_3: AudioStreamPlayer = $Wind/wind3
+@onready var wind_4: AudioStreamPlayer = $Wind/wind4
 
-@onready var child_1: AudioStreamPlayer3D = $children/child1
-@onready var child_2: AudioStreamPlayer3D = $children/child2
-@onready var child_3: AudioStreamPlayer3D = $children/child3
-@onready var child_4: AudioStreamPlayer3D = $children/child4
+@onready var child_1: AudioStreamPlayer = $children/child1
+@onready var child_2: AudioStreamPlayer = $children/child2
+@onready var child_3: AudioStreamPlayer = $children/child3
+@onready var child_4: AudioStreamPlayer = $children/child4
 
 @onready var soundArr = [bird_1, bird_2, bird_3, bird_4, wind_1, wind_2, wind_3, wind_4, child_1, child_2, child_3, child_4]
 var sound
@@ -65,7 +65,7 @@ func _process(delta: float) -> void:
 		AudioServer.set_bus_mute(master_bus_index, true)
 		
 	
-func soundManipulation(sound: AudioStreamPlayer3D):
+func soundManipulation(sound: AudioStreamPlayer):
 	print(sound)
 	#sound.volume_db = 3
 	var bus_index = AudioServer.get_bus_index("soundScape")
