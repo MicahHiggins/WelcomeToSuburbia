@@ -93,8 +93,7 @@ func _process(delta: float) -> void:
 	if environment == null:
 		return
 
-	# Replace this with wherever your iterations variable lives
-	var iterations_value: float = GlobalVariables.ITERS
+	var iterations_value: float = GlobalVariables.iterations
 
 	# Convert iterations into a 0.0 -> 1.0 progress value
 	var t := clamp(iterations_value / max_iterations, 0.0, 1.0)
@@ -131,7 +130,7 @@ func apply_environment_values() -> void:
 	environment.ambient_light_color = current_color
 	
 func update_fog_color() -> void:
-	var iters: float = float(GlobalVariables.ITERS)
+	var iters: float = float(GlobalVariables.iterations)
 	var iter_t: float = clamp(iters / max_iterations, 0.0, 1.0)
 	var time_sec: float = Time.get_ticks_msec() / 1000.0
 

@@ -43,7 +43,7 @@ func update_text() -> void:
 	if label_3d == null:
 		return
 
-	var iteration: int = GlobalVariables.ITERS
+	var iteration: int = GlobalVariables.iterations
 
 	if iteration in unique_iterations:
 		label_3d.text = unique_iterations[iteration]

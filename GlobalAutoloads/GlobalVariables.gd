@@ -1,6 +1,5 @@
 extends Node
 
-var ITERS = 0 #For Billboard
 var iterations = 0
 var conversations = 0
 #var gameStart = false

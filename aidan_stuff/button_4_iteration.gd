@@ -20,14 +20,11 @@ func _rpc_request_iter_up() -> void:
 
 func _server_iter_up() -> void:
 	GlobalVariables.iterations += 1
-	GlobalVariables.ITERS += 1
 	var it: int = int(GlobalVariables.iterations)
-	var it2: int = int(GlobalVariables.ITERS)
-	rpc("_rpc_apply_iters", it, it2)
+	rpc("_rpc_apply_iters", it)
 
 @rpc("any_peer", "call_local", "reliable")
 func _rpc_apply_iters(it: int, it2: int) -> void:
 	GlobalVariables.iterations = it
-	GlobalVariables.ITERS = it2
 	GlobalVariables.gameStart.emit()
 	questHub.it_change()
