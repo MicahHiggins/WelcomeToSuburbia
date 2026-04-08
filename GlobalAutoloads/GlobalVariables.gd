@@ -20,6 +20,8 @@ var algoDebug = false
 
 signal gameStart
 
+signal cellarLevel
+
 signal level2change
 
 signal interact
