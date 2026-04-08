@@ -1,0 +1,12 @@
+[gd_scene load_steps=3 format=3 uid="uid://ctgohi32dunti"]
+
+[ext_resource type="AudioStream" uid="uid://p0dbfrvjgn0u" path="res://Audio/'Chase' - Welcome to Surburbia! (OST) - Copy (2) - Copy.wav" id="1_h74bn"]
+[ext_resource type="Script" uid="uid://dodaq0wqbp286" path="res://Audio/SoundTrack/soundtrack_manager.gd" id="1_leubx"]
+
+[node name="SoundtrackManager" type="Node"]
+script = ExtResource("1_leubx")
+
+[node name="track3" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("1_h74bn")
+volume_db = -12.511
+bus = &"Music"

@@ -186,6 +186,8 @@ const SERVER_ID: int = 1
 
 
 func _ready() -> void:
+	
+	GlobalVariables.cellarLevel.emit()
 	_rng.randomize()
 
 	# PATCH: LevelFlowManager will call on_level_post_ready() via group after everyone loads.

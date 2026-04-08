@@ -1,7 +1,8 @@
-[gd_scene load_steps=8 format=3 uid="uid://dswh46vj4pwd5"]
+[gd_scene load_steps=9 format=3 uid="uid://dswh46vj4pwd5"]
 
 [ext_resource type="Script" uid="uid://dh885eu4g8ih8" path="res://Audio/audio_manager.gd" id="1_x7qoq"]
 [ext_resource type="AudioStream" uid="uid://dpeesc788mq3x" path="res://Audio/SFX/667288__pekena_larva__out-of-breath_woman_fast.wav" id="2_43dpk"]
+[ext_resource type="PackedScene" uid="uid://ctgohi32dunti" path="res://Audio/SoundTrack/soundtrack_manager.tscn" id="2_uukss"]
 [ext_resource type="PackedScene" uid="uid://dr522dk6qis6t" path="res://Audio/sound_scape_audio.tscn" id="3_so863"]
 
 [sub_resource type="Animation" id="Animation_43dpk"]
@@ -70,6 +71,8 @@ unique_name_in_owner = true
 
 [node name="Music" type="Node" parent="."]
 
+[node name="SoundtrackManager" parent="Music" instance=ExtResource("2_uukss")]
+
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 libraries = {
 &"": SubResource("AnimationLibrary_uukss")
@@ -80,3 +83,4 @@ libraries = {
 [connection signal="gameStart" from="." to="soundScape Audio" method="_on_audio_manager_game_start"]
 [connection signal="timeout" from="SFX/StopBreathingTimer" to="." method="_on_stop_breathing_timer_timeout"]
 [connection signal="animation_finished" from="AnimationPlayer" to="." method="_on_animation_player_animation_finished"]
+[connection signal="playTrack3" from="soundScape Audio" to="Music/SoundtrackManager" method="_on_sound_scape_audio_play_track_3"]

@@ -25,6 +25,12 @@ class_name soundScape
 @onready var soundArr = [bird_1, bird_2, bird_3, bird_4, wind_1, wind_2, wind_3, wind_4, child_1, child_2, child_3, child_4]
 var sound
 
+
+var soundToggle := false
+
+
+signal playTrack3
+
 #const for iteration range
 
 #returns range of floats for audio maniuplation
@@ -42,13 +48,22 @@ func randSound():
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	pass
+	GlobalVariables.cellarLevel.connect(levelOut)
+	soundToggle = true
 
-
+func levelOut():
+	print("LEVL OUT!")
+	soundToggle = false
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
-	pass
+	if soundToggle == false:
+		print("SOUND TOGGLE!")
+		playTrack3.emit()
+		soundToggle = true
+		var master_bus_index = AudioServer.get_bus_index("soundScape")
+		AudioServer.set_bus_mute(master_bus_index, true)
+		
 	
 func soundManipulation(sound: AudioStreamPlayer3D):
 	print(sound)
@@ -102,6 +117,8 @@ func pickRandSound():
 	#print(soundArr[randSound()])
 	#print("Pick: ", sound)
 	soundManipulation(sound)
+
+
 	_on_audio_manager_game_start()
 	
 	
