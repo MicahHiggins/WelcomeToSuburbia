@@ -21,6 +21,9 @@ var patrol_instance_rh: Node3D = null
 var entered := false
 
 func _ready() -> void:
+	
+	#AudioManager.gameStart.emit()
+	
 	GlobalVariables.iterations = 0
 	GlobalVariables.gameStart.emit()
 	houses.visible = false

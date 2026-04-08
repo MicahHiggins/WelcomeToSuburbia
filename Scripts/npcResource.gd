@@ -42,7 +42,9 @@ func iterationChange(value: int):
 	
 	
 func _input(event: InputEvent) -> void:
-	if event.is_action_pressed("interact"):
+	if talking == true && event.is_action("interact"):
+		return
+	if event.is_action_pressed("use-attack"):
 		dialogueSig.emit()
 
 	if in_area == true && Input.is_action_just_pressed("interact"):

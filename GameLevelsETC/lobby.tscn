@@ -3,13 +3,14 @@
 [ext_resource type="Script" path="res://Scripts/lobby.gd" id="1_ym4ib"]
 [ext_resource type="PackedScene" uid="uid://bs2jm62cmkbrk" path="res://addons/instant-realistic-light/light_scene.tscn" id="2_sknj8"]
 [ext_resource type="PackedScene" uid="uid://d1ibgfwne281y" path="res://GameLevelsETC/Level1.tscn" id="2_yosgk"]
-[ext_resource type="Script" uid="uid://clddli10o35xf" path="res://GameLevelsETC/world_conveyor_manager.gd" id="5_pxi2p"]
+[ext_resource type="Script" path="res://GameLevelsETC/world_conveyor_manager.gd" id="5_pxi2p"]
 [ext_resource type="PackedScene" uid="uid://dkeoxgpjjq64q" path="res://GameLevelsETC/lobby_world_block.tscn" id="6_ca7vd"]
 [ext_resource type="PackedScene" uid="uid://cx5rbrvijd0rs" path="res://Assets/RandomObjects/bus/busssss.tscn" id="6_j8coi"]
 
 [node name="Lobby" type="Node3D"]
 script = ExtResource("1_ym4ib")
 start_level_scene = ExtResource("2_yosgk")
+start_countdown_seconds = 0
 
 [node name="Spawn" type="Marker3D" parent="."]
 

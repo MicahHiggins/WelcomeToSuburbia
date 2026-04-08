@@ -19,7 +19,7 @@
 [ext_resource type="PackedScene" uid="uid://cxnlf1qokkhee" path="res://Assets/RandomObjects/streetlight/street_light.tscn" id="13_bcxsy"]
 [ext_resource type="Script" uid="uid://dbt273cudle2e" path="res://aidan_stuff/iteration_detector.gd" id="15_v0qsu"]
 [ext_resource type="PackedScene" uid="uid://d2rvqfwj71ucv" path="res://Assets/RandomObjects/billboard/billboard.tscn" id="18_vslbx"]
-[ext_resource type="PackedScene" uid="uid://bjq42iea72mgn" path="res://AudioCues/heart_beat_detector.tscn" id="20_u2ehm"]
+[ext_resource type="PackedScene" uid="uid://bjq42iea72mgn" path="res://Audio/AudioCues/heart_beat_detector.tscn" id="20_u2ehm"]
 [ext_resource type="PackedScene" uid="uid://bhne50eu8g2mb" path="res://Assets/RandomObjects/pineTree/pine_tree.tscn" id="21_u2ehm"]
 [ext_resource type="PackedScene" uid="uid://655t81u48joy" path="res://NPC/fido.tscn" id="22_ga440"]
 
