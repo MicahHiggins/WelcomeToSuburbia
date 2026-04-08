@@ -7,9 +7,9 @@ extends Node3D
 @export var default_text: String = "Welcome to Suburbia!"
 
 var unique_iterations := {
-	4: "Where are you going?",
-	8: "102",
-	12: "Suburbia Knows"
+	2: "Where are you going?",
+	4: "Suburbia Watches",
+	6: "118"
 }
 
 var player: Node3D = null
