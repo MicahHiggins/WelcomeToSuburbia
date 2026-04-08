@@ -1,16 +1,12 @@
-[gd_scene load_steps=4 format=3 uid="uid://0kqwxdf31iqg"]
+[gd_scene load_steps=3 format=3 uid="uid://0kqwxdf31iqg"]
 
 [ext_resource type="Script" uid="uid://b8lerjmagqkl4" path="res://GameLevelsETC/patrol_path.gd" id="1_drhvv"]
 [ext_resource type="PackedScene" uid="uid://c854co31tfyx8" path="res://NPC/npc_issacc.tscn" id="2_6igey"]
-[ext_resource type="PackedScene" uid="uid://r8vqf0qcnkdn" path="res://aidan_stuff/block_design.tscn" id="2_c060b"]
 
 [node name="potrol_bundel_isacc" type="Node3D"]
 
 [node name="patrol_path" type="Node3D" parent="."]
 script = ExtResource("1_drhvv")
-
-[node name="Block Design" parent="patrol_path" instance=ExtResource("2_c060b")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
 
 [node name="NPC_ISSACC" parent="." instance=ExtResource("2_6igey")]
 transform = Transform3D(0.25, 0, 0, 0, 0.25, 0, 0, 0, 0.25, 9.64872, 0.23159778, 9.794408)

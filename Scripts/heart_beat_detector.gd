@@ -32,6 +32,7 @@ func iterationChange(value: int):
 func _on_body_entered(body: Node3D) -> void:
 	if  body.is_in_group("player"):
 		GlobalVariables.iterations += 1
+		GlobalVariables.gameStart.emit()
 		
 		questHub.it_change()
 		GlobalVariables.heart_beat = true

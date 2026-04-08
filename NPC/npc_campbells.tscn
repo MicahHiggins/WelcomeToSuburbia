@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3 uid="uid://c11d0ync6fj8o"]
+[gd_scene load_steps=14 format=3 uid="uid://c11d0ync6fj8o"]
 
 [ext_resource type="Script" uid="uid://csc5bob5s77t" path="res://Scripts/npc_bob.gd" id="1_k38it"]
 [ext_resource type="Script" uid="uid://cicakuq5a1gle" path="res://Scripts/state_machine.gd" id="2_76l8o"]
@@ -9,6 +9,8 @@
 [ext_resource type="PackedScene" uid="uid://bcggylgytgib6" path="res://Models/dog.tscn" id="6_u5i8w"]
 [ext_resource type="PackedScene" uid="uid://diyfna0mvebm4" path="res://Assets/RandomObjects/quest_marker!.tscn" id="7_2ka8d"]
 [ext_resource type="PackedScene" uid="uid://bix7glsjl8lbf" path="res://NPC/campbell_father_model.tscn" id="9_j5sfe"]
+[ext_resource type="PackedScene" uid="uid://cao3it45xwei0" path="res://NPC/campbell_mother.tscn" id="10_lvv75"]
+[ext_resource type="PackedScene" uid="uid://couhu7dkhkyfi" path="res://NPC/campbell_child.tscn" id="11_b5vy5"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_g4ita"]
 radius = 1.0
@@ -28,8 +30,18 @@ collision_mask = 8
 transform = Transform3D(5, 0, 0, 0, 5, 0, 0, 0, 5, 0, 0, 0)
 shape = SubResource("SphereShape3D_g4ita")
 
-[node name="body" type="CollisionShape3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.40819955, 0)
+[node name="father_body" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.845227, -0.357467, 1.4594342)
+shape = SubResource("CapsuleShape3D_5x2h4")
+debug_color = Color(0.65632045, 0.5013817, 0.35583058, 0.41960785)
+
+[node name="mother_body" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.8768134, -0.357467, 1.4594342)
+shape = SubResource("CapsuleShape3D_5x2h4")
+debug_color = Color(0.65632045, 0.5013817, 0.35583058, 0.41960785)
+
+[node name="child_body" type="CollisionShape3D" parent="."]
+transform = Transform3D(0.7, 0, 0, 0, 0.7, 0, 0, 0, 0.7, -0.7605126, -0.4581964, -0.41729707)
 shape = SubResource("CapsuleShape3D_5x2h4")
 debug_color = Color(0.65632045, 0.5013817, 0.35583058, 0.41960785)
 
@@ -54,7 +66,7 @@ talk_detection = NodePath("../../TalkDetection")
 collision_mask = 8
 
 [node name="TalkDetectionShape" type="CollisionShape3D" parent="TalkDetection"]
-transform = Transform3D(1.65, 0, 0, 0, 1.65, 0, 0, 0, 1.65, 1.0070975, 0, 0.33880293)
+transform = Transform3D(1.8, 0, 0, 0, 1.8, 0, 0, 0, 1.8, 0, 0, 0.339)
 shape = SubResource("SphereShape3D_g4ita")
 
 [node name="CampbellsDialogue" type="Node3D" parent="."]
@@ -62,21 +74,18 @@ script = ExtResource("5_u5i8w")
 npc_name = "The Campbells"
 
 [node name="Dog" parent="." instance=ExtResource("6_u5i8w")]
-transform = Transform3D(0.14999999, 0, 0, 0, 0.14940615, -0.013334143, 0, 0.013334143, 0.14940615, 1.6609339, -0.86171335, -0.21240687)
-
-[node name="body" type="StaticBody3D" parent="Dog"]
-transform = Transform3D(-0.65, 0, -5.6824803e-08, 0, 0.65, 0, 5.6824803e-08, 0, -0.65, 0.49134994, -0.2974286, 1.3932059)
-
-[node name="body" type="CollisionShape3D" parent="Dog/body"]
-transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 0, 0)
-shape = SubResource("CapsuleShape3D_5x2h4")
-debug_color = Color(0.65632045, 0.5013817, 0.35583058, 0.41960785)
+transform = Transform3D(0.14999999, 0, 0, 0, 0.14940615, -0.013334143, 0, 0.013334143, 0.14940615, 0.63112676, -0.6064683, -1.4637898)
 
 [node name="QuestMarker!" parent="." instance=ExtResource("7_2ka8d")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.9475939, 0, 0)
 
 [node name="campbell_father" parent="." groups=["NPC_Body"] instance=ExtResource("9_j5sfe")]
-transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 1.7436124, -1.2366176, 1.3822143)
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0.80557716, -1.2366176, 1.3822143)
+
+[node name="campbell_mother" parent="." groups=["NPC_Body"] instance=ExtResource("10_lvv75")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, -0.87497413, -1.2366176, 1.3822143)
+
+[node name="campbell_child" parent="." groups=["NPC_Body"] instance=ExtResource("11_b5vy5")]
+transform = Transform3D(-0.7, 0, -6.119594e-08, 0, 0.7, 0, 6.119594e-08, 0, -0.7, -0.74684536, -1.2366176, -0.48773575)
 
 [connection signal="body_entered" from="interact" to="." method="_on_interact_body_entered"]
 [connection signal="body_exited" from="interact" to="." method="_on_interact_body_exited"]

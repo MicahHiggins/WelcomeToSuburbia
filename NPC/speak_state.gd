@@ -110,7 +110,7 @@ func _cache_anim_player() -> void:
 	var npc3d := npc as NPC
 	if npc3d == null:
 		return
-
+		
 	var model_node := find_descendant_in_group(npc3d, "NPC_Body")
 	if model_node:
 		_anim_player = find_descendant_in_group(model_node, "NPC_Animation") as AnimationPlayer

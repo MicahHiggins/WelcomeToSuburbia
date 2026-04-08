@@ -3,7 +3,7 @@ extends Node
 var ITERS = 0 #For Billboard
 var iterations = 0
 var conversations = 0
-
+#var gameStart = false
 
 var heart_beat = false
 
@@ -17,6 +17,8 @@ var iteration4 = 0
 var iteration5 = 0
 var puzzleType = 0
 var algoDebug = false
+
+signal gameStart
 
 signal level2change
 

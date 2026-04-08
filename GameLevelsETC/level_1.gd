@@ -28,7 +28,7 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	if GlobalVariables.ITERS < start_iteration:
 		return
-
+	
 	spawn_timer -= delta
 	if spawn_timer <= 0.0:
 		_try_spawn_tentacle()
