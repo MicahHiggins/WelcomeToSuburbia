@@ -1,6 +1,5 @@
 extends Node
 
-var ITERS = 0 #For Billboard
 var iterations = 0
 var conversations = 0
 #var gameStart = false
@@ -19,6 +18,8 @@ var puzzleType = 0
 var algoDebug = false
 
 signal gameStart
+
+signal cellarLevel
 
 signal level2change
 

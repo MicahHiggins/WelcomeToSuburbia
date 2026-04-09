@@ -9,11 +9,11 @@ class_name Level1Controller
 @export var start_iteration: int = 3
 @export var spawn_radius: float = 35.0
 @export var radius_randomness: float = 8.0
-@export var max_alive_tentacles: int = 7
+@export var max_alive_tentacles: int = 20
 
 @export var slow_spawn_interval: float = 7.0
-@export var fast_spawn_interval: float = 1.5
-@export var max_iteration_for_full_speed: int = 12
+@export var fast_spawn_interval: float = 0.5
+@export var max_iteration_for_full_speed: int = 6.0
 
 @export var spawn_height_offset: float = 0.0
 
@@ -26,7 +26,7 @@ func _ready() -> void:
 	randomize()
 
 func _process(delta: float) -> void:
-	if GlobalVariables.ITERS < start_iteration:
+	if GlobalVariables.iterations < start_iteration:
 		return
 	
 	spawn_timer -= delta
@@ -38,7 +38,7 @@ func _get_spawn_interval() -> float:
 	var t := inverse_lerp(
 		float(start_iteration),
 		float(max_iteration_for_full_speed),
-		float(GlobalVariables.ITERS)
+		float(GlobalVariables.iterations)
 	)
 
 	t = clamp(t, 0.0, 1.0)
