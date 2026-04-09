@@ -117,4 +117,4 @@ cellar_scene = ExtResource("16_17epn")
 cellar_root_path = NodePath("")
 
 [node name="Spawn" type="Marker3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.4970512, 47.726566)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 55.014503, 2.4970512, 55.606415)
