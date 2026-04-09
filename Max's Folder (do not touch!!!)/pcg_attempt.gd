@@ -58,7 +58,6 @@ func algoForIterations(worldBlocks):
 
 			if counter < 2:
 				print("AHAHAHAH")
-				GlobalVariables.ITERS+=0.5
 				currentWorldBlockIterationX = worldBlocks2[worldBlocks].global_position.x
 				worldBlocks2[i].global_position = currentWorldBlockIteration
 				worldBlocks2[i].global_position.x = currentWorldBlockIterationX + displacement
