@@ -194,7 +194,7 @@ size = Vector3(0.7171631, 1.5157471, 1.7279663)
 size = Vector3(1.7943726, 1, 0.83032227)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_pe1yd"]
-size = Vector3(0.5433502, 0.42407227, 0.4175644)
+size = Vector3(0.5433502, 0.48568726, 0.4175644)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_asrhd"]
 size = Vector3(1.8148193, 0.8902283, 2.7679367)
@@ -321,7 +321,7 @@ transform = Transform3D(0.99997854, 0, -1.2221335e-12, 0, 0.99999917, 0, 1.22213
 shape = SubResource("BoxShape3D_kiafm")
 
 [node name="Desk Light" parent="Bedrooms/bedroom1" instance=ExtResource("9_lobfv")]
-transform = Transform3D(1.0656065, 0, 0.65343946, 0, 1.4999999, 0, -0.65343946, 0, 1.0656065, -3.0751352, -0.87845737, -3.1189904)
+transform = Transform3D(0.2926552, 0, 1.2152585, 0, 1.5, 0, -1.2152585, 0, 0.2926552, -3.0751355, -0.87845737, -3.1189904)
 
 [node name="R1SpotLight3D" type="SpotLight3D" parent="Bedrooms/bedroom1/Desk Light"]
 unique_name_in_owner = true
@@ -338,16 +338,16 @@ light_color = Color(0.8863026, 0.7930651, 0.62317014, 1)
 light_energy = 0.1
 
 [node name="Chair" parent="Bedrooms/bedroom1" instance=ExtResource("10_ppsdj")]
-transform = Transform3D(-1.3621511, 0, -0.6281332, 0, 1.5, 0, 0.6281332, 0, -1.3621511, -1.4257864, -1.9826562, -4.6658034)
+transform = Transform3D(1.4999845, 0, 0.0075397054, 0, 1.5, 0, -0.0075397054, 0, 1.4999845, -3.0531142, -1.9826562, -0.38833332)
 
 [node name="StaticBody3D" type="StaticBody3D" parent="Bedrooms/bedroom1/Chair"]
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Bedrooms/bedroom1/Chair/StaticBody3D"]
-transform = Transform3D(1, 0, -4.4703484e-08, 0, 1, 0, 4.4703484e-08, 0, 1, 0.9011636, 0.17053258, -1.1934946)
+transform = Transform3D(1, 0, -4.4703484e-08, 0, 1, 0, 4.4703484e-08, 0, 1, 0.9011631, 0.15818822, -1.1934948)
 shape = SubResource("BoxShape3D_pe1yd")
 
 [node name="toy_pianoListen" parent="Bedrooms/bedroom1" instance=ExtResource("12_6rn1s")]
-transform = Transform3D(0.00091631734, 0, -0.14999743, 0, 0.15000004, 0, 0.14999743, 0, 0.00091631734, -2.5166962, -0.8161694, -2.30835)
+transform = Transform3D(-6.5567196e-09, 0, -0.15000027, 0, 0.15000004, 0, 0.15000027, 0, -6.5567196e-09, -2.4453826, -0.8161694, -2.195756)
 
 [node name="RedBed" parent="Bedrooms/bedroom1" instance=ExtResource("13_2uf5w")]
 transform = Transform3D(-1.223919e-08, 0, 0.28000006, 0, 0.28000003, 0, -0.28000006, 0, -1.223919e-08, 4.78642, -1.9862005, 0.79205513)
@@ -443,7 +443,7 @@ transform = Transform3D(0.99997854, 0, -1.2221335e-12, 0, 0.99999917, 0, 1.22213
 shape = SubResource("BoxShape3D_kiafm")
 
 [node name="Desk Light" parent="Bedrooms/bedroom2" instance=ExtResource("9_lobfv")]
-transform = Transform3D(0.69893664, 0, 1.0363338, 0, 1.5, 0, -1.0363338, 0, 0.69893664, -3.0250435, -0.87845737, -3.0714893)
+transform = Transform3D(1.2413197, -0.0010411583, 0.14705308, 0.00065282546, 1.4999979, 0.0018644538, -0.14705423, -0.0021296479, 1.2413188, -3.025044, -0.87845737, -3.0714889)
 
 [node name="R2SpotLight3D" type="SpotLight3D" parent="Bedrooms/bedroom2/Desk Light"]
 unique_name_in_owner = true
@@ -461,16 +461,16 @@ light_color = Color(0.8863026, 0.7930651, 0.62317014, 1)
 light_energy = 0.1
 
 [node name="Chair" parent="Bedrooms/bedroom2" instance=ExtResource("10_ppsdj")]
-transform = Transform3D(0.28300056, 0, 1.4730628, 0, 1.5, 0, -1.4730628, 0, 0.28300056, -0.79377145, -1.9826559, -0.10930538)
+transform = Transform3D(-0.047817037, 0.003236851, -1.4992366, 0.004758212, 1.4999909, 0.003086725, 1.4992325, -0.0046573794, -0.047827095, -3.986168, -1.9832458, -3.1244678)
 
 [node name="StaticBody3D" type="StaticBody3D" parent="Bedrooms/bedroom2/Chair"]
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Bedrooms/bedroom2/Chair/StaticBody3D"]
-transform = Transform3D(1, 0, -4.4703484e-08, 0, 1, 0, 4.4703484e-08, 0, 1, 0.9011636, 0.17053258, -1.1934946)
+transform = Transform3D(1.0000007, 0, -4.4703484e-08, -8.1490725e-10, 1, 3.4888217e-09, 4.8428774e-08, -2.0372681e-10, 1.0000005, 0.90116453, 0.21368444, -1.1934952)
 shape = SubResource("BoxShape3D_pe1yd")
 
 [node name="toy_piano" parent="Bedrooms/bedroom2" instance=ExtResource("13_itlhn")]
-transform = Transform3D(-0.15000011, 0, 2.0962343e-05, 0, 0.15000002, 0, -2.0962343e-05, 0, -0.15000011, -2.2025387, -0.77872807, -2.5126305)
+transform = Transform3D(-0.15000013, 1.254552e-11, 2.0962343e-05, -1.8221868e-11, 0.15000004, -1.4551915e-11, -2.0962347e-05, 0, -0.15000013, -2.202537, -0.7786873, -2.4847784)
 
 [node name="doorway" parent="Bedrooms/bedroom2" instance=ExtResource("13_pm42j")]
 transform = Transform3D(-0.34000015, 2.4563462e-11, -2.9725925e-08, 1.6999735e-11, 0.3400002, -5.820766e-11, 2.9718649e-08, 2.910383e-11, -0.34000027, 0.672379, -1.936038, 3.1620798)
@@ -1968,7 +1968,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.7124307, 19.075016)
 [node name="Puzzle2" parent="." instance=ExtResource("22_itlhn")]
 
 [node name="etch-a-sketch" parent="Puzzle2" index="0"]
-transform = Transform3D(1.9106855e-15, 4.3711392e-08, -1, 1, -4.3711392e-08, 0, -4.371139e-08, -1.0000001, -4.371139e-08, -4.570696, -0.57986665, 25.593967)
+transform = Transform3D(4.371139e-08, 1.0000001, 8.742278e-08, 1, -4.3711392e-08, 0, 3.821371e-15, 8.7422784e-08, -1, -6.5554357, -0.57986665, -19.276117)
 
 [node name="ObsArea" parent="Puzzle2/etch-a-sketch" index="3"]
 transform = Transform3D(1.9106855e-15, 4.371139e-08, -1, 1, -4.371139e-08, 0, -4.371139e-08, -1, -4.371139e-08, -0.09567714, 0.57986665, -0.3335595)
@@ -1977,7 +1977,7 @@ transform = Transform3D(1.9106855e-15, 4.371139e-08, -1, 1, -4.371139e-08, 0, -4
 transform = Transform3D(1.9106855e-15, 4.371139e-08, -1, 1, -4.371139e-08, 0, -4.371139e-08, -1, -4.371139e-08, 0, 0, 0)
 
 [node name="etch-a-sketch2" parent="Puzzle2" index="1"]
-transform = Transform3D(4.371139e-08, 1, -8.742278e-08, 1, -4.371139e-08, 0, -3.821371e-15, -8.742278e-08, -1, -6.599003, -1.1230392, -19.273579)
+transform = Transform3D(1.9106855e-15, 4.371139e-08, -1, 1, -4.371139e-08, 0, -4.371139e-08, -1, -4.371139e-08, -4.570696, -0.57986665, 25.593967)
 
 [connection signal="puzzleOneComplete" from="Bedrooms/bedroom2/toy_piano" to="." method="_on_toy_piano_puzzle_one_complete"]
 

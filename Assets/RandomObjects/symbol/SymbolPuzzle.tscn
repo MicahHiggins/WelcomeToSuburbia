@@ -7,9 +7,9 @@
 [ext_resource type="Texture2D" uid="uid://cs51fm4ybyunp" path="res://Max's Folder (do not touch!!!)/Tiles/empty-Sheet.png" id="3_lcf58"]
 [ext_resource type="Script" uid="uid://drdtamscdvpnk" path="res://Scripts/drawing.gd" id="4_lcf58"]
 [ext_resource type="Script" uid="uid://c42s0sbmibvcb" path="res://Scripts/Seeing.gd" id="6_nsdqc"]
-[ext_resource type="Script" uid="uid://cy8r7bxw3kxbj" path="res://Assets/RandomObjects/symbol/buttons_4_draw.gd" id="7_ymkyp"]
+[ext_resource type="Script" path="res://Assets/RandomObjects/symbol/buttons_4_draw.gd" id="7_ymkyp"]
 [ext_resource type="Texture2D" uid="uid://dohc0ilahbkwf" path="res://Assets/RandomObjects/etch-a-sketch/etchSketchPic.jpg" id="8_mf04g"]
-[ext_resource type="Script" uid="uid://brt7ixudi60mk" path="res://Assets/RandomObjects/symbol/buttons_4_see.gd" id="10_2j2dh"]
+[ext_resource type="Script" path="res://Assets/RandomObjects/symbol/buttons_4_see.gd" id="10_2j2dh"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_lcf58"]
 radius = 1.745
@@ -99,9 +99,10 @@ layout_mode = 1
 anchors_preset = 2
 anchor_top = 1.0
 anchor_bottom = 1.0
-offset_top = -128.0
-offset_right = 218.0
-offset_bottom = -43.0
+offset_left = 907.0
+offset_top = -459.0
+offset_right = 1125.0
+offset_bottom = -374.0
 grow_vertical = 0
 text = "Clear Canvas"
 
@@ -112,10 +113,10 @@ anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -275.0
-offset_top = -144.0
-offset_right = -44.0
-offset_bottom = -38.0
+offset_left = -254.0
+offset_top = -582.0
+offset_right = -23.0
+offset_bottom = -476.0
 grow_horizontal = 0
 grow_vertical = 0
 text = "Enter"
@@ -125,12 +126,12 @@ layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5
-offset_left = -483.0
-offset_top = 216.0
-offset_right = -389.0
-offset_bottom = 382.0
+offset_left = -496.0
+offset_top = 249.0
+offset_right = -402.0
+offset_bottom = 283.0
 grow_horizontal = 2
-theme_override_font_sizes/font_size = 30
+theme_override_font_sizes/font_size = 24
 text = "Hello!"
 
 [node name="Exit" type="Button" parent="Buttons4Draw"]
@@ -141,10 +142,10 @@ anchor_left = 0.5
 anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
-offset_left = 301.0
-offset_top = -383.0
-offset_right = 560.0
-offset_bottom = -304.0
+offset_left = 310.0
+offset_top = -358.0
+offset_right = 569.0
+offset_bottom = -279.0
 grow_horizontal = 2
 grow_vertical = 0
 text = "Exit "
@@ -193,10 +194,10 @@ layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5
-offset_left = -568.0
-offset_top = 167.0
-offset_right = -281.0
-offset_bottom = 333.0
+offset_left = -558.0
+offset_top = -2.0
+offset_right = -271.0
+offset_bottom = 164.0
 grow_horizontal = 2
 theme_override_font_sizes/font_size = 30
 text = "Move away to exit...

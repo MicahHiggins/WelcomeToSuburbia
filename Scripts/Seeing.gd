@@ -41,29 +41,57 @@ func _drawing1():
 	# Match the center of the drawing canvas exactly
 	var center_x = 35 
 	var center_y = 15
-	
-	# Spiral parameters - must be identical to the drawing script
-	var steps = 800
-	var growth = 0.08
-	var tightness = 0.25
-	
-	for i in range(steps):
-		var t = i * tightness
-		var r = growth * t
-		
-		var x = center_x + r * cos(t)
-		var y = center_y + r * sin(t)
-		
-		var pic = Vector2i(round(x), round(y))
-		
-		# Check if tile is in the playable area and not a grey line
-		if Dict.has(pic) and not Grid.has(pic):
-			if not mask_arr.has(pic):
-				mask_arr.append(pic)
+	#
+	## Spiral parameters - must be identical to the drawing script
+	#var steps = 400
+	#var growth = 0.08
+	#var tightness = 0.25
+	#
+	#for i in range(steps):
+		#var t = i * tightness
+		#var r = growth * t
+		#
+		#var x = center_x + r * cos(t)
+		#var y = center_y + r * sin(t)
+		#
+		#var pic = Vector2i(round(x), round(y))
+		#
+		## Check if tile is in the playable area and not a grey line
+		#if Dict.has(pic) and not Grid.has(pic):
+			#if not mask_arr.has(pic):
+				#mask_arr.append(pic)
+				#
+				## PREFILL THE BLACK TILES:
+				## This makes the spiral visible so the player can see what to draw.
+				#set_cell(pic, 1, Vector2i(0, 0), 0)
 				
-				# PREFILL THE BLACK TILES:
-				# This makes the spiral visible so the player can see what to draw.
-				set_cell(pic, 1, Vector2i(0, 0), 0)
+	var radius = 8
+	var thickness = 1.0  # controls how thick the outline is
+	for x in range(center_x - radius - 1, center_x + radius + 1):
+		for y in range(center_y - radius - 1, center_y + radius + 1):
+			var dx = x - center_x
+			var dy = y - center_y
+			var dist = sqrt(dx * dx + dy * dy)
+			
+			# Only keep pixels near the edge (empty circle)
+			if abs(dist - radius) < thickness:
+				var pic = Vector2i(x, y)
+				
+				if Dict.has(pic) and not Grid.has(pic):
+					if not mask_arr.has(pic):
+						mask_arr.append(pic)
+						set_cell(pic, 1, Vector2i(0, 0), 0)
+	var tri_height = 6
+	var tri_top_y = center_y - radius - tri_height
+	for y in range(tri_top_y, tri_top_y + tri_height):
+		var width = (y - tri_top_y) * 2  # triangle expands downward
+		for x in range(center_x - width/2, center_x + width/2 + 1):
+			var pic = Vector2i(x, y)
+			
+			if Dict.has(pic) and not Grid.has(pic):
+				if not mask_arr.has(pic):
+					mask_arr.append(pic)
+					set_cell(pic, 1, Vector2i(0, 0), 0)
 
 	print("Observer loaded with ", mask_arr.size(), " tiles.")
 
