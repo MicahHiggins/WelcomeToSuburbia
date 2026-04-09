@@ -33,14 +33,14 @@ var puzzleArr = [1, 5, 3, 7, 4, 6, 6, 2]
 
 
 func _on_mousefree_body_entered(body: Node3D) -> void:
-	if body.is_in_group("player"):
+	if body.is_in_group("player") && body.is_multiplayer_authority():
 		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 		body.set_process_unhandled_input(false)
 		symbol.can_draw = false
 
 
 func _on_mousefree_body_exited(body: Node3D) -> void:
-	if body.is_in_group("player"):
+	if body.is_in_group("player") && body.is_multiplayer_authority():
 		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 		body.set_process_unhandled_input(true)
 		symbol.can_draw = true
