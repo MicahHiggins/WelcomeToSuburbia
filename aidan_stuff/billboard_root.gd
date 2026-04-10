@@ -8,7 +8,7 @@ extends Node3D
 
 var unique_iterations := {
 	2: "Where are you going?",
-	4: "Suburbia Watches",
+	4: "He watches from the sun",
 	6: "118"
 }
 

@@ -11,8 +11,25 @@ extends WorldEnvironment
 # How much fog should remain when staring at the sun (0.0 = totally clear)
 @export var min_fog_multiplier: float = 0.35
 
+@export var base_fog_depth: float = 1.0
+
+# How close fog should be when staring at the sun (0.0 = no distance)
+@export var min_fog_depth: float = 0.90
+
+@export var base_sky_color: Color = Color(1.0,0.92,0.26,1.0)
+# sky color after looking at sun
+@export var changed_sky_color:  Color = Color(0.709, 0.0, 0.332, 1.0)
+
+#@export var base_sun_size: float = 100.0
+## sun size after looking at sun
+#@export var changed_sun_size: float = 1000.0
+
+@export var base_sun_curve: float = 0.0588
+# sun size after looking at sun
+@export var changed_sun_curve: float = 1.35
+
 #Stops changing at 6th iteration
-@export var max_iterations: float = 12.0
+@export var max_iterations: float = 10.0
 @export var max_iterations2: float = 6.0
 
 # How quickly the environment catches up to the target look
@@ -37,7 +54,7 @@ var current_color: Color
 
 # Fog distance change
 @export var start_depth_begin: float = 80.0
-@export var end_depth_begin: float = 35.0
+@export var end_depth_begin: float = 40.0
 @export var start_depth_end: float = 300.0
 @export var end_depth_end: float = 120.0
 
@@ -55,6 +72,12 @@ func _ready() -> void:
 	# Capture your current fog values automatically if you want:
 	if environment:
 		base_fog_light_energy = environment.fog_light_energy
+		base_fog_depth = environment.fog_sky_affect
+		var sky := environment.sky
+		if sky and sky.sky_material:
+			base_sky_color = sky.sky_material.sky_top_color
+			#base_sun_size = sky.sky_material.sun_angle_max
+			base_sun_curve = sky.sky_material.sun_curve
 		
 	# Make sure we have adjustment enabled so saturation/color can work
 	environment.adjustment_enabled = true
@@ -84,11 +107,22 @@ func _process(delta: float) -> void:
 	var raw_focus: float = clampf(cam_forward.dot(to_sun), 0.0, 1.0)
 	var focus: float = smoothstep(look_start, look_end, raw_focus) # 0..1
 
-	# When focus=1 (looking at sun), fog multiplier goes toward min_fog_multiplier
+		# When focus=1 (looking at sun), fog multiplier goes toward min_fog_multiplier
 	var target_mult: float = lerpf(1.0, min_fog_multiplier, focus)
+	var target_mult2: float = lerpf(1.0, min_fog_depth, focus)
+	#var target_mult3: float = lerpf(1.0, changed_sun_size, focus)
+	var target_mult4: float = lerpf(1.0, changed_sun_curve, focus)
+	var targ_color: Color = base_sky_color.lerp(changed_sky_color, focus)
 
 	# Smooth it so it feels natural
 	environment.fog_light_energy = lerpf(environment.fog_light_energy, base_fog_light_energy * target_mult, delta * response_speed)
+	environment.fog_sky_affect = lerpf(environment.fog_sky_affect, base_fog_depth * target_mult2, delta * response_speed)
+	var sky := environment.sky
+	if sky and sky.sky_material:
+		sky.sky_material.sky_top_color = sky.sky_material.sky_top_color.lerp(targ_color, delta * response_speed)
+		#sky.sky_material.sun_angle_max = lerpf(sky.sky_material.sun_angle_max, base_sun_size * target_mult3, delta * response_speed)
+		sky.sky_material.sun_curve = lerpf(sky.sky_material.sun_curve, base_sun_curve * target_mult4, delta * response_speed)
+
 	
 	if environment == null:
 		return
