@@ -88,11 +88,12 @@ func campDial():
 	camp_local += 1
 
 func issDial():
-	print("ISAAC TEST")
+	
 	if (GlobalVariables.iterations >= 3):
 		dialogue.uniqueDialogue =  npcDialogue.issDialogue[2][iss_local]
 	else:
 		dialogue.uniqueDialogue = npcDialogue.issDialogue[GlobalVariables.iterations][iss_local]
+	iss_local += 1
 		
 		
 func dialogueMan(npc_name):
@@ -113,8 +114,8 @@ func dialogueMan(npc_name):
 				campDial()
 				
 			"Isaac":
-				if iss_local == 0:
-					iss_local = 0
+				if iss_local == 3:
+					iss_local = 2
 				issDial()
 				
 

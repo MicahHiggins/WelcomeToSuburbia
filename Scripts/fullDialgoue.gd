@@ -22,7 +22,7 @@ static var campbellsDialogue = [
 	["Fido is where?", "Oh my goodness, thank you!", "We will go look for him right now!"]
 ]
 static var issDialogue = [
-	["..."],
-	["..."], 
-	["..."]
+	["...", "oh, hello", "I'm Isaac"],
+	["you two seem... new here", "this is a strange place", "you can talk to me at any time"], 
+	["are you two... stuck here like me?", "I have a bad feeling about this place", "a really, really, bad feeling"]
 ]

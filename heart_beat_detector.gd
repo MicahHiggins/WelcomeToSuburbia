@@ -18,7 +18,7 @@ func _ready() -> void:
 
 func iterationChange(value: int):
 	print(value)
-	if value == 1:
+	if value == 2:
 		quest_marker_.visible = true
 		#print("itrationChanged! Heartbeat!")
 		#questHub.it_change()

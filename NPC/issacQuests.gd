@@ -16,7 +16,7 @@ func _process(delta: float) -> void:
 
 func iterationChange(value: int):
 	print("Isaaac: Marker!")
-	if value == 4:
+	if value == 1:
 		quest_marker_.visible = true
 		
 
