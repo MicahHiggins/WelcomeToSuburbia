@@ -113,17 +113,20 @@ grow_vertical = 0
 size_flags_horizontal = 4
 
 [node name="CurrObj" type="VBoxContainer" parent="."]
-offset_right = 272.0
-offset_bottom = 163.0
+offset_left = -28.0
+offset_top = 2.0
+offset_right = 244.0
+offset_bottom = 165.0
+theme_override_constants/separation = 9
 script = ExtResource("6_dd0l5")
 
 [node name="Label" type="Label" parent="CurrObj"]
 layout_mode = 2
 size_flags_horizontal = 6
-theme_override_colors/font_color = Color(0.8039216, 0.39607844, 0.4862745, 1)
+theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_colors/font_shadow_color = Color(0.39607844, 0.9529412, 0.8901961, 0)
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
-theme_override_constants/paragraph_spacing = -24
+theme_override_constants/paragraph_spacing = -5
 theme_override_constants/shadow_offset_x = 12
 theme_override_constants/shadow_offset_y = 8
 theme_override_constants/outline_size = 10
@@ -135,7 +138,7 @@ text = "Main Objectives:"
 layout_mode = 2
 size_flags_horizontal = 6
 size_flags_vertical = 8
-theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_color = Color(1, 0.14117648, 0.3529412, 1)
 theme_override_colors/font_shadow_color = Color(0.39607844, 0.9529412, 0.8901961, 0)
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_constants/paragraph_spacing = -24
@@ -150,8 +153,8 @@ text = "Find Your Home (130)
 [node name="sideLabel" type="Label" parent="CurrObj"]
 layout_mode = 2
 size_flags_horizontal = 6
-size_flags_vertical = 1
-theme_override_colors/font_color = Color(0.28145075, 0.57361144, 0.772331, 1)
+size_flags_vertical = 8
+theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_colors/font_shadow_color = Color(0.39607844, 0.9529412, 0.8901961, 0)
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_constants/line_spacing = 1
@@ -160,14 +163,14 @@ theme_override_constants/shadow_offset_x = 12
 theme_override_constants/shadow_offset_y = 8
 theme_override_constants/outline_size = 10
 theme_override_fonts/font = ExtResource("3_q5pv1")
-theme_override_font_sizes/font_size = 18
-text = "Side Objectives"
+theme_override_font_sizes/font_size = 20
+text = "Side Objectives:"
 
 [node name="side" type="Label" parent="CurrObj"]
 layout_mode = 2
 size_flags_horizontal = 6
 size_flags_vertical = 8
-theme_override_colors/font_color = Color(0.6300943, 0.34077573, 0.3706163, 1)
+theme_override_colors/font_color = Color(0.29533136, 0.5175257, 0.8186027, 1)
 theme_override_colors/font_shadow_color = Color(0.39607844, 0.9529412, 0.8901961, 0)
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_constants/paragraph_spacing = -24
@@ -177,7 +180,7 @@ theme_override_constants/outline_size = 10
 theme_override_fonts/font = ExtResource("3_q5pv1")
 theme_override_font_sizes/font_size = 20
 text = "
-
+none
 "
 
 [node name="currIter" type="Label" parent="."]
