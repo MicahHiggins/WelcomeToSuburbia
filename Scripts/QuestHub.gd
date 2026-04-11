@@ -13,6 +13,9 @@ static var singleton := questHub.new()
 static var iteration_changed := Signal(singleton, "iterationManipulation")
 static var questTalk := Signal(singleton, "questManipulation")
 static var isaacQuest := Signal(singleton, "isaacStuff")
+
+
+static var dogFound := false
 #func set_value(new_value: int) -> void:
 	## ... update state ...
 	#iteration_changed.emit(GlobalVariables.iterations)
@@ -25,8 +28,8 @@ static func it_change():
 	iteration_changed.emit(GlobalVariables.iterations)
 
 static func campbellTalk():
-	print("Iteration Change Detected!?: ")
-	print(GlobalVariables.iterations)
+	#print("Iteration Change Detected!?: ")
+	#print(GlobalVariables.iterations)
 	questTalk.emit(GlobalVariables.iterations)
 	
 static func isaacTrigger():

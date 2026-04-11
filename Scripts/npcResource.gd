@@ -141,7 +141,7 @@ func enter_dialogue():
 			"The Campbells":
 				number = camp_local
 			"Isaac":
-				number = 2
+				number = iss_local
 		
 		if number >= 2:
 			dialogueMan(npc_name)

@@ -30,14 +30,18 @@ func _process(delta: float) -> void:
 #checks if campbells are talked to during iteration 3-5
 func talkedTo(value: int):
 	if value >= 2 && value <= 5:
-		print("Campbells talked detected!")
-
-		side.text = "Find Fido (The Dog)"
+		if questHub.dogFound == true:
+			side.text = "Tell Campbells you have found Fido"
+		else:
+			side.text = "Find Fido (The Dog)"
 
 #Iteration change (ref questHub.gd)
 func iterationChange(value: int):
-	if value == 2:
+	if value == 1:
+		main.text = main.text + "\n Talk to Issac (corner)"
 		
+	if value == 2:
+		#main.text = main.text + "\n Talk to Issac (corner)"
 		side.text = "Investigate the Crying (Campbells)"
 
 func isaacTrigger(value: int):

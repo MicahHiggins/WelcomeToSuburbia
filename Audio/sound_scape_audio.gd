@@ -52,13 +52,13 @@ func _ready() -> void:
 	soundToggle = true
 
 func levelOut():
-	print("LEVL OUT!")
+	#print("LEVL OUT!")
 	soundToggle = false
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
 	if soundToggle == false:
-		print("SOUND TOGGLE!")
+		#print("SOUND TOGGLE!")
 		playTrack3.emit()
 		soundToggle = true
 		var master_bus_index = AudioServer.get_bus_index("soundScape")
@@ -66,7 +66,7 @@ func _process(delta: float) -> void:
 		
 	
 func soundManipulation(sound: AudioStreamPlayer):
-	print(sound)
+	#print(sound)
 	#sound.volume_db = 3
 	var bus_index = AudioServer.get_bus_index("soundScape")
 	var panner = AudioServer.get_bus_effect(bus_index, 0)
@@ -126,6 +126,6 @@ func pickRandSound():
 
 func _on_audio_manager_game_start() -> void:
 	var num = randomNumTransition()
-	print(num)
+	#print(num)
 	await get_tree().create_timer(num).timeout 
 	pickRandSound()

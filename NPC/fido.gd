@@ -37,8 +37,8 @@ func iterationChange(value: int):
 		fido_collision.set_deferred("disabled", false)
 		print("FIDO ON!")
 		fido.visible = true
-		animation_player.play("Bark")
 		quest_marker_.visible = false
+		animation_player.play("Bark")
 		bark_2.play()
 	if value == 3:
 			quest_marker_.visible = true
@@ -47,6 +47,7 @@ func iterationChange(value: int):
 		bark_2.stop()
 		fido.visible = false
 		fido_collision.set_deferred("disabled", true)
+		
 		#animation_player.stop()
 
 
@@ -56,9 +57,13 @@ func _on_area_3d_body_entered(body: Node3D) -> void:
 	
 	if fido_toggle == true:
 		return 
+		
 	if body.is_in_group("player"):
 		visible = false
-		print("Fido: Player Detected")
+		#print("Fido: Player Detected")
+		questHub.dogFound = true
 		fido_toggle = true
+		questHub.campbellTalk()
 		uiStuff.ObjectiveToggle = true
+		
 		

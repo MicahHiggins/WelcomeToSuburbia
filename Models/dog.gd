@@ -15,6 +15,14 @@ func _ready() -> void:
 		quest_marker_.visible = true
 
 
+		
+# Called every frame. 'delta' is the elapsed time since the previous frame.
+func _process(delta: float) -> void:
+	pass
+	#if questHub.
+	
+	
+
 func iterationChange(value: int):
 	
 	#Dog disappears at iteration 3 (2), "teleports" to random location (house near abigail)
@@ -25,10 +33,6 @@ func iterationChange(value: int):
 		
 	else:
 		dog.visible = true
-		
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta: float) -> void:
-	pass
 	
 func talkedTo(value: int):
 	print("Talked! Marker!")
