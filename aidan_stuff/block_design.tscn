@@ -222,14 +222,20 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.992708, 0.15580705, 15.998
 transform = Transform3D(0.21213204, 0, 0.21213204, 0, 0.3, 0, -0.21213204, 0, 0.21213204, -6.343025, -4.1292725, -7.2216015)
 
 [node name="Label3D" type="Label3D" parent="BillboardRoot/Rotator"]
-transform = Transform3D(-0.21213204, 0, -0.21213204, 0, 0.3, 0, 0.21213204, 0, -0.21213204, -0.09330177, 4.420728, -0.14616203)
+transform = Transform3D(-0.21213204, 0, -0.21213204, 0, 0.3, 0, 0.21213204, 0, -0.21213204, -0.09330177, 4.3504243, -0.14616203)
 pixel_size = 0.05
 text = "Welcome to Suburbia!"
+line_spacing = -7.0
+autowrap_mode = 2
+width = 188.0
 
 [node name="Label3D2" type="Label3D" parent="BillboardRoot/Rotator"]
-transform = Transform3D(0.212132, 0, 0.2121321, 0, 0.3, 0, -0.2121321, 0, 0.212132, 0.12263298, 4.420728, 0.15872383)
+transform = Transform3D(0.212132, 0, 0.2121321, 0, 0.3, 0, -0.2121321, 0, 0.212132, 0.123, 4.35, 0.159)
 pixel_size = 0.05
 text = "Welcome to Suburbia!"
+line_spacing = -7.0
+autowrap_mode = 2
+width = 150.0
 
 [node name="Houses" type="Node3D" parent="."]
 
