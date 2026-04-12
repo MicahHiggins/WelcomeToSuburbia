@@ -1,16 +1,28 @@
-[gd_scene load_steps=4 format=3 uid="uid://knf05h80dkgl"]
+[gd_scene load_steps=5 format=3 uid="uid://dqjphju0rm3il"]
 
-[ext_resource type="Script" uid="uid://col33obiu0kql" path="res://WatchedCrawler.gd" id="1_diuyk"]
+[ext_resource type="Script" uid="uid://col33obiu0kql" path="res://Scripts/WatchedCrawler.gd" id="1_diuyk"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_0ktk6"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_a5j5k"]
 
+[sub_resource type="SphereShape3D" id="SphereShape3D_diuyk"]
+
 [node name="Crawler" type="CharacterBody3D"]
 script = ExtResource("1_diuyk")
+watch_max_distance = 40.0
+watch_fov_degrees = 60.0
+debug_print = false
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 shape = SubResource("BoxShape3D_0ktk6")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="CollisionShape3D"]
+layers = 9
 mesh = SubResource("BoxMesh_a5j5k")
+
+[node name="Area3D" type="Area3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Area3D"]
+transform = Transform3D(6.66, 0, 0, 0, 6.66, 0, 0, 0, 6.66, 0, 0, 0)
+shape = SubResource("SphereShape3D_diuyk")
