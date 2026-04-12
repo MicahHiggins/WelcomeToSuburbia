@@ -38,6 +38,7 @@ func talkedTo(value: int):
 #Iteration change (ref questHub.gd)
 func iterationChange(value: int):
 	if value == 1:
+		prev_text_main = main.text
 		main.text = main.text + "\n Talk to Issac (corner)"
 		
 	if value == 2:
@@ -45,6 +46,9 @@ func iterationChange(value: int):
 		side.text = "Investigate the Crying (Campbells)"
 
 func isaacTrigger(value: int):
-	if value >= 5:
-		pass
+	print("Is issac UI ON?")
+	if value == 2 && isaacQuest.isaacQToggle == false:
+		print("ISAAC HAS ENTERED THE UI!")
+		
+		main.text = prev_text_main + "\n explore the neighborhood"
 		

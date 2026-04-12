@@ -88,6 +88,13 @@ func campDial():
 	camp_local += 1
 
 func issDial():
+	if GlobalVariables.iterations == 1 && isaacQuest.isaacQToggle == true:
+		isaacQuest.isaacQToggle = false
+		
+		GlobalVariables.iterations += 1
+		questHub.isaacTrigger()
+		questHub.it_change()
+		print("DM: After issac talking trigger!")
 	
 	if (GlobalVariables.iterations >= 3):
 		dialogue.uniqueDialogue =  npcDialogue.issDialogue[2][iss_local]
@@ -169,11 +176,11 @@ func enter_dialogue():
 	
 	
 func _on_talk_detection_body_entered(body: Node3D) -> void:
-	print("SSSSs")
+	#print("SSSSs")
 	if body.is_multiplayer_authority():
 		tutorial.interact = true
 		in_area = true
-		print("TRUE")
+		#print("TRUE")
 
 
 func _on_talk_detection_body_exited(body: Node3D) -> void:
@@ -181,7 +188,7 @@ func _on_talk_detection_body_exited(body: Node3D) -> void:
 		GlobalVariables.interact.emit()
 		tutorial.interact = false
 		in_area = false
-		print("FALSE")
+		#print("FALSE")
 
 func find_descendant_in_group(node: Node, group: String) -> Node:
 	if node.is_in_group(group):

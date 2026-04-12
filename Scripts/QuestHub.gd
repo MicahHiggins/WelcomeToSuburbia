@@ -8,6 +8,7 @@ signal questManipulation(value: int)
 signal isaacStuff(value: int)
 
 
+
  # Global signal
 static var singleton := questHub.new()
 static var iteration_changed := Signal(singleton, "iterationManipulation")
