@@ -1,0 +1,195 @@
+[gd_scene load_steps=9 format=3 uid="uid://dwgaejjewy8s5"]
+
+[ext_resource type="Script" uid="uid://bbitif1hr07eg" path="res://aidan_stuff/ui.gd" id="1_8pkb0"]
+[ext_resource type="Texture2D" uid="uid://dbjeeu2hjcp4e" path="res://Assets/Images/Arrow.png" id="2_e0qpt"]
+[ext_resource type="FontFile" uid="uid://g7ve53wy4c3c" path="res://addons/Font/MADE TOMMY Medium_PERSONAL USE.otf" id="3_q5pv1"]
+[ext_resource type="Script" uid="uid://cnfd8g3v8lobu" path="res://GameLevelsETC/pop_up.gd" id="4_n0eaf"]
+[ext_resource type="PackedScene" uid="uid://gxwo5ybv7v7s" path="res://Max's Folder (do not touch!!!)/DialogueManager/dialogue_manager.tscn" id="5_n0eaf"]
+[ext_resource type="Script" uid="uid://b04i6ar3qh87c" path="res://aidan_stuff/curr_iter.gd" id="6_d3d0q"]
+[ext_resource type="Script" uid="uid://c8d8y0v8e3yhm" path="res://aidan_stuff/curr_obj.gd" id="6_dd0l5"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_q3uk2"]
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(1.2303787, 1.9752561, 1.472464, 1)
+
+[node name="UI" type="CanvasLayer"]
+script = ExtResource("1_8pkb0")
+
+[node name="Control" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -20.0
+offset_top = 1.0
+offset_right = 20.0
+offset_bottom = 41.0
+grow_horizontal = 2
+
+[node name="distance" type="Label" parent="Control"]
+layout_mode = 0
+offset_left = 506.0
+offset_top = 365.0
+offset_right = 546.0
+offset_bottom = 388.0
+
+[node name="PartnerArrow" type="TextureRect" parent="Control"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -39.0
+offset_top = 86.0
+offset_right = 796.00006
+offset_bottom = 698.0
+grow_horizontal = 2
+scale = Vector2(0.1, 0.1)
+texture = ExtResource("2_e0qpt")
+stretch_mode = 3
+
+[node name="Item1Box" type="Panel" parent="."]
+modulate = Color(0.28321043, 0.28321043, 0.28321043, 1)
+offset_left = 1011.0
+offset_top = 528.0
+offset_right = 1096.0
+offset_bottom = 606.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_q3uk2")
+
+[node name="Item2Box" type="Panel" parent="."]
+modulate = Color(0.28321043, 0.28321043, 0.28321043, 1)
+offset_left = 886.0
+offset_top = 528.0
+offset_right = 971.0
+offset_bottom = 606.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_q3uk2")
+
+[node name="Item1Label" type="Label" parent="."]
+offset_left = 908.0
+offset_top = 555.0
+offset_right = 948.0
+offset_bottom = 578.0
+
+[node name="Item2Lable" type="Label" parent="."]
+offset_left = 1034.0
+offset_top = 555.0
+offset_right = 1074.0
+offset_bottom = 578.0
+
+[node name="popUp" type="Label" parent="."]
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -721.0
+offset_top = 86.0
+offset_right = -270.0
+offset_bottom = 148.0
+grow_horizontal = 0
+grow_vertical = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_constants/outline_size = 6
+theme_override_fonts/font = ExtResource("3_q5pv1")
+theme_override_font_sizes/font_size = 30
+text = "Press \"F\" to interact"
+script = ExtResource("4_n0eaf")
+metadata/_edit_use_anchors_ = true
+
+[node name="DialogueManager" parent="." instance=ExtResource("5_n0eaf")]
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -263.0
+offset_top = -202.0
+offset_right = -128.00003
+offset_bottom = -162.0
+grow_horizontal = 2
+grow_vertical = 0
+size_flags_horizontal = 4
+
+[node name="CurrObj" type="VBoxContainer" parent="."]
+offset_left = -28.0
+offset_top = 2.0
+offset_right = 244.0
+offset_bottom = 165.0
+theme_override_constants/separation = 9
+script = ExtResource("6_dd0l5")
+
+[node name="Label" type="Label" parent="CurrObj"]
+layout_mode = 2
+size_flags_horizontal = 6
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_shadow_color = Color(0.39607844, 0.9529412, 0.8901961, 0)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/paragraph_spacing = -5
+theme_override_constants/shadow_offset_x = 12
+theme_override_constants/shadow_offset_y = 8
+theme_override_constants/outline_size = 10
+theme_override_fonts/font = ExtResource("3_q5pv1")
+theme_override_font_sizes/font_size = 25
+text = "Main Objectives:"
+
+[node name="main" type="Label" parent="CurrObj"]
+layout_mode = 2
+size_flags_horizontal = 6
+size_flags_vertical = 8
+theme_override_colors/font_color = Color(1, 0.14117648, 0.3529412, 1)
+theme_override_colors/font_shadow_color = Color(0.39607844, 0.9529412, 0.8901961, 0)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/paragraph_spacing = -24
+theme_override_constants/shadow_offset_x = 12
+theme_override_constants/shadow_offset_y = 8
+theme_override_constants/outline_size = 10
+theme_override_fonts/font = ExtResource("3_q5pv1")
+theme_override_font_sizes/font_size = 20
+text = "Find Your Home (130)
+"
+
+[node name="sideLabel" type="Label" parent="CurrObj"]
+layout_mode = 2
+size_flags_horizontal = 6
+size_flags_vertical = 8
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_shadow_color = Color(0.39607844, 0.9529412, 0.8901961, 0)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/line_spacing = 1
+theme_override_constants/paragraph_spacing = -24
+theme_override_constants/shadow_offset_x = 12
+theme_override_constants/shadow_offset_y = 8
+theme_override_constants/outline_size = 10
+theme_override_fonts/font = ExtResource("3_q5pv1")
+theme_override_font_sizes/font_size = 20
+text = "Side Objectives:"
+
+[node name="side" type="Label" parent="CurrObj"]
+layout_mode = 2
+size_flags_horizontal = 6
+size_flags_vertical = 8
+theme_override_colors/font_color = Color(0.29533136, 0.5175257, 0.8186027, 1)
+theme_override_colors/font_shadow_color = Color(0.39607844, 0.9529412, 0.8901961, 0)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/paragraph_spacing = -24
+theme_override_constants/shadow_offset_x = 12
+theme_override_constants/shadow_offset_y = 8
+theme_override_constants/outline_size = 10
+theme_override_fonts/font = ExtResource("3_q5pv1")
+theme_override_font_sizes/font_size = 20
+text = "
+none
+"
+
+[node name="currIter" type="Label" parent="."]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -20.0
+offset_right = 20.0
+offset_bottom = 23.0
+grow_horizontal = 2
+text = "Curr Iteration: "
+script = ExtResource("6_d3d0q")
