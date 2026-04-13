@@ -2543,11 +2543,11 @@ shape = SubResource("BoxShape3D_milrp")
 [node name="AudioCues" type="Node3D" parent="."]
 
 [node name="heartBeatDetector" parent="AudioCues" instance=ExtResource("20_u2ehm")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.802187, 0.6931386, 4.6977787)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.2216754, -0.20272827, 10.947605)
 priority = 1
 
 [node name="QuestMarker!" parent="AudioCues/heartBeatDetector" index="1"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.096632, 0, -0.9018469)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.099029064, 0, -0.9018469)
 
 [node name="PineTrees" type="Node3D" parent="."]
 
