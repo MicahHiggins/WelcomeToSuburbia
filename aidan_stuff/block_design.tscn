@@ -1,4 +1,4 @@
-[gd_scene load_steps=37 format=3 uid="uid://r8vqf0qcnkdn"]
+[gd_scene load_steps=38 format=3 uid="uid://r8vqf0qcnkdn"]
 
 [ext_resource type="Script" uid="uid://4p6bc6ac8elf" path="res://aidan_stuff/block_design.gd" id="1_jmv40"]
 [ext_resource type="Texture2D" uid="uid://but80wsucm4q2" path="res://textures/GrassTextures/GrassAlbedo.png" id="2_bkv0n"]
@@ -22,9 +22,9 @@
 [ext_resource type="PackedScene" uid="uid://bjq42iea72mgn" path="res://Audio/AudioCues/heart_beat_detector.tscn" id="20_u2ehm"]
 [ext_resource type="PackedScene" uid="uid://bhne50eu8g2mb" path="res://Assets/RandomObjects/pineTree/pine_tree.tscn" id="21_u2ehm"]
 [ext_resource type="PackedScene" uid="uid://655t81u48joy" path="res://NPC/fido.tscn" id="22_ga440"]
+[ext_resource type="Script" path="res://aidan_stuff/bus.gd" id="23_3rgr2"]
 [ext_resource type="PackedScene" uid="uid://gk88lcwyw5hu" path="res://Assets/RandomObjects/cellar_investigate.tscn" id="23_5xofl"]
-[ext_resource type="Script" uid="uid://cefpvj7tg03be" path="res://aidan_stuff/bus.gd" id="23_3rgr2"]
-[ext_resource type="PackedScene" uid="uid://cx5rbrvijd0rs" path="res://Assets/RandomObjects/bus/busssss.tscn" id="23_5xofl"]
+[ext_resource type="PackedScene" uid="uid://cx5rbrvijd0rs" path="res://Assets/RandomObjects/bus/busssss.tscn" id="25_g1s53"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_0wadw"]
 albedo_color = Color(0.60271376, 0.7674062, 0.73615, 1)
@@ -198,6 +198,9 @@ _data = {
 [node name="Block Design" type="Node3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.043141365)
 script = ExtResource("1_jmv40")
+
+[node name="Cellar Investigate" parent="." instance=ExtResource("23_5xofl")]
+transform = Transform3D(-0.5, 0, -4.371139e-08, 0, 0.5, 0, 4.371139e-08, 0, -0.5, -5.9443893, 0, 15.849679)
 
 [node name="Ground" type="StaticBody3D" parent="."]
 transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0)
@@ -2753,12 +2756,10 @@ shape = SubResource("SphereShape3D_ga440")
 [node name="Fido" parent="Dog" instance=ExtResource("22_ga440")]
 transform = Transform3D(0.05, 0, 0, 0, 0.05, 0, 0, 0, 0.05, 0, 0, 0)
 
-[node name="Cellar Investigate" parent="." instance=ExtResource("23_5xofl")]
-transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, -6.094309, 0, 15.946864)
 [node name="Bus" type="Node3D" parent="."]
 script = ExtResource("23_3rgr2")
 
-[node name="busssss" parent="Bus" instance=ExtResource("23_5xofl")]
+[node name="busssss" parent="Bus" instance=ExtResource("25_g1s53")]
 transform = Transform3D(-0.34000003, 0, -4.6808704e-08, 0, 0.31000003, 0, 5.1338578e-08, 0, -0.31000003, 15.77774, 0.5986364, -9)
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="Bus"]
