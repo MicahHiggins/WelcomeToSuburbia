@@ -59,7 +59,10 @@ func _try_spawn_tentacle() -> void:
 	var tentacle := tentacle_scene.instantiate() as Node3D
 	if tentacle == null:
 		return
-
+	
+	var scale_mult := randf_range(0.7, 2.7)
+	tentacle.scale = Vector3.ONE * scale_mult
+	
 	var angle := randf() * TAU
 	var dist := spawn_radius + randf_range(-radius_randomness, radius_randomness)
 

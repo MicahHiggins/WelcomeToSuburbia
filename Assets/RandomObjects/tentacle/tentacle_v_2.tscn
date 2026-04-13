@@ -1,7 +1,17 @@
-[gd_scene load_steps=3 format=3 uid="uid://cdnciukj27aok"]
+[gd_scene load_steps=6 format=3 uid="uid://cdnciukj27aok"]
 
 [ext_resource type="PackedScene" uid="uid://dd0s156funjlr" path="res://Assets/RandomObjects/tentacle/TentacleV2.glb" id="1_tbxqs"]
 [ext_resource type="Script" uid="uid://b2yyvqemomigg" path="res://Assets/RandomObjects/tentacle/tentacle_v_2.gd" id="2_xyel8"]
+[ext_resource type="Texture2D" uid="uid://s0nfw2xwhace" path="res://Assets/textures/PinkyTexture.png" id="3_0ehj7"]
+[ext_resource type="Texture2D" uid="uid://bpa0okxahjrpn" path="res://Assets/textures/FleshNormalMap.jpg" id="4_05tcu"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_vd8ks"]
+albedo_color = Color(1, 0.6048508, 0.7219524, 1)
+albedo_texture = ExtResource("3_0ehj7")
+roughness = 0.6
+normal_enabled = true
+normal_texture = ExtResource("4_05tcu")
+uv1_triplanar = true
 
 [node name="TentacleV2" instance=ExtResource("1_tbxqs")]
 transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0)
@@ -18,3 +28,4 @@ transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0)
 
 [node name="Cylinder" parent="Armature/Skeleton3D" index="0"]
 transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0)
+surface_material_override/0 = SubResource("StandardMaterial3D_vd8ks")

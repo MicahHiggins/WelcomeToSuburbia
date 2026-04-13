@@ -3,6 +3,7 @@ extends Node3D
 @onready var houses: Node3D = $Houses
 @onready var roads: Node3D = $Roads
 
+
 const PATROL_BUNDLE: PackedScene = preload("res://aidan_stuff/patrol_path.tscn")
 const PATROL_BUNDLE_ABIGAIL: PackedScene = preload("res://NPC/patrol_bundel_abigail.tscn")
 const PATROL_BUNDLE_CAMPBELL: PackedScene = preload("res://NPC/patrol_bundle_campbells.tscn")

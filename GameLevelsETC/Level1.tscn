@@ -1,10 +1,11 @@
-[gd_scene load_steps=15 format=3 uid="uid://d1ibgfwne281y"]
+[gd_scene load_steps=16 format=3 uid="uid://d1ibgfwne281y"]
 
 [ext_resource type="Script" uid="uid://bw77jeuwa8wio" path="res://GameLevelsETC/level_1.gd" id="1_oh3op"]
 [ext_resource type="PackedScene" uid="uid://bs2jm62cmkbrk" path="res://addons/instant-realistic-light/light_scene.tscn" id="3_jo2a5"]
 [ext_resource type="Script" uid="uid://bkb35cbdsgdbh" path="res://addons/instant-realistic-light/light_scene.gd" id="4_d084q"]
 [ext_resource type="PackedScene" uid="uid://bst3bb8d7vieb" path="res://Max's Folder (do not touch!!!)/pcgRescaled.tscn" id="7_d084q"]
 [ext_resource type="Script" uid="uid://c5qchfyao7ahn" path="res://GameLevelsETC/tether_system.gd" id="7_ki0f2"]
+[ext_resource type="PackedScene" path="res://NPC/WatchedCrawler.tscn" id="8_d084q"]
 [ext_resource type="Script" uid="uid://cjg7ws1b5cnm7" path="res://GameLevelsETC/telleport_manager.gd" id="15_vlwaf"]
 [ext_resource type="PackedScene" uid="uid://bf38tvkrxj6ds" path="res://GameLevelsETC/CellarLevel.tscn" id="16_17epn"]
 
@@ -79,7 +80,7 @@ _data = {
 script = ExtResource("1_oh3op")
 spawn_radius = 200.0
 slow_spawn_interval = 3.0
-fast_spawn_interval = 0.4
+fast_spawn_interval = 0.75
 
 [node name="PCGAttempt" parent="." instance=ExtResource("7_d084q")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.1072845, 9.536743e-07, -0.011600018)
@@ -118,3 +119,6 @@ cellar_root_path = NodePath("")
 
 [node name="Spawn" type="Marker3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 55.014503, 2.4970512, 55.606415)
+
+[node name="Crawler" parent="Spawn" instance=ExtResource("8_d084q")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.3250885, 0)

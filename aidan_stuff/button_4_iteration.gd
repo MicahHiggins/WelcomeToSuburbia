@@ -30,7 +30,7 @@ func _server_iter_up() -> void:
 	rpc("_rpc_apply_iters", it)
 
 @rpc("any_peer", "call_local", "reliable")
-func _rpc_apply_iters(it: int, it2: int) -> void:
+func _rpc_apply_iters(it: int) -> void:
 	GlobalVariables.iterations = it
 	print("QUEST BUTTON CHANGE!")
 	GlobalVariables.gameStart.emit()
