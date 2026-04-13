@@ -1,13 +1,10 @@
 extends  CharacterBody3D
 
 class_name fido_dog
-
+@onready var quest_marker_: questMarker = $"QuestMarker!"
 @onready var fido: CharacterBody3D = $"."
 @onready var animation_player: AnimationPlayer = $AnimationPlayer
-@onready var quest_marker_: questMarker = $"QuestMarker!"
-
 @onready var area_3d: Area3D = $"../Area3D"
-
 @onready var fido_collision: CollisionShape3D = $"../Area3D/FidoCollision"
 
 static var fido_toggle := false
@@ -17,8 +14,20 @@ static var fido_toggle := false
 func _ready() -> void:
 	#collision_shape_3d.set_deferred("disabled", true)
 	questHub.iteration_changed.connect(iterationChange)
+	questHub.campbellQuest.connect(campbellProgression)
 	fido.visible = false
 	fido_collision.set_deferred("disabled", true)
+	
+	match(questHub.campbellProg):
+		0: 
+			quest_marker_.visible = false
+		1:
+			quest_marker_.visible = true
+		2:
+			quest_marker_.visible = true
+		3:
+			quest_marker_.visible = false
+			
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -27,23 +36,28 @@ func _process(delta: float) -> void:
 
 
 
+func campbellProgression(value: int):
+
+	if questHub.campbellProg == 2:
+		print("FIDO Progression!!!")
+		print("Fido Progression: ", questHub.campbellProg)
+		quest_marker_.visible = true
+
 func iterationChange(value: int):
 	print("FIDO DETECTED!")
 	
 	#If on iteration 3, turn fido on
 	if value == 2:
 	
-		print(fido.global_position)
+		#print(fido.global_position)
 		fido_collision.set_deferred("disabled", false)
-		print("FIDO ON!")
-		fido.visible = true
-		quest_marker_.visible = false
 		animation_player.play("Bark")
-		bark_2.play()
-	if value == 3:
-			quest_marker_.visible = true
+		#print("FIDO ON!")
+		fido.visible = true
 		
-	if value > 5:
+		bark_2.play()
+		
+	if value > 5: # YOU FAIL QUEST IT YOU DO NOT FIND FIDO BY IT. 6
 		bark_2.stop()
 		fido.visible = false
 		fido_collision.set_deferred("disabled", true)
@@ -54,16 +68,15 @@ func iterationChange(value: int):
 
 
 func _on_area_3d_body_entered(body: Node3D) -> void:
-	
-	if fido_toggle == true:
-		return 
-		
-	if body.is_in_group("player"):
+
+	if body.is_in_group("player") && body.is_multiplayer_authority() && questHub.campbellProg > 0:
 		visible = false
-		#print("Fido: Player Detected")
-		questHub.dogFound = true
-		fido_toggle = true
-		questHub.campbellTalk()
-		uiStuff.ObjectiveToggle = true
+		questHub.campbellProg = 3
+		questHub.campbellTrigger()
+		bark_2.stop()
+		get_tree().call_group("doggy", "queue_free")
+		#fido_toggle = true
+		#questHub.campbellTalk()
+		#uiStuff.ObjectiveToggle = true
 		
 		

@@ -43,6 +43,7 @@ interactable=""
 uv_reveal=""
 NPC_Body=""
 NPC_Animation=""
+doggy=""
 
 [input]
 

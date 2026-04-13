@@ -28,6 +28,8 @@ func _ready() -> void:
 			quest_marker_.visible = false
 		5:
 			quest_marker_.visible = true
+		6: 
+			quest_marker_.visible = false
 		
 			
 			
@@ -46,6 +48,7 @@ func isaacProgress(value: int):
 	
 	if GlobalVariables.isaac_quest_progression == 5:
 		quest_marker_.visible = true
+		
 		
 		#QUEST BRUH
 		

@@ -8,11 +8,28 @@ extends Node3D
 func _ready() -> void:
 	animation_player.play("DogWalk")
 	questHub.iteration_changed.connect(iterationChange)
-	questHub.questTalk.connect(talkedTo)
+	questHub.campbellQuest.connect(campbellProgression)
 	quest_marker_.visible = false
-	if questMarker.campbells == true:
-		visible = false
-		quest_marker_.visible = true
+	
+	match(questHub.campbellProg):
+		0:
+			quest_marker_.visible = false
+			dog.visible = true
+		1:
+			quest_marker_.visible = true
+			dog.visible = false
+		2:
+			quest_marker_.visible = false
+			dog.visible = false
+		3:
+			quest_marker_.visible = true
+			dog.visible = false
+		4:
+			quest_marker_.visible = false
+			dog.visible = false
+	#if questMarker.campbells == true:
+		#visible = false
+		#quest_marker_.visible = true
 
 
 		
@@ -26,14 +43,27 @@ func _process(delta: float) -> void:
 func iterationChange(value: int):
 	
 	#Dog disappears at iteration 3 (2), "teleports" to random location (house near abigail)
-	if value >= 2:
+	if value >= 2 && questHub.campbellProg == 0:
+		questHub.campbellProg = 1
+		print("DOG DISAPPEARS!")
+		questHub.campbellTrigger()
 		dog.visible = false
 		quest_marker_.visible = true
-		questMarker.campbells = true
+		#questMarker.campbells = true
 		
 	else:
 		dog.visible = true
 	
-func talkedTo(value: int):
-	print("Talked! Marker!")
-	quest_marker_.visible = false
+func campbellProgression(value: int):
+	match(questHub.campbellProg):
+		0:
+			quest_marker_.visible = false
+		1:
+			quest_marker_.visible = true
+		2:
+			quest_marker_.visible = false
+		3:
+			quest_marker_.visible = true
+		4:
+			quest_marker_.visible = false
+	

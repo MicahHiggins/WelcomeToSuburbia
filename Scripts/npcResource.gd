@@ -36,6 +36,7 @@ func iterationChange(value: int):
 	iss_local = 0
 	
 	
+	
 #func questSig():
 	#if campbell_talked == false:
 		#campbell_talked = true
@@ -70,19 +71,28 @@ func abiDial():
 			
 		abi_local += 1
 		
+		
+var DBToggle := false
 func campDial():
 
-	if campbell_talked == false && GlobalVariables.iterations >= 2:
-		campbell_talked = true
-		print("Campbell Talked To! in iter 3")
-		questHub.campbellTalk()
+	if GlobalVariables.iterations >= 2 && questHub.campbellProg == 1:
+	
+		
+		print("Campbell Talked To! in iter 3-5")
+		questHub.campbellProg = 2
+		questHub.campbellTrigger()
 		
 	if (GlobalVariables.iterations >= 2):
 		dialogue.uniqueDialogue =  npcDialogue.campbellsDialogue[2][camp_local]
-		if fido_dog.fido_toggle == true:
-			if GlobalVariables.iterations < 6:
-				#print("NOT DETECTING")
-				dialogue.uniqueDialogue =  npcDialogue.campbellsDialogue[FIDOFOUND][camp_local]
+	
+		if GlobalVariables.iterations < 6 && questHub.campbellProg >= 3:
+			#if camp_local == 2 && DBToggle == false:
+				#DBToggle = true
+				#camp_local = 0
+			dialogue.uniqueDialogue = npcDialogue.campbellsDialogue[FIDOFOUND][camp_local]
+			questHub.campbellProg = 4
+			questHub.campbellTrigger()
+				
 	else:
 		dialogue.uniqueDialogue = npcDialogue.campbellsDialogue[GlobalVariables.iterations][camp_local]
 	camp_local += 1
@@ -94,6 +104,7 @@ func issDial():
 		
 		GlobalVariables.iterations += 1
 		questHub.isaacTrigger()
+		questHub.campbellTrigger()
 		questHub.it_change()
 		print("DM: After issac talking trigger!")
 	
@@ -101,12 +112,12 @@ func issDial():
 		dialogue.uniqueDialogue =  npcDialogue.issDialogue[2][iss_local]
 		
 		##QMAIN QUEST!
-		if GlobalVariables.isaac_quest_progression == 5:
+		if GlobalVariables.isaac_quest_progression >= 5:
 			
 			dialogue.uniqueDialogue = npcDialogue.issDialogue[isaacQuest.ISAACQUEST_TURN_IN][iss_local]
-			#GlobalVariables.isaac_quest_progression = 6
+			#questHub.it_change()
+			GlobalVariables.isaac_quest_progression = 6
 			questHub.isaacTrigger()
-			
 			
 	
 	else:

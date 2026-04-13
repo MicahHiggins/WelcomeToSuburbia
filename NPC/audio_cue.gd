@@ -1,5 +1,6 @@
 extends Node3D
 @onready var audio_cue: Node3D = $"."
+@onready var quest_marker_: questMarker = $"../QuestMarker!"
 
 @onready var toddler_crying: AudioStreamPlayer3D = $toddlerCrying
 @onready var dog_bark_1: AudioStreamPlayer3D = $DogBark1
@@ -11,6 +12,9 @@ var max_distance: float = 100.0
 func _ready() -> void:
 	players = get_tree().get_nodes_in_group("player")
 	questHub.iteration_changed.connect(iterationChange)
+	questHub.campbellQuest.connect(campbellProgression)
+	
+
 	
 
 
@@ -24,17 +28,23 @@ func _process(delta: float) -> void:
 		
 
 
+func campbellProgression(value: int):
+	pass
+	
+
 func iterationChange(value: int):
 	
 	
 	if value > 0 && value < 2:
 		print("Dog Barking: AudioCue")
 		dog_bark_1.play()
+		
 	if value >= 2 && value <= 5:
 		toddlerToggle = true
 		print("Toddler Crying, play! Stop Dog Barking")
 		dog_bark_1.stop()
 		toddler_crying.play()
+		
 	elif value > 5:
 		toddlerToggle = false
 		print("Toddler Crying, stop!")

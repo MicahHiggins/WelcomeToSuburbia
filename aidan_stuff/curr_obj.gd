@@ -16,7 +16,7 @@ var isaacQuestDB := false
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	questHub.iteration_changed.connect(iterationChange)
-	questHub.questTalk.connect(talkedTo)
+	questHub.campbellQuest.connect(campbellProgression)
 	questHub.isaacQuest.connect(isaacTrigger)
 
 
@@ -30,24 +30,30 @@ func _process(delta: float) -> void:
 
 
 #checks if campbells are talked to during iteration 3-5
-func talkedTo(value: int):
-	if value >= 2 && value <= 5:
-		if questHub.dogFound == true:
+func campbellProgression(value: int):
+	if value >= 2 && value <= 5 && questHub.campbellProg == 1:
+		if questHub.campbellProg == 4:
 			side.text = "Tell Campbells you have found Fido"
-		else:
+			#questHub.campbellProg = 4
+	if questHub.campbellProg == 2:
 			side.text = "Find Fido (The Dog)"
+	if questHub.campbellProg == 3:
+		side.text =  "Tell the Campbell Family\n you found Fido!"
+	if value == 2 && questHub.campbellProg == 1:
+		side.text = "Investigate the Crying\n (Campbells)"
+	if questHub.campbellProg == 4:
+		side.text = "none"
 
 #Iteration change (ref questHub.gd)
 func iterationChange(value: int):
+	
 	if value == 1 && isaacQuestDB == false:
 		isaacQuestDB = true
 		print("UI Debugging...")
 		prev_text_main = "Find Your Home (130)"
 		main.text = main.text + "\n Talk to Issac (corner)"
 		
-	if value == 2:
-		#main.text = main.text + "\n Talk to Issac (corner)"
-		side.text = "Investigate the Crying\n (Campbells)"
+
 
 func isaacTrigger(value: int):
 	#print("Is issac UI ON?")
@@ -63,4 +69,7 @@ func isaacTrigger(value: int):
 		
 	elif GlobalVariables.isaac_quest_progression == 5:
 		main.text = prev_text_main + "\n Tell Isaac What You\n Found"
+		
+	if GlobalVariables.isaac_quest_progression == 6:
+		main.text = "Find Your Home (130)\n break into house 111"
 		
