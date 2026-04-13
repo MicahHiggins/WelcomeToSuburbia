@@ -254,6 +254,7 @@ transform = Transform3D(-5.98846e-09, 0, 0.137, 0, 0.137, 0, -0.137, 0, -5.98846
 
 [node name="SurbHouseV5" parent="Houses" instance=ExtResource("9_5xofl")]
 transform = Transform3D(-5.98846e-09, 0, 0.137, 0, 0.137, 0, -0.137, 0, -5.98846e-09, -5.965637, -0.06223011, -2.3650205)
+visible = false
 
 [node name="SurbHouseV6" parent="Houses" instance=ExtResource("9_5xofl")]
 transform = Transform3D(7.180497e-06, 0, -0.137, 0, 0.137, 0, 0.137, 0, 7.180497e-06, -6.088655, -0.06223011, 2.4173722)

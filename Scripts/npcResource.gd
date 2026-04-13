@@ -89,7 +89,7 @@ func campDial():
 
 func issDial():
 	
-	if GlobalVariables.iterations == 1 && isaacQuest.isaacQToggle == true:
+	if GlobalVariables.iterations >= 1 && isaacQuest.isaacQToggle == true:
 		isaacQuest.isaacQToggle = false
 		
 		GlobalVariables.iterations += 1
@@ -104,7 +104,7 @@ func issDial():
 		if GlobalVariables.isaac_quest_progression == 5:
 			
 			dialogue.uniqueDialogue = npcDialogue.issDialogue[isaacQuest.ISAACQUEST_TURN_IN][iss_local]
-			GlobalVariables.isaac_quest_progression = 6
+			#GlobalVariables.isaac_quest_progression = 6
 			questHub.isaacTrigger()
 			
 			

@@ -52,7 +52,7 @@ func isaacTrigger(value: int):
 		print("ISAAC HAS ENTERED THE UI!")
 		
 		main.text = prev_text_main + "\n explore the neighborhood"
-		GlobalVariables.isaac_quest_progression = 2
+		#GlobalVariables.isaac_quest_progression = 2
 		
 	if GlobalVariables.isaac_quest_progression == 3:
 		main.text = prev_text_main + "\n investigate around 111..."
