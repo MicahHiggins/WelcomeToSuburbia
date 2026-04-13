@@ -9,6 +9,7 @@ class_name isaacQuest
 
 
 static var isaacQToggle := false
+static var ISAACQUEST_TURN_IN = 3
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -25,6 +26,8 @@ func _ready() -> void:
 			quest_marker_.visible = true
 		2: 
 			quest_marker_.visible = false
+		5:
+			quest_marker_.visible = true
 		
 			
 			
@@ -35,9 +38,20 @@ func _process(delta: float) -> void:
 	pass
 
 func isaacProgress(value: int):
-	if value >= 1:
+	print("ISACC QUEST MARKER NOT WORKING?: ", GlobalVariables.isaac_quest_progression)
+	if value >= 1 && GlobalVariables.isaac_quest_progression == 1:
 		GlobalVariables.isaac_quest_progression = 2
 		quest_marker_.visible = false
+	
+	if GlobalVariables.isaac_quest_progression == 5:
+		quest_marker_.visible = true
+		
+		#QUEST BRUH
+		
+	
+	if GlobalVariables.isaac_quest_progression == 6:
+		quest_marker_.visible = false
+		
 		
 
 func iterationChange(value: int):
@@ -46,6 +60,8 @@ func iterationChange(value: int):
 		isaacQToggle = true
 		GlobalVariables.isaac_quest_progression = 1
 		quest_marker_.visible = true
+		
+
 		
 
 	

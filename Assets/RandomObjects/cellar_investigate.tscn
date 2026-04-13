@@ -1,0 +1,81 @@
+[gd_scene load_steps=10 format=3 uid="uid://gk88lcwyw5hu"]
+
+[ext_resource type="Script" uid="uid://doos5n53x8aul" path="res://cellar_investigate.gd" id="1_rx571"]
+[ext_resource type="PackedScene" uid="uid://diyfna0mvebm4" path="res://Assets/RandomObjects/quest_marker!.tscn" id="2_8eug6"]
+[ext_resource type="PackedScene" uid="uid://wac3jaa6tbq3" path="res://Assets/RandomObjects/humans/hooman.tscn" id="3_8eug6"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_u0bkj"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_rx571"]
+size = Vector3(3, 1, 3)
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_8eug6"]
+radius = 3.0
+
+[sub_resource type="Animation" id="Animation_8eug6"]
+resource_name = "peek"
+length = 1.5
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("hooman:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.13333334, 0.6333333, 1.5),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 0,
+"values": [Vector3(0, -1.5462456, 0.51568484), Vector3(0, -0.7177843, 0.51568484), Vector3(0, -0.7177843, 0.51568484), Vector3(0, -2.1454706, 0.51568484)]
+}
+
+[sub_resource type="Animation" id="Animation_u0bkj"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("hooman:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(0, -1.5462456, 0.51568484)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_aomo8"]
+_data = {
+&"RESET": SubResource("Animation_u0bkj"),
+&"peek": SubResource("Animation_8eug6")
+}
+
+[node name="Cellar Investigate" type="StaticBody3D"]
+collision_layer = 3
+script = ExtResource("1_rx571")
+
+[node name="QuestMarker!" parent="." instance=ExtResource("2_8eug6")]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(2.6, 0, 0, 0, 1, 0, 0, 0, 2.72, 0, 0, 0)
+mesh = SubResource("BoxMesh_u0bkj")
+
+[node name="cellarCollision" type="CollisionShape3D" parent="."]
+shape = SubResource("BoxShape3D_rx571")
+
+[node name="area4Quest" type="Area3D" parent="."]
+collision_layer = 0
+collision_mask = 8
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="area4Quest"]
+shape = SubResource("SphereShape3D_8eug6")
+
+[node name="hooman" parent="." instance=ExtResource("3_8eug6")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.5462456, 0.51568484)
+script = null
+
+[node name="peekAnim" type="AnimationPlayer" parent="."]
+libraries = {
+&"": SubResource("AnimationLibrary_aomo8")
+}
+
+[connection signal="body_entered" from="area4Quest" to="." method="_on_area_4_quest_body_entered"]

@@ -1,4 +1,4 @@
-[gd_scene load_steps=30 format=3 uid="uid://r8vqf0qcnkdn"]
+[gd_scene load_steps=31 format=3 uid="uid://r8vqf0qcnkdn"]
 
 [ext_resource type="Script" uid="uid://4p6bc6ac8elf" path="res://aidan_stuff/block_design.gd" id="1_jmv40"]
 [ext_resource type="Texture2D" uid="uid://but80wsucm4q2" path="res://textures/GrassTextures/GrassAlbedo.png" id="2_bkv0n"]
@@ -22,6 +22,7 @@
 [ext_resource type="PackedScene" uid="uid://bjq42iea72mgn" path="res://Audio/AudioCues/heart_beat_detector.tscn" id="20_u2ehm"]
 [ext_resource type="PackedScene" uid="uid://bhne50eu8g2mb" path="res://Assets/RandomObjects/pineTree/pine_tree.tscn" id="21_u2ehm"]
 [ext_resource type="PackedScene" uid="uid://655t81u48joy" path="res://NPC/fido.tscn" id="22_ga440"]
+[ext_resource type="PackedScene" uid="uid://gk88lcwyw5hu" path="res://Assets/RandomObjects/cellar_investigate.tscn" id="23_5xofl"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_0wadw"]
 albedo_color = Color(0.60271376, 0.7674062, 0.73615, 1)
@@ -2615,6 +2616,9 @@ shape = SubResource("SphereShape3D_ga440")
 
 [node name="Fido" parent="Dog" instance=ExtResource("22_ga440")]
 transform = Transform3D(0.05, 0, 0, 0, 0.05, 0, 0, 0, 0.05, 0, 0, 0)
+
+[node name="Cellar Investigate" parent="." instance=ExtResource("23_5xofl")]
+transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, -6.094309, 0, 15.946864)
 
 [connection signal="body_entered" from="LoadingSystem" to="." method="_on_area_3d_body_entered"]
 [connection signal="body_exited" from="LoadingSystem" to="." method="_on_area_3d_body_exited"]
