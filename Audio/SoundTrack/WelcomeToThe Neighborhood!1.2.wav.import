@@ -1,0 +1,24 @@
+[remap]
+
+importer="wav"
+type="AudioStreamWAV"
+uid="uid://cyx2njh2qttb3"
+path="res://.godot/imported/WelcomeToThe Neighborhood!1.2.wav-5ab83a9db249b00f3679e55796a9ac7f.sample"
+
+[deps]
+
+source_file="res://Audio/SoundTrack/WelcomeToThe Neighborhood!1.2.wav"
+dest_files=["res://.godot/imported/WelcomeToThe Neighborhood!1.2.wav-5ab83a9db249b00f3679e55796a9ac7f.sample"]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=2
