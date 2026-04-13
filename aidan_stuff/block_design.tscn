@@ -22,7 +22,7 @@
 [ext_resource type="PackedScene" uid="uid://bjq42iea72mgn" path="res://Audio/AudioCues/heart_beat_detector.tscn" id="20_u2ehm"]
 [ext_resource type="PackedScene" uid="uid://bhne50eu8g2mb" path="res://Assets/RandomObjects/pineTree/pine_tree.tscn" id="21_u2ehm"]
 [ext_resource type="PackedScene" uid="uid://655t81u48joy" path="res://NPC/fido.tscn" id="22_ga440"]
-[ext_resource type="Script" path="res://aidan_stuff/bus.gd" id="23_3rgr2"]
+[ext_resource type="Script" uid="uid://cefpvj7tg03be" path="res://aidan_stuff/bus.gd" id="23_3rgr2"]
 [ext_resource type="PackedScene" uid="uid://gk88lcwyw5hu" path="res://Assets/RandomObjects/cellar_investigate.tscn" id="23_5xofl"]
 [ext_resource type="PackedScene" uid="uid://cx5rbrvijd0rs" path="res://Assets/RandomObjects/bus/busssss.tscn" id="25_g1s53"]
 
@@ -2770,6 +2770,7 @@ libraries = {
 
 [node name="Area3D" type="Area3D" parent="Bus"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.454205, 0, -4.010418)
+collision_layer = 0
 collision_mask = 8
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Bus/Area3D"]
