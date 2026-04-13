@@ -7,9 +7,9 @@
 [ext_resource type="Texture2D" uid="uid://cs51fm4ybyunp" path="res://Max's Folder (do not touch!!!)/Tiles/empty-Sheet.png" id="3_lcf58"]
 [ext_resource type="Script" uid="uid://drdtamscdvpnk" path="res://Scripts/drawing.gd" id="4_lcf58"]
 [ext_resource type="Script" uid="uid://c42s0sbmibvcb" path="res://Scripts/Seeing.gd" id="6_nsdqc"]
-[ext_resource type="Script" path="res://Assets/RandomObjects/symbol/buttons_4_draw.gd" id="7_ymkyp"]
+[ext_resource type="Script" uid="uid://cy8r7bxw3kxbj" path="res://Assets/RandomObjects/symbol/buttons_4_draw.gd" id="7_ymkyp"]
 [ext_resource type="Texture2D" uid="uid://dohc0ilahbkwf" path="res://Assets/RandomObjects/etch-a-sketch/etchSketchPic.jpg" id="8_mf04g"]
-[ext_resource type="Script" path="res://Assets/RandomObjects/symbol/buttons_4_see.gd" id="10_2j2dh"]
+[ext_resource type="Script" uid="uid://brt7ixudi60mk" path="res://Assets/RandomObjects/symbol/buttons_4_see.gd" id="10_2j2dh"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_lcf58"]
 radius = 1.745
