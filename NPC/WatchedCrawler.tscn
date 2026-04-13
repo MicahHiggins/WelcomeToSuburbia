@@ -11,7 +11,7 @@
 [node name="Crawler" type="CharacterBody3D"]
 script = ExtResource("1_diuyk")
 watch_max_distance = 40.0
-watch_fov_degrees = 60.0
+watch_fov_degrees = 115.0
 debug_print = false
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]

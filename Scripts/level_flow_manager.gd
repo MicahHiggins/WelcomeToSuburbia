@@ -13,7 +13,7 @@ const SERVER_ID: int = 1
 @export var spawn_y_lift: float = 1.5
 @export var snap_late_joiners_to_spawn: bool = true
 
-@export var level_1_scene: PackedScene = preload("res://Assets/RandomObjects/symbol/SymbolPuzzle.tscn")
+@export var level_1_scene: PackedScene = preload("res://GameLevelsETC/Level1.tscn")
 @export var level_2_scene: PackedScene = preload("res://GameLevelsETC/kidnap.tscn")
 @export var level_3_scene: PackedScene = preload("res://GameLevelsETC/CellarLevel.tscn")
 
