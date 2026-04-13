@@ -25,3 +25,6 @@ signal level2change
 
 signal interact
 var playerTalking = false
+
+#for questing
+var isaac_quest_progression := 0
