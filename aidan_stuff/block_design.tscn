@@ -2779,6 +2779,7 @@ shape = SubResource("BoxShape3D_jwb48")
 
 [node name="Area3D2" type="Area3D" parent="Bus"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.538173, 0, 4.0298853)
+collision_layer = 0
 collision_mask = 8
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Bus/Area3D2"]
