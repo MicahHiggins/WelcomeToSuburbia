@@ -21,7 +21,6 @@ animations = [{
 }]
 
 [node name="DialogueManager" type="NinePatchRect"]
-visible = false
 offset_right = 135.0
 offset_bottom = 40.0
 scale = Vector2(3.8414602, 3.8414602)

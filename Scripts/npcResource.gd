@@ -43,13 +43,14 @@ func iterationChange(value: int):
 	
 	
 func _input(event: InputEvent) -> void:
-	if talking == true && event.is_action("interact"):
-		return
+
+	#if talking == true && event.is_action("interact"):
+		#return
 	if event.is_action_pressed("use-attack"):
 		dialogueSig.emit()
-
-	if in_area == true && Input.is_action_just_pressed("interact"):
-		enter_dialogue()
+#
+	#if in_area == true && Input.is_action_just_pressed("interact"):
+		#enter_dialogue()
 		
 func bobDial():
 		if (GlobalVariables.iterations >= 2):
@@ -154,13 +155,15 @@ func dialogueMan(npc_name):
 		
 func enter_dialogue():
 	var number = 0
-	GlobalVariables.playerTalking = true
+	
+	#GlobalVariables.playerTalking = true
+	print(GlobalVariables.playerTalking)
 	if talking == false:
 		#Input.set_mouse_mode(Input.MOUSE_MODE_CONFINED)
 		dialogue.uniqueName = npc_name
 		talking = true
 		dialogue.toggle = true
-		print("Curr Iteration: ", GlobalVariables.iterations)
+		#print("Curr Iteration: ", GlobalVariables.iterations)
 
 		match(npc_name):
 			"Bob":
@@ -192,36 +195,40 @@ func enter_dialogue():
 		#Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 		dialogue.toggle = false
 		talking = false
-		GlobalVariables.playerTalking = false
+		#GlobalVariables.playerTalking = false
+		print(GlobalVariables.playerTalking)
 	
 	
 	
 	
 func _on_talk_detection_body_entered(body: Node3D) -> void:
-	#print("SSSSs")
-	if body.is_multiplayer_authority():
+	#print("SSSSs"
+# Use the class name 'player' to filter out NPCs or other objects
+	if body is player and body.is_multiplayer_authority():
+		body.current_npc = self
 		tutorial.interact = true
 		in_area = true
 		#print("TRUE")
 
 
 func _on_talk_detection_body_exited(body: Node3D) -> void:
-	if body.is_multiplayer_authority():
-		GlobalVariables.interact.emit()
+	if body is player and body.is_multiplayer_authority():
+		if body.current_npc == self:
+			body.current_npc = null
 		tutorial.interact = false
 		in_area = false
-		#print("FALSE")
 
-func find_descendant_in_group(node: Node, group: String) -> Node:
-	if node.is_in_group(group):
-		return node
-		
-	for child in node.get_children():
-		var result = find_descendant_in_group(child, group)
-		if result:
-			return result
-			
-	return null
+
+#func find_descendant_in_group(node: Node, group: String) -> Node:
+	#if node.is_in_group(group):
+		#return node
+		#
+	#for child in node.get_children():
+		#var result = find_descendant_in_group(child, group)
+		#if result:
+			#return result
+			#
+	#return null
 	
 	#To find the animation for talking and playing it
 	#var npc: CharacterBody3D

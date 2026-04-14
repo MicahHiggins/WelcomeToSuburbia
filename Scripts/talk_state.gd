@@ -69,6 +69,7 @@ func physics_update(delta: float) -> void:
 			return
 	
 	if GlobalVariables.playerTalking == true:
+		print("INSIDE TALK STATE")
 		_net_broadcast_state_change(&"SpeakState", {})
 		change_state.emit(&"SpeakState")
 		return

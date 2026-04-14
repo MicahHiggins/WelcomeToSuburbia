@@ -801,7 +801,17 @@ void fragment() {
 # =========================
 #         INPUT HANDLING
 # =========================
+#@onready var ray_cast_3d: RayCast3D = $Head/Camera3D/RayCast3D
+var current_npc : npcStats = null
+
+
+
 func _input(event: InputEvent) -> void:
+	if event.is_action_pressed("interact") and current_npc != null:
+		current_npc.enter_dialogue()
+
+			
+			
 	if multiplayer.has_multiplayer_peer() and not is_multiplayer_authority():
 		return
 	if event.is_action_pressed("ui_cancel"):
