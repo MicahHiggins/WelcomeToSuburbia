@@ -3,7 +3,7 @@
 [ext_resource type="PackedScene" uid="uid://1a6x3mm0bkde" path="res://HouseModel/HouseTextures/SurbHouseV2.glb" id="1_i7dfi"]
 [ext_resource type="Texture2D" uid="uid://bts7j03s7hmsx" path="res://HouseModel/HouseTextures/SurbHouseV2_WoodSiding009_1K-PNG_Color.png" id="2_qvj7o"]
 [ext_resource type="Texture2D" uid="uid://7d4p7ym8or2b" path="res://HouseModel/HouseTextures/SurbHouseV2_Bricks104_1K-PNG_Color.png" id="2_s7blv"]
-[ext_resource type="PackedScene" uid="uid://c4nxoy26vw1m2" path="res://doorWIDdaOPEN.tscn" id="4_w7rv4"]
+[ext_resource type="PackedScene" uid="uid://2x2qaifhqwo8" path="res://doorWIDdaOPEN.tscn" id="4_w7rv4"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_w7rv4"]
 albedo_texture = ExtResource("2_s7blv")
@@ -116,4 +116,4 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.674267, 2.3916237, -5.2022
 shape = SubResource("BoxShape3D_0wt2w")
 
 [node name="DOOOOOOOR" parent="." index="19" instance=ExtResource("4_w7rv4")]
-transform = Transform3D(-0.031236568, 0, -0.99877006, 0, 0.55, 0, 0.62922513, 0, -0.049581856, 5.8836036, 1.82974, -0.001745224)
+transform = Transform3D(-2.7975288e-08, 0, 1, 0, 0.55, 0, -0.64, 0, -4.371139e-08, 5.908577, 1.7381201, 0)
