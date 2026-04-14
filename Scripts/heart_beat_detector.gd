@@ -40,7 +40,6 @@ func _on_body_entered(body: Node3D) -> void:
 	if  body.is_in_group("player") && body.is_multiplayer_authority():
 		
 		questHub.isaacTrigger()
-		#questHub.it_change()
 		questHub.it_change()
 		
 		quest_marker_.visible = false
@@ -50,7 +49,7 @@ func _on_body_entered(body: Node3D) -> void:
 		GlobalVariables.gameStart.emit()
 		
 	
-		
+		questHub.it_change()
 		queue_free()
 		
 	
