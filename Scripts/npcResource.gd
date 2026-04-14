@@ -14,6 +14,7 @@ var iss_local := 0
 var in_area = false
 var talking = false
 const FIDOFOUND = 3
+const FIDOLOST = 4
 
 signal dialogueSig
 
@@ -93,6 +94,9 @@ func campDial():
 			dialogue.uniqueDialogue = npcDialogue.campbellsDialogue[FIDOFOUND][camp_local]
 			questHub.campbellProg = 4
 			questHub.campbellTrigger()
+		else:
+			dialogue.uniqueDialogue = npcDialogue.campbellsDialogue[FIDOLOST][camp_local]
+			
 				
 	else:
 		dialogue.uniqueDialogue = npcDialogue.campbellsDialogue[GlobalVariables.iterations][camp_local]

@@ -20,6 +20,7 @@ config/icon="res://Assets/Images/icon.svg"
 GlobalVariables="*res://GlobalAutoloads/GlobalVariables.gd"
 AudioManager="*res://Audio/audio_manager.tscn"
 NetSceneManager="*res://Scripts/net_scene_manager.gd"
+questHub="*res://Scripts/QuestHub.gd"
 
 [display]
 

@@ -1,100 +1,48 @@
 extends Node2D
+# No need for class_name if it's an Autoload, but you can keep it.
 
-class_name questHub
+signal iteration_changed(value: int)
+signal questTalk(value: int)
+signal isaacQuest(value: int)
+signal campbellQuest(value: int)
 
+var campbellProg := 0
+var dogFound := false
 
-signal iterationManipulation(value: int)
-signal questManipulation(value: int)
-signal isaacStuff(value: int)
-signal campbellStuff(value: int)
+# This is the function you call from any other script
+func it_change():
+	# 1. If a client calls this, they ask the server to change it
+	if not multiplayer.is_server():
+		rpc_id(1, "request_it_change")
+	else:
+		# 2. If the server calls this (or receives the request), it executes
+		request_it_change()
 
-
-
- # Global signal
-static var singleton := questHub.new()
-static var iteration_changed := Signal(singleton, "iterationManipulation")
-static var questTalk := Signal(singleton, "questManipulation")
-static var isaacQuest := Signal(singleton, "isaacStuff")
-static var campbellQuest := Signal(singleton, "campbellStuff")
-
-static var campbellProg := 0
-
-
-static var dogFound := false
-#func set_value(new_value: int) -> void:
-	## ... update state ...
-	#iteration_changed.emit(GlobalVariables.iterations)
-	#
+@rpc("any_peer", "call_local", "reliable")
+func request_it_change():
+	if not multiplayer.is_server(): return
 	
-#can call this function anywhere for it to be triggered
-static func it_change():
-	print("Iteration Change Detected!?: ")
-	GlobalVariables.iterations += 1
-	iteration_changed.emit(GlobalVariables.iterations)
+	# 3. Server updates the value and tells EVERYONE to sync up
+	# We send GlobalVariables.iterations + 1 as the new value
+	sync_iteration.rpc(GlobalVariables.iterations + 1)
 
-static func campbellTrigger():
-	#print("Iteration Change Detected!?: ")
-	#print(GlobalVariables.iterations)
-	campbellQuest.emit(GlobalVariables.iterations)
-	
-static func isaacTrigger():
-	print("Iteration Change Detected!?: ")
-	print(GlobalVariables.iterations)
-	isaacQuest.emit(GlobalVariables.iterations)
+@rpc("authority", "call_local", "reliable")
+func sync_iteration(new_value: int):
+	print("Iteration Syncing for all players: ", new_value)
+	GlobalVariables.iterations = new_value
+	iteration_changed.emit(new_value)
 
+# Do the same for your triggers
+func campbellTrigger():
+	sync_campbell.rpc(GlobalVariables.iterations)
 
-#Ok lets do this
+@rpc("authority", "call_local", "reliable")
+func sync_campbell(val):
+	campbellQuest.emit(val)
 
-#First Iteration:
-#UI marker - "Find Home (130)"
-#Abigal: Greets and welcomes player
-#Campbell: Greets and Welcomes player (w/ dog)
-#Bob: Greets the Player
-#house 104 HOA: stares
-#Issac: silence
-#Trigger: Going into the next iteration via collision (timer 60 seconds)
- 
+func isaacTrigger():
+	sync_isaac.rpc(GlobalVariables.iterations)
 
-#2nd Iteration
-#UI marker - "Find Home (130)"
-#Abigal: Dialogue Change
-#Campbell: Greets and Welcomes player (w/ dog)
-#Bob: Greets the Player
-#house 104 HOA: stares
-#Issac: silence
-#Pass 124 with heartbeat loud and cool visuals
-
-
-#3rd Iteration
-#Abigail warns the player, and vaguely refers to the dog quest
-#Campbells: Find dog quest (w/ no dog)
-#Bob begins to worry
-#house 104 HOA: stares w/ 2 people
-#Spawn dog in different (maybe random location?)
-#Baby Crying triggers (UI - "Investigate tHe Crying")
-#next iteration: talk to isaac?
-
-#4th Iteration
-#Abigail updates the player
-#Campbell Dog quest open
-#Bob can really worry
-#Issac silence
-
-
-#5th Iteration
-#Abigial HOA reveal, tells the player what's coming
-#Campbell Outcome:
-	#if player found and told campbell about dog befre they talk on 5th iteration
-		#bus = false
-	#else
-		#bus = true
-
-#Campbells outcome plays (either bus or dog eating them) + trigger for next iteration.
-
-#6th iteration
-#Isaac: if baby crying, eats
-		#else: stays silent
-#Bob audio cue to talk and advance to phase 2 (UI = "Investigate 104") (ONLY CUE TO ADVANCE)
-#if Bob audio cue, when both players get to 104, cutscene for phase 2
-	
-	
+@rpc("authority", "call_local", "reliable")
+func sync_isaac(val):
+	isaacQuest.emit(val)
