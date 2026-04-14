@@ -101,9 +101,9 @@ text = "Menu
 "
 
 [node name="code" type="Label" parent="Menu/pause"]
-offset_left = 41.0
+offset_left = 92.0
 offset_top = 199.0
-offset_right = 210.0
+offset_right = 158.0
 offset_bottom = 225.0
 
 [node name="copy" type="Button" parent="Menu/pause"]
