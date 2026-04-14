@@ -23,7 +23,7 @@
 [ext_resource type="PackedScene" uid="uid://bhne50eu8g2mb" path="res://Assets/RandomObjects/pineTree/pine_tree.tscn" id="21_u2ehm"]
 [ext_resource type="PackedScene" uid="uid://655t81u48joy" path="res://NPC/fido.tscn" id="22_ga440"]
 [ext_resource type="Script" uid="uid://cefpvj7tg03be" path="res://aidan_stuff/bus.gd" id="23_3rgr2"]
-[ext_resource type="PackedScene" uid="uid://cvk47btmwa7or" path="res://Assets/RandomObjects/bus/Bus_no_collisions.tscn" id="24_3rgr2"]
+[ext_resource type="PackedScene" path="res://Assets/RandomObjects/bus/Bus_no_collisions.tscn" id="24_3rgr2"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_0wadw"]
 albedo_color = Color(0.60271376, 0.7674062, 0.73615, 1)
@@ -2741,7 +2741,7 @@ transform = Transform3D(1.8603868, 0, 0, 0, 1, 0, 0, 0, 0.262545, 0.5270233, 0, 
 shape = SubResource("BoxShape3D_jwb48")
 
 [node name="BusCooldownTimer" type="Timer" parent="Bus"]
-wait_time = 5.0
+wait_time = 20.0
 one_shot = true
 
 [node name="busssss" parent="Bus" instance=ExtResource("24_3rgr2")]
