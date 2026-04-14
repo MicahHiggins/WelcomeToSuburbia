@@ -40,13 +40,44 @@ func campbellTrigger():
 @rpc("authority", "call_local", "reliable")
 func sync_campbell(val):
 	campbellQuest.emit(val)
+	
+	
+	# Inside questHub.gd
 
 func isaacTrigger():
-	print("ISsaccTriggers")
-	GlobalVariables.isaac_quest_progression += 1
-	sync_isaac.rpc(GlobalVariables.iterations)
+	# 1. If I'm a client, I ask the server to handle the progression
+	if not multiplayer.is_server():
+		rpc_id(1, "server_request_isaac_up")
+	else:
+		# 2. If I'm the server, I just run it
+		server_request_isaac_up()
+
+@rpc("any_peer", "call_local", "reliable")
+func server_request_isaac_up():
+	if not multiplayer.is_server(): return
 	
+	# 3. Server adds +1 to the GLOBAL state
+	GlobalVariables.isaac_quest_progression += 1
+	
+	# 4. Server tells EVERYONE what the new number is
+	# We pass BOTH the progression and the iterations to keep everything in sync
+	sync_isaac_state.rpc(GlobalVariables.isaac_quest_progression, GlobalVariables.iterations)
 
 @rpc("authority", "call_local", "reliable")
-func sync_isaac(val):
-	isaacQuest.emit(val)
+func sync_isaac_state(new_prog: int, iter_val: int):
+	# 5. Every player updates their local variable to match the server
+	GlobalVariables.isaac_quest_progression = new_prog
+	
+	# 6. Emit the signal so your Dialogue/UI knows to refresh
+	isaacQuest.emit(iter_val)
+	print("Isaac Quest Synced to: ", new_prog)
+#
+#func isaacTrigger():
+	#print("ISsaccTriggers")
+	#GlobalVariables.isaac_quest_progression += 1
+	#sync_isaac.rpc(GlobalVariables.iterations)
+	#
+#
+#@rpc("authority", "call_local", "reliable")
+#func sync_isaac(val):
+	#isaacQuest.emit(val)
