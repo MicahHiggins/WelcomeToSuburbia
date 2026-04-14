@@ -12,28 +12,35 @@ func _ready() -> void:
 	questHub.iteration_changed.connect(iterationChange)
 	GlobalVariables.gameStart.connect(_on_body_entered)
 	quest_marker_.visible = false
+	
+	match(GlobalVariables.isaac_quest_progression):
+		0:
+			quest_marker_.visible = false
+		1: 
+			quest_marker_.visible = true
+		_:
+			quest_marker_.visible = false
+			
 
 
 
 
 
 func iterationChange(value: int):
-	print(value)
-	if value == 2:
+	print("HEARTBEAT:", GlobalVariables.isaac_quest_progression)
+	if GlobalVariables.isaac_quest_progression == 2:
 		quest_marker_.visible = true
 		collision_shape_3d.set_deferred("disabled", false) 
 		
-	elif value > 3:
+	if GlobalVariables.isaac_quest_progression > 2:
 		queue_free()
 		print("itereationChanged! Heartbeat! Error/DQ!")
 			
 func _on_body_entered(body: Node3D) -> void:
 	if  body.is_in_group("player") && body.is_multiplayer_authority():
 		
-		#isaac is talked too during his quest! change to phase 3 in isaac questline!
-		
-		GlobalVariables.isaac_quest_progression = 3
 		questHub.isaacTrigger()
+		questHub.it_change()
 		
 		quest_marker_.visible = false
 		GlobalVariables.heart_beat = true

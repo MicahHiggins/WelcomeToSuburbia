@@ -41,7 +41,10 @@ func sync_campbell(val):
 	campbellQuest.emit(val)
 
 func isaacTrigger():
+	print("ISsaccTriggers")
+	GlobalVariables.isaac_quest_progression += 1
 	sync_isaac.rpc(GlobalVariables.iterations)
+	
 
 @rpc("authority", "call_local", "reliable")
 func sync_isaac(val):

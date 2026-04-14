@@ -44,7 +44,7 @@ func isaacProgress(value: int):
 	
 	if GlobalVariables.isaac_quest_progression == 1:
 		print("Is this thing on?")
-		GlobalVariables.isaac_quest_progression = 2
+		questHub.isaacTrigger()
 		quest_marker_.visible = false
 	
 	if GlobalVariables.isaac_quest_progression == 5:
@@ -62,7 +62,7 @@ func isaacProgress(value: int):
 func iterationChange(value: int):
 	print("Isaaac: Marker!")
 	if value == 1:
-		isaacQToggle = true
+		#isaacQToggle = true
 		
 		#questHub.isaacTrigger()
 		quest_marker_.visible = true
