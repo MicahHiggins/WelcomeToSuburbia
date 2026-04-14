@@ -25,7 +25,7 @@ func _ready() -> void:
 		print("Bus: busssss not found")
 		return
 
-	$busssss.visible = false
+	$busssss.visible = true
 
 	trigger_area_1.body_entered.connect(_on_trigger_area_1_body_entered)
 	trigger_area_2.body_entered.connect(_on_trigger_area_2_body_entered)
