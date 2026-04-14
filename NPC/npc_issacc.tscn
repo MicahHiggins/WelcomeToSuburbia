@@ -16,7 +16,6 @@ radius = 2.0
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_5x2h4"]
 
 [node name="NPC_ISSACC" type="CharacterBody3D" groups=["NPC"]]
-collision_layer = 9
 collision_mask = 7
 script = ExtResource("1_khqxu")
 

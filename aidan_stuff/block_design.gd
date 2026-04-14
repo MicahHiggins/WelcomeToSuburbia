@@ -47,6 +47,7 @@ func _deferred_send_state_to_peer(peer_id: int) -> void:
 	rpc_id(peer_id, "_rpc_set_active", entered, global_transform)
 
 func _on_area_3d_body_entered(body: Node3D) -> void:
+	print(body)
 	if body == null or not body.is_in_group("player"):
 		return
 
