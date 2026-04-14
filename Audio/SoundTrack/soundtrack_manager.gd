@@ -6,13 +6,17 @@ extends Node
 
 
 
+
+
 func randNum():
 	return randi_range(1, 3)
+	
+
 
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	track1Loop()
+	questHub.iteration_changed.connect(playTune)
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -22,15 +26,24 @@ func _process(delta: float) -> void:
 
 
 	
-func track1Loop():
-	var randNumber = randNum()
-	match(randNumber):
+func playTune(value: int):
+	print("Play Tune!")
+	match(value):
+		0:
+			wttn_1.play()
 		1:
 			wttn_1.play()
-		2:
+		3:
 			wttn_2.play()
 		3:
+			wttn_2.play()
+		4:
 			wttn_3.play()
+		5:
+			wttn_3.play()
+		6: 
+			wttn_3.play()
+			
 			
 
 func _on_sound_scape_audio_play_track_3() -> void:

@@ -29,7 +29,7 @@ static var dogFound := false
 #can call this function anywhere for it to be triggered
 static func it_change():
 	print("Iteration Change Detected!?: ")
-	print(GlobalVariables.iterations)
+	GlobalVariables.iterations += 1
 	iteration_changed.emit(GlobalVariables.iterations)
 
 static func campbellTrigger():

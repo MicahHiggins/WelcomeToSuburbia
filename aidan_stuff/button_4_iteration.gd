@@ -21,11 +21,11 @@ func _rpc_request_iter_up() -> void:
 	_server_iter_up()
 
 func _server_iter_up() -> void:
-	GlobalVariables.iterations += 1
+	#GlobalVariables.iterations += 1
 
 	print("QUEST BUTTON CHANGE!")
 	GlobalVariables.gameStart.emit()
-	questHub.it_change()
+	# 
 	var it: int = int(GlobalVariables.iterations)
 	rpc("_rpc_apply_iters", it)
 

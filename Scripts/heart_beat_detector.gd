@@ -41,7 +41,7 @@ func _on_body_entered(body: Node3D) -> void:
 		#forgot what this is for...
 		GlobalVariables.gameStart.emit()
 		
-		GlobalVariables.iterations += 1
+	
 		questHub.it_change()
 		queue_free()
 		

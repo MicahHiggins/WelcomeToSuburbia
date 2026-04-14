@@ -24,3 +24,4 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.296562, 0.6372285, -9.6596
 transform = Transform3D(0.25, 0, 0, 0, 0.25, 0, 0, 0, 0.25, 8.151035, 0.4424472, -8.379852)
 
 [editable path="NPC_Campbells"]
+[editable path="NPC_Campbells/QuestMarker!"]

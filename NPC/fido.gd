@@ -1,11 +1,12 @@
 extends  CharacterBody3D
 
 class_name fido_dog
-@onready var quest_marker_: questMarker = $"QuestMarker!"
+#@onready var quest_marker_: questMarker = $"QuestMarker!"
 @onready var fido: CharacterBody3D = $"."
 @onready var animation_player: AnimationPlayer = $AnimationPlayer
 @onready var area_3d: Area3D = $"../Area3D"
 @onready var fido_collision: CollisionShape3D = $"../Area3D/FidoCollision"
+@onready var quest_marker_: Node3D = $QuestMarkerBlue
 
 static var fido_toggle := false
 @onready var bark_2: AudioStreamPlayer3D = $Bark2

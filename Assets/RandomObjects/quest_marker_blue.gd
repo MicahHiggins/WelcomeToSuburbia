@@ -1,10 +1,10 @@
 extends Node3D
 
 
-class_name questMarker
+
 @onready var quest_marker_: questMarker = %"QuestMarker!"
 
-static var campbells := false
+#static var campbells := false
 @onready var animation_player: AnimationPlayer = $AnimationPlayer
 
 # Called when the node enters the scene tree for the first time.

@@ -1,5 +1,7 @@
 extends Node3D
-@onready var quest_marker_: questMarker = $"../QuestMarker!"
+@onready var quest_marker_: Node3D = $"../QuestMarkerBlue"
+
+@onready var quest_anim: AnimationPlayer = $"../QuestMarker!/AnimationPlayer"
 
 @onready var animation_player: AnimationPlayer = $AnimationPlayer
 @onready var dog: Node3D = $"."
@@ -7,6 +9,7 @@ extends Node3D
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	animation_player.play("DogWalk")
+	
 	questHub.iteration_changed.connect(iterationChange)
 	questHub.campbellQuest.connect(campbellProgression)
 	quest_marker_.visible = false
@@ -46,7 +49,9 @@ func iterationChange(value: int):
 	if value >= 2 && questHub.campbellProg == 0:
 		questHub.campbellProg = 1
 		print("DOG DISAPPEARS!")
+		#quest_anim.play("Move_blue")
 		questHub.campbellTrigger()
+		
 		dog.visible = false
 		quest_marker_.visible = true
 		#questMarker.campbells = true

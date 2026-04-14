@@ -103,7 +103,7 @@ func issDial():
 	if GlobalVariables.iterations >= 1 && isaacQuest.isaacQToggle == true:
 		isaacQuest.isaacQToggle = false
 		GlobalVariables.isaac_quest_progression = 1
-		GlobalVariables.iterations += 1
+		#GlobalVariables.iterations += 1
 		questHub.isaacTrigger()
 		questHub.campbellTrigger()
 		questHub.it_change()
