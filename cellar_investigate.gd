@@ -10,9 +10,11 @@ func _ready() -> void:
 	quest_marker_.visible = false
 	
 	match(GlobalVariables.isaac_quest_progression):
-		4:
+		2:
 			quest_marker_.visible = true
-		5: 
+		3: 
+			quest_marker_.visible = false
+		_:
 			quest_marker_.visible = false
 
 
@@ -22,12 +24,15 @@ func _process(delta: float) -> void:
 
 
 func isaacProgression(value: int):
-	if GlobalVariables.isaac_quest_progression == 3:
-		GlobalVariables.isaac_quest_progression = 4
-		questHub.isaacTrigger()
+	#if GlobalVariables.isaac_quest_progression == 2:
+		#GlobalVariables.isaac_quest_progression = 4
+		#questHub.isaacTrigger()
 		
-	if GlobalVariables.isaac_quest_progression == 4:
+	if GlobalVariables.isaac_quest_progression == 2:
 		quest_marker_.visible = true
+	
+	if GlobalVariables.isaac_quest_progression == 3:
+		quest_marker_.visible = false
 		
 		
 	
@@ -45,8 +50,9 @@ func iterationChanged(value: int):
 func _on_area_4_quest_body_entered(body: Node3D) -> void:
 	if body.is_in_group("player") && body.is_multiplayer_authority():
 		peek_anim.play("peek")
-		if GlobalVariables.isaac_quest_progression == 4:
-			GlobalVariables.isaac_quest_progression = 5
-			quest_marker_.visible = false
+		if GlobalVariables.isaac_quest_progression == 2:
+			#GlobalVariables.isaac_quest_progression = 5
+			
 			questHub.isaacTrigger()
+			#quest_marker_.visible = false
 			

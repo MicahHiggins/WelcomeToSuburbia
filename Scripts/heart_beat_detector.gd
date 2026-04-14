@@ -28,11 +28,11 @@ func _ready() -> void:
 
 func iterationChange(value: int):
 	print("HEARTBEAT:", GlobalVariables.isaac_quest_progression)
-	if GlobalVariables.isaac_quest_progression == 2:
+	if GlobalVariables.isaac_quest_progression == 1:
 		quest_marker_.visible = true
 		collision_shape_3d.set_deferred("disabled", false) 
 		
-	if GlobalVariables.isaac_quest_progression > 2:
+	if GlobalVariables.isaac_quest_progression > 1:
 		queue_free()
 		print("itereationChanged! Heartbeat! Error/DQ!")
 			
@@ -48,8 +48,8 @@ func _on_body_entered(body: Node3D) -> void:
 		#forgot what this is for...
 		GlobalVariables.gameStart.emit()
 		
-	
-		questHub.it_change()
+	#
+		#questHub.it_change()
 		queue_free()
 		
 	

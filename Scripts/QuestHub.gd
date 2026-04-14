@@ -34,6 +34,7 @@ func sync_iteration(new_value: int):
 
 # Do the same for your triggers
 func campbellTrigger():
+	print("HELLO? Does this happen twice?")
 	sync_campbell.rpc(GlobalVariables.iterations)
 
 @rpc("authority", "call_local", "reliable")

@@ -26,9 +26,9 @@ func _ready() -> void:
 			quest_marker_.visible = true
 		2: 
 			quest_marker_.visible = false
-		5:
+		3:
 			quest_marker_.visible = true
-		6: 
+		4: 
 			quest_marker_.visible = false
 		
 			
@@ -44,17 +44,17 @@ func isaacProgress(value: int):
 	
 	if GlobalVariables.isaac_quest_progression == 1:
 		print("Is this thing on?")
-		questHub.isaacTrigger()
+		#questHub.isaacTrigger()
 		quest_marker_.visible = false
 	
-	if GlobalVariables.isaac_quest_progression == 5:
+	if GlobalVariables.isaac_quest_progression == 3:
 		quest_marker_.visible = true
 		
 		
 		#QUEST BRUH
 		
 	
-	if GlobalVariables.isaac_quest_progression == 6:
+	if GlobalVariables.isaac_quest_progression == 4:
 		quest_marker_.visible = false
 		
 		

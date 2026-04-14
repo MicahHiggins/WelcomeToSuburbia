@@ -107,7 +107,7 @@ func issDial():
 	
 	if GlobalVariables.iterations >= 1 && GlobalVariables.isaac_quest_progression == 0:
 		#isaacQuest.isaacQToggle = false
-		
+		print("DOES THIS HAPPEN TWICE?")
 		#GlobalVariables.iterations += 1
 		questHub.isaacTrigger()
 		questHub.it_change()
@@ -119,11 +119,11 @@ func issDial():
 		dialogue.uniqueDialogue =  npcDialogue.issDialogue[2][iss_local]
 		
 		##QMAIN QUEST!
-		if GlobalVariables.isaac_quest_progression >= 5:
+		if GlobalVariables.isaac_quest_progression >= 3:
 			
 			dialogue.uniqueDialogue = npcDialogue.issDialogue[isaacQuest.ISAACQUEST_TURN_IN][iss_local]
 			#questHub.it_change()
-			GlobalVariables.isaac_quest_progression = 6
+			
 			questHub.isaacTrigger()
 			
 	
