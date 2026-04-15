@@ -1,0 +1,21 @@
+[gd_scene load_steps=4 format=3 uid="uid://eginvg4sxfqg"]
+
+[ext_resource type="Script" path="res://Max's Folder (do not touch!!!)/transition.gd" id="1_usnn0"]
+[ext_resource type="PackedScene" uid="uid://diyfna0mvebm4" path="res://Assets/RandomObjects/quest_marker!.tscn" id="2_fcvov"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_nnrem"]
+radius = 6.829
+
+[node name="Kidnap" type="Area3D"]
+collision_layer = 0
+collision_mask = 8
+script = ExtResource("1_usnn0")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("SphereShape3D_nnrem")
+disabled = true
+
+[node name="QuestMarker!" parent="." instance=ExtResource("2_fcvov")]
+transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, 0, -0.40733385, 0.027061462)
+
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]
