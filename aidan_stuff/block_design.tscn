@@ -1,4 +1,4 @@
-[gd_scene load_steps=38 format=3 uid="uid://r8vqf0qcnkdn"]
+[gd_scene load_steps=43 format=3 uid="uid://r8vqf0qcnkdn"]
 
 [ext_resource type="Script" uid="uid://4p6bc6ac8elf" path="res://aidan_stuff/block_design.gd" id="1_jmv40"]
 [ext_resource type="Texture2D" uid="uid://but80wsucm4q2" path="res://textures/GrassTextures/GrassAlbedo.png" id="2_bkv0n"]
@@ -15,8 +15,13 @@
 [ext_resource type="PackedScene" uid="uid://ret8ne1fmk7l" path="res://Assets/RandomObjects/road/road.tscn" id="9_milrp"]
 [ext_resource type="PackedScene" uid="uid://bwm6yq7ualh21" path="res://Assets/RandomObjects/road/sidewalk_corner.tscn" id="9_v0qsu"]
 [ext_resource type="PackedScene" uid="uid://c23ew22eosded" path="res://Assets/RandomObjects/road/Short_sidewalk.tscn" id="10_rkcnq"]
+[ext_resource type="PackedScene" uid="uid://crn8fjkgnfc2x" path="res://HouseModel/surb_house_v_2_5.tscn" id="10_yddyx"]
+[ext_resource type="PackedScene" uid="uid://ra3n7bx03cca" path="res://HouseModel/surb_house_v_2_4.tscn" id="11_4jqnc"]
 [ext_resource type="PackedScene" uid="uid://dexa2pmw4ua8t" path="res://Assets/RandomObjects/bush/Bush.tscn" id="12_x5kdk"]
+[ext_resource type="PackedScene" path="res://HouseModel/surb_house_v_2_3.tscn" id="13_048gh"]
 [ext_resource type="PackedScene" uid="uid://cxnlf1qokkhee" path="res://Assets/RandomObjects/streetlight/street_light.tscn" id="13_bcxsy"]
+[ext_resource type="PackedScene" path="res://HouseModel/surb_house_v_2_2.tscn" id="14_exxux"]
+[ext_resource type="PackedScene" uid="uid://dlk17rptaahid" path="res://HouseModel/surb_house_v_2_6.tscn" id="15_34jml"]
 [ext_resource type="Script" uid="uid://dbt273cudle2e" path="res://aidan_stuff/iteration_detector.gd" id="15_v0qsu"]
 [ext_resource type="PackedScene" uid="uid://d2rvqfwj71ucv" path="res://Assets/RandomObjects/billboard/billboard.tscn" id="18_vslbx"]
 [ext_resource type="PackedScene" uid="uid://bjq42iea72mgn" path="res://Audio/AudioCues/heart_beat_detector.tscn" id="20_u2ehm"]
@@ -24,7 +29,7 @@
 [ext_resource type="PackedScene" uid="uid://655t81u48joy" path="res://NPC/fido.tscn" id="22_ga440"]
 [ext_resource type="Script" uid="uid://cefpvj7tg03be" path="res://aidan_stuff/bus.gd" id="23_3rgr2"]
 [ext_resource type="PackedScene" uid="uid://gk88lcwyw5hu" path="res://Assets/RandomObjects/cellar_investigate.tscn" id="23_5xofl"]
-[ext_resource type="PackedScene" uid="uid://cx5rbrvijd0rs" path="res://Assets/RandomObjects/bus/busssss.tscn" id="25_g1s53"]
+[ext_resource type="PackedScene" uid="uid://cisg4q78neeyi" path="res://Assets/RandomObjects/bus/Bus_no_collisions.tscn" id="24_3rgr2"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_0wadw"]
 albedo_color = Color(0.60271376, 0.7674062, 0.73615, 1)
@@ -77,10 +82,10 @@ tracks/0/path = NodePath("busssss:position")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
-"times": PackedFloat32Array(0.033333335, 8.933333),
+"times": PackedFloat32Array(0, 8.94),
 "transitions": PackedFloat32Array(1, 1),
 "update": 0,
-"values": [Vector3(15.77774, 0.5986364, -9), Vector3(-10, 0.599, -9)]
+"values": [Vector3(15.772278, 0.5961638, -9.0102625), Vector3(-10, 0.596, -9.01)]
 }
 tracks/1/type = "value"
 tracks/1/imported = false
@@ -89,22 +94,10 @@ tracks/1/path = NodePath("busssss:visible")
 tracks/1/interp = 1
 tracks/1/loop_wrap = true
 tracks/1/keys = {
-"times": PackedFloat32Array(0.01, 8.933333),
+"times": PackedFloat32Array(0, 8.94),
 "transitions": PackedFloat32Array(1, 1),
 "update": 1,
 "values": [true, false]
-}
-tracks/2/type = "value"
-tracks/2/imported = false
-tracks/2/enabled = true
-tracks/2/path = NodePath("busssss:rotation")
-tracks/2/interp = 1
-tracks/2/loop_wrap = true
-tracks/2/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [Vector3(0, 0, 0)]
 }
 
 [sub_resource type="Animation" id="Animation_ov7qd"]
@@ -117,31 +110,19 @@ tracks/0/path = NodePath("busssss:position")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
-"times": PackedFloat32Array(0, 11.966666),
+"times": PackedFloat32Array(0.02, 11.958932),
 "transitions": PackedFloat32Array(1, 1),
 "update": 0,
-"values": [Vector3(3, 0.599, 9.044), Vector3(-30, 0.599, 9.044)]
+"values": [Vector3(2.9680934, 0.596, 9), Vector3(-30, 0.596, 9)]
 }
 tracks/1/type = "value"
 tracks/1/imported = false
 tracks/1/enabled = true
-tracks/1/path = NodePath("busssss:rotation")
+tracks/1/path = NodePath("busssss:visible")
 tracks/1/interp = 1
 tracks/1/loop_wrap = true
 tracks/1/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [Vector3(0, 0, 0)]
-}
-tracks/2/type = "value"
-tracks/2/imported = false
-tracks/2/enabled = true
-tracks/2/path = NodePath("busssss:visible")
-tracks/2/interp = 1
-tracks/2/loop_wrap = true
-tracks/2/keys = {
-"times": PackedFloat32Array(0.001, 11.966666),
+"times": PackedFloat32Array(0.02, 11.958932),
 "transitions": PackedFloat32Array(1, 1),
 "update": 1,
 "values": [true, false]
@@ -159,7 +140,7 @@ tracks/0/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 0,
-"values": [Vector3(15.77774, 0.5986364, -9)]
+"values": [Vector3(15.772278, 0.5961638, -9.0102625)]
 }
 tracks/1/type = "value"
 tracks/1/imported = false
@@ -172,18 +153,6 @@ tracks/1/keys = {
 "transitions": PackedFloat32Array(1),
 "update": 1,
 "values": [true]
-}
-tracks/2/type = "value"
-tracks/2/imported = false
-tracks/2/enabled = true
-tracks/2/path = NodePath("busssss:rotation")
-tracks/2/interp = 1
-tracks/2/loop_wrap = true
-tracks/2/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [Vector3(0, -3.1415925, 0)]
 }
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_ov7qd"]
@@ -243,62 +212,23 @@ width = 150.0
 
 [node name="Houses" type="Node3D" parent="."]
 
-[node name="SurbHouseV2" parent="Houses" instance=ExtResource("9_5xofl")]
-transform = Transform3D(-5.98846e-09, 0, 0.137, 0, 0.137, 0, -0.137, 0, -5.98846e-09, 5.9602118, -0.06223011, -2.3650205)
+[node name="SurbHouseV2" parent="Houses" instance=ExtResource("10_yddyx")]
+transform = Transform3D(-5.98846e-09, 0, 0.137, 0, 0.137, 0, -0.137, 0, -5.98846e-09, 5.96, -0.062, -2.365)
 
-[node name="SurbHouseV3" parent="Houses" instance=ExtResource("9_5xofl")]
-transform = Transform3D(-5.98846e-09, 0, 0.137, 0, 0.137, 0, -0.137, 0, -5.98846e-09, 2.010663, -0.06223011, -2.3650205)
+[node name="SurbHouseV3" parent="Houses" instance=ExtResource("11_4jqnc")]
+transform = Transform3D(-5.98846e-09, 0, 0.137, 0, 0.137, 0, -0.137, 0, -5.98846e-09, 2, -0.062, -2.3663998)
 
 [node name="SurbHouseV4" parent="Houses" instance=ExtResource("9_5xofl")]
 transform = Transform3D(-5.98846e-09, 0, 0.137, 0, 0.137, 0, -0.137, 0, -5.98846e-09, -2.0160885, -0.06223011, -2.3650205)
 
-[node name="SurbHouseV5" parent="Houses" instance=ExtResource("9_5xofl")]
-transform = Transform3D(-5.98846e-09, 0, 0.137, 0, 0.137, 0, -0.137, 0, -5.98846e-09, -5.965637, -0.06223011, -2.3650205)
-
-[node name="SurbHouseV6" parent="Houses" instance=ExtResource("9_5xofl")]
-transform = Transform3D(7.180497e-06, 0, -0.137, 0, 0.137, 0, 0.137, 0, 7.180497e-06, -6.088655, -0.06223011, 2.4173722)
-
-[node name="SurbHouseV7" parent="Houses" instance=ExtResource("9_5xofl")]
-transform = Transform3D(7.180497e-06, 0, -0.137, 0, 0.137, 0, 0.137, 0, 7.180497e-06, -2.1391063, -0.06223011, 2.4171653)
-
-[node name="SurbHouseV8" parent="Houses" instance=ExtResource("9_5xofl")]
-transform = Transform3D(7.180497e-06, 0, -0.137, 0, 0.137, 0, 0.137, 0, 7.180497e-06, 1.8876452, -0.06223011, 2.4169545)
-
-[node name="SurbHouseV9" parent="Houses" instance=ExtResource("9_5xofl")]
-transform = Transform3D(7.180497e-06, 0, -0.137, 0, 0.137, 0, 0.137, 0, 7.180497e-06, 6.01385, -0.06223011, 2.4167476)
-
-[node name="SurbHouseV10" parent="Houses" instance=ExtResource("9_5xofl")]
-transform = Transform3D(-5.98846e-09, 0, 0.137, 0, 0.137, 0, -0.137, 0, -5.98846e-09, 5.9602118, -0.06223011, 13.841948)
-
-[node name="SurbHouseV11" parent="Houses" instance=ExtResource("9_5xofl")]
-transform = Transform3D(-5.98846e-09, 0, 0.137, 0, 0.137, 0, -0.137, 0, -5.98846e-09, 2.010663, -0.06223011, 13.841948)
+[node name="SurbHouseV5" parent="Houses" instance=ExtResource("10_yddyx")]
+transform = Transform3D(-5.98846e-09, 0, 0.137, 0, 0.137, 0, -0.137, 0, -5.98846e-09, -5.956972, -0.062, -2.365)
 
 [node name="SurbHouseV12" parent="Houses" instance=ExtResource("9_5xofl")]
 transform = Transform3D(-5.98846e-09, 0, 0.137, 0, 0.137, 0, -0.137, 0, -5.98846e-09, -2.0160885, -0.06223011, 13.841948)
 
-[node name="SurbHouseV13" parent="Houses" instance=ExtResource("9_5xofl")]
-transform = Transform3D(-5.98846e-09, 0, 0.137, 0, 0.137, 0, -0.137, 0, -5.98846e-09, -5.965637, -0.06223011, 13.841948)
-
-[node name="SurbHouseV14" parent="Houses" instance=ExtResource("9_5xofl")]
-transform = Transform3D(7.180497e-06, 0, -0.137, 0, 0.137, 0, 0.137, 0, 7.180497e-06, -6.088655, -0.06223011, -13.925952)
-
-[node name="SurbHouseV15" parent="Houses" instance=ExtResource("9_5xofl")]
-transform = Transform3D(7.180497e-06, 0, -0.137, 0, 0.137, 0, 0.137, 0, 7.180497e-06, -1.9332827, -0.06223011, -13.92616)
-
-[node name="SurbHouseV16" parent="Houses" instance=ExtResource("9_5xofl")]
-transform = Transform3D(7.180497e-06, 0, -0.137, 0, 0.137, 0, 0.137, 0, 7.180497e-06, 2.029033, -0.06223011, -13.92637)
-
 [node name="SurbHouseV17" parent="Houses" instance=ExtResource("9_5xofl")]
 transform = Transform3D(7.180497e-06, 0, -0.137, 0, 0.137, 0, 0.137, 0, 7.180497e-06, 6.01385, -0.06223011, -13.926578)
-
-[node name="SurbHouseV18" parent="Houses" instance=ExtResource("9_5xofl")]
-transform = Transform3D(-0.13699995, 0, 0.000100427795, 0, 0.137, 0, -0.000100427795, 0, -0.13699995, 13.940325, -0.06223011, -5.9895997)
-
-[node name="SurbHouseV19" parent="Houses" instance=ExtResource("9_5xofl")]
-transform = Transform3D(-0.13699995, 0, 0.000100427795, 0, 0.137, 0, -0.000100427795, 0, -0.13699995, 13.937429, -0.06223011, -2.040053)
-
-[node name="SurbHouseV20" parent="Houses" instance=ExtResource("9_5xofl")]
-transform = Transform3D(-0.13699995, 0, 0.000100427795, 0, 0.137, 0, -0.000100427795, 0, -0.13699995, 13.934477, -0.06223011, 1.9606879)
 
 [node name="SurbHouseV21" parent="Houses" instance=ExtResource("9_5xofl")]
 transform = Transform3D(-0.13699995, 0, 0.000100427795, 0, 0.137, 0, -0.000100427795, 0, -0.13699995, 13.9315815, -0.06223011, 6.030347)
@@ -306,14 +236,53 @@ transform = Transform3D(-0.13699995, 0, 0.000100427795, 0, 0.137, 0, -0.00010042
 [node name="SurbHouseV22" parent="Houses" instance=ExtResource("9_5xofl")]
 transform = Transform3D(0.13699985, 0, -0.00020801641, 0, 0.137, 0, 0.00020801641, 0, 0.13699985, -13.957022, -0.06223011, 6.0109897)
 
-[node name="SurbHouseV23" parent="Houses" instance=ExtResource("9_5xofl")]
-transform = Transform3D(0.13699985, 0, -0.00020801641, 0, 0.137, 0, 0.00020801641, 0, 0.13699985, -13.951025, -0.06223011, 2.0075264)
+[node name="SurbHouseV23" parent="Houses" instance=ExtResource("13_048gh")]
+transform = Transform3D(0.137, 0, 0, 0, 0.137, 0, 0, 0, 0.137, -13.95, -0.062, 2)
 
-[node name="SurbHouseV24" parent="Houses" instance=ExtResource("9_5xofl")]
-transform = Transform3D(0.13699985, 0, -0.00020801641, 0, 0.137, 0, 0.00020801641, 0, 0.13699985, -13.94491, -0.06223011, -2.0192199)
+[node name="SurbHouseV25" parent="Houses" instance=ExtResource("14_exxux")]
+transform = Transform3D(0.137, 0, 0, 0, 0.137, 0, 0, 0, 0.137, -13.93, -0.062, -5.969)
 
-[node name="SurbHouseV25" parent="Houses" instance=ExtResource("9_5xofl")]
-transform = Transform3D(0.13699985, 0, -0.00020801641, 0, 0.137, 0, 0.00020801641, 0, 0.13699985, -13.938913, -0.06223011, -5.968765)
+[node name="SurbHouseV26" parent="Houses" instance=ExtResource("11_4jqnc")]
+transform = Transform3D(1.6337086e-09, 0, -0.137, 0, 0.137, 0, 0.137, 0, 1.6337086e-09, 6.054302, -0.070493996, 2.429792)
+
+[node name="SurbHouseV27" parent="Houses" instance=ExtResource("11_4jqnc")]
+transform = Transform3D(-5.98846e-09, 0, 0.137, 0, 0.137, 0, -0.137, 0, -5.98846e-09, 2, -0.062, 13.83375)
+
+[node name="SurbHouseV28" parent="Houses" instance=ExtResource("11_4jqnc")]
+transform = Transform3D(-5.98846e-09, 0, 0.137, 0, 0.137, 0, -0.137, 0, -5.98846e-09, -5.981371, -0.062, 13.795382)
+
+[node name="SurbHouseV29" parent="Houses" instance=ExtResource("14_exxux")]
+transform = Transform3D(-0.137, 0, -1.197692e-08, 0, 0.137, 0, 1.197692e-08, 0, -0.137, 13.93, -0.062, 1.9449062)
+
+[node name="SurbHouseV9" parent="Houses" instance=ExtResource("11_4jqnc")]
+transform = Transform3D(-0.137, 0, -1.197692e-08, 0, 0.137, 0, 1.197692e-08, 0, -0.137, 13.948273, -0.062, -6.0007596)
+
+[node name="SurbHouseV30" parent="Houses" instance=ExtResource("13_048gh")]
+transform = Transform3D(1.6337086e-09, 0, -0.137, 0, 0.137, 0, 0.137, 0, 1.6337086e-09, 1.8770053, -0.062, 2.4139347)
+
+[node name="SurbHouseV8" parent="Houses" instance=ExtResource("10_yddyx")]
+transform = Transform3D(1.6337086e-09, 0, -0.137, 0, 0.137, 0, 0.137, 0, 1.6337086e-09, -2.126, -0.062, 2.418)
+
+[node name="SurbHouseV31" parent="Houses" instance=ExtResource("14_exxux")]
+transform = Transform3D(1.6337086e-09, 0, 0.137, 0, 0.137, 0, -0.137, 0, 1.6337086e-09, -6.0946183, -0.062, 2.4)
+
+[node name="SurbHouseV32" parent="Houses" instance=ExtResource("13_048gh")]
+transform = Transform3D(1.6337086e-09, 0, -0.137, 0, 0.137, 0, 0.137, 0, 1.6337086e-09, -1.9646466, -0.062, -14.066892)
+
+[node name="SurbHouseV11" parent="Houses" instance=ExtResource("10_yddyx")]
+transform = Transform3D(1.6337086e-09, 0, -0.137, 0, 0.137, 0, 0.137, 0, 1.6337086e-09, -5.967652, -0.062, -14.062826)
+
+[node name="SurbHouseV33" parent="Houses" instance=ExtResource("14_exxux")]
+transform = Transform3D(-1.3610628e-08, 0, -0.137, 0, 0.137, 0, 0.137, 0, -1.3610628e-08, 2.0029845, -0.062, -14.001851)
+
+[node name="SurbHouseV6" parent="Houses" instance=ExtResource("15_34jml")]
+transform = Transform3D(-0.137, 0, 1.197692e-08, 0, 0.137, 0, -1.197692e-08, 0, -0.137, 13.988701, -0.062, -2.0546806)
+
+[node name="SurbHouseV7" parent="Houses" instance=ExtResource("15_34jml")]
+transform = Transform3D(1.7965379e-08, 0, 0.137, 0, 0.137, 0, -0.137, 0, 1.7965379e-08, 5.982545, -0.062, 13.874168)
+
+[node name="SurbHouseV10" parent="Houses" instance=ExtResource("15_34jml")]
+transform = Transform3D(0.137, 0, -2.3953838e-08, 0, 0.137, 0, 2.3953838e-08, 0, 0.137, -13.942325, -0.062, -1.9770801)
 
 [node name="Sidewalk" type="Node3D" parent="."]
 transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, 0, -0.09, 0)
@@ -2758,8 +2727,9 @@ transform = Transform3D(0.05, 0, 0, 0, 0.05, 0, 0, 0, 0.05, 0, 0, 0)
 [node name="Bus" type="Node3D" parent="."]
 script = ExtResource("23_3rgr2")
 
-[node name="busssss" parent="Bus" instance=ExtResource("25_g1s53")]
-transform = Transform3D(-0.34000003, 0, -4.6808704e-08, 0, 0.31000003, 0, 5.1338578e-08, 0, -0.31000003, 15.77774, 0.5986364, -9)
+[node name="busssss" parent="Bus" instance=ExtResource("24_3rgr2")]
+transform = Transform3D(0.34, 0, 0, 0, 0.31, 0, 0, 0, 0.31, 15.772278, 0.5961638, -9.0102625)
+top_level = true
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="Bus"]
 libraries = {
@@ -2785,7 +2755,8 @@ transform = Transform3D(1.8603868, 0, 0, 0, 1, 0, 0, 0, 0.262545, 0.5270233, 0, 
 shape = SubResource("BoxShape3D_jwb48")
 
 [node name="BusCooldownTimer" type="Timer" parent="Bus"]
-wait_time = 20.0
+wait_time = 5.0
+one_shot = true
 
 [connection signal="body_entered" from="LoadingSystem" to="." method="_on_area_3d_body_entered"]
 [connection signal="body_exited" from="LoadingSystem" to="." method="_on_area_3d_body_exited"]

@@ -1,6 +1,8 @@
-[gd_scene load_steps=16 format=4 uid="uid://2x2qaifhqwo8"]
+[gd_scene load_steps=21 format=4 uid="uid://bp314wd4qac1m"]
 
-[ext_resource type="Script" uid="uid://b11uau0l5vnrw" path="res://door_wi_dda_open.gd" id="1_k8ps0"]
+[ext_resource type="Script" uid="uid://b11uau0l5vnrw" path="res://HouseModel/door_wi_dda_open.gd" id="1_g6g2w"]
+[ext_resource type="Texture2D" uid="uid://dvxur5f0f1id5" path="res://Assets/RandomObjects/chair/Chair_4K-american_walnut_1_basecolor.png" id="2_vxwy1"]
+[ext_resource type="Texture2D" uid="uid://dylfs5ddsnvs7" path="res://Assets/RandomObjects/Beds/RedBed_oak-wood-bare_albedo.png" id="3_xll7v"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ftv4y"]
 
@@ -33,6 +35,12 @@ _surfaces = [{
 }]
 blend_shape_mode = 0
 shadow_mesh = SubResource("ArrayMesh_tobdd")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_hvh8v"]
+albedo_color = Color(0.82427967, 0.7287449, 0.7109644, 1)
+albedo_texture = ExtResource("2_vxwy1")
+uv1_scale = Vector3(1, 3, 1)
+uv1_triplanar = true
 
 [sub_resource type="Animation" id="Animation_irphc"]
 resource_name = "DOOR OPEN"
@@ -149,6 +157,11 @@ _surfaces = [{
 blend_shape_mode = 0
 shadow_mesh = SubResource("ArrayMesh_wv313")
 
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_nuj5x"]
+albedo_color = Color(0.63236135, 0.42333594, 0.48142415, 1)
+albedo_texture = ExtResource("3_xll7v")
+uv1_scale = Vector3(3.5, 1, 1)
+
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_uij2a"]
 
 [sub_resource type="ArrayMesh" id="ArrayMesh_epx2l"]
@@ -181,11 +194,14 @@ _surfaces = [{
 blend_shape_mode = 0
 shadow_mesh = SubResource("ArrayMesh_epx2l")
 
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_haya2"]
+albedo_color = Color(0.2231029, 0.2231029, 0.22310287, 1)
+
 [sub_resource type="BoxShape3D" id="BoxShape3D_po04r"]
 size = Vector3(4.245331, 9.176453, 1)
 
 [node name="DOOOOOOOR" type="Node3D" groups=["interactable"]]
-script = ExtResource("1_k8ps0")
+script = ExtResource("1_g6g2w")
 required_iteration = 6
 open_anim = &"DOOR OPEN"
 close_anim = &"fastclose"
@@ -194,6 +210,7 @@ close_anim = &"fastclose"
 transform = Transform3D(2.4684815, 0, 0, 0, 4.4978037, 0, 0, 0, 0.21647675, 0, 4.178197, 0)
 mesh = SubResource("ArrayMesh_jrviy")
 skeleton = NodePath("")
+surface_material_override/0 = SubResource("StandardMaterial3D_hvh8v")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 libraries = {
@@ -207,11 +224,13 @@ transform = Transform3D(0.9999998, 0, 0, 0, 1, 0, 0, 0, 0.9999998, 1.9606299, 4.
 transform = Transform3D(1.8902037, 0, 0, 0, 4.048411, 0, 0, 0, 0.05272544, -2.0008497, -0.54611635, -0.013964653)
 mesh = SubResource("ArrayMesh_u35pu")
 skeleton = NodePath("")
+surface_material_override/0 = SubResource("StandardMaterial3D_nuj5x")
 
 [node name="Cube_002" type="MeshInstance3D" parent="rot"]
-transform = Transform3D(0.110847, -0.0043513305, 0, 0.004351329, 0.11084703, 0, 0, 0, 0.2050721, -3.309917, -0.1977477, -0.0035977135)
+transform = Transform3D(0.110847, -0.00435133, 0, 0.004351329, 0.110847026, 0, 0, 0, 0.2050721, -3.309917, -0.1977477, -0.0035977135)
 mesh = SubResource("ArrayMesh_0sdy3")
 skeleton = NodePath("")
+surface_material_override/0 = SubResource("StandardMaterial3D_haya2")
 
 [node name="StaticBody3D" type="StaticBody3D" parent="rot"]
 transform = Transform3D(1.0000001, 0, 0, 0, 1, 0, 0, 0, 1.0000001, -1.9606302, -4.3133683, 0)
