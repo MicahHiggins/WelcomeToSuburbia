@@ -134,7 +134,7 @@ script = ExtResource("2_q1ipm")
 hear_radius = 80.0
 unit_size = 3.0
 base_volume_db = 4.0
-playback_buffer_sec = 0.0
+playback_buffer_sec = 0.05
 far_cut_db = 20.0
 
 [node name="VoicePlayer3D" type="AudioStreamPlayer3D" parent="Head"]
