@@ -33,14 +33,37 @@ func sync_iteration(new_value: int):
 	iteration_changed.emit(new_value)
 
 # Do the same for your triggers
+# Inside questHub.gd
+
 func campbellTrigger():
-	print("HELLO? Does this happen twice?")
-	sync_campbell.rpc(GlobalVariables.iterations)
+	# 1. If a client calls this, ask the server to update the progress
+	if not multiplayer.is_server():
+		rpc_id(1, "server_request_campbell_up")
+	else:
+		server_request_campbell_up()
+
+@rpc("any_peer", "call_local", "reliable")
+func server_request_campbell_up():
+	if not multiplayer.is_server(): return
+	
+	# 2. Server performs the logic
+	questHub.campbellProg += 1
+	
+	if fido_dog.found_fido_early == true:
+		fido_dog.found_fido_early = false
+		questHub.campbellProg = 3
+	
+	# 3. Server broadcasts the NEW values to everyone
+	sync_campbell_state.rpc(questHub.campbellProg, GlobalVariables.iterations)
 
 @rpc("authority", "call_local", "reliable")
-func sync_campbell(val):
-	campbellQuest.emit(val)
+func sync_campbell_state(new_prog: int, iter_val: int):
+	# 4. Everyone updates their local variables to match the server
+	questHub.campbellProg = new_prog
 	
+	# 5. Emit the signal so Dialogue/UI refreshes
+	campbellQuest.emit(iter_val)
+	print("Campbell Quest Synced! Progress is now: ", new_prog)
 	
 	# Inside questHub.gd
 
