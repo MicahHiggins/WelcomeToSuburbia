@@ -1,7 +1,7 @@
 [gd_scene load_steps=20 format=3 uid="uid://bs72ogkvdd7d6"]
 
 [ext_resource type="Script" uid="uid://psbmqqwxvny5" path="res://addons/proto_controller/proto_controller.gd" id="1_ucva2"]
-[ext_resource type="Script" uid="uid://6tcwk75iwlkk" path="res://addons/proto_controller/voice_chat.gd" id="2_q1ipm"]
+[ext_resource type="Script" path="res://addons/proto_controller/voice_chat.gd" id="2_q1ipm"]
 [ext_resource type="Script" uid="uid://boitue63820b1" path="res://addons/proto_controller/ray_cast_3d.gd" id="2_wr06p"]
 [ext_resource type="AudioStream" uid="uid://77vhd06aou5i" path="res://Audio/SFX/Steps_gravel-006.ogg" id="3_5hfox"]
 [ext_resource type="Script" uid="uid://cfienyrl5pmdh" path="res://addons/proto_controller/player_audio.gd" id="3_h60nn"]
@@ -113,7 +113,6 @@ stamina_max = 160.0
 stamina_drain_per_sec = 14.0
 stamina_regen_per_sec = 35.0
 attack_cooldown = 5.0
-sprint_cam_lerp = 10.0
 cellar_follow_up_m = 0.7
 cellar_follow_back_m = 0.3
 cellar_piggyback_dist_override = 0.0
@@ -132,7 +131,7 @@ shape = SubResource("CapsuleShape3D_iof21")
 [node name="Head" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6066794, -0.30353436)
 script = ExtResource("2_q1ipm")
-hear_radius = 100.0
+hear_radius = 50.0
 playback_buffer_sec = 0.1
 
 [node name="VoicePlayer3D" type="AudioStreamPlayer3D" parent="Head"]
