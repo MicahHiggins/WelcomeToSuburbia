@@ -5,7 +5,7 @@
 [ext_resource type="Script" uid="uid://bkb35cbdsgdbh" path="res://addons/instant-realistic-light/light_scene.gd" id="4_d084q"]
 [ext_resource type="PackedScene" uid="uid://bst3bb8d7vieb" path="res://Max's Folder (do not touch!!!)/pcgRescaled.tscn" id="7_d084q"]
 [ext_resource type="Script" uid="uid://c5qchfyao7ahn" path="res://GameLevelsETC/tether_system.gd" id="7_ki0f2"]
-[ext_resource type="PackedScene" path="res://NPC/WatchedCrawler.tscn" id="8_d084q"]
+[ext_resource type="PackedScene" uid="uid://dqjphju0rm3il" path="res://NPC/WatchedCrawler.tscn" id="8_d084q"]
 [ext_resource type="Script" uid="uid://cjg7ws1b5cnm7" path="res://GameLevelsETC/telleport_manager.gd" id="15_vlwaf"]
 [ext_resource type="PackedScene" uid="uid://bf38tvkrxj6ds" path="res://GameLevelsETC/CellarLevel.tscn" id="16_17epn"]
 
@@ -96,6 +96,10 @@ script = ExtResource("4_d084q")
 sun_ref = NodePath("../DirectionalLight3D")
 response_speed = 0.6
 min_fog_multiplier = 0.0
+max_iterations = 6.0
+end_exposure = 0.4
+end_ambient_energy = 0.4
+end_saturation = 0.2
 start_depth_begin = 70.0
 cycle_speed = 0.2
 red_shift_strength = 1.0
