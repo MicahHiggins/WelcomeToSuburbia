@@ -26,7 +26,7 @@ func _ready() -> void:
 	#AudioManager.gameStart.emit()
 	
 	GlobalVariables.iterations = 0
-	GlobalVariables.gameStart.emit()
+	GlobalVariables.dialogueSignal.emit()
 	houses.visible = false
 	roads.visible = false
 

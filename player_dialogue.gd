@@ -2,10 +2,10 @@ extends CanvasLayer
 
 @export var playerSpeech = RichTextLabel
 
-#GlobalVariables.gameStart.emit()
+#GlobalVariables.dialogueSignal.emit()
 
 func _ready() -> void:
-	GlobalVariables.gameStart.connect(change_dialogue)
+	GlobalVariables.dialogueSignal.connect(change_dialogue)
 
 func _process(delta: float) -> void:
 	pass

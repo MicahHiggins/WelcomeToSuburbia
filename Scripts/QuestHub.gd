@@ -31,6 +31,7 @@ func sync_iteration(new_value: int):
 	print("Iteration Syncing for all players: ", new_value)
 	GlobalVariables.iterations = new_value
 	iteration_changed.emit(new_value)
+	GlobalVariables.dialogueSignal.emit()
 
 # Do the same for your triggers
 # Inside questHub.gd
