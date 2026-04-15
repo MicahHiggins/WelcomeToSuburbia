@@ -1,6 +1,9 @@
 extends Node3D
 @onready var jumpscare: AnimationPlayer = $"../jumpscare"
 
+
+@onready var audio_stream_player: AudioStreamPlayer = $"../jumpscare/AudioStreamPlayer"
+
 var jumpscared_played := false
 
 
@@ -19,6 +22,7 @@ func _on_talk_detection_body_entered(body: Node3D) -> void:
 	if body.is_in_group("player") && body.is_multiplayer_authority():
 		if jumpscared_played == false:
 			jumpscared_played = true
+			audio_stream_player.play()
 			jumpscare.play("duck")
 		
 

@@ -2,13 +2,20 @@ extends Node2D
 # No need for class_name if it's an Autoload, but you can keep it.
 
 signal iteration_changed(value: int)
-signal questTalk(value: int)
+#signal questTalk(value: int)
 signal isaacQuest(value: int)
 signal campbellQuest(value: int)
+
+signal talkingNpc(value: int)
 
 var campbellProg := 0
 var found_fido_early := false
 
+
+
+
+func audio_play_talk(value: int):
+	talkingNpc.emit(0)
 # This is the function you call from any other script
 func it_change():
 	# 1. If a client calls this, they ask the server to change it
@@ -53,6 +60,7 @@ func server_request_campbell_up():
 	
 	if found_fido_early == true:
 		found_fido_early = false
+		print("BRUH")
 		questHub.campbellProg = 3
 	
 	# 3. Server broadcasts the NEW values to everyone

@@ -1,8 +1,9 @@
-[gd_scene load_steps=39 format=3 uid="uid://r8vqf0qcnkdn"]
+[gd_scene load_steps=40 format=3 uid="uid://r8vqf0qcnkdn"]
 
 [ext_resource type="Script" uid="uid://4p6bc6ac8elf" path="res://aidan_stuff/block_design.gd" id="1_jmv40"]
 [ext_resource type="Texture2D" uid="uid://but80wsucm4q2" path="res://textures/GrassTextures/GrassAlbedo.png" id="2_bkv0n"]
 [ext_resource type="ArrayMesh" uid="uid://dcbboo0ncpiq4" path="res://Assets/kenney_city-kit-suburban_20/Models/OBJ format/path-stones-messy.obj" id="3_2eoyn"]
+[ext_resource type="AudioStream" uid="uid://xd517vpa5epx" path="res://Audio/SFX/scream2.wav" id="3_jwb48"]
 [ext_resource type="Texture2D" uid="uid://do7xmc15vdxif" path="res://textures/GrassTextures/GrassAO.png" id="3_x5kdk"]
 [ext_resource type="Texture2D" uid="uid://cgxv1p4pfa1ju" path="res://textures/GrassTextures/GrassTransluc.png" id="4_bcxsy"]
 [ext_resource type="Texture2D" uid="uid://btkv156gx2ymr" path="res://textures/GrassTextures/GrassNormal.png" id="5_milrp"]
@@ -202,6 +203,9 @@ script = ExtResource("1_jmv40")
 
 [node name="Cellar Investigate" parent="." instance=ExtResource("23_5xofl")]
 transform = Transform3D(-0.5, 0, -4.371139e-08, 0, 0.5, 0, 4.371139e-08, 0, -0.5, -5.9443893, 0, 15.849679)
+
+[node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="Cellar Investigate"]
+stream = ExtResource("3_jwb48")
 
 [node name="Ground" type="StaticBody3D" parent="."]
 transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0)

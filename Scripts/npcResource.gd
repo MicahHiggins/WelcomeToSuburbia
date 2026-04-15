@@ -162,7 +162,7 @@ func dialogueMan(npc_name):
 		
 func enter_dialogue():
 	var number = 0
-	
+	questHub.audio_play_talk(0)
 	#GlobalVariables.playerTalking = true
 	print(GlobalVariables.playerTalking)
 	if talking == false:
