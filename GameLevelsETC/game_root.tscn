@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3 uid="uid://c2ocvg8ruxbbg"]
+[gd_scene load_steps=12 format=3 uid="uid://c2ocvg8ruxbbg"]
 
 [ext_resource type="Script" uid="uid://dywhk2ngguw7a" path="res://GameLevelsETC/lobby_manager.gd" id="1_l5n62"]
 [ext_resource type="Script" uid="uid://l6pyeyjgkntn" path="res://GameLevelsETC/item_manager.gd" id="1_lbg40"]
@@ -9,7 +9,6 @@
 [ext_resource type="Texture2D" uid="uid://3i53ybhtpc0f" path="res://Assets/Images/—Pngtree—vector copy icon_4013516.png" id="9_7i78e"]
 [ext_resource type="Script" uid="uid://744qvh7h6rs5" path="res://GameLevelsETC/player_spawner.gd" id="9_nqjqn"]
 [ext_resource type="FontFile" uid="uid://g7ve53wy4c3c" path="res://addons/Font/MADE TOMMY Medium_PERSONAL USE.otf" id="10_nqjqn"]
-[ext_resource type="Script" uid="uid://caquv2h3v5qd7" path="res://GameLevelsETC/voice_chat.gd" id="11_6bcdd"]
 [ext_resource type="PackedScene" uid="uid://b3tivaphj7o57" path="res://aidan_stuff/button4Iteration.tscn" id="13_nqjqn"]
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_fan4m"]
@@ -155,12 +154,6 @@ text = "Level 3"
 [node name="Interact" type="CanvasLayer" parent="Menu"]
 
 [node name="NPCDialogue" type="CanvasLayer" parent="Menu"]
-
-[node name="VoiceChat" type="Node3D" parent="."]
-script = ExtResource("11_6bcdd")
-
-[node name="VoiceOut" type="AudioStreamPlayer3D" parent="VoiceChat"]
-volume_db = -6.0
 
 [connection signal="pressed" from="Menu/CanvasLayer/Host" to="LobbyManager" method="_on_host_pressed"]
 [connection signal="pressed" from="Menu/CanvasLayer/Join" to="LobbyManager" method="_on_join_pressed"]

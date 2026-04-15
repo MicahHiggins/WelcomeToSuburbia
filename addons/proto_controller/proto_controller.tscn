@@ -1,4 +1,4 @@
-[gd_scene load_steps=19 format=3 uid="uid://bs72ogkvdd7d6"]
+[gd_scene load_steps=20 format=3 uid="uid://bs72ogkvdd7d6"]
 
 [ext_resource type="Script" uid="uid://psbmqqwxvny5" path="res://addons/proto_controller/proto_controller.gd" id="1_ucva2"]
 [ext_resource type="Script" uid="uid://boitue63820b1" path="res://addons/proto_controller/ray_cast_3d.gd" id="2_wr06p"]
@@ -10,6 +10,7 @@
 [ext_resource type="PackedScene" uid="uid://dphhgsxb3ams8" path="res://player_dialogue.tscn" id="8_1tksx"]
 [ext_resource type="PackedScene" uid="uid://dhngofkxehkt0" path="res://aidan_stuff/player_boy.tscn" id="9_ths8c"]
 [ext_resource type="PackedScene" uid="uid://dwvq73qdfv2q1" path="res://aidan_stuff/player_girl.tscn" id="10_x436g"]
+[ext_resource type="Script" uid="uid://caquv2h3v5qd7" path="res://GameLevelsETC/voice_chat.gd" id="11_q1ipm"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_iof21"]
 albedo_color = Color(0.91806, 0.575202, 0.222449, 1)
@@ -184,3 +185,9 @@ transform = Transform3D(-0.93, 0, -8.1303185e-08, 0, 0.93, 0, 8.1303185e-08, 0, 
 [node name="girl" parent="." instance=ExtResource("10_x436g")]
 transform = Transform3D(-0.93, 0, -8.1303185e-08, 0, 0.93, 0, 8.1303185e-08, 0, -0.93, 0, 0, 0)
 visible = false
+
+[node name="VoiceChat" type="Node3D" parent="."]
+script = ExtResource("11_q1ipm")
+
+[node name="VoicePlayer3D" type="AudioStreamPlayer3D" parent="VoiceChat"]
+volume_db = -6.0
