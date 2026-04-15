@@ -10,7 +10,6 @@ signal heart_beat
 func _ready() -> void:
 	collision_shape_3d.set_deferred("disabled", true)
 	questHub.iteration_changed.connect(iterationChange)
-	GlobalVariables.gameStart.connect(_on_body_entered)
 	quest_marker_.visible = false
 	
 	match(GlobalVariables.isaac_quest_progression):
@@ -45,10 +44,6 @@ func _on_body_entered(body: Node3D) -> void:
 		quest_marker_.visible = false
 		GlobalVariables.heart_beat = true
 		
-		#forgot what this is for...
-		GlobalVariables.gameStart.emit()
-		
-	#
 		#questHub.it_change()
 		queue_free()
 		

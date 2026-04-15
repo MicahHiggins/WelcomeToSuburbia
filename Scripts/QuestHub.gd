@@ -2,13 +2,20 @@ extends Node2D
 # No need for class_name if it's an Autoload, but you can keep it.
 
 signal iteration_changed(value: int)
-signal questTalk(value: int)
+#signal questTalk(value: int)
 signal isaacQuest(value: int)
 signal campbellQuest(value: int)
 
-var campbellProg := 0
-var dogFound := false
+signal talkingNpc(value: int)
 
+var campbellProg := 0
+var found_fido_early := false
+
+
+
+
+func audio_play_talk(value: int):
+	talkingNpc.emit(0)
 # This is the function you call from any other script
 func it_change():
 	# 1. If a client calls this, they ask the server to change it
@@ -24,6 +31,7 @@ func request_it_change():
 	
 	# 3. Server updates the value and tells EVERYONE to sync up
 	# We send GlobalVariables.iterations + 1 as the new value
+	
 	sync_iteration.rpc(GlobalVariables.iterations + 1)
 
 @rpc("authority", "call_local", "reliable")
@@ -31,16 +39,41 @@ func sync_iteration(new_value: int):
 	print("Iteration Syncing for all players: ", new_value)
 	GlobalVariables.iterations = new_value
 	iteration_changed.emit(new_value)
+	GlobalVariables.dialogueSignal.emit()
 
 # Do the same for your triggers
+# Inside questHub.gd
+
 func campbellTrigger():
-	print("HELLO? Does this happen twice?")
-	sync_campbell.rpc(GlobalVariables.iterations)
+	# 1. If a client calls this, ask the server to update the progress
+	if not multiplayer.is_server():
+		rpc_id(1, "server_request_campbell_up")
+	else:
+		server_request_campbell_up()
+
+@rpc("any_peer", "call_local", "reliable")
+func server_request_campbell_up():
+	if not multiplayer.is_server(): return
+	
+	# 2. Server performs the logic
+	questHub.campbellProg += 1
+	
+	if found_fido_early == true:
+		found_fido_early = false
+		print("BRUH")
+		questHub.campbellProg = 3
+	
+	# 3. Server broadcasts the NEW values to everyone
+	sync_campbell_state.rpc(questHub.campbellProg, GlobalVariables.iterations)
 
 @rpc("authority", "call_local", "reliable")
-func sync_campbell(val):
-	campbellQuest.emit(val)
+func sync_campbell_state(new_prog: int, iter_val: int):
+	# 4. Everyone updates their local variables to match the server
+	questHub.campbellProg = new_prog
 	
+	# 5. Emit the signal so Dialogue/UI refreshes
+	campbellQuest.emit(iter_val)
+	print("Campbell Quest Synced! Progress is now: ", new_prog)
 	
 	# Inside questHub.gd
 
