@@ -9,10 +9,13 @@ class_name fido_dog
 @onready var quest_marker_: Node3D = $QuestMarkerBlue
 
 static var fido_toggle := false
+
+
 @onready var bark_2: AudioStreamPlayer3D = $Bark2
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
+	#found_fido_early = false
 	#collision_shape_3d.set_deferred("disabled", true)
 	questHub.iteration_changed.connect(iterationChange)
 	questHub.campbellQuest.connect(campbellProgression)
@@ -72,9 +75,11 @@ func _on_area_3d_body_entered(body: Node3D) -> void:
 
 	if body.is_in_group("player") && body.is_multiplayer_authority() && questHub.campbellProg > 0:
 		visible = false
-		questHub.campbellProg = 3
+		#questHub.campbellProg = 3
+		questHub.found_fido_early = true
 		questHub.campbellTrigger()
 		bark_2.stop()
+		
 		get_tree().call_group("doggy", "queue_free")
 		#fido_toggle = true
 		#questHub.campbellTalk()

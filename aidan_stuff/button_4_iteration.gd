@@ -4,6 +4,7 @@ const SERVER_ID := 1
 
 func _on_button_pressed() -> void:
 	questHub.it_change()
+	GlobalVariables.dialogueSignal.emit()
 	
 	#if multiplayer.has_multiplayer_peer():
 		#if multiplayer.is_server():
