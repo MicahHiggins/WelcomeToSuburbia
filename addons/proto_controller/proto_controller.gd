@@ -68,9 +68,9 @@ var is_sprinting: bool = false
 #   BODY ANIM NAMES (skins)
 # =========================
 # set these to match BOTH the boy + girl AnimationPlayers
-@export var anim_idle: StringName = &"idle"
-@export var anim_walk: StringName = &"walk"
-@export var anim_run: StringName = &"run"
+@export var anim_idle: StringName = &"Standing"
+@export var anim_walk: StringName = &"Walking"
+@export var anim_run: StringName = &"Running"
 
 # =========================
 #   FOOTSTEP AUDIO (3D)
