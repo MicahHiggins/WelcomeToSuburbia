@@ -9,11 +9,13 @@ class_name player
 # - Drop is "drop" (bind to G)
 # - Use/Attack is "use-attack" (plays "swing" locally + server broadcasts via ItemManager)
 #
-# PATCHES IN THIS VERSION:
-# - Fix missing deferred '_play_footstep_audio' error by implementing it again.
 # - Footsteps are proximity-audible (3D sound) + broadcast to all peers.
 # - Sprint footsteps play faster (separate interval) + optional pitch boost.
 # - Keeps your piggyback camera offsets + smoothing logic.
+#
+# - Two player skins (boy / girl) inside the player scene (nodes: "boy" and "girl")
+# - Server assigns skin by authority id (host=boy, join=girl by default)
+# - Reliable RPC applies the same skin to everyone (and handles late joiners)
 # --------------------------------------------
 
 # =========================
@@ -85,6 +87,22 @@ var breathing_active := false
 
 var _is_talking_local: bool = false
 var _talking_target_path: NodePath = NodePath("")
+
+# =========================
+#     SKIN / CHARACTER
+# =========================
+# Expected nodes under this player:
+# - boy
+# - girl
+#
+# 0 = boy
+# 1 = girl
+@export var boy_node_path: NodePath = NodePath("boy")
+@export var girl_node_path: NodePath = NodePath("girl")
+
+var _boy_skin: Node3D = null
+var _girl_skin: Node3D = null
+var _skin_id: int = 0
 
 # =========================
 #         RUNTIME STATE
@@ -232,6 +250,73 @@ func _ready() -> void:
 	_setup_stamina_ui()
 
 	_configure_footstep_audio_3d()
+
+	# -------------------------
+	# ADDED: skin init + net sync
+	# -------------------------
+	_init_skin_nodes()
+	_init_skin_assignment()
+
+# =========================
+#     SKIN HELPERS
+# =========================
+func _init_skin_nodes() -> void:
+	_boy_skin = get_node_or_null(boy_node_path) as Node3D
+	_girl_skin = get_node_or_null(girl_node_path) as Node3D
+
+	# default to something deterministic so we don't flash the wrong mesh for 1 frame
+	_apply_skin_local(0)
+
+func _init_skin_assignment() -> void:
+	# singleplayer: just boy
+	if not multiplayer.has_multiplayer_peer():
+		_set_skin_server_and_broadcast(0)
+		return
+
+	# server decides once per player instance (authority id tells us who this node belongs to)
+	if multiplayer.is_server():
+		# make sure late joiners get correct skins for already-spawned players
+		if not multiplayer.peer_connected.is_connected(_on_peer_connected_send_skin):
+			multiplayer.peer_connected.connect(_on_peer_connected_send_skin)
+
+		_server_assign_skin()
+
+func _server_assign_skin() -> void:
+	# rule:
+	# - host (peer 1) = boy
+	# - everyone else = girl
+	var owner_id: int = int(get_multiplayer_authority())
+	var sid: int = 0 if owner_id == SERVER_ID else 1
+	_set_skin_server_and_broadcast(sid)
+
+func _set_skin_server_and_broadcast(sid: int) -> void:
+	_skin_id = sid
+	rpc("_rpc_apply_skin", _skin_id)
+
+@rpc("any_peer", "call_local", "reliable")
+func _rpc_apply_skin(sid: int) -> void:
+	_skin_id = sid
+	_apply_skin_local(_skin_id)
+
+func _apply_skin_local(sid: int) -> void:
+	if _boy_skin == null:
+		_boy_skin = get_node_or_null(boy_node_path) as Node3D
+	if _girl_skin == null:
+		_girl_skin = get_node_or_null(girl_node_path) as Node3D
+
+	if _boy_skin != null:
+		_boy_skin.visible = (sid == 0)
+		_boy_skin.process_mode = Node.PROCESS_MODE_INHERIT if sid == 0 else Node.PROCESS_MODE_DISABLED
+
+	if _girl_skin != null:
+		_girl_skin.visible = (sid == 1)
+		_girl_skin.process_mode = Node.PROCESS_MODE_INHERIT if sid == 1 else Node.PROCESS_MODE_DISABLED
+
+func _on_peer_connected_send_skin(peer_id: int) -> void:
+	# server only: when a new peer joins, each already-spawned player sends its skin to that peer
+	if not multiplayer.is_server():
+		return
+	rpc_id(peer_id, "_rpc_apply_skin", _skin_id)
 
 # =========================
 #        PATH HELPERS
@@ -804,14 +889,10 @@ void fragment() {
 #@onready var ray_cast_3d: RayCast3D = $Head/Camera3D/RayCast3D
 var current_npc : npcStats = null
 
-
-
 func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("interact") and current_npc != null:
 		current_npc.enter_dialogue()
 
-			
-			
 	if multiplayer.has_multiplayer_peer() and not is_multiplayer_authority():
 		return
 	if event.is_action_pressed("ui_cancel"):
