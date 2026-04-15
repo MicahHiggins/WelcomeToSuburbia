@@ -16,6 +16,10 @@ class_name player
 # - Two player skins (boy / girl) inside the player scene (nodes: "boy" and "girl")
 # - Server assigns skin by authority id (host=boy, join=girl by default)
 # - Reliable RPC applies the same skin to everyone (and handles late joiners)
+#
+# NEW IN THIS VERSION:
+# - Anim state is replicated (idle / walk / run / swing) so remote players animate too
+# - Each skin can have its own AnimationPlayer (we auto-find it under the active skin)
 # --------------------------------------------
 
 # =========================
@@ -61,6 +65,14 @@ var is_sprinting: bool = false
 @export var swing_animplayer_path: NodePath = NodePath("AnimationPlayer")
 
 # =========================
+#   BODY ANIM NAMES (skins)
+# =========================
+# set these to match BOTH the boy + girl AnimationPlayers
+@export var anim_idle: StringName = &"idle"
+@export var anim_walk: StringName = &"walk"
+@export var anim_run: StringName = &"run"
+
+# =========================
 #   FOOTSTEP AUDIO (3D)
 # =========================
 @export var footstep_hear_radius: float = 18.0
@@ -103,6 +115,14 @@ var _talking_target_path: NodePath = NodePath("")
 var _boy_skin: Node3D = null
 var _girl_skin: Node3D = null
 var _skin_id: int = 0
+
+# =========================
+#   ANIM STATE SYNC (net)
+# =========================
+var _net_anim_state: StringName = &""
+var _net_is_sprinting: bool = false
+var _last_sent_anim_state: StringName = &""
+var _last_sent_sprint: bool = false
 
 # =========================
 #         RUNTIME STATE
@@ -252,7 +272,7 @@ func _ready() -> void:
 	_configure_footstep_audio_3d()
 
 	# -------------------------
-	# ADDED: skin init + net sync
+	# skin init + net sync
 	# -------------------------
 	_init_skin_nodes()
 	_init_skin_assignment()
@@ -317,6 +337,57 @@ func _on_peer_connected_send_skin(peer_id: int) -> void:
 	if not multiplayer.is_server():
 		return
 	rpc_id(peer_id, "_rpc_apply_skin", _skin_id)
+
+# =========================
+#   SKIN ANIM HELPERS
+# =========================
+func _get_active_skin_root() -> Node:
+	if _skin_id == 0:
+		return _boy_skin
+	return _girl_skin
+
+func _find_anim_player_in(node: Node) -> AnimationPlayer:
+	if node == null:
+		return null
+	return node.find_child("AnimationPlayer", true, false) as AnimationPlayer
+
+func _play_body_anim_local(anim_name: StringName) -> void:
+	var root := _get_active_skin_root()
+	var ap := _find_anim_player_in(root)
+	if ap == null:
+		return
+	var a := String(anim_name)
+	if ap.has_animation(a):
+		if ap.current_animation != a or not ap.is_playing():
+			ap.play(a)
+
+# =========================
+#   ANIM STATE SYNC (net)
+# =========================
+func _net_maybe_send_anim(anim_state: StringName, sprinting: bool) -> void:
+	if not multiplayer.has_multiplayer_peer():
+		return
+	if not is_multiplayer_authority():
+		return
+
+	# only send on changes (keeps spam down)
+	if anim_state == _last_sent_anim_state and sprinting == _last_sent_sprint:
+		return
+
+	_last_sent_anim_state = anim_state
+	_last_sent_sprint = sprinting
+
+	rpc("_rpc_set_anim_state", String(anim_state), sprinting)
+
+@rpc("any_peer", "call_local", "unreliable")
+func _rpc_set_anim_state(anim_state: String, sprinting: bool) -> void:
+	# owner already plays locally
+	if multiplayer.has_multiplayer_peer() and is_multiplayer_authority():
+		return
+
+	_net_anim_state = StringName(anim_state)
+	_net_is_sprinting = sprinting
+	_play_body_anim_local(_net_anim_state)
 
 # =========================
 #        PATH HELPERS
@@ -886,7 +957,6 @@ void fragment() {
 # =========================
 #         INPUT HANDLING
 # =========================
-#@onready var ray_cast_3d: RayCast3D = $Head/Camera3D/RayCast3D
 var current_npc : npcStats = null
 
 func _input(event: InputEvent) -> void:
@@ -933,7 +1003,22 @@ func _try_use_attack() -> void:
 		return
 	_last_attack_time = now
 	_play_attack_local()
+	_net_broadcast_attack_anim()
 	request_use_attack_rpc()
+
+func _net_broadcast_attack_anim() -> void:
+	if not multiplayer.has_multiplayer_peer():
+		return
+	if not is_multiplayer_authority():
+		return
+	rpc("_rpc_play_attack_anim")
+
+@rpc("any_peer", "call_local", "reliable")
+func _rpc_play_attack_anim() -> void:
+	# owner already did it
+	if multiplayer.has_multiplayer_peer() and is_multiplayer_authority():
+		return
+	_play_body_anim_local(attack_anim_name)
 
 func _play_attack_local() -> void:
 	if _swing_anim != null and _swing_anim.has_animation(String(attack_anim_name)):
@@ -988,6 +1073,9 @@ func _physics_process(delta: float) -> void:
 		return
 
 	_net_interpolate_remote()
+	# apply whatever anim state we've received
+	if _net_anim_state != &"":
+		_play_body_anim_local(_net_anim_state)
 
 func _physics_authority(delta: float) -> void:
 	if can_freefly and freeflying:
@@ -1046,6 +1134,10 @@ func _physics_authority(delta: float) -> void:
 		global_position = global_position.lerp(target_pos, a_pos)
 
 		move_and_slide()
+
+		# follower anim pick (still send so other peers see it)
+		_pick_and_sync_body_anim()
+
 		return
 	# ---------------------------------------
 
@@ -1124,6 +1216,23 @@ func _physics_authority(delta: float) -> void:
 				%FootstepAnimation.play("walk")
 
 	move_and_slide()
+
+	# -------------------------
+	# AFTER MOVE: pick anim + replicate
+	# -------------------------
+	_pick_and_sync_body_anim()
+
+func _pick_and_sync_body_anim() -> void:
+	# idle / walk / run based on velocity + sprint flag
+	var anim_pick: StringName = anim_idle
+	var flat_v := velocity
+	flat_v.y = 0.0
+
+	if flat_v.length() > 0.15:
+		anim_pick = anim_run if is_sprinting else anim_walk
+
+	_play_body_anim_local(anim_pick)
+	_net_maybe_send_anim(anim_pick, is_sprinting)
 
 # =========================
 #        NET MOVEMENT
