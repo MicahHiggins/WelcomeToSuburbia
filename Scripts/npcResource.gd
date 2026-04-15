@@ -106,12 +106,12 @@ func campDial():
 
 func issDial():
 	
-	if GlobalVariables.iterations >= 1 && GlobalVariables.isaac_quest_progression == 0:
+	if GlobalVariables.iterations == 1 && GlobalVariables.isaac_quest_progression == 0:
 		#isaacQuest.isaacQToggle = false
 		print("DOES THIS HAPPEN TWICE?")
 		#GlobalVariables.iterations += 1
-		questHub.isaacTrigger()
 		questHub.it_change()
+		questHub.isaacTrigger()
 		#questHub.campbellTrigger()
 		
 		print("DM: After issac talking trigger!")

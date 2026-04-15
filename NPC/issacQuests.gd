@@ -22,8 +22,10 @@ func _ready() -> void:
 	match(GlobalVariables.isaac_quest_progression):
 		0: 
 			quest_marker_.visible = false
+			if GlobalVariables.iterations == 1:
+				quest_marker_.visible = true
 		1:
-			quest_marker_.visible = true
+			quest_marker_.visible = false
 		2: 
 			quest_marker_.visible = false
 		3:

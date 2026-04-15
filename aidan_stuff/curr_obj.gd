@@ -58,7 +58,7 @@ func iterationChange(value: int):
 func isaacTrigger(value: int):
 	#print("Is issac UI ON?")
 	print("FROM UI: iss quest", GlobalVariables.isaac_quest_progression)
-	if value == 1 && GlobalVariables.isaac_quest_progression == 1:
+	if GlobalVariables.isaac_quest_progression == 1:
 		print("ISAAC HAS ENTERED THE UI!")
 		
 		main.text = prev_text_main + "\n explore the\n neighborhood"
