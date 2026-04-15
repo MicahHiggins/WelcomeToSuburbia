@@ -8,6 +8,20 @@ const APP_ID: int = 480
 const MAX_PLAYERS: int = 4
 const SERVER_ID: int = 1
 
+# ------------------------------------------------------------
+# ADDED: 4-digit join code system
+# - Host generates a 4-digit code (0000-9999)
+# - Code is stored as lobby data "join_code"
+# - Join searches lobby list for matching code, then joins that lobby_id
+# ------------------------------------------------------------
+const LOBBY_CODE_KEY: String = "join_code"
+@export var join_code_digits: int = 4
+@export var join_code_allow_leading_zeros: bool = true
+@export var join_code_search_worldwide: bool = true
+@export var debug_join_code: bool = false
+
+var _pending_join_code: String = ""
+
 var steam_initialized: bool = false
 var peer: MultiplayerPeer = null
 var current_lobby_id: int = 0
@@ -209,6 +223,9 @@ func _init_steam() -> void:
 
 		Steam.lobby_created.connect(_on_lobby_created)
 		Steam.lobby_joined.connect(_on_lobby_joined)
+
+		# ADDED: lobby list results for 4-digit join
+		Steam.lobby_match_list.connect(_on_lobby_match_list)
 	else:
 		steam_initialized = false
 		var msg: String = str(init_result.get("verbal", "Unknown error"))
@@ -236,15 +253,88 @@ func _on_join_pressed() -> void:
 
 	var code_str: String = _join_code_node.text.strip_edges()
 	if code_str == "":
-		push_error("Enter a lobby ID first.")
+		push_error("Enter a 4-digit code.")
 		return
 	if not code_str.is_valid_int():
-		push_error("Join code must be a numeric Steam lobby ID.")
+		push_error("Join code must be numeric.")
 		return
 
-	var lobby_id: int = int(code_str)
-	print("Requesting to join Steam lobby: ", lobby_id)
-	Steam.joinLobby(lobby_id)
+	# ADDED: normalize to digits you want (default 4)
+	code_str = _normalize_join_code(code_str)
+	if code_str == "":
+		push_error("Join code must be %d digits." % join_code_digits)
+		return
+
+	# ADDED: join by 4-digit code (search lobby list -> join first match)
+	_find_lobby_by_4_digit_code(code_str)
+
+
+# =========================
+#   4-DIGIT CODE HELPERS
+# =========================
+func _normalize_join_code(code_str: String) -> String:
+	var s := code_str.strip_edges()
+	if not s.is_valid_int():
+		return ""
+	if s.length() > join_code_digits:
+		return ""
+
+	if join_code_allow_leading_zeros:
+		while s.length() < join_code_digits:
+			s = "0" + s
+	else:
+		if s.length() != join_code_digits:
+			return ""
+
+	return s
+
+
+func _make_join_code_4_digit() -> String:
+	var digits := maxi(1, join_code_digits)
+	var max_val := 1
+	for _i in range(digits):
+		max_val *= 10
+
+	var v := randi() % max_val
+	var s := str(v)
+	if join_code_allow_leading_zeros:
+		while s.length() < digits:
+			s = "0" + s
+	return s
+
+
+func _find_lobby_by_4_digit_code(code: String) -> void:
+	_pending_join_code = code
+
+	if join_code_search_worldwide and Steam.has_method("addRequestLobbyListDistanceFilter"):
+		Steam.addRequestLobbyListDistanceFilter(Steam.LOBBY_DISTANCE_FILTER_WORLDWIDE)
+
+	# FIX: this build expects (key, value, comparison)
+	# comparison = 0 is "equal" in the builds that use this signature
+	Steam.addRequestLobbyListStringFilter(LOBBY_CODE_KEY, code, 0)
+
+	if debug_join_code:
+		print("[LobbyManager] searching lobby list for code=", code)
+
+	Steam.requestLobbyList()
+
+
+func _on_lobby_match_list(lobbies: Array) -> void:
+	var code := _pending_join_code
+	_pending_join_code = ""
+
+	if code == "":
+		return
+
+	# FIX: do NOT call getNumLobbyMatches/getLobbyByIndex (not in your build)
+	if lobbies != null and lobbies.size() > 0:
+		var lobby_id: int = int(lobbies[0])
+		if debug_join_code:
+			print("[LobbyManager] found lobby for code ", code, " -> lobby_id=", lobby_id)
+		Steam.joinLobby(lobby_id)
+		return
+
+	push_error("No lobby found for code: " + code)
 
 
 # =========================
@@ -258,8 +348,13 @@ func _on_lobby_created(result: int, lobby_id: int) -> void:
 	print("Lobby created successfully. Lobby ID:", lobby_id)
 	current_lobby_id = lobby_id
 
+	# ADDED: generate + store 4-digit join code
+	var join_code := _make_join_code_4_digit()
+	Steam.setLobbyData(lobby_id, LOBBY_CODE_KEY, join_code)
+
+	# show the 4-digit code in the UI (same field)
 	if _join_code_node != null:
-		_join_code_node.text = str(lobby_id)
+		_join_code_node.text = join_code
 
 	Steam.setLobbyData(lobby_id, "name", Steam.getPersonaName() + "'s Lobby")
 	_host_game(lobby_id)
@@ -272,6 +367,13 @@ func _on_lobby_joined(lobby_id: int, _permissions, _locked: bool, chat_response:
 
 	print("Entered lobby successfully. Lobby ID:", lobby_id)
 	current_lobby_id = lobby_id
+
+	# ADDED: if we joined by lobby id directly, try to display its 4-digit code
+	if _join_code_node != null:
+		var code := str(Steam.getLobbyData(lobby_id, LOBBY_CODE_KEY))
+		if code != "" and code != "0":
+			_join_code_node.text = code
+
 	_join_game(lobby_id)
 
 
