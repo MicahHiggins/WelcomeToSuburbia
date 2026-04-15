@@ -110,7 +110,7 @@ func issDial():
 		#isaacQuest.isaacQToggle = false
 		print("DOES THIS HAPPEN TWICE?")
 		#GlobalVariables.iterations += 1
-		#questHub.isaacTrigger()
+		questHub.isaacTrigger()
 		questHub.it_change()
 		#questHub.campbellTrigger()
 		
