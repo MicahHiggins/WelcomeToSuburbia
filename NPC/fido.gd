@@ -10,7 +10,7 @@ class_name fido_dog
 
 static var fido_toggle := false
 
-static var found_fido_early := false
+
 @onready var bark_2: AudioStreamPlayer3D = $Bark2
 
 # Called when the node enters the scene tree for the first time.
@@ -76,7 +76,7 @@ func _on_area_3d_body_entered(body: Node3D) -> void:
 	if body.is_in_group("player") && body.is_multiplayer_authority() && questHub.campbellProg > 0:
 		visible = false
 		#questHub.campbellProg = 3
-		found_fido_early = true
+		questHub.found_fido_early = true
 		questHub.campbellTrigger()
 		bark_2.stop()
 		

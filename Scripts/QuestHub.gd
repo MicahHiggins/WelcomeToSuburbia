@@ -7,7 +7,7 @@ signal isaacQuest(value: int)
 signal campbellQuest(value: int)
 
 var campbellProg := 0
-var dogFound := false
+var found_fido_early := false
 
 # This is the function you call from any other script
 func it_change():
@@ -24,6 +24,7 @@ func request_it_change():
 	
 	# 3. Server updates the value and tells EVERYONE to sync up
 	# We send GlobalVariables.iterations + 1 as the new value
+	
 	sync_iteration.rpc(GlobalVariables.iterations + 1)
 
 @rpc("authority", "call_local", "reliable")
@@ -49,8 +50,8 @@ func server_request_campbell_up():
 	# 2. Server performs the logic
 	questHub.campbellProg += 1
 	
-	if fido_dog.found_fido_early == true:
-		fido_dog.found_fido_early = false
+	if found_fido_early == true:
+		found_fido_early = false
 		questHub.campbellProg = 3
 	
 	# 3. Server broadcasts the NEW values to everyone
