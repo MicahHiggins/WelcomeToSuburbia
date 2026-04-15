@@ -15,7 +15,7 @@ static var fido_toggle := false
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	found_fido_early = false
+	#found_fido_early = false
 	#collision_shape_3d.set_deferred("disabled", true)
 	questHub.iteration_changed.connect(iterationChange)
 	questHub.campbellQuest.connect(campbellProgression)
