@@ -50,7 +50,7 @@ func iterationChange(value: int):
 		#questHub.campbellProg = 1
 		#print("DOG DISAPPEARS!")
 		#quest_anim.play("Move_blue")
-		questHub.campbellTrigger()
+		#questHub.campbellTrigger()
 		
 		dog.visible = false
 		quest_marker_.visible = true

@@ -125,6 +125,7 @@ func issDial():
 			dialogue.uniqueDialogue = npcDialogue.issDialogue[isaacQuest.ISAACQUEST_TURN_IN][iss_local]
 			#questHub.it_change()
 			if GlobalVariables.isaac_quest_progression == 3:
+				print("WHAT THE HEEEEELLLL")
 				questHub.isaacTrigger()
 			
 	
