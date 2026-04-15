@@ -19,6 +19,9 @@ class_name VoiceChat
 @export var debug_print: bool = true
 @export var debug_interval_sec: float = 0.75
 
+# If you hold PTT and still never send >0 bytes, warn after this
+@export var no_data_warn_sec: float = 2.0
+
 var _steam: Object = null
 var _steam_ok: bool = false
 var _sample_rate: int = 48000
@@ -31,6 +34,10 @@ var _playback: AudioStreamGeneratorPlayback = null
 
 var _dbg_t: float = 0.0
 
+# "why is joiner sending 0" tracker
+var _ptt_hold_time: float = 0.0
+var _warned_no_data: bool = false
+
 func _ready() -> void:
 	_inherit_authority_from_owner()
 
@@ -42,7 +49,6 @@ func _ready() -> void:
 		push_error("VoiceChat: missing AudioStreamPlayer3D at voice_player_path: " + str(voice_player_path))
 		return
 
-	# 3D attenuation / proximity
 	_voice_player.max_distance = hear_radius
 	_voice_player.attenuation_model = AudioStreamPlayer3D.ATTENUATION_INVERSE_DISTANCE
 	_voice_player.unit_size = unit_size
@@ -50,25 +56,22 @@ func _ready() -> void:
 	_voice_player.volume_db = 0.0
 	_voice_player.stream_paused = false
 
-	# generator stream for decoded PCM
 	var gen := AudioStreamGenerator.new()
 	gen.mix_rate = _sample_rate
 	gen.buffer_length = playback_buffer_sec
 	_voice_player.stream = gen
 	_voice_player.play()
-
 	_playback = _voice_player.get_stream_playback() as AudioStreamGeneratorPlayback
 
-	# ALWAYS process so remote players can receive+play.
-	# Only local authority will capture+send.
+	# Always process so remote nodes can receive+play.
 	set_process(true)
 
 	if debug_print:
-		print("VoiceChat ready | node auth:", int(get_multiplayer_authority()),
-			" local uid:", (multiplayer.get_unique_id() if multiplayer.has_multiplayer_peer() else -1),
+		print("VoiceChat ready | node_auth:", int(get_multiplayer_authority()),
+			" local_uid:", (multiplayer.get_unique_id() if multiplayer.has_multiplayer_peer() else -1),
 			" local_auth:", _is_local_authority_player())
-		print("steam singleton:", _steam != null, " steam ok:", _steam_ok, " sample_rate:", _sample_rate)
-		print("voice player:", _voice_player, " playback:", _playback != null)
+		print("steam:", _steam != null, " steam_ok:", _steam_ok, " sr:", _sample_rate)
+		print("voice player:", _voice_player != null, " playback:", _playback != null)
 
 func _process(dt: float) -> void:
 	if not enable_voice:
@@ -78,7 +81,11 @@ func _process(dt: float) -> void:
 	_run_steam_callbacks_safe()
 
 	if _is_local_authority_player():
-		_capture_and_send_voice()
+		_capture_and_send_voice(dt)
+	else:
+		# never track PTT / warn on non-local nodes
+		_ptt_hold_time = 0.0
+		_warned_no_data = false
 
 	_dbg_t += dt
 	if debug_print and _dbg_t >= debug_interval_sec:
@@ -86,11 +93,9 @@ func _process(dt: float) -> void:
 		_debug_tick()
 
 # =========================
-#   AUTHORITY (IMPORTANT)
+#   AUTHORITY
 # =========================
 func _inherit_authority_from_owner() -> void:
-	# VoiceChat is on Head. Owner is usually Player (or higher).
-	# Make sure THIS node authority matches the owning player instance.
 	var owner_player: Node = _find_owner_player_node()
 	if owner_player == null:
 		return
@@ -99,7 +104,6 @@ func _inherit_authority_from_owner() -> void:
 	if auth > 0 and auth != int(get_multiplayer_authority()):
 		set_multiplayer_authority(auth)
 
-	# Optional: also set on VoicePlayer3D so playback node matches too
 	var vp := get_node_or_null(voice_player_path)
 	if vp != null:
 		vp.set_multiplayer_authority(auth)
@@ -118,7 +122,7 @@ func _is_local_authority_player() -> bool:
 	return int(get_multiplayer_authority()) == int(multiplayer.get_unique_id())
 
 # =========================
-#        STEAM SETUP
+#   STEAM
 # =========================
 func _get_steam_singleton() -> Object:
 	if Engine.has_singleton("Steam"):
@@ -144,7 +148,7 @@ func _run_steam_callbacks_safe() -> void:
 		_steam.call("runCallbacks")
 
 # =========================
-#     RECORD / SEND VOICE
+#   RECORD / SEND
 # =========================
 func _wants_talk() -> bool:
 	if not enable_voice:
@@ -175,11 +179,18 @@ func _stop_recording_if_needed() -> void:
 		_steam.call("stopVoiceRecording")
 	_recording = false
 
-func _capture_and_send_voice() -> void:
+func _capture_and_send_voice(dt: float) -> void:
+	# HARD GATE: only local authority may ever send
+	if not _is_local_authority_player():
+		return
+
 	var talk: bool = _wants_talk()
 	if talk:
 		_start_recording_if_needed()
+		_ptt_hold_time += dt
 	else:
+		_ptt_hold_time = 0.0
+		_warned_no_data = false
 		_stop_recording_if_needed()
 		return
 
@@ -191,10 +202,18 @@ func _capture_and_send_voice() -> void:
 
 	var compressed: PackedByteArray = _read_compressed_voice()
 
+	# Only print SEND from the local authority node
 	if debug_print:
-		print("SEND | compressed bytes:", compressed.size(), " recording:", _recording)
+		print("SEND | uid:", multiplayer.get_unique_id(),
+			" auth:", int(get_multiplayer_authority()),
+			" bytes:", compressed.size(),
+			" recording:", _recording)
 
 	if compressed.is_empty():
+		if not _warned_no_data and _ptt_hold_time >= no_data_warn_sec and debug_print:
+			_warned_no_data = true
+			print("WARN | No mic data after holding PTT for ", no_data_warn_sec, "s on uid:", multiplayer.get_unique_id(),
+				" -> Steam voice is returning empty on this machine.")
 		return
 
 	if multiplayer.has_multiplayer_peer():
@@ -204,45 +223,56 @@ func _read_compressed_voice() -> PackedByteArray:
 	var out := PackedByteArray()
 	if _steam == null:
 		return out
+	if not _steam.has_method("getVoice"):
+		if debug_print:
+			print("ERR | Steam missing getVoice()")
+		return out
 
-	# Some GodotSteam builds return -1 or don't expose this reliably, so it's optional.
+	# Try getAvailableVoice if it exists, BUT treat <=0 (including -1) as "unknown"
+	var avail: int = 0
 	if _steam.has_method("getAvailableVoice"):
-		var avail: int = int(_steam.call("getAvailableVoice"))
+		avail = int(_steam.call("getAvailableVoice"))
 		if debug_print:
 			print("avail voice:", avail)
-		if avail > 0 and _steam.has_method("getVoice"):
-			var want: int = mini(avail, max_compressed_bytes)
-			var res: Variant = _steam.call("getVoice", want)
-			return _extract_voice_buffer(res)
 
-	# Fallback: just pull up to max bytes
-	if _steam.has_method("getVoice"):
-		var res2: Variant = _steam.call("getVoice", max_compressed_bytes)
-		return _extract_voice_buffer(res2)
+	# If avail is positive, request that many (capped). Otherwise, just pull max bytes.
+	var want: int = max_compressed_bytes
+	if avail > 0:
+		want = mini(avail, max_compressed_bytes)
 
-	return out
+	var res: Variant = _steam.call("getVoice", want)
+	return _extract_voice_buffer(res)
 
 func _extract_voice_buffer(res: Variant) -> PackedByteArray:
 	var out := PackedByteArray()
 
+	# Dictionary shape
 	if typeof(res) == TYPE_DICTIONARY:
 		var d := res as Dictionary
+
+		# Common: {"result": int, "buffer": PackedByteArray, "written": int}
 		if d.has("buffer") and d["buffer"] is PackedByteArray:
 			var bb: PackedByteArray = d["buffer"]
+			var w: int = 0
 			if d.has("written"):
-				var w: int = int(d["written"])
-				if w > 0 and w <= bb.size():
-					return bb.slice(0, w)
+				w = int(d["written"])
+			elif d.has("size"):
+				w = int(d["size"])
+			if w > 0 and w <= bb.size():
+				return bb.slice(0, w)
 			return bb
-		if d.has("data") and d["data"] is PackedByteArray:
-			return d["data"]
 
-	if res is PackedByteArray:
-		return res as PackedByteArray
+		for k in ["data", "voice", "output"]:
+			if d.has(k) and d[k] is PackedByteArray:
+				return d[k] as PackedByteArray
 
+		if debug_print:
+			print("getVoice dict keys:", d.keys())
+		return out
+
+	# Array shape: [result, buffer] or [result, buffer, written]
 	if typeof(res) == TYPE_ARRAY:
 		var a := res as Array
-		# common: [result, buffer] or [result, buffer, written]
 		if a.size() >= 2 and a[1] is PackedByteArray:
 			var bb2: PackedByteArray = a[1] as PackedByteArray
 			if a.size() >= 3:
@@ -251,10 +281,20 @@ func _extract_voice_buffer(res: Variant) -> PackedByteArray:
 					return bb2.slice(0, w2)
 			return bb2
 
+		if debug_print:
+			print("getVoice array size:", a.size(), " types:", _types_of_array(a))
+		return out
+
+	# Direct
+	if res is PackedByteArray:
+		return res as PackedByteArray
+
+	if debug_print:
+		print("getVoice unknown typeof:", typeof(res))
 	return out
 
 # =========================
-#      RECEIVE / PLAY
+#   RECEIVE / PLAY
 # =========================
 @rpc("any_peer", "call_local", "unreliable")
 func _rpc_voice_packet(compressed: PackedByteArray) -> void:
@@ -264,18 +304,12 @@ func _rpc_voice_packet(compressed: PackedByteArray) -> void:
 	var sender_id: int = multiplayer.get_remote_sender_id()
 	var local_uid: int = multiplayer.get_unique_id()
 
-	# IMPORTANT:
-	# Don't skip based on node authority — with per-player nodes, the receiver node is
-	# often the sender player's instance on the other peer.
-	# Only skip if THIS peer is the sender.
+	# Only ignore if YOU are the sender
 	if sender_id == local_uid:
 		return
 
 	if debug_print:
-		print("RECV | from:", sender_id,
-			" bytes:", compressed.size(),
-			" this node auth:", int(get_multiplayer_authority()),
-			" local uid:", local_uid)
+		print("RECV | local:", local_uid, " from:", sender_id, " bytes:", compressed.size())
 
 	_play_compressed_local(compressed)
 
@@ -290,16 +324,12 @@ func _play_compressed_local(compressed: PackedByteArray) -> void:
 		return
 
 	var res: Variant = _steam.call("decompressVoice", compressed, _sample_rate)
-
-	# Robust extraction (GodotSteam return shapes vary)
 	var pcm: PackedByteArray = _extract_pcm_bytes(res)
 
 	if debug_print:
 		print("PLAY | pcm bytes:", pcm.size())
 
 	if pcm.is_empty():
-		# If you still see 0, the next thing to check is what decompressVoice returns.
-		# But we keep this script "quiet" unless debug_print is on.
 		if debug_print:
 			_debug_print_decompress_shape(res)
 		return
@@ -308,12 +338,6 @@ func _play_compressed_local(compressed: PackedByteArray) -> void:
 
 func _extract_pcm_bytes(res: Variant) -> PackedByteArray:
 	var out := PackedByteArray()
-
-	# Common wrapper patterns:
-	# Dictionary: {"result": int, "buffer": PackedByteArray, "written": int}
-	# Dictionary: {"data": PackedByteArray}
-	# Array: [result, buffer] or [result, buffer, written]
-	# PackedByteArray directly
 
 	if typeof(res) == TYPE_DICTIONARY:
 		var d: Dictionary = res as Dictionary
@@ -337,16 +361,12 @@ func _extract_pcm_bytes(res: Variant) -> PackedByteArray:
 
 	if typeof(res) == TYPE_ARRAY:
 		var a: Array = res as Array
-
-		# [result, buffer, written]
 		if a.size() >= 3 and a[1] is PackedByteArray:
 			var bb2: PackedByteArray = a[1] as PackedByteArray
 			var w2: int = int(a[2])
 			if w2 > 0 and w2 <= bb2.size():
 				return bb2.slice(0, w2)
 			return bb2
-
-		# [result, buffer]
 		if a.size() >= 2 and a[1] is PackedByteArray:
 			return a[1] as PackedByteArray
 
@@ -358,17 +378,14 @@ func _push_pcm_to_playback(pb: AudioStreamGeneratorPlayback, pcm: PackedByteArra
 		return
 
 	var room: int = pb.get_frames_available()
-
 	if debug_print:
-		print("PUSH | frames avail:", room, " samples:", sample_count)
+		print("PUSH | frames:", room, " samples:", sample_count)
 
 	if room <= 0:
 		return
 
 	var to_push: int = mini(sample_count, room)
 	var idx: int = 0
-
-	# PCM is assumed 16-bit little-endian mono; we duplicate into stereo
 	for i in range(to_push):
 		var lo: int = int(pcm[idx])
 		var hi: int = int(pcm[idx + 1])
@@ -380,10 +397,11 @@ func _push_pcm_to_playback(pb: AudioStreamGeneratorPlayback, pcm: PackedByteArra
 		idx += 2
 
 # =========================
-#        DEBUG
+#   DEBUG
 # =========================
 func _debug_tick() -> void:
 	var mp_on := multiplayer.has_multiplayer_peer()
+	var local_uid: int = (multiplayer.get_unique_id() if mp_on else -1)
 	var auth := _is_local_authority_player()
 	var ptt_ok := (not push_to_talk) or InputMap.has_action(ptt_action)
 	var ptt_pressed := false
@@ -392,7 +410,7 @@ func _debug_tick() -> void:
 
 	print("VOICE DBG | mp:", mp_on,
 		" node_auth:", int(get_multiplayer_authority()),
-		" local_uid:", (multiplayer.get_unique_id() if mp_on else -1),
+		" local_uid:", local_uid,
 		" local_auth:", auth,
 		" ptt_ok:", ptt_ok,
 		" ptt:", ptt_pressed,
@@ -401,17 +419,17 @@ func _debug_tick() -> void:
 		" playback:", _playback != null)
 
 func _debug_print_decompress_shape(res: Variant) -> void:
-	print("DECOMP RES typeof:", typeof(res))
+	print("DECOMP typeof:", typeof(res))
 	if typeof(res) == TYPE_DICTIONARY:
 		var d := res as Dictionary
-		print("DECOMP DICT keys:", d.keys())
+		print("DECOMP keys:", d.keys())
 		if d.has("result"):
 			print("DECOMP result:", d["result"])
 		if d.has("written"):
 			print("DECOMP written:", d["written"])
 	elif typeof(res) == TYPE_ARRAY:
 		var a := res as Array
-		print("DECOMP ARRAY size:", a.size(), " types:", _types_of_array(a))
+		print("DECOMP array size:", a.size(), " types:", _types_of_array(a))
 
 func _types_of_array(a: Array) -> Array:
 	var out: Array = []
