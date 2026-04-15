@@ -1,4 +1,4 @@
-[gd_scene load_steps=17 format=3 uid="uid://bs72ogkvdd7d6"]
+[gd_scene load_steps=19 format=3 uid="uid://bs72ogkvdd7d6"]
 
 [ext_resource type="Script" uid="uid://psbmqqwxvny5" path="res://addons/proto_controller/proto_controller.gd" id="1_ucva2"]
 [ext_resource type="Script" uid="uid://boitue63820b1" path="res://addons/proto_controller/ray_cast_3d.gd" id="2_wr06p"]
@@ -8,6 +8,8 @@
 [ext_resource type="AudioStream" uid="uid://oyfj3k6hjdsi" path="res://Audio/SFX/fastHeartbeat.wav" id="5_h60nn"]
 [ext_resource type="PackedScene" uid="uid://bh8wge84bqmlq" path="res://cutscenes.tscn" id="7_ujot4"]
 [ext_resource type="PackedScene" uid="uid://dphhgsxb3ams8" path="res://player_dialogue.tscn" id="8_1tksx"]
+[ext_resource type="PackedScene" uid="uid://dhngofkxehkt0" path="res://aidan_stuff/player_boy.tscn" id="9_ths8c"]
+[ext_resource type="PackedScene" uid="uid://dwvq73qdfv2q1" path="res://aidan_stuff/player_girl.tscn" id="10_x436g"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_iof21"]
 albedo_color = Color(0.91806, 0.575202, 0.222449, 1)
@@ -116,6 +118,7 @@ cellar_piggyback_dist_override = 0.0
 
 [node name="Mesh" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+visible = false
 material_override = SubResource("StandardMaterial3D_iof21")
 cast_shadow = 0
 mesh = SubResource("CapsuleMesh_ucva2")
@@ -173,3 +176,10 @@ libraries = {
 [node name="Cutscenes" parent="." instance=ExtResource("7_ujot4")]
 
 [node name="PlayerDialogue" parent="." instance=ExtResource("8_1tksx")]
+
+[node name="boy" parent="." instance=ExtResource("9_ths8c")]
+transform = Transform3D(0.93, 0, 0, 0, 0.93, 0, 0, 0, 0.93, 0, 0, 0)
+
+[node name="girl" parent="." instance=ExtResource("10_x436g")]
+transform = Transform3D(0.93, 0, 0, 0, 0.93, 0, 0, 0, 0.93, 0, 0, 0)
+visible = false
