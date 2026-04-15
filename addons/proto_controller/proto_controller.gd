@@ -20,6 +20,9 @@ class_name player
 # NEW IN THIS VERSION:
 # - Anim state is replicated (idle / walk / run / swing) so remote players animate too
 # - Each skin can have its own AnimationPlayer (we auto-find it under the active skin)
+#
+# NEW:
+# - Sprint camera shift is LOCAL ONLY (each peer moves ONLY their own camera)
 # --------------------------------------------
 
 # =========================
@@ -123,6 +126,18 @@ var _net_anim_state: StringName = &""
 var _net_is_sprinting: bool = false
 var _last_sent_anim_state: StringName = &""
 var _last_sent_sprint: bool = false
+
+# =========================
+#   SPRINT CAMERA SHIFT (LOCAL ONLY)
+# =========================
+@export var sprint_cam_enabled: bool = true
+@export var sprint_cam_down: float = 0.06
+@export var sprint_cam_forward: float = 0.05
+@export var sprint_cam_lerp: float = 0.18
+@export var sprint_cam_max_forward: float = 0.10
+@export var sprint_cam_min_y: float = -0.20
+
+var _sprint_cam_offs: Vector3 = Vector3.ZERO
 
 # =========================
 #         RUNTIME STATE
@@ -259,6 +274,7 @@ func _ready() -> void:
 
 	cam.current = (not multiplayer.has_multiplayer_peer()) or is_multiplayer_authority()
 	_cam_local_base_pos = cam.position
+	_sprint_cam_offs = Vector3.ZERO
 
 	_net_target_transform = global_transform
 	_swing_anim = get_node_or_null(swing_animplayer_path) as AnimationPlayer
@@ -390,6 +406,30 @@ func _rpc_set_anim_state(anim_state: String, sprinting: bool) -> void:
 	_play_body_anim_local(_net_anim_state)
 
 # =========================
+#   SPRINT CAMERA SHIFT (LOCAL ONLY)
+# =========================
+func _update_sprint_cam(delta: float) -> void:
+	if not sprint_cam_enabled:
+		_sprint_cam_offs = Vector3.ZERO
+		return
+
+	# LOCAL ONLY: never move camera for non-authority player instances
+	if multiplayer.has_multiplayer_peer() and not is_multiplayer_authority():
+		_sprint_cam_offs = Vector3.ZERO
+		return
+
+	var target := Vector3.ZERO
+	if is_sprinting:
+		target.y -= sprint_cam_down
+		target.z -= sprint_cam_forward
+
+	target.z = clampf(target.z, -sprint_cam_max_forward, 0.0)
+	target.y = maxf(target.y, sprint_cam_min_y)
+
+	var a := 1.0 - pow(1.0 - clampf(sprint_cam_lerp, 0.01, 0.95), delta * 60.0)
+	_sprint_cam_offs = _sprint_cam_offs.lerp(target, a)
+
+# =========================
 #        PATH HELPERS
 # =========================
 func _scene_root() -> Node:
@@ -497,6 +537,10 @@ func _update_follower_camera_offset(delta: float) -> void:
 
 	if is_follower:
 		target = _cam_local_base_pos + cellar_follower_cam_local_offset
+
+	# apply sprint shift ONLY for the local authority player
+	_update_sprint_cam(delta)
+	target += _sprint_cam_offs
 
 	var a := 1.0 - pow(1.0 - clampf(cellar_follower_cam_lerp, 0.01, 0.95), delta * 60.0)
 	cam.position = cam.position.lerp(target, a)

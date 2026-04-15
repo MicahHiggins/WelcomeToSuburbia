@@ -112,6 +112,7 @@ stamina_max = 160.0
 stamina_drain_per_sec = 14.0
 stamina_regen_per_sec = 35.0
 attack_cooldown = 5.0
+sprint_cam_lerp = 10.0
 cellar_follow_up_m = 0.7
 cellar_follow_back_m = 0.3
 cellar_piggyback_dist_override = 0.0
