@@ -6,21 +6,18 @@ class_name VoiceChat
 @export var push_to_talk: bool = true
 @export var ptt_action: StringName = &"voice"
 
-@export var send_rate_hz: float = 20.0
-@export var max_compressed_bytes: int = 8192
+@export var send_rate_hz: float = 30.0
+@export var max_compressed_bytes: int = 16384
 
 @export var hear_radius: float = 18.0
 @export var unit_size: float = 1.0
-@export var playback_buffer_sec: float = 0.35
+@export var playback_buffer_sec: float = 0.70
 
-# Script is on Head, VoicePlayer3D is a child under Head
+# script is on Head, VoicePlayer3D is a child under Head
 @export var voice_player_path: NodePath = NodePath("VoicePlayer3D")
 
 @export var debug_print: bool = true
 @export var debug_interval_sec: float = 0.75
-
-# If you hold PTT and still never send >0 bytes, warn after this
-@export var no_data_warn_sec: float = 2.0
 
 var _steam: Object = null
 var _steam_ok: bool = false
@@ -33,22 +30,22 @@ var _voice_player: AudioStreamPlayer3D = null
 var _playback: AudioStreamGeneratorPlayback = null
 
 var _dbg_t: float = 0.0
+var _registered: bool = false
+var _last_registered_peer_id: int = -1
 
-# "why is joiner sending 0" tracker
-var _ptt_hold_time: float = 0.0
-var _warned_no_data: bool = false
-
-func _ready() -> void:
+func _enter_tree() -> void:
 	_inherit_authority_from_owner()
 
+func _ready() -> void:
 	_steam = _get_steam_singleton()
 	_steam_ok = _init_steam_voice()
 
 	_voice_player = get_node_or_null(voice_player_path) as AudioStreamPlayer3D
 	if _voice_player == null:
-		push_error("VoiceChat: missing AudioStreamPlayer3D at voice_player_path: " + str(voice_player_path))
+		push_error("VoiceChat: missing AudioStreamPlayer3D at " + str(voice_player_path))
 		return
 
+	# 3D attenuation / proximity
 	_voice_player.max_distance = hear_radius
 	_voice_player.attenuation_model = AudioStreamPlayer3D.ATTENUATION_INVERSE_DISTANCE
 	_voice_player.unit_size = unit_size
@@ -56,41 +53,104 @@ func _ready() -> void:
 	_voice_player.volume_db = 0.0
 	_voice_player.stream_paused = false
 
-	var gen := AudioStreamGenerator.new()
+	# generator stream for decoded PCM
+	var gen: AudioStreamGenerator = AudioStreamGenerator.new()
 	gen.mix_rate = _sample_rate
 	gen.buffer_length = playback_buffer_sec
 	_voice_player.stream = gen
 	_voice_player.play()
+
 	_playback = _voice_player.get_stream_playback() as AudioStreamGeneratorPlayback
 
-	# Always process so remote nodes can receive+play.
 	set_process(true)
+
+	_try_register_with_voicenet(true)
 
 	if debug_print:
 		print("VoiceChat ready | node_auth:", int(get_multiplayer_authority()),
-			" local_uid:", (multiplayer.get_unique_id() if multiplayer.has_multiplayer_peer() else -1),
-			" local_auth:", _is_local_authority_player())
-		print("steam:", _steam != null, " steam_ok:", _steam_ok, " sr:", _sample_rate)
-		print("voice player:", _voice_player != null, " playback:", _playback != null)
+			" local_uid:", (_local_uid()),
+			" local_auth:", _is_local_authority_player(),
+			" steam_ok:", _steam_ok,
+			" sr:", _sample_rate,
+			" playback:", _playback != null)
+
+func _exit_tree() -> void:
+	_unregister_from_voicenet()
 
 func _process(dt: float) -> void:
 	if not enable_voice:
 		_stop_recording_if_needed()
 		return
 
+	# keep authority synced (some spawners set authority after instancing)
+	_inherit_authority_from_owner()
+
+	_try_register_with_voicenet(false)
 	_run_steam_callbacks_safe()
 
+	# ONLY local authority captures + sends
 	if _is_local_authority_player():
-		_capture_and_send_voice(dt)
-	else:
-		# never track PTT / warn on non-local nodes
-		_ptt_hold_time = 0.0
-		_warned_no_data = false
+		_capture_and_send_voice()
 
 	_dbg_t += dt
 	if debug_print and _dbg_t >= debug_interval_sec:
 		_dbg_t = 0.0
 		_debug_tick()
+
+# =========================
+#   REGISTER WITH VoiceNet
+# =========================
+func _has_voicenet_autoload() -> bool:
+	return get_tree() != null and get_tree().root != null and get_tree().root.has_node("VoiceNet")
+
+func _try_register_with_voicenet(force: bool) -> void:
+	if not _has_voicenet_autoload():
+		return
+
+	var owner_player: Node = _find_owner_player_node()
+	if owner_player == null:
+		return
+
+	var my_peer_id: int = int(owner_player.get_multiplayer_authority())
+	if my_peer_id <= 0:
+		return
+
+	# Re-register if authority changed (common during multiplayer spawn setup)
+	if _registered and my_peer_id == _last_registered_peer_id and not force:
+		return
+
+	# If we were registered under an old id, unregister first
+	if _registered and _last_registered_peer_id != my_peer_id:
+		_unregister_from_voicenet()
+
+	# Call autoload directly (no typeof checks; avoids Variant typing issues)
+	VoiceNet.register_voice_target(my_peer_id, self)
+	_registered = true
+	_last_registered_peer_id = my_peer_id
+
+	if debug_print:
+		print("VoiceChat | registered with VoiceNet as peer:", my_peer_id, " node_auth:", int(get_multiplayer_authority()))
+
+func _unregister_from_voicenet() -> void:
+	if not _registered:
+		return
+	if not _has_voicenet_autoload():
+		_registered = false
+		_last_registered_peer_id = -1
+		return
+
+	var pid: int = _last_registered_peer_id
+	if pid <= 0:
+		_registered = false
+		_last_registered_peer_id = -1
+		return
+
+	VoiceNet.unregister_voice_target(pid, self)
+	_registered = false
+	_last_registered_peer_id = -1
+
+	if debug_print:
+		print("VoiceChat | unregistered from VoiceNet peer:", pid)
 
 # =========================
 #   AUTHORITY
@@ -104,10 +164,6 @@ func _inherit_authority_from_owner() -> void:
 	if auth > 0 and auth != int(get_multiplayer_authority()):
 		set_multiplayer_authority(auth)
 
-	var vp := get_node_or_null(voice_player_path)
-	if vp != null:
-		vp.set_multiplayer_authority(auth)
-
 func _find_owner_player_node() -> Node:
 	var cur: Node = self
 	while cur != null:
@@ -115,6 +171,11 @@ func _find_owner_player_node() -> Node:
 			return cur
 		cur = cur.get_parent()
 	return null
+
+func _local_uid() -> int:
+	if multiplayer.has_multiplayer_peer():
+		return int(multiplayer.get_unique_id())
+	return -1
 
 func _is_local_authority_player() -> bool:
 	if not multiplayer.has_multiplayer_peer():
@@ -127,7 +188,7 @@ func _is_local_authority_player() -> bool:
 func _get_steam_singleton() -> Object:
 	if Engine.has_singleton("Steam"):
 		return Engine.get_singleton("Steam")
-	push_error("Steam engine singleton not found. Make sure GodotSteam is enabled and loaded.")
+	push_error("Steam engine singleton not found.")
 	return null
 
 func _init_steam_voice() -> bool:
@@ -148,49 +209,43 @@ func _run_steam_callbacks_safe() -> void:
 		_steam.call("runCallbacks")
 
 # =========================
-#   RECORD / SEND
+#   SEND
 # =========================
 func _wants_talk() -> bool:
 	if not enable_voice:
 		return false
 	if not _steam_ok:
 		return false
+
 	if push_to_talk:
 		if not InputMap.has_action(ptt_action):
 			return false
 		return Input.is_action_pressed(ptt_action)
+
 	return true
 
 func _start_recording_if_needed() -> void:
 	if _recording:
 		return
-	if _steam == null:
-		return
-	if _steam.has_method("startVoiceRecording"):
+	if _steam != null and _steam.has_method("startVoiceRecording"):
 		_steam.call("startVoiceRecording")
 	_recording = true
 
 func _stop_recording_if_needed() -> void:
 	if not _recording:
 		return
-	if _steam == null:
-		return
-	if _steam.has_method("stopVoiceRecording"):
+	if _steam != null and _steam.has_method("stopVoiceRecording"):
 		_steam.call("stopVoiceRecording")
 	_recording = false
 
-func _capture_and_send_voice(dt: float) -> void:
-	# HARD GATE: only local authority may ever send
+func _capture_and_send_voice() -> void:
 	if not _is_local_authority_player():
 		return
 
 	var talk: bool = _wants_talk()
 	if talk:
 		_start_recording_if_needed()
-		_ptt_hold_time += dt
 	else:
-		_ptt_hold_time = 0.0
-		_warned_no_data = false
 		_stop_recording_if_needed()
 		return
 
@@ -202,77 +257,53 @@ func _capture_and_send_voice(dt: float) -> void:
 
 	var compressed: PackedByteArray = _read_compressed_voice()
 
-	# Only print SEND from the local authority node
 	if debug_print:
-		print("SEND | uid:", multiplayer.get_unique_id(),
-			" auth:", int(get_multiplayer_authority()),
-			" bytes:", compressed.size(),
-			" recording:", _recording)
+		print("SEND | uid:", _local_uid(), " auth:", int(get_multiplayer_authority()), " bytes:", compressed.size(), " recording:", _recording)
 
 	if compressed.is_empty():
-		if not _warned_no_data and _ptt_hold_time >= no_data_warn_sec and debug_print:
-			_warned_no_data = true
-			print("WARN | No mic data after holding PTT for ", no_data_warn_sec, "s on uid:", multiplayer.get_unique_id(),
-				" -> Steam voice is returning empty on this machine.")
 		return
 
-	if multiplayer.has_multiplayer_peer():
-		rpc("_rpc_voice_packet", compressed)
+	if _has_voicenet_autoload():
+		VoiceNet.send_voice(compressed)
 
 func _read_compressed_voice() -> PackedByteArray:
-	var out := PackedByteArray()
+	var out: PackedByteArray = PackedByteArray()
 	if _steam == null:
 		return out
 	if not _steam.has_method("getVoice"):
-		if debug_print:
-			print("ERR | Steam missing getVoice()")
 		return out
 
-	# Try getAvailableVoice if it exists, BUT treat <=0 (including -1) as "unknown"
-	var avail: int = 0
-	if _steam.has_method("getAvailableVoice"):
-		avail = int(_steam.call("getAvailableVoice"))
-		if debug_print:
-			print("avail voice:", avail)
-
-	# If avail is positive, request that many (capped). Otherwise, just pull max bytes.
 	var want: int = max_compressed_bytes
-	if avail > 0:
-		want = mini(avail, max_compressed_bytes)
+
+	# optional avail; can be -1 on some builds
+	if _steam.has_method("getAvailableVoice"):
+		var avail: int = int(_steam.call("getAvailableVoice"))
+		if avail > 0:
+			want = mini(avail, max_compressed_bytes)
 
 	var res: Variant = _steam.call("getVoice", want)
 	return _extract_voice_buffer(res)
 
 func _extract_voice_buffer(res: Variant) -> PackedByteArray:
-	var out := PackedByteArray()
-
-	# Dictionary shape
+	# Dictionary form
 	if typeof(res) == TYPE_DICTIONARY:
-		var d := res as Dictionary
+		var d: Dictionary = res as Dictionary
 
-		# Common: {"result": int, "buffer": PackedByteArray, "written": int}
 		if d.has("buffer") and d["buffer"] is PackedByteArray:
-			var bb: PackedByteArray = d["buffer"]
+			var bb: PackedByteArray = d["buffer"] as PackedByteArray
 			var w: int = 0
 			if d.has("written"):
 				w = int(d["written"])
-			elif d.has("size"):
-				w = int(d["size"])
 			if w > 0 and w <= bb.size():
 				return bb.slice(0, w)
 			return bb
 
-		for k in ["data", "voice", "output"]:
-			if d.has(k) and d[k] is PackedByteArray:
-				return d[k] as PackedByteArray
+		if d.has("data") and d["data"] is PackedByteArray:
+			return d["data"] as PackedByteArray
 
-		if debug_print:
-			print("getVoice dict keys:", d.keys())
-		return out
-
-	# Array shape: [result, buffer] or [result, buffer, written]
+	# Array form
 	if typeof(res) == TYPE_ARRAY:
-		var a := res as Array
+		var a: Array = res as Array
 		if a.size() >= 2 and a[1] is PackedByteArray:
 			var bb2: PackedByteArray = a[1] as PackedByteArray
 			if a.size() >= 3:
@@ -281,84 +312,53 @@ func _extract_voice_buffer(res: Variant) -> PackedByteArray:
 					return bb2.slice(0, w2)
 			return bb2
 
-		if debug_print:
-			print("getVoice array size:", a.size(), " types:", _types_of_array(a))
-		return out
-
-	# Direct
+	# Raw bytes form
 	if res is PackedByteArray:
 		return res as PackedByteArray
 
-	if debug_print:
-		print("getVoice unknown typeof:", typeof(res))
-	return out
+	return PackedByteArray()
 
 # =========================
-#   RECEIVE / PLAY
+#   RECEIVE (called by VoiceNet)
 # =========================
-@rpc("any_peer", "call_local", "unreliable")
-func _rpc_voice_packet(compressed: PackedByteArray) -> void:
+func _voice_receive_compressed(sender_id: int, compressed: PackedByteArray) -> void:
 	if compressed.is_empty():
 		return
-
-	var sender_id: int = multiplayer.get_remote_sender_id()
-	var local_uid: int = multiplayer.get_unique_id()
-
-	# Only ignore if YOU are the sender
-	if sender_id == local_uid:
-		return
-
-	if debug_print:
-		print("RECV | local:", local_uid, " from:", sender_id, " bytes:", compressed.size())
-
-	_play_compressed_local(compressed)
-
-func _play_compressed_local(compressed: PackedByteArray) -> void:
-	if _steam == null:
-		return
-	if not _steam.has_method("decompressVoice"):
-		push_error("Steam missing method decompressVoice")
+	if _steam == null or not _steam.has_method("decompressVoice"):
 		return
 	if _playback == null:
-		push_error("VoiceChat playback missing")
 		return
 
 	var res: Variant = _steam.call("decompressVoice", compressed, _sample_rate)
 	var pcm: PackedByteArray = _extract_pcm_bytes(res)
 
 	if debug_print:
-		print("PLAY | pcm bytes:", pcm.size())
+		print("RECV->PLAY | local_uid:", _local_uid(), " node_auth:", int(get_multiplayer_authority()),
+			" from:", sender_id, " pcm:", pcm.size())
 
 	if pcm.is_empty():
-		if debug_print:
-			_debug_print_decompress_shape(res)
 		return
 
 	_push_pcm_to_playback(_playback, pcm)
 
 func _extract_pcm_bytes(res: Variant) -> PackedByteArray:
-	var out := PackedByteArray()
-
+	# Dictionary form
 	if typeof(res) == TYPE_DICTIONARY:
 		var d: Dictionary = res as Dictionary
 
 		if d.has("buffer") and d["buffer"] is PackedByteArray:
-			var bb: PackedByteArray = d["buffer"]
+			var bb: PackedByteArray = d["buffer"] as PackedByteArray
+			var w: int = 0
 			if d.has("written"):
-				var w: int = int(d["written"])
-				if w > 0 and w <= bb.size():
-					return bb.slice(0, w)
+				w = int(d["written"])
+			if w > 0 and w <= bb.size():
+				return bb.slice(0, w)
 			return bb
 
-		for k in ["data", "pcm", "output", "uncompressed"]:
-			if d.has(k) and d[k] is PackedByteArray:
-				return d[k] as PackedByteArray
+		if d.has("data") and d["data"] is PackedByteArray:
+			return d["data"] as PackedByteArray
 
-		return out
-
-	if res is PackedByteArray:
-		return res as PackedByteArray
-
+	# Array form
 	if typeof(res) == TYPE_ARRAY:
 		var a: Array = res as Array
 		if a.size() >= 3 and a[1] is PackedByteArray:
@@ -370,7 +370,11 @@ func _extract_pcm_bytes(res: Variant) -> PackedByteArray:
 		if a.size() >= 2 and a[1] is PackedByteArray:
 			return a[1] as PackedByteArray
 
-	return out
+	# Raw bytes form
+	if res is PackedByteArray:
+		return res as PackedByteArray
+
+	return PackedByteArray()
 
 func _push_pcm_to_playback(pb: AudioStreamGeneratorPlayback, pcm: PackedByteArray) -> void:
 	var sample_count: int = pcm.size() / 2
@@ -378,14 +382,12 @@ func _push_pcm_to_playback(pb: AudioStreamGeneratorPlayback, pcm: PackedByteArra
 		return
 
 	var room: int = pb.get_frames_available()
-	if debug_print:
-		print("PUSH | frames:", room, " samples:", sample_count)
-
 	if room <= 0:
 		return
 
 	var to_push: int = mini(sample_count, room)
 	var idx: int = 0
+
 	for i in range(to_push):
 		var lo: int = int(pcm[idx])
 		var hi: int = int(pcm[idx + 1])
@@ -400,39 +402,21 @@ func _push_pcm_to_playback(pb: AudioStreamGeneratorPlayback, pcm: PackedByteArra
 #   DEBUG
 # =========================
 func _debug_tick() -> void:
-	var mp_on := multiplayer.has_multiplayer_peer()
-	var local_uid: int = (multiplayer.get_unique_id() if mp_on else -1)
-	var auth := _is_local_authority_player()
-	var ptt_ok := (not push_to_talk) or InputMap.has_action(ptt_action)
-	var ptt_pressed := false
-	if ptt_ok and push_to_talk:
+	var mp_on: bool = multiplayer.has_multiplayer_peer()
+	var uid: int = _local_uid()
+
+	var ptt_ok: bool = (not push_to_talk) or InputMap.has_action(ptt_action)
+	var ptt_pressed: bool = false
+	if push_to_talk and ptt_ok:
 		ptt_pressed = Input.is_action_pressed(ptt_action)
 
 	print("VOICE DBG | mp:", mp_on,
 		" node_auth:", int(get_multiplayer_authority()),
-		" local_uid:", local_uid,
-		" local_auth:", auth,
-		" ptt_ok:", ptt_ok,
+		" local_uid:", uid,
+		" local_auth:", _is_local_authority_player(),
+		" registered:", _registered,
+		" reg_peer:", _last_registered_peer_id,
 		" ptt:", ptt_pressed,
 		" recording:", _recording,
 		" sr:", _sample_rate,
-		" playback:", _playback != null)
-
-func _debug_print_decompress_shape(res: Variant) -> void:
-	print("DECOMP typeof:", typeof(res))
-	if typeof(res) == TYPE_DICTIONARY:
-		var d := res as Dictionary
-		print("DECOMP keys:", d.keys())
-		if d.has("result"):
-			print("DECOMP result:", d["result"])
-		if d.has("written"):
-			print("DECOMP written:", d["written"])
-	elif typeof(res) == TYPE_ARRAY:
-		var a := res as Array
-		print("DECOMP array size:", a.size(), " types:", _types_of_array(a))
-
-func _types_of_array(a: Array) -> Array:
-	var out: Array = []
-	for v in a:
-		out.append(typeof(v))
-	return out
+		" buffer:", playback_buffer_sec)

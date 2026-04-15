@@ -21,6 +21,7 @@ GlobalVariables="*res://GlobalAutoloads/GlobalVariables.gd"
 AudioManager="*res://Audio/audio_manager.tscn"
 NetSceneManager="*res://Scripts/net_scene_manager.gd"
 questHub="*res://Scripts/QuestHub.gd"
+VoiceNet="*res://voice_net.gd"
 
 [display]
 
