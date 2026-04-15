@@ -88,7 +88,7 @@ func campDial():
 	if (GlobalVariables.iterations >= 2):
 		dialogue.uniqueDialogue =  npcDialogue.campbellsDialogue[2][camp_local]
 	
-		if GlobalVariables.iterations < 6 && questHub.campbellProg >= 3:
+		if GlobalVariables.iterations < 6 && questHub.campbellProg == 3:
 			#if camp_local == 2 && DBToggle == false:
 				#DBToggle = true
 				#camp_local = 0
@@ -110,7 +110,7 @@ func issDial():
 		#isaacQuest.isaacQToggle = false
 		print("DOES THIS HAPPEN TWICE?")
 		#GlobalVariables.iterations += 1
-		questHub.isaacTrigger()
+		#questHub.isaacTrigger()
 		questHub.it_change()
 		#questHub.campbellTrigger()
 		
