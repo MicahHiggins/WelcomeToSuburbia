@@ -17,7 +17,7 @@ var iteration5 = 0
 var puzzleType = 0
 var algoDebug = false
 
-signal gameStart
+signal dialogueSignal
 
 signal cellarLevel
 
