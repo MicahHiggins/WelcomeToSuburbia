@@ -9,9 +9,20 @@ class_name VoiceChat
 @export var send_rate_hz: float = 30.0
 @export var max_compressed_bytes: int = 16384
 
-@export var hear_radius: float = 18.0
-@export var unit_size: float = 1.0
+# --- PROXIMITY (AudioStreamPlayer3D base settings) ---
+@export var hear_radius: float = 32.0          # was 18
+@export var unit_size: float = 0.65            # was 1.0 (smaller = louder close)
+@export var base_volume_db: float = 0.0        # baseline before extra distance gain
+
 @export var playback_buffer_sec: float = 0.70
+
+# --- EXTRA PROXIMITY CURVE (stacks on top of 3D attenuation) ---
+# This only runs on LISTENERS (non-local authority instances) so it doesn't affect sending.
+@export var use_extra_distance_gain: bool = true
+@export var near_boost_db: float = 10.0        # extra gain at 0m
+@export var far_cut_db: float = -10.0          # extra cut at max_distance
+@export var gain_curve_pow: float = 1.8        # >1 = punchier close, faster falloff
+@export var gain_update_hz: float = 12.0       # how often we update gain
 
 # script is on Head, VoicePlayer3D is a child under Head
 @export var voice_player_path: NodePath = NodePath("VoicePlayer3D")
@@ -30,6 +41,7 @@ var _voice_player: AudioStreamPlayer3D = null
 var _playback: AudioStreamGeneratorPlayback = null
 
 var _dbg_t: float = 0.0
+var _gain_t: float = 0.0
 
 func _enter_tree() -> void:
 	_inherit_authority_from_owner()
@@ -48,7 +60,7 @@ func _ready() -> void:
 	_voice_player.attenuation_model = AudioStreamPlayer3D.ATTENUATION_INVERSE_DISTANCE
 	_voice_player.unit_size = unit_size
 	_voice_player.bus = &"Master"
-	_voice_player.volume_db = 0.0
+	_voice_player.volume_db = base_volume_db
 	_voice_player.stream_paused = false
 
 	# generator stream for decoded PCM (16-bit mono -> we push stereo frames)
@@ -68,7 +80,9 @@ func _ready() -> void:
 			" steam:", _steam != null,
 			" steam_ok:", _steam_ok,
 			" sr:", _sample_rate,
-			" playback:", _playback != null)
+			" playback:", _playback != null,
+			" hear_radius:", hear_radius,
+			" unit_size:", unit_size)
 
 func _process(dt: float) -> void:
 	if not enable_voice:
@@ -80,6 +94,14 @@ func _process(dt: float) -> void:
 	# ONLY the local authority player instance captures + broadcasts
 	if _is_local_authority_player():
 		_capture_and_send_voice()
+	else:
+		# listeners apply extra distance gain to make "close louder / far quieter"
+		if use_extra_distance_gain:
+			_gain_t += dt
+			var step: float = 1.0 / maxf(gain_update_hz, 1.0)
+			if _gain_t >= step:
+				_gain_t = 0.0
+				_apply_extra_distance_gain()
 
 	_dbg_t += dt
 	if debug_print and _dbg_t >= debug_interval_sec:
@@ -196,24 +218,15 @@ func _read_compressed_voice() -> PackedByteArray:
 	if _steam == null:
 		return out
 
-	# Optional check (some builds return -1 or odd values; don't rely on it too hard)
-	if _steam.has_method("getAvailableVoice"):
-		var avail_res: Variant = _steam.call("getAvailableVoice")
-		if typeof(avail_res) == TYPE_DICTIONARY:
-			var ad: Dictionary = avail_res as Dictionary
-			var abuf: PackedByteArray = (ad.get("buffer", PackedByteArray()) as PackedByteArray)
-			# If there's no buffer available, early out
-			if abuf.is_empty():
-				# still fall through to getVoice on some builds? usually safe to return empty
-				return out
-
-	# Main fetch: getVoice(max_bytes) -> { result, buffer }
 	if _steam.has_method("getVoice"):
 		var res: Variant = _steam.call("getVoice", max_compressed_bytes)
 		if typeof(res) == TYPE_DICTIONARY:
 			var d: Dictionary = res as Dictionary
 			var bb: PackedByteArray = (d.get("buffer", PackedByteArray()) as PackedByteArray)
-			# Some builds include extra bytes; but generally buffer is already the correct length.
+			# If GodotSteam includes a "written" field, trim to it
+			var w: int = int(d.get("written", 0))
+			if w > 0 and w <= bb.size():
+				return bb.slice(0, w)
 			return bb
 		if res is PackedByteArray:
 			return res as PackedByteArray
@@ -231,7 +244,6 @@ func _rpc_voice_packet(compressed: PackedByteArray) -> void:
 	var sender_id: int = multiplayer.get_remote_sender_id()
 
 	# Don't echo your own voice locally.
-	# (This node instance is the speaker's node, so when you speak, you will also receive call_local.)
 	if _is_local_authority_player():
 		return
 
@@ -249,14 +261,24 @@ func _play_compressed_local(sender_id: int, compressed: PackedByteArray) -> void
 	if _playback == null:
 		return
 
-	# decompressVoice(compressed, desired_sample_rate) -> { result, uncompressed, size }
 	var res: Variant = _steam.call("decompressVoice", compressed, _sample_rate)
-	if typeof(res) != TYPE_DICTIONARY:
-		return
 
-	var d: Dictionary = res as Dictionary
-	var pcm: PackedByteArray = (d.get("uncompressed", PackedByteArray()) as PackedByteArray)
-	var sz: int = int(d.get("size", pcm.size()))
+	var pcm: PackedByteArray = PackedByteArray()
+	var sz: int = 0
+
+	if typeof(res) == TYPE_DICTIONARY:
+		var d: Dictionary = res as Dictionary
+		# different builds return different keys:
+		# - "uncompressed" + "size"
+		# - "buffer" + "written"
+		if d.has("uncompressed"):
+			pcm = d.get("uncompressed", PackedByteArray()) as PackedByteArray
+			sz = int(d.get("size", pcm.size()))
+		elif d.has("buffer"):
+			pcm = d.get("buffer", PackedByteArray()) as PackedByteArray
+			sz = int(d.get("written", pcm.size()))
+	else:
+		return
 
 	if sz > 0 and sz < pcm.size():
 		pcm = pcm.slice(0, sz)
@@ -270,7 +292,6 @@ func _play_compressed_local(sender_id: int, compressed: PackedByteArray) -> void
 	_push_pcm_to_playback(_playback, pcm)
 
 func _push_pcm_to_playback(pb: AudioStreamGeneratorPlayback, pcm: PackedByteArray) -> void:
-	# pcm = 16-bit signed little-endian mono
 	var sample_count: int = pcm.size() / 2
 	if sample_count <= 0:
 		return
@@ -293,8 +314,25 @@ func _push_pcm_to_playback(pb: AudioStreamGeneratorPlayback, pcm: PackedByteArra
 		pb.push_frame(Vector2(f, f))
 		idx += 2
 
-	if debug_print:
-		print("PUSH | frames:", to_push, " room:", room, " samples:", sample_count)
+# =========================
+#   EXTRA DISTANCE GAIN (listener-side)
+# =========================
+func _apply_extra_distance_gain() -> void:
+	if _voice_player == null:
+		return
+
+	var listener_cam: Camera3D = get_viewport().get_camera_3d()
+	if listener_cam == null:
+		return
+
+	var maxd: float = maxf(_voice_player.max_distance, 0.001)
+	var d: float = listener_cam.global_position.distance_to(_voice_player.global_position)
+	var t: float = clampf(d / maxd, 0.0, 1.0)
+
+	var shaped: float = pow(t, gain_curve_pow)
+	var extra_db: float = lerp(near_boost_db, far_cut_db, shaped)
+
+	_voice_player.volume_db = base_volume_db + extra_db
 
 # =========================
 #   DEBUG
@@ -316,4 +354,7 @@ func _debug_tick() -> void:
 		" ptt:", ptt_pressed,
 		" recording:", _recording,
 		" sr:", _sample_rate,
-		" buffer:", playback_buffer_sec)
+		" maxd:", hear_radius,
+		" unit:", unit_size,
+		" base_db:", base_volume_db,
+		" extra_gain:", use_extra_distance_gain)
