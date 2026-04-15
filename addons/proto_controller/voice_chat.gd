@@ -13,34 +13,44 @@ class_name VoiceChat
 @export var unit_size: float = 1.0
 @export var playback_buffer_sec: float = 0.35
 
-# put VoicePlayer3D under Head so it follows the head
-@export var voice_player_path: NodePath = NodePath("../Head/VoicePlayer3D")
+# script is on Head, VoicePlayer3D is a child under Head
+@export var voice_player_path: NodePath = NodePath("VoicePlayer3D")
 
-var _steam: Object
+@export var debug_print: bool = true
+@export var debug_interval_sec: float = 0.75
+
+var _steam: Object = null
 var _steam_ok: bool = false
 var _sample_rate: int = 48000
 
 var _recording: bool = false
 var _last_send_t: float = 0.0
 
-var _voice_player: AudioStreamPlayer3D
-var _playback: AudioStreamGeneratorPlayback
+var _voice_player: AudioStreamPlayer3D = null
+var _playback: AudioStreamGeneratorPlayback = null
+
+var _dbg_t: float = 0.0
 
 func _ready() -> void:
+	_inherit_authority_from_owner()
+
 	_steam = _get_steam_singleton()
 	_steam_ok = _init_steam_voice()
 
 	_voice_player = get_node_or_null(voice_player_path) as AudioStreamPlayer3D
 	if _voice_player == null:
-		push_error("VoiceChat: missing VoicePlayer3D at voice_player_path: " + str(voice_player_path))
+		push_error("VoiceChat: missing AudioStreamPlayer3D at voice_player_path: " + str(voice_player_path))
 		return
 
-	# set up 3D proximity
+	# 3D attenuation / proximity
 	_voice_player.max_distance = hear_radius
 	_voice_player.attenuation_model = AudioStreamPlayer3D.ATTENUATION_INVERSE_DISTANCE
 	_voice_player.unit_size = unit_size
+	_voice_player.bus = &"Master"
+	_voice_player.volume_db = 0.0
+	_voice_player.stream_paused = false
 
-	# set up generator playback (for decoded PCM)
+	# generator stream for decoded PCM
 	var gen := AudioStreamGenerator.new()
 	gen.mix_rate = _sample_rate
 	gen.buffer_length = playback_buffer_sec
@@ -49,9 +59,16 @@ func _ready() -> void:
 
 	_playback = _voice_player.get_stream_playback() as AudioStreamGeneratorPlayback
 
-	# IMPORTANT:
-	# only the local authority player captures + sends voice
-	set_process(_is_local_authority_player())
+	# ALWAYS process: remote players must receive+play packets.
+	# Only local authority will capture+send.
+	set_process(true)
+
+	if debug_print:
+		print("VoiceChat ready | node auth:", get_multiplayer_authority(),
+			" local uid:", (multiplayer.get_unique_id() if multiplayer.has_multiplayer_peer() else -1),
+			" local_auth:", _is_local_authority_player())
+		print("steam singleton:", _steam != null, " steam ok:", _steam_ok, " sample_rate:", _sample_rate)
+		print("voice player:", _voice_player, " playback:", _playback)
 
 func _process(dt: float) -> void:
 	if not enable_voice:
@@ -59,16 +76,46 @@ func _process(dt: float) -> void:
 		return
 
 	_run_steam_callbacks_safe()
-	_capture_and_send_voice()
+
+	if _is_local_authority_player():
+		_capture_and_send_voice()
+
+	_dbg_t += dt
+	if debug_print and _dbg_t >= debug_interval_sec:
+		_dbg_t = 0.0
+		_debug_tick()
 
 # =========================
-#   AUTHORITY HELPERS
+#   AUTHORITY (IMPORTANT)
 # =========================
+func _inherit_authority_from_owner() -> void:
+	# VoiceChat is on Head. Owner is usually Player (or higher).
+	# Make sure THIS node authority matches the owning player instance.
+	var owner_player: Node = _find_owner_player_node()
+	if owner_player == null:
+		return
+
+	var auth: int = int(owner_player.get_multiplayer_authority())
+	if auth > 0 and auth != int(get_multiplayer_authority()):
+		set_multiplayer_authority(auth)
+
+	# Optional: also set on VoicePlayer3D so playback node matches too
+	var vp := get_node_or_null(voice_player_path)
+	if vp != null:
+		vp.set_multiplayer_authority(auth)
+
+func _find_owner_player_node() -> Node:
+	var cur: Node = self
+	while cur != null:
+		if cur.is_in_group("player"):
+			return cur
+		cur = cur.get_parent()
+	return null
+
 func _is_local_authority_player() -> bool:
-	# if no multiplayer, allow capture (singleplayer test)
 	if not multiplayer.has_multiplayer_peer():
 		return true
-	return is_multiplayer_authority()
+	return int(get_multiplayer_authority()) == int(multiplayer.get_unique_id())
 
 # =========================
 #        STEAM SETUP
@@ -82,12 +129,10 @@ func _get_steam_singleton() -> Object:
 func _init_steam_voice() -> bool:
 	if _steam == null:
 		return false
-
 	if _steam.has_method("getVoiceOptimalSampleRate"):
 		_sample_rate = int(_steam.call("getVoiceOptimalSampleRate"))
 	else:
 		_sample_rate = 48000
-
 	return true
 
 func _run_steam_callbacks_safe() -> void:
@@ -106,13 +151,10 @@ func _wants_talk() -> bool:
 		return false
 	if not _steam_ok:
 		return false
-
 	if push_to_talk:
-		# don't hard-error if the action is missing
 		if not InputMap.has_action(ptt_action):
 			return false
 		return Input.is_action_pressed(ptt_action)
-
 	return true
 
 func _start_recording_if_needed() -> void:
@@ -148,6 +190,9 @@ func _capture_and_send_voice() -> void:
 	_last_send_t = now
 
 	var compressed: PackedByteArray = _read_compressed_voice()
+	if debug_print:
+		print("SEND | compressed bytes:", compressed.size(), " recording:", _recording)
+
 	if compressed.is_empty():
 		return
 
@@ -155,19 +200,22 @@ func _capture_and_send_voice() -> void:
 		rpc("_rpc_voice_packet", compressed)
 
 func _read_compressed_voice() -> PackedByteArray:
-	var out: PackedByteArray = PackedByteArray()
+	var out := PackedByteArray()
 	if _steam == null:
 		return out
 
+	# some GodotSteam builds don't expose getAvailableVoice reliably,
+	# so we treat it as optional.
 	if _steam.has_method("getAvailableVoice"):
 		var avail: int = int(_steam.call("getAvailableVoice"))
-		if avail <= 0:
-			return out
-		var want: int = mini(avail, max_compressed_bytes)
-		if _steam.has_method("getVoice"):
+		if debug_print:
+			print("avail voice:", avail)
+		if avail > 0 and _steam.has_method("getVoice"):
+			var want: int = mini(avail, max_compressed_bytes)
 			var res: Variant = _steam.call("getVoice", want)
 			return _extract_voice_buffer(res)
 
+	# fallback: just pull up to max bytes
 	if _steam.has_method("getVoice"):
 		var res2: Variant = _steam.call("getVoice", max_compressed_bytes)
 		return _extract_voice_buffer(res2)
@@ -175,10 +223,10 @@ func _read_compressed_voice() -> PackedByteArray:
 	return out
 
 func _extract_voice_buffer(res: Variant) -> PackedByteArray:
-	var out: PackedByteArray = PackedByteArray()
+	var out := PackedByteArray()
 
 	if typeof(res) == TYPE_DICTIONARY:
-		var d: Dictionary = res as Dictionary
+		var d := res as Dictionary
 		if d.has("buffer") and d["buffer"] is PackedByteArray:
 			var bb: PackedByteArray = d["buffer"]
 			if d.has("written"):
@@ -193,7 +241,7 @@ func _extract_voice_buffer(res: Variant) -> PackedByteArray:
 		return res as PackedByteArray
 
 	if typeof(res) == TYPE_ARRAY:
-		var a: Array = res as Array
+		var a := res as Array
 		if a.size() >= 2 and a[1] is PackedByteArray:
 			return a[1] as PackedByteArray
 
@@ -207,10 +255,15 @@ func _rpc_voice_packet(compressed: PackedByteArray) -> void:
 	if compressed.is_empty():
 		return
 
-	# this node belongs to the speaking player.
-	# don't play your own voice locally.
+	# don't echo your own voice
 	if _is_local_authority_player():
 		return
+
+	if debug_print:
+		print("RECV | from:", multiplayer.get_remote_sender_id(),
+			" bytes:", compressed.size(),
+			" this node auth:", get_multiplayer_authority(),
+			" local uid:", multiplayer.get_unique_id())
 
 	_play_compressed_local(compressed)
 
@@ -224,16 +277,20 @@ func _play_compressed_local(compressed: PackedByteArray) -> void:
 
 	var res: Variant = _steam.call("decompressVoice", compressed, _sample_rate)
 	var pcm: PackedByteArray = _extract_pcm_bytes(res)
+
+	if debug_print:
+		print("PLAY | pcm bytes:", pcm.size())
+
 	if pcm.is_empty():
 		return
 
 	_push_pcm_to_playback(_playback, pcm)
 
 func _extract_pcm_bytes(res: Variant) -> PackedByteArray:
-	var out: PackedByteArray = PackedByteArray()
+	var out := PackedByteArray()
 
 	if typeof(res) == TYPE_DICTIONARY:
-		var d: Dictionary = res as Dictionary
+		var d := res as Dictionary
 		if d.has("buffer") and d["buffer"] is PackedByteArray:
 			var bb: PackedByteArray = d["buffer"]
 			if d.has("written"):
@@ -248,7 +305,7 @@ func _extract_pcm_bytes(res: Variant) -> PackedByteArray:
 		return res as PackedByteArray
 
 	if typeof(res) == TYPE_ARRAY:
-		var a: Array = res as Array
+		var a := res as Array
 		if a.size() >= 2 and a[1] is PackedByteArray:
 			return a[1] as PackedByteArray
 
@@ -260,11 +317,13 @@ func _push_pcm_to_playback(pb: AudioStreamGeneratorPlayback, pcm: PackedByteArra
 		return
 
 	var room: int = pb.get_frames_available()
+	if debug_print:
+		print("PUSH | frames avail:", room, " samples:", sample_count)
+
 	if room <= 0:
 		return
 
 	var to_push: int = mini(sample_count, room)
-
 	var idx: int = 0
 	for i in range(to_push):
 		var lo: int = int(pcm[idx])
@@ -272,7 +331,27 @@ func _push_pcm_to_playback(pb: AudioStreamGeneratorPlayback, pcm: PackedByteArra
 		var s16: int = (hi << 8) | lo
 		if s16 >= 32768:
 			s16 -= 65536
-
 		var f: float = float(s16) / 32768.0
 		pb.push_frame(Vector2(f, f))
 		idx += 2
+
+# =========================
+#        DEBUG TICK
+# =========================
+func _debug_tick() -> void:
+	var mp_on := multiplayer.has_multiplayer_peer()
+	var auth := _is_local_authority_player()
+	var ptt_ok := (not push_to_talk) or InputMap.has_action(ptt_action)
+	var ptt_pressed := false
+	if ptt_ok and push_to_talk:
+		ptt_pressed = Input.is_action_pressed(ptt_action)
+
+	print("VOICE DBG | mp:", mp_on,
+		" node_auth:", int(get_multiplayer_authority()),
+		" local_uid:", (multiplayer.get_unique_id() if mp_on else -1),
+		" local_auth:", auth,
+		" ptt_ok:", ptt_ok,
+		" ptt:", ptt_pressed,
+		" recording:", _recording,
+		" sr:", _sample_rate,
+		" playback:", _playback != null)
