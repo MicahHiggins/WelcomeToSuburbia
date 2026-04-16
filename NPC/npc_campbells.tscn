@@ -115,6 +115,7 @@ panning_strength = 1.14
 bus = &"SFX"
 
 [node name="QuestMarkerBlue" parent="." instance=ExtResource("14_vmf3g")]
+transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 0, 0.28481317, 0)
 
 [connection signal="body_entered" from="interact" to="." method="_on_interact_body_entered"]
 [connection signal="body_exited" from="interact" to="." method="_on_interact_body_exited"]

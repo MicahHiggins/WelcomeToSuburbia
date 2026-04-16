@@ -46,7 +46,7 @@ func _process(delta: float) -> void:
 func iterationChange(value: int):
 	
 	#Dog disappears at iteration 3 (2), "teleports" to random location (house near abigail)
-	if value >= 2 && questHub.campbellProg == 0:
+	if value == 2 && questHub.campbellProg == 0:
 		#questHub.campbellProg = 1
 		#print("DOG DISAPPEARS!")
 		#quest_anim.play("Move_blue")

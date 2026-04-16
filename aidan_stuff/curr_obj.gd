@@ -58,18 +58,18 @@ func iterationChange(value: int):
 func isaacTrigger(value: int):
 	#print("Is issac UI ON?")
 	print("FROM UI: iss quest", GlobalVariables.isaac_quest_progression)
-	if value == 1 && GlobalVariables.isaac_quest_progression == 1:
+	if GlobalVariables.isaac_quest_progression == 1:
 		print("ISAAC HAS ENTERED THE UI!")
 		
 		main.text = prev_text_main + "\n explore the\n neighborhood"
 		#GlobalVariables.isaac_quest_progression = 2
 		
 	if GlobalVariables.isaac_quest_progression == 2:
-		main.text = prev_text_main + "\n investigate around 111..."
+		main.text = prev_text_main + "\n investigate around 114..."
 		
 	elif GlobalVariables.isaac_quest_progression == 3:
 		main.text = prev_text_main + "\n Tell Isaac What You\n Found"
 		
 	if GlobalVariables.isaac_quest_progression == 4:
-		main.text = "Find Your Home (130)\n break into house 111"
+		main.text = "Find Your Home (130)\n break into house 114"
 		

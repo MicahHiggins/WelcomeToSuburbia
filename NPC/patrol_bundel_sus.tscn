@@ -47,7 +47,7 @@ _data = {
 script = ExtResource("1_qg67n")
 
 [node name="NPC_SUS" parent="." instance=ExtResource("2_2cvra")]
-transform = Transform3D(-0.25, 0, -2.1855694e-08, 0, 0.25, 0, 2.1855694e-08, 0, -0.25, -5.2926764, 0.4496556, 13.224584)
+transform = Transform3D(-0.25, 0, -2.1855694e-08, 0, 0.25, 0, 2.1855694e-08, 0, -0.25, 6.698569, 0.4496556, -13.273861)
 
 [node name="jumpscare" type="AnimationPlayer" parent="."]
 libraries = {

@@ -7,6 +7,7 @@
 radius = 6.829
 
 [node name="Kidnap" type="Area3D"]
+transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 0, 0, 0)
 collision_layer = 0
 collision_mask = 8
 script = ExtResource("1_usnn0")
