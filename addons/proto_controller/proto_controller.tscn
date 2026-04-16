@@ -1,4 +1,4 @@
-[gd_scene load_steps=20 format=3 uid="uid://bs72ogkvdd7d6"]
+[gd_scene load_steps=24 format=3 uid="uid://bs72ogkvdd7d6"]
 
 [ext_resource type="Script" uid="uid://psbmqqwxvny5" path="res://addons/proto_controller/proto_controller.gd" id="1_ucva2"]
 [ext_resource type="Script" uid="uid://6tcwk75iwlkk" path="res://addons/proto_controller/voice_chat.gd" id="2_q1ipm"]
@@ -6,7 +6,11 @@
 [ext_resource type="AudioStream" uid="uid://77vhd06aou5i" path="res://Audio/SFX/Steps_gravel-006.ogg" id="3_5hfox"]
 [ext_resource type="Script" uid="uid://cfienyrl5pmdh" path="res://addons/proto_controller/player_audio.gd" id="3_h60nn"]
 [ext_resource type="PackedScene" uid="uid://dwgaejjewy8s5" path="res://aidan_stuff/ui.tscn" id="4_6dqce"]
+[ext_resource type="AudioStream" uid="uid://dalf71v12xtp8" path="res://Audio/SFX/TalkingAudio/talk1.mp3" id="4_cisnj"]
+[ext_resource type="AudioStream" uid="uid://ckp3i4yq63cae" path="res://Audio/SFX/TalkingAudio/talk2.mp3" id="5_gxq8o"]
 [ext_resource type="AudioStream" uid="uid://oyfj3k6hjdsi" path="res://Audio/SFX/fastHeartbeat.wav" id="5_h60nn"]
+[ext_resource type="AudioStream" uid="uid://cdhts10ucjgra" path="res://Audio/SFX/TalkingAudio/talk3.mp3" id="6_f4vau"]
+[ext_resource type="AudioStream" uid="uid://njlowol7uduw" path="res://Audio/SFX/TalkingAudio/talk4.mp3" id="7_3o3af"]
 [ext_resource type="PackedScene" uid="uid://bh8wge84bqmlq" path="res://cutscenes.tscn" id="7_ujot4"]
 [ext_resource type="PackedScene" uid="uid://dphhgsxb3ams8" path="res://player_dialogue.tscn" id="8_1tksx"]
 [ext_resource type="PackedScene" uid="uid://dhngofkxehkt0" path="res://aidan_stuff/player_boy.tscn" id="9_ths8c"]
@@ -165,6 +169,18 @@ replication_config = SubResource("SceneReplicationConfig_2gj5w")
 
 [node name="PlayerAudios" type="Node3D" parent="."]
 script = ExtResource("3_h60nn")
+
+[node name="Talk1" type="AudioStreamPlayer" parent="PlayerAudios"]
+stream = ExtResource("4_cisnj")
+
+[node name="Talk2" type="AudioStreamPlayer" parent="PlayerAudios"]
+stream = ExtResource("5_gxq8o")
+
+[node name="Talk3" type="AudioStreamPlayer" parent="PlayerAudios"]
+stream = ExtResource("6_f4vau")
+
+[node name="Talk4" type="AudioStreamPlayer" parent="PlayerAudios"]
+stream = ExtResource("7_3o3af")
 
 [node name="Footstep" type="AudioStreamPlayer3D" parent="PlayerAudios"]
 stream = ExtResource("3_5hfox")

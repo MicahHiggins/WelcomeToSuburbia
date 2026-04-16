@@ -72,7 +72,7 @@ func soundManipulation(sound: AudioStreamPlayer):
 	var panner = AudioServer.get_bus_effect(bus_index, 0)
 
 	
-	var target_pan = randNum(-1, 1)
+	var target_pan = randNum(-0.75, 0.75)
 	var tween = create_tween()
 	tween.tween_property(panner, "pan", target_pan, 0.5)
 	match(GlobalVariables.iterations):
@@ -122,9 +122,14 @@ func pickRandSound():
 	_on_audio_manager_game_start()
 	
 	
-	
+var start := false
 
 func _on_audio_manager_game_start() -> void:
+	if start == false:
+		sound = soundArr[randSound()]
+		soundManipulation(sound)
+		start = true
+		
 	var num = randomNumTransition()
 	#print(num)
 	await get_tree().create_timer(num).timeout 

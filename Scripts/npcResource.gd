@@ -82,20 +82,21 @@ func campDial():
 		
 		print("Campbell Talked To! in iter 3-5")
 		questHub.it_change()
-		questHub.campbellProg = 2
+		#questHub.campbellProg = 2
 		questHub.campbellTrigger()
 		
 	if (GlobalVariables.iterations >= 2):
 		dialogue.uniqueDialogue =  npcDialogue.campbellsDialogue[2][camp_local]
 	
-		if GlobalVariables.iterations < 6 && questHub.campbellProg >= 3:
+		if GlobalVariables.iterations < 6 && questHub.campbellProg == 3:
 			#if camp_local == 2 && DBToggle == false:
 				#DBToggle = true
 				#camp_local = 0
 			dialogue.uniqueDialogue = npcDialogue.campbellsDialogue[FIDOFOUND][camp_local]
-			questHub.campbellProg = 4
+			#questHub.campbellProg = 4
 			questHub.campbellTrigger()
 		elif GlobalVariables.iterations > 6:
+			questHub.campbellProg = 5
 			dialogue.uniqueDialogue = npcDialogue.campbellsDialogue[FIDOLOST][camp_local]
 			
 				
@@ -111,7 +112,7 @@ func issDial():
 		#GlobalVariables.iterations += 1
 		questHub.isaacTrigger()
 		questHub.it_change()
-		questHub.campbellTrigger()
+		#questHub.campbellTrigger()
 		
 		print("DM: After issac talking trigger!")
 	
@@ -123,8 +124,8 @@ func issDial():
 			
 			dialogue.uniqueDialogue = npcDialogue.issDialogue[isaacQuest.ISAACQUEST_TURN_IN][iss_local]
 			#questHub.it_change()
-			
-			questHub.isaacTrigger()
+			if GlobalVariables.isaac_quest_progression == 3:
+				questHub.isaacTrigger()
 			
 	
 	else:
@@ -161,7 +162,7 @@ func dialogueMan(npc_name):
 		
 func enter_dialogue():
 	var number = 0
-	
+	questHub.audio_play_talk(0)
 	#GlobalVariables.playerTalking = true
 	print(GlobalVariables.playerTalking)
 	if talking == false:

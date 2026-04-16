@@ -5,11 +5,15 @@ extends Node
 @onready var wttn_3: AudioStreamPlayer = $Track1/WTTN3
 
 
+@onready var timer: Timer = $Track1/Timer
 
 
 
 func randNum():
 	return randi_range(1, 3)
+	
+func randNum_start():
+	return randf_range(10, 15)
 	
 
 
@@ -17,23 +21,22 @@ func randNum():
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	questHub.iteration_changed.connect(playTune)
-
-
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta: float) -> void:
-	pass
-
-
-
 	
+
 func playTune(value: int):
-	print("Play Tune!")
-	match(value):
+	
+	print("GOTTEN PLAYTUNE!")
+	
+	var num = randNum_start()
+	print("playTune", num)
+	await get_tree().create_timer(num).timeout
+	
+	match(GlobalVariables.iterations):
 		0:
 			wttn_1.play()
 		1:
 			wttn_1.play()
-		3:
+		2:
 			wttn_2.play()
 		3:
 			wttn_2.play()

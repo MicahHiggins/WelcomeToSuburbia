@@ -24,3 +24,5 @@ stream = ExtResource("4_xil7p")
 
 [node name="WTTN3" type="AudioStreamPlayer" parent="Track1"]
 stream = ExtResource("5_i0wtg")
+
+[node name="Timer" type="Timer" parent="Track1"]
