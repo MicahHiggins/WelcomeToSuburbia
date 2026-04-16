@@ -1,4 +1,4 @@
-[gd_scene load_steps=46 format=3 uid="uid://dw6fx71adu107"]
+[gd_scene load_steps=50 format=3 uid="uid://dw6fx71adu107"]
 
 [ext_resource type="Script" uid="uid://duigu086blnlq" path="res://GameLevelsETC/kidnap.gd" id="1_6rn1s"]
 [ext_resource type="PackedScene" uid="uid://bs2jm62cmkbrk" path="res://addons/instant-realistic-light/light_scene.tscn" id="1_wff52"]
@@ -17,6 +17,7 @@
 [ext_resource type="PackedScene" uid="uid://dghy3kpje6d1i" path="res://Assets/RandomObjects/doorway.glb" id="13_pm42j"]
 [ext_resource type="PackedScene" uid="uid://d0082o2yj0qb2" path="res://Assets/RandomObjects/bedrooms/bedroom_2.tscn" id="13_vmkem"]
 [ext_resource type="PackedScene" uid="uid://c4o2j15yoqaln" path="res://HouseModel/surb_house_v_1.tscn" id="14_mgih5"]
+[ext_resource type="PackedScene" uid="uid://b36mjwh3wwi6m" path="res://GameLevelsETC/Items/bat_clean.tscn" id="15_dwtrd"]
 [ext_resource type="Texture2D" uid="uid://but80wsucm4q2" path="res://textures/GrassTextures/GrassAlbedo.png" id="15_ii0sn"]
 [ext_resource type="PackedScene" uid="uid://d0amtgbo2s5el" path="res://Assets/RandomObjects/Beds/blue_bed.tscn" id="15_lyc4m"]
 [ext_resource type="Texture2D" uid="uid://do7xmc15vdxif" path="res://textures/GrassTextures/GrassAO.png" id="16_5x2wp"]
@@ -53,6 +54,54 @@ tracks/1/keys = {
 "update": 0,
 "values": [Vector3(-2.1563776, -0.8876659, 2.5052242)]
 }
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Bedrooms/bedroom1/Bat:position")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(-1.8231024, -1.2399532, 2.7910442)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("Bedrooms/bedroom2/Bat:position")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(2.735105, -1.2487528, -0.41625214)]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("Bedrooms/bedroom2/Shelf:position")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(0.6285904, -1.421977, -20.330544)]
+}
+tracks/5/type = "value"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath("Bedrooms/bedroom1/Shelf:position")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(-1.9190041, -1.3467678, -16.26862)]
+}
 
 [sub_resource type="Animation" id="Animation_pm42j"]
 resource_name = "puzzle1Complete"
@@ -81,11 +130,112 @@ tracks/1/keys = {
 "update": 0,
 "values": [Vector3(-2.1563776, -0.8876659, 2.5052242), Vector3(-0.32465905, -0.8876659, 2.5052242)]
 }
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Bedrooms/bedroom1/Bat:position")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 3),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector3(-1.8231024, -1.2399532, 2.7910442), Vector3(0.18684162, -1.2399532, 2.7910452)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("Bedrooms/bedroom2/Bat:position")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0, 3),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector3(2.735105, -1.2487528, -0.41625214), Vector3(2.7349925, -1.2514293, -2.2404637)]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("Bedrooms/bedroom2/Shelf:position")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0, 3),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector3(2.629559, -1.425428, -21.043156), Vector3(0.50580823, -1.4228752, -21.04302)]
+}
+tracks/5/type = "value"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath("Bedrooms/bedroom1/Shelf:position")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = {
+"times": PackedFloat32Array(0, 3),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector3(-2.6889448, -1.3467678, -18.176666), Vector3(-2.6889446, -1.3467678, -16.268621)]
+}
+
+[sub_resource type="Animation" id="Animation_dwtrd"]
+resource_name = "puzzle2Complete"
+length = 3.0
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Bedrooms/bedroom2/Bat:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 3),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector3(2.7349925, -1.2514293, -2.2404637), Vector3(2.1120853, -1.2506808, -2.2404256)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Bedrooms/bedroom1/Bat:position")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 3),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector3(0.1868416, -1.2399532, 2.7910452), Vector3(0.18684162, -1.2399532, 2.1632166)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Bedrooms/bedroom2/Shelf:position")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 3),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector3(0.50580823, -1.4228752, -21.04302), Vector3(0.5058524, -1.4218298, -20.33054)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("Bedrooms/bedroom1/Shelf:position")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0, 3),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector3(-2.6889446, -1.3467678, -16.268621), Vector3(-1.9190041, -1.3467678, -16.26862)]
+}
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_lyc4m"]
 _data = {
 &"RESET": SubResource("Animation_2uf5w"),
-&"puzzle1Complete": SubResource("Animation_pm42j")
+&"puzzle1Complete": SubResource("Animation_pm42j"),
+&"puzzle2Complete": SubResource("Animation_dwtrd")
 }
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_qci02"]
@@ -198,6 +348,12 @@ size = Vector3(0.5433502, 0.48568726, 0.4175644)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_asrhd"]
 size = Vector3(1.8148193, 0.8902283, 2.7679367)
+
+[sub_resource type="BoxMesh" id="BoxMesh_dwtrd"]
+size = Vector3(3, 0.099, 1.5)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_un8vx"]
+albedo_color = Color(0.4509804, 0.33333334, 0.08627451, 1)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_rkcnq"]
 albedo_color = Color(0.60271376, 0.7674062, 0.73615, 1)
@@ -366,6 +522,15 @@ visible = false
 [node name="doorway" parent="Bedrooms/bedroom1" instance=ExtResource("13_pm42j")]
 transform = Transform3D(-1.486188e-08, 0, 0.34000015, 0, 0.34, 0, -0.34000015, 0, -1.486188e-08, -3.1386063, -1.9812669, 0.41458416)
 
+[node name="Bat" parent="Bedrooms/bedroom1" instance=ExtResource("15_dwtrd")]
+transform = Transform3D(-3.4969116e-08, -0.8000001, 0, 0.8000001, -3.4969112e-08, 0, 0, 0, 0.8000001, -1.8231024, -1.2399532, 2.7910442)
+
+[node name="Shelf" type="MeshInstance3D" parent="Bedrooms/bedroom1"]
+transform = Transform3D(-1.471374e-06, -0.0010388871, -0.47619143, 0.0008311079, 0.5952374, -0.0008311112, 0.4761903, -0.0010388878, -2.0814989e-08, -1.9190041, -1.3467678, -16.26862)
+mesh = SubResource("BoxMesh_dwtrd")
+skeleton = NodePath("../../..")
+surface_material_override/0 = SubResource("StandardMaterial3D_un8vx")
+
 [node name="bedroom2" parent="Bedrooms" instance=ExtResource("13_vmkem")]
 transform = Transform3D(-1.4999993, 0.0011538021, 9.1280155e-05, 0.0014421464, 1.1999987, -0.0017605099, -9.294293e-05, -0.0014083382, -1.4999992, 0.3168704, 0.11224883, -13.854978)
 
@@ -474,6 +639,15 @@ transform = Transform3D(-0.15000013, 1.254552e-11, 2.0962343e-05, -1.8221868e-11
 
 [node name="doorway" parent="Bedrooms/bedroom2" instance=ExtResource("13_pm42j")]
 transform = Transform3D(-0.34000015, 2.4563462e-11, -2.9725925e-08, 1.6999735e-11, 0.3400002, -5.820766e-11, 2.9718649e-08, 2.910383e-11, -0.34000027, 0.672379, -1.936038, 3.1620798)
+
+[node name="Bat" parent="Bedrooms/bedroom2" instance=ExtResource("15_dwtrd")]
+transform = Transform3D(3.989129e-10, 3.4979166e-08, 0.80000025, 0.8, -3.4691766e-08, 2.4982683e-11, 3.4982804e-08, 0.80000097, -3.4968252e-08, 2.735105, -1.2487528, -0.41625214)
+
+[node name="Shelf" type="MeshInstance3D" parent="Bedrooms/bedroom2"]
+transform = Transform3D(-0.4761903, 0.00045782482, -2.9515206e-05, 0.0005723232, 0.5952386, -0.00069858157, 2.8968348e-05, -0.00055889325, -0.47619125, 0.6285904, -1.421977, -20.330544)
+mesh = SubResource("BoxMesh_dwtrd")
+skeleton = NodePath("../../..")
+surface_material_override/0 = SubResource("StandardMaterial3D_un8vx")
 
 [node name="Neighborhood" type="Node3D" parent="."]
 transform = Transform3D(1.5, 0, 0, 0, 1.5, 0, 0, 0, 1.5, 0, 0, 0)
