@@ -70,32 +70,19 @@ func iterationChange(value: int):
 
 
 
-# Inside questHub.gd
 
-func found_fido_trigger():
-	if not multiplayer.is_server():
-		rpc_id(1, "server_found_fido")
-	else:
-		server_found_fido()
+func _on_area_3d_body_entered(body: Node3D) -> void:
 
-@rpc("any_peer", "call_local", "reliable")
-func server_found_fido():
-	if not multiplayer.is_server(): return
-	
-	# Update the logic state
-	#questHub.campbellProg = 3
-	
-	# Tell everyone to sync their variables and delete the dog
-	sync_fido_found.rpc()
-
-@rpc("authority", "call_local", "reliable")
-func sync_fido_found():
-	# Sync the variable locally for everyone
-	questHub.campbellProg = 3
-	
-	# Sync the world: Stop sounds and remove the dog nodes
-	# Assuming 'bark_2' is accessible or managed globally
-	# If not, you might need a signal to tell the specific scene to stop sounds
-	
-	get_tree().call_group("doggy", "queue_free")
-	print("Fido has been found and synced for everyone!")
+	if body.is_in_group("player") && body.is_multiplayer_authority() && questHub.campbellProg > 0:
+		visible = false
+		#questHub.campbellProg = 3
+		questHub.found_fido_early = true
+		questHub.campbellTrigger()
+		bark_2.stop()
+		
+		get_tree().call_group("doggy", "queue_free")
+		#fido_toggle = true
+		#questHub.campbellTalk()
+		#uiStuff.ObjectiveToggle = true
+		
+		
