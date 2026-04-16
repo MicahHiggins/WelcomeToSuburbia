@@ -135,6 +135,7 @@ hear_radius = 80.0
 unit_size = 0.8
 base_volume_db = 4.0
 playback_buffer_sec = 0.05
+far_cut_db = -1.0
 debug_interval_sec = 4.0
 
 [node name="VoicePlayer3D" type="AudioStreamPlayer3D" parent="Head"]
