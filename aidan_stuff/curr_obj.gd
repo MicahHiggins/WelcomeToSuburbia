@@ -65,11 +65,11 @@ func isaacTrigger(value: int):
 		#GlobalVariables.isaac_quest_progression = 2
 		
 	if GlobalVariables.isaac_quest_progression == 2:
-		main.text = prev_text_main + "\n investigate around 111..."
+		main.text = prev_text_main + "\n investigate around 114..."
 		
 	elif GlobalVariables.isaac_quest_progression == 3:
 		main.text = prev_text_main + "\n Tell Isaac What You\n Found"
 		
 	if GlobalVariables.isaac_quest_progression == 4:
-		main.text = "Find Your Home (130)\n break into house 111"
+		main.text = "Find Your Home (130)\n break into house 114"
 		
