@@ -1,0 +1,5 @@
+[gd_scene load_steps=2 format=3 uid="uid://buinqxsmw87q3"]
+
+[ext_resource type="PackedScene" uid="uid://xfgyylwbmms8" path="res://Assets/SpiderW.glb" id="1_o8lau"]
+
+[node name="SpiderW" instance=ExtResource("1_o8lau")]

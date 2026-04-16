@@ -136,17 +136,18 @@ shape = SubResource("CapsuleShape3D_iof21")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6066794, -0.30353436)
 script = ExtResource("2_q1ipm")
 hear_radius = 80.0
-unit_size = 3.0
+unit_size = 0.8
 base_volume_db = 4.0
-playback_buffer_sec = 0.1
-far_cut_db = 20.0
+playback_buffer_sec = 0.05
+far_cut_db = -1.0
+debug_interval_sec = 4.0
 
 [node name="VoicePlayer3D" type="AudioStreamPlayer3D" parent="Head"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.6066794, 0.30353436)
 attenuation_model = 2
-volume_db = 6.0
-unit_size = 50.0
-max_db = 6.0
+volume_db = 2.0
+unit_size = 0.8
+max_db = 4.0
 max_distance = 80.0
 
 [node name="CarryObjectMarker" type="Marker3D" parent="Head"]
