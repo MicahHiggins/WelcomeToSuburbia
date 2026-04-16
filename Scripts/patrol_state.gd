@@ -22,6 +22,7 @@ var _retry_left: float = 0.0
 @export var net_sync_anim: bool = true
 
 var _anim_player: AnimationPlayer = null
+var _anim_players:= []
 var _last_anim: StringName = &""
 
 # ADDED: prevents TalkState spam when no waypoints
@@ -184,10 +185,9 @@ func _cache_anim_player() -> void:
 	if npc3d == null:
 		return
 
-	var model_node := find_descendant_in_group(npc3d, "NPC_Body")
-	if model_node:
-		_anim_player = find_descendant_in_group(model_node, "NPC_Animation") as AnimationPlayer
-
+	var model_node := find_descendants_in_group(npc3d, "NPC_Body")
+	for n in model_node:
+		_anim_player = find_descendant_in_group(n, "NPC_Animation") as AnimationPlayer
 
 func _play_anim_local(anim_name: StringName) -> void:
 	if _anim_player == null:
@@ -249,3 +249,14 @@ func find_descendant_in_group(node: Node, group: String) -> Node:
 			return result
 
 	return null
+
+func find_descendants_in_group(node: Node, group: String) -> Array:
+	var results: Array = []
+	
+	if node.is_in_group(group):
+		results.append(node)
+		
+	for child in node.get_children():
+		results += find_descendants_in_group(child, group)
+		
+	return results

@@ -1,4 +1,4 @@
-[gd_scene load_steps=43 format=3 uid="uid://r8vqf0qcnkdn"]
+[gd_scene load_steps=45 format=3 uid="uid://r8vqf0qcnkdn"]
 
 [ext_resource type="Script" uid="uid://4p6bc6ac8elf" path="res://aidan_stuff/block_design.gd" id="1_jmv40"]
 [ext_resource type="Texture2D" uid="uid://but80wsucm4q2" path="res://textures/GrassTextures/GrassAlbedo.png" id="2_bkv0n"]
@@ -19,9 +19,9 @@
 [ext_resource type="PackedScene" uid="uid://crn8fjkgnfc2x" path="res://HouseModel/surb_house_v_2_5.tscn" id="10_yddyx"]
 [ext_resource type="PackedScene" uid="uid://ra3n7bx03cca" path="res://HouseModel/surb_house_v_2_4.tscn" id="11_4jqnc"]
 [ext_resource type="PackedScene" uid="uid://dexa2pmw4ua8t" path="res://Assets/RandomObjects/bush/Bush.tscn" id="12_x5kdk"]
-[ext_resource type="PackedScene" path="res://HouseModel/surb_house_v_2_3.tscn" id="13_048gh"]
+[ext_resource type="PackedScene" uid="uid://dgvgcdc4hcryu" path="res://HouseModel/surb_house_v_2_3.tscn" id="13_048gh"]
 [ext_resource type="PackedScene" uid="uid://cxnlf1qokkhee" path="res://Assets/RandomObjects/streetlight/street_light.tscn" id="13_bcxsy"]
-[ext_resource type="PackedScene" path="res://HouseModel/surb_house_v_2_2.tscn" id="14_exxux"]
+[ext_resource type="PackedScene" uid="uid://c62gtec4unihb" path="res://HouseModel/surb_house_v_2_2.tscn" id="14_exxux"]
 [ext_resource type="PackedScene" uid="uid://dlk17rptaahid" path="res://HouseModel/surb_house_v_2_6.tscn" id="15_34jml"]
 [ext_resource type="Script" uid="uid://dbt273cudle2e" path="res://aidan_stuff/iteration_detector.gd" id="15_v0qsu"]
 [ext_resource type="PackedScene" uid="uid://d2rvqfwj71ucv" path="res://Assets/RandomObjects/billboard/billboard.tscn" id="18_vslbx"]
@@ -31,8 +31,7 @@
 [ext_resource type="Script" uid="uid://cefpvj7tg03be" path="res://aidan_stuff/bus.gd" id="23_3rgr2"]
 [ext_resource type="PackedScene" uid="uid://gk88lcwyw5hu" path="res://Assets/RandomObjects/cellar_investigate.tscn" id="23_5xofl"]
 [ext_resource type="PackedScene" uid="uid://cisg4q78neeyi" path="res://Assets/RandomObjects/bus/Bus_no_collisions.tscn" id="24_3rgr2"]
-[ext_resource type="PackedScene" uid="uid://cx5rbrvijd0rs" path="res://Assets/RandomObjects/bus/busssss.tscn" id="25_g1s53"]
-[ext_resource type="PackedScene" uid="uid://bul2360acir3e" path="res://Max's Folder (do not touch!!!)/transistion.tscn" id="26_ov7qd"]
+[ext_resource type="PackedScene" uid="uid://eginvg4sxfqg" path="res://Max's Folder (do not touch!!!)/transistion.tscn" id="26_ov7qd"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_0wadw"]
 albedo_color = Color(0.60271376, 0.7674062, 0.73615, 1)
@@ -270,7 +269,7 @@ transform = Transform3D(1.6337086e-09, 0, -0.137, 0, 0.137, 0, 0.137, 0, 1.63370
 transform = Transform3D(1.6337086e-09, 0, -0.137, 0, 0.137, 0, 0.137, 0, 1.6337086e-09, -2.126, -0.062, 2.418)
 
 [node name="SurbHouseV31" parent="Houses" instance=ExtResource("14_exxux")]
-transform = Transform3D(1.6337086e-09, 0, 0.137, 0, 0.137, 0, -0.137, 0, 1.6337086e-09, -6.0946183, -0.062, 2.4)
+transform = Transform3D(-5.98846e-09, 0, -0.137, 0, 0.137, 0, 0.137, 0, -5.98846e-09, -6.0946183, -0.062, 2.4)
 
 [node name="SurbHouseV32" parent="Houses" instance=ExtResource("13_048gh")]
 transform = Transform3D(1.6337086e-09, 0, -0.137, 0, 0.137, 0, 0.137, 0, 1.6337086e-09, -1.9646466, -0.062, -14.066892)
@@ -2302,85 +2301,85 @@ text = "101"
 [node name="RegularNumbers" type="Node3D" parent="HouseNumbers"]
 
 [node name="House101" type="Label3D" parent="HouseNumbers/RegularNumbers"]
-transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 13.077982, 0.6705457, 6.313701)
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 13.078018, 0.6705457, 6.313701)
 pixel_size = 0.0015
 text = "101"
 font_size = 24
 
 [node name="House102" type="Label3D" parent="HouseNumbers/RegularNumbers"]
-transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 13.080926, 0.67028785, 2.241565)
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 13.076077, 0.67135286, 2.2270303)
 pixel_size = 0.0015
 text = "102"
 font_size = 24
 
 [node name="House103" type="Label3D" parent="HouseNumbers/RegularNumbers"]
-transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 13.083869, 0.6690862, -1.754213)
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 13.13489, 0.672038, -1.7713606)
 pixel_size = 0.0015
 text = "103"
 font_size = 24
 
 [node name="House104" type="Label3D" parent="HouseNumbers/RegularNumbers"]
-transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 13.085084, 0.66698587, -5.7045546)
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 13.093499, 0.669862, -5.7188935)
 pixel_size = 0.0015
 text = "104"
 font_size = 24
 
 [node name="House105" type="Label3D" parent="HouseNumbers/RegularNumbers"]
-transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 5.6763334, 0.67025405, 12.988229)
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 5.6976576, 0.67025405, 13.020635)
 pixel_size = 0.0015
 text = "105"
 font_size = 24
 
 [node name="House107" type="Label3D" parent="HouseNumbers/RegularNumbers"]
-transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 1.7280525, 0.6726213, 12.98853)
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 1.717807, 0.6726213, 12.980264)
 pixel_size = 0.0015
 text = "107"
 font_size = 24
 
 [node name="House109" type="Label3D" parent="HouseNumbers/RegularNumbers"]
-transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, -2.3002262, 0.6692518, 12.988634)
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, -2.2979605, 0.671339, 12.988634)
 pixel_size = 0.0015
 text = "109"
 font_size = 24
 
 [node name="House111" type="Label3D" parent="HouseNumbers/RegularNumbers"]
-transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, -6.2504673, 0.67208487, 12.988263)
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, -6.2663345, 0.67208487, 12.941745)
 pixel_size = 0.0015
 text = "111"
 font_size = 24
 
 [node name="House106" type="Label3D" parent="HouseNumbers/RegularNumbers"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.2959986, 0.67163485, 3.272109)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.336873, 0.66317177, 3.2832713)
 pixel_size = 0.0015
 text = "106"
 font_size = 24
 
 [node name="House108" type="Label3D" parent="HouseNumbers/RegularNumbers"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.1690814, 0.6732829, 3.270323)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.163722, 0.67066133, 3.270323)
 pixel_size = 0.0015
 text = "108"
 font_size = 24
 
 [node name="House110" type="Label3D" parent="HouseNumbers/RegularNumbers"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.8575845, 0.6702971, 3.2707407)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.8434738, 0.6702971, 3.272636)
 pixel_size = 0.0015
 text = "110"
 font_size = 24
 
 [node name="House112" type="Label3D" parent="HouseNumbers/RegularNumbers"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.806111, 0.67212653, 3.2709532)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.813038, 0.67212653, 3.2533967)
 pixel_size = 0.0015
 text = "112"
 font_size = 24
 
 [node name="House113" type="Label3D" parent="HouseNumbers/RegularNumbers"]
-transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 5.6751847, 0.67216337, -3.218678)
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 5.67679, 0.67216337, -3.2216759)
 pixel_size = 0.0015
 text = "113"
 font_size = 24
 
 [node name="House115" type="Label3D" parent="HouseNumbers/RegularNumbers"]
-transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 1.7266126, 0.6714458, -3.2190447)
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 1.7186352, 0.6714458, -3.2203946)
 pixel_size = 0.0015
 text = "115"
 font_size = 24
@@ -2392,55 +2391,55 @@ text = "117"
 font_size = 24
 
 [node name="House119" type="Label3D" parent="HouseNumbers/RegularNumbers"]
-transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, -6.248046, 0.67254454, -3.219019)
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, -6.2386074, 0.67254454, -3.219019)
 pixel_size = 0.0015
 text = "119"
 font_size = 24
 
 [node name="House114" type="Label3D" parent="HouseNumbers/RegularNumbers"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.2967987, 0.67111284, -13.073091)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.2961526, 0.67111284, -13.073091)
 pixel_size = 0.0015
 text = "114"
 font_size = 24
 
 [node name="House116" type="Label3D" parent="HouseNumbers/RegularNumbers"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.3114593, 0.6701036, -13.072975)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.2837465, 0.6701036, -13.148495)
 pixel_size = 0.0015
 text = "116"
 font_size = 24
 
 [node name="House118" type="Label3D" parent="HouseNumbers/RegularNumbers"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.6515051, 0.6696192, -13.07264)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.681993, 0.6696192, -13.211856)
 pixel_size = 0.0015
 text = "118"
 font_size = 24
 
 [node name="House120" type="Label3D" parent="HouseNumbers/RegularNumbers"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.8073087, 0.67288995, -13.072262)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.6867423, 0.67288995, -13.207603)
 pixel_size = 0.0015
 text = "120"
 font_size = 24
 
 [node name="House121" type="Label3D" parent="HouseNumbers/RegularNumbers"]
-transform = Transform3D(-0.0002618273, 0, 0.99999994, 0, 1, 0, -0.99999994, 0, -0.0002618273, -13.084905, 0.6738232, -6.252655)
+transform = Transform3D(-0.0002618273, 0, 0.99999994, 0, 1, 0, -0.99999994, 0, -0.0002618273, -13.074951, 0.6738232, -6.252655)
 pixel_size = 0.0015
 text = "121"
 font_size = 24
 
 [node name="House122" type="Label3D" parent="HouseNumbers/RegularNumbers"]
-transform = Transform3D(-0.0002618273, 0, 0.99999994, 0, 1, 0, -0.99999994, 0, -0.0002618273, -13.090572, 0.6708178, -2.3030133)
+transform = Transform3D(-0.0002618273, 0, 0.99999994, 0, 1, 0, -0.99999994, 0, -0.0002618273, -13.087734, 0.6708178, -2.2595673)
 pixel_size = 0.0015
 text = "122"
 font_size = 24
 
 [node name="House123" type="Label3D" parent="HouseNumbers/RegularNumbers"]
-transform = Transform3D(-0.0002618273, 0, 0.99999994, 0, 1, 0, -0.99999994, 0, -0.0002618273, -13.097196, 0.67135054, 1.7234716)
+transform = Transform3D(-0.0002618273, 0, 0.99999994, 0, 1, 0, -0.99999994, 0, -0.0002618273, -13.09657, 0.67135054, 1.7181507)
 pixel_size = 0.0015
 text = "123"
 font_size = 24
 
 [node name="House124" type="Label3D" parent="HouseNumbers/RegularNumbers"]
-transform = Transform3D(-0.0002618273, 0, 0.99999994, 0, 1, 0, -0.99999994, 0, -0.0002618273, -13.10253, 0.671139, 5.7288265)
+transform = Transform3D(-0.0002618273, 0, 0.99999994, 0, 1, 0, -0.99999994, 0, -0.0002618273, -13.10253, 0.671139, 5.7305307)
 pixel_size = 0.0015
 text = "124"
 font_size = 24
