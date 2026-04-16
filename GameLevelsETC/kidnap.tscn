@@ -81,26 +81,74 @@ tracks/3/keys = {
 tracks/4/type = "value"
 tracks/4/imported = false
 tracks/4/enabled = true
-tracks/4/path = NodePath("Bedrooms/bedroom2/Shelf:position")
+tracks/4/path = NodePath("Bedrooms/bedroom1/Shelf2:position")
 tracks/4/interp = 1
 tracks/4/loop_wrap = true
 tracks/4/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
+"times": PackedFloat32Array(0, 0.001),
+"transitions": PackedFloat32Array(1, 1),
 "update": 0,
-"values": [Vector3(0.6285904, -1.421977, -20.330544)]
+"values": [Vector3(0.6285904, -1.421977, -20.330544), Vector3(-2.2274091, -1.421977, 3.0018435)]
 }
 tracks/5/type = "value"
 tracks/5/imported = false
 tracks/5/enabled = true
-tracks/5/path = NodePath("Bedrooms/bedroom1/Shelf:position")
+tracks/5/path = NodePath("Bedrooms/bedroom2/Shelf:position")
 tracks/5/interp = 1
 tracks/5/loop_wrap = true
 tracks/5/keys = {
-"times": PackedFloat32Array(0),
+"times": PackedFloat32Array(0, 0.001),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector3(-1.9190041, -1.3467678, -16.26862), Vector3(2.930409, -1.328808, -0.054070473)]
+}
+tracks/6/type = "value"
+tracks/6/imported = false
+tracks/6/enabled = true
+tracks/6/path = NodePath("Bedrooms/bedroom1/Shelf2:rotation")
+tracks/6/interp = 1
+tracks/6/loop_wrap = true
+tracks/6/keys = {
+"times": PackedFloat32Array(0.001),
 "transitions": PackedFloat32Array(1),
 "update": 0,
-"values": [Vector3(-1.9190041, -1.3467678, -16.26862)]
+"values": [Vector3(0, 0, 0)]
+}
+tracks/7/type = "value"
+tracks/7/imported = false
+tracks/7/enabled = true
+tracks/7/path = NodePath("Bedrooms/bedroom2/Shelf:rotation")
+tracks/7/interp = 1
+tracks/7/loop_wrap = true
+tracks/7/keys = {
+"times": PackedFloat32Array(0.001),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(0.0017453292, 1.5707964, -2.4447155e-10)]
+}
+tracks/8/type = "value"
+tracks/8/imported = false
+tracks/8/enabled = true
+tracks/8/path = NodePath("Bedrooms/bedroom1/Shelf2:visible")
+tracks/8/interp = 1
+tracks/8/loop_wrap = true
+tracks/8/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+tracks/9/type = "value"
+tracks/9/imported = false
+tracks/9/enabled = true
+tracks/9/path = NodePath("Bedrooms/bedroom2/Shelf:visible")
+tracks/9/interp = 1
+tracks/9/loop_wrap = true
+tracks/9/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
 }
 
 [sub_resource type="Animation" id="Animation_pm42j"]
@@ -157,26 +205,50 @@ tracks/3/keys = {
 tracks/4/type = "value"
 tracks/4/imported = false
 tracks/4/enabled = true
-tracks/4/path = NodePath("Bedrooms/bedroom2/Shelf:position")
+tracks/4/path = NodePath("Bedrooms/bedroom1/Shelf2:position")
 tracks/4/interp = 1
 tracks/4/loop_wrap = true
 tracks/4/keys = {
 "times": PackedFloat32Array(0, 3),
 "transitions": PackedFloat32Array(1, 1),
 "update": 0,
-"values": [Vector3(2.629559, -1.425428, -21.043156), Vector3(0.50580823, -1.4228752, -21.04302)]
+"values": [Vector3(-2.1901047, -1.421977, 3.0347843), Vector3(-0.22560644, -1.421977, 3.0347853)]
 }
 tracks/5/type = "value"
 tracks/5/imported = false
 tracks/5/enabled = true
-tracks/5/path = NodePath("Bedrooms/bedroom1/Shelf:position")
+tracks/5/path = NodePath("Bedrooms/bedroom2/Shelf:position")
 tracks/5/interp = 1
 tracks/5/loop_wrap = true
 tracks/5/keys = {
 "times": PackedFloat32Array(0, 3),
 "transitions": PackedFloat32Array(1, 1),
 "update": 0,
-"values": [Vector3(-2.6889448, -1.3467678, -18.176666), Vector3(-2.6889446, -1.3467678, -16.268621)]
+"values": [Vector3(2.9458275, -1.3288276, -0.054053307), Vector3(2.9457202, -1.3313519, -1.7751279)]
+}
+tracks/6/type = "value"
+tracks/6/imported = false
+tracks/6/enabled = true
+tracks/6/path = NodePath("Bedrooms/bedroom2/Shelf:visible")
+tracks/6/interp = 1
+tracks/6/loop_wrap = true
+tracks/6/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
+}
+tracks/7/type = "value"
+tracks/7/imported = false
+tracks/7/enabled = true
+tracks/7/path = NodePath("Bedrooms/bedroom1/Shelf2:visible")
+tracks/7/interp = 1
+tracks/7/loop_wrap = true
+tracks/7/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
 }
 
 [sub_resource type="Animation" id="Animation_dwtrd"]
@@ -209,26 +281,26 @@ tracks/1/keys = {
 tracks/2/type = "value"
 tracks/2/imported = false
 tracks/2/enabled = true
-tracks/2/path = NodePath("Bedrooms/bedroom2/Shelf:position")
+tracks/2/path = NodePath("Bedrooms/bedroom1/Shelf2:position")
 tracks/2/interp = 1
 tracks/2/loop_wrap = true
 tracks/2/keys = {
 "times": PackedFloat32Array(0, 3),
 "transitions": PackedFloat32Array(1, 1),
 "update": 0,
-"values": [Vector3(0.50580823, -1.4228752, -21.04302), Vector3(0.5058524, -1.4218298, -20.33054)]
+"values": [Vector3(-0.41526833, -1.421977, 3.0596275), Vector3(-0.3709249, -1.360833, 2.2025537)]
 }
 tracks/3/type = "value"
 tracks/3/imported = false
 tracks/3/enabled = true
-tracks/3/path = NodePath("Bedrooms/bedroom1/Shelf:position")
+tracks/3/path = NodePath("Bedrooms/bedroom2/Shelf:position")
 tracks/3/interp = 1
 tracks/3/loop_wrap = true
 tracks/3/keys = {
 "times": PackedFloat32Array(0, 3),
 "transitions": PackedFloat32Array(1, 1),
 "update": 0,
-"values": [Vector3(-2.6889446, -1.3467678, -16.268621), Vector3(-1.9190041, -1.3467678, -16.26862)]
+"values": [Vector3(2.962842, -1.3643839, -1.8209295), Vector3(2.2907925, -1.3635759, -1.8208895)]
 }
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_lyc4m"]
@@ -525,8 +597,9 @@ transform = Transform3D(-1.486188e-08, 0, 0.34000015, 0, 0.34, 0, -0.34000015, 0
 [node name="Bat" parent="Bedrooms/bedroom1" instance=ExtResource("15_dwtrd")]
 transform = Transform3D(-3.4969116e-08, -0.8000001, 0, 0.8000001, -3.4969112e-08, 0, 0, 0, 0.8000001, -1.8231024, -1.2399532, 2.7910442)
 
-[node name="Shelf" type="MeshInstance3D" parent="Bedrooms/bedroom1"]
-transform = Transform3D(-1.471374e-06, -0.0010388871, -0.47619143, 0.0008311079, 0.5952374, -0.0008311112, 0.4761903, -0.0010388878, -2.0814989e-08, -1.9190041, -1.3467678, -16.26862)
+[node name="Shelf2" type="MeshInstance3D" parent="Bedrooms/bedroom1"]
+transform = Transform3D(0.47619087, 0, 0, 0, 0.5952399, 0, 0, 0, 0.47619262, 0.6285904, -1.421977, -20.330544)
+visible = false
 mesh = SubResource("BoxMesh_dwtrd")
 skeleton = NodePath("../../..")
 surface_material_override/0 = SubResource("StandardMaterial3D_un8vx")
@@ -644,7 +717,8 @@ transform = Transform3D(-0.34000015, 2.4563462e-11, -2.9725925e-08, 1.6999735e-1
 transform = Transform3D(3.989129e-10, 3.4979166e-08, 0.80000025, 0.8, -3.4691766e-08, 2.4982683e-11, 3.4982804e-08, 0.80000097, -3.4968252e-08, 2.735105, -1.2487528, -0.41625214)
 
 [node name="Shelf" type="MeshInstance3D" parent="Bedrooms/bedroom2"]
-transform = Transform3D(-0.4761903, 0.00045782482, -2.9515206e-05, 0.0005723232, 0.5952386, -0.00069858157, 2.8968348e-05, -0.00055889325, -0.47619125, 0.6285904, -1.421977, -20.330544)
+transform = Transform3D(-2.0815234e-08, 0.0010388906, 0.47619274, -1.16415315e-10, 0.5952399, -0.00083111395, -0.4761924, -1.9093079e-10, -2.0815046e-08, -1.9190041, -1.3467678, -16.26862)
+visible = false
 mesh = SubResource("BoxMesh_dwtrd")
 skeleton = NodePath("../../..")
 surface_material_override/0 = SubResource("StandardMaterial3D_un8vx")
@@ -2154,5 +2228,6 @@ transform = Transform3D(1.9106855e-15, 4.371139e-08, -1, 1, -4.371139e-08, 0, -4
 transform = Transform3D(1.9106855e-15, 4.371139e-08, -1, 1, -4.371139e-08, 0, -4.371139e-08, -1, -4.371139e-08, -4.570696, -0.57986665, 25.593967)
 
 [connection signal="puzzleOneComplete" from="Bedrooms/bedroom2/toy_piano" to="." method="_on_toy_piano_puzzle_one_complete"]
+[connection signal="puzzleTwoComplete" from="Puzzle2/Drawing/drawing" to="." method="_on_drawing_puzzle_two_complete"]
 
 [editable path="Puzzle2"]

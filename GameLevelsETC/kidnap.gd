@@ -19,6 +19,9 @@ func _on_toy_piano_puzzle_one_complete() -> void:
 	#cohesion.play("puzzle1Complete")
 	_play_anim_server(&"puzzle1Complete")
 
+func _on_drawing_puzzle_two_complete() -> void:
+	_play_anim_server(&"puzzle2Complete")
+
 #
 #func _play_anim_local(anim_name: StringName) -> void:
 	#if _anim_player == null:

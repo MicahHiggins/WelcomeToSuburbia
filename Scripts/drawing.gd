@@ -12,6 +12,8 @@ var drawn_tiles = []
 
 var can_draw: bool = true
 
+signal puzzleTwoComplete
+
 func _ready() -> void:
 	mask_arr.clear()
 	label.text = "Hello!"
@@ -147,6 +149,7 @@ func _on_button_pressed() -> void:
 	
 	if percentage >= 60.0:
 		label.text = "You Win: %.2f%%" % percentage
+		puzzleTwoComplete.emit()
 	else:
 		label.text = "You Lose: %.2f%%" % percentage
 
