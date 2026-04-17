@@ -18,11 +18,14 @@ bus = &"Music"
 
 [node name="WTTN1" type="AudioStreamPlayer" parent="Track1"]
 stream = ExtResource("3_ldjqn")
+pitch_scale = 0.8
 
 [node name="WTTN2" type="AudioStreamPlayer" parent="Track1"]
 stream = ExtResource("4_xil7p")
+pitch_scale = 0.8
 
 [node name="WTTN3" type="AudioStreamPlayer" parent="Track1"]
 stream = ExtResource("5_i0wtg")
+pitch_scale = 0.8
 
 [node name="Timer" type="Timer" parent="Track1"]

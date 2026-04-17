@@ -38,7 +38,7 @@ func randNum(range1: float, range2: float):
 	return randf_range(range1, range2)
 
 func randomNumTransition():
-	return randi_range(2, 10)
+	return randi_range(5, 15)
 	
 	
 func randSound():
@@ -126,7 +126,7 @@ var start := false
 
 func _on_audio_manager_game_start() -> void:
 	if start == false:
-		sound = soundArr[randSound()]
+		sound = wind_2
 		soundManipulation(sound)
 		start = true
 		

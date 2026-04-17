@@ -3,7 +3,7 @@
 [ext_resource type="Script" uid="uid://dh885eu4g8ih8" path="res://Audio/audio_manager.gd" id="1_x7qoq"]
 [ext_resource type="AudioStream" uid="uid://dpeesc788mq3x" path="res://Audio/SFX/667288__pekena_larva__out-of-breath_woman_fast.wav" id="2_43dpk"]
 [ext_resource type="PackedScene" uid="uid://ctgohi32dunti" path="res://Audio/SoundTrack/soundtrack_manager.tscn" id="2_uukss"]
-[ext_resource type="PackedScene" uid="uid://dr522dk6qis6t" path="res://Audio/sound_scape_audio.tscn" id="3_so863"]
+[ext_resource type="PackedScene" uid="uid://dr522dk6qis6t" path="res://Audio/soundScape/sound_scape_audio.tscn" id="3_so863"]
 
 [sub_resource type="Animation" id="Animation_43dpk"]
 length = 0.001
