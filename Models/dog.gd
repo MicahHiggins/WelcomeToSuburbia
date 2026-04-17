@@ -56,8 +56,7 @@ func iterationChange(value: int):
 		quest_marker_.visible = true
 		#questMarker.campbells = true
 		
-	else:
-		dog.visible = true
+
 	
 func campbellProgression(value: int):
 	
@@ -66,6 +65,8 @@ func campbellProgression(value: int):
 		0:
 			quest_marker_.visible = false
 			dog.visible = true
+		
+				
 		1:
 			quest_marker_.visible = true
 			dog.visible = false

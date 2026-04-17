@@ -1,4 +1,4 @@
-[gd_resource type="AudioBusLayout" load_steps=6 format=3 uid="uid://b0lobs0b2w5ww"]
+[gd_resource type="AudioBusLayout" load_steps=7 format=3 uid="uid://b0lobs0b2w5ww"]
 
 [sub_resource type="AudioEffectReverb" id="AudioEffectReverb_j3pel"]
 resource_name = "Reverb"
@@ -18,6 +18,9 @@ resource_name = "Reverb"
 wet = 0.15
 
 [sub_resource type="AudioEffectPanner" id="AudioEffectPanner_g28q7"]
+resource_name = "Panner"
+
+[sub_resource type="AudioEffectPanner" id="AudioEffectPanner_n8wo2"]
 resource_name = "Panner"
 
 [resource]
@@ -55,3 +58,11 @@ bus/4/volume_db = -0.72599316
 bus/4/send = &"Master"
 bus/4/effect/0/effect = SubResource("AudioEffectPanner_g28q7")
 bus/4/effect/0/enabled = true
+bus/5/name = &"wind"
+bus/5/solo = false
+bus/5/mute = false
+bus/5/bypass_fx = false
+bus/5/volume_db = 0.0
+bus/5/send = &"Master"
+bus/5/effect/0/effect = SubResource("AudioEffectPanner_n8wo2")
+bus/5/effect/0/enabled = true

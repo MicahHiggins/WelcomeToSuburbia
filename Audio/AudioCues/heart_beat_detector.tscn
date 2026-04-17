@@ -4,7 +4,7 @@
 [ext_resource type="PackedScene" uid="uid://diyfna0mvebm4" path="res://Assets/RandomObjects/quest_marker!.tscn" id="2_tpsl0"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_tr127"]
-radius = 3.0
+radius = 2.0
 
 [node name="heartBeatDetector" type="Area3D"]
 collision_layer = 0
@@ -15,6 +15,6 @@ script = ExtResource("1_lc4wc")
 shape = SubResource("SphereShape3D_tr127")
 
 [node name="QuestMarker!" parent="." instance=ExtResource("2_tpsl0")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.0966318, 0, -3.6638184)
+transform = Transform3D(0.4, 0, 0, 0, 0.4, 0, 0, 0, 0.4, 0.0016587973, 0.06422585, -0.19440103)
 
 [connection signal="body_entered" from="." to="." method="_on_body_entered"]

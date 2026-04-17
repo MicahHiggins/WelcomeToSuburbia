@@ -44,22 +44,22 @@ bus = &"soundScape"
 [node name="wind1" type="AudioStreamPlayer" parent="Wind"]
 stream = ExtResource("5_6v7kh")
 volume_db = 3.0
-bus = &"soundScape"
+bus = &"wind"
 
 [node name="wind2" type="AudioStreamPlayer" parent="Wind"]
 stream = ExtResource("6_a4ywy")
 volume_db = 3.0
-bus = &"soundScape"
+bus = &"wind"
 
 [node name="wind3" type="AudioStreamPlayer" parent="Wind"]
 stream = ExtResource("7_2yf4l")
 volume_db = 3.0
-bus = &"soundScape"
+bus = &"wind"
 
 [node name="wind4" type="AudioStreamPlayer" parent="Wind"]
 stream = ExtResource("8_bmm62")
 volume_db = 3.0
-bus = &"soundScape"
+bus = &"wind"
 
 [node name="children" type="Node" parent="."]
 

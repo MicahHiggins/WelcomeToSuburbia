@@ -1,4 +1,4 @@
-[gd_scene load_steps=43 format=3 uid="uid://r8vqf0qcnkdn"]
+[gd_scene load_steps=45 format=3 uid="uid://r8vqf0qcnkdn"]
 
 [ext_resource type="Script" uid="uid://4p6bc6ac8elf" path="res://aidan_stuff/block_design.gd" id="1_jmv40"]
 [ext_resource type="Texture2D" uid="uid://but80wsucm4q2" path="res://textures/GrassTextures/GrassAlbedo.png" id="2_bkv0n"]
@@ -19,9 +19,9 @@
 [ext_resource type="PackedScene" uid="uid://crn8fjkgnfc2x" path="res://HouseModel/surb_house_v_2_5.tscn" id="10_yddyx"]
 [ext_resource type="PackedScene" uid="uid://ra3n7bx03cca" path="res://HouseModel/surb_house_v_2_4.tscn" id="11_4jqnc"]
 [ext_resource type="PackedScene" uid="uid://dexa2pmw4ua8t" path="res://Assets/RandomObjects/bush/Bush.tscn" id="12_x5kdk"]
-[ext_resource type="PackedScene" path="res://HouseModel/surb_house_v_2_3.tscn" id="13_048gh"]
+[ext_resource type="PackedScene" uid="uid://dgvgcdc4hcryu" path="res://HouseModel/surb_house_v_2_3.tscn" id="13_048gh"]
 [ext_resource type="PackedScene" uid="uid://cxnlf1qokkhee" path="res://Assets/RandomObjects/streetlight/street_light.tscn" id="13_bcxsy"]
-[ext_resource type="PackedScene" path="res://HouseModel/surb_house_v_2_2.tscn" id="14_exxux"]
+[ext_resource type="PackedScene" uid="uid://c62gtec4unihb" path="res://HouseModel/surb_house_v_2_2.tscn" id="14_exxux"]
 [ext_resource type="PackedScene" uid="uid://dlk17rptaahid" path="res://HouseModel/surb_house_v_2_6.tscn" id="15_34jml"]
 [ext_resource type="Script" uid="uid://dbt273cudle2e" path="res://aidan_stuff/iteration_detector.gd" id="15_v0qsu"]
 [ext_resource type="PackedScene" uid="uid://d2rvqfwj71ucv" path="res://Assets/RandomObjects/billboard/billboard.tscn" id="18_vslbx"]
@@ -31,8 +31,7 @@
 [ext_resource type="Script" uid="uid://cefpvj7tg03be" path="res://aidan_stuff/bus.gd" id="23_3rgr2"]
 [ext_resource type="PackedScene" uid="uid://gk88lcwyw5hu" path="res://Assets/RandomObjects/cellar_investigate.tscn" id="23_5xofl"]
 [ext_resource type="PackedScene" uid="uid://cisg4q78neeyi" path="res://Assets/RandomObjects/bus/Bus_no_collisions.tscn" id="24_3rgr2"]
-[ext_resource type="PackedScene" uid="uid://cx5rbrvijd0rs" path="res://Assets/RandomObjects/bus/busssss.tscn" id="25_g1s53"]
-[ext_resource type="PackedScene" uid="uid://bul2360acir3e" path="res://Max's Folder (do not touch!!!)/transistion.tscn" id="26_ov7qd"]
+[ext_resource type="PackedScene" uid="uid://eginvg4sxfqg" path="res://Max's Folder (do not touch!!!)/transistion.tscn" id="26_ov7qd"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_0wadw"]
 albedo_color = Color(0.60271376, 0.7674062, 0.73615, 1)
@@ -2658,14 +2657,23 @@ shape = SubResource("BoxShape3D_milrp")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.685093, 0, -7.384315)
 
 [node name="heartBeatDetector" parent="AudioCues" instance=ExtResource("20_u2ehm")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.2216754, -0.20272827, 11.825592)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.3857403, 0.39871454, 9.012432)
 priority = 1
 
 [node name="CollisionShape3D" parent="AudioCues/heartBeatDetector" index="0"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 0, -3)
+transform = Transform3D(0.12, 0, 0, 0, 0.12, 0, 0, 0, 0.12, 0.17049885, 0, 0)
 
 [node name="QuestMarker!" parent="AudioCues/heartBeatDetector" index="1"]
-transform = Transform3D(0.25, 0, 0, 0, 0.25, 0, 0, 0, 0.25, 5.7988987, 0.8638283, -0.9018469)
+transform = Transform3D(0.12, 0, 0, 0, 0.12, 0, 0, 0, 0.12, 0.07003689, 0.032768726, 0)
+
+[node name="Label3D" type="Label3D" parent="AudioCues"]
+transform = Transform3D(-1.0926498e-08, -0.003926829, 0.24996912, -0.002617946, 0.24995542, 0.003926614, -0.24998626, -0.0026176227, -4.1131832e-05, -1.2889471, 0.48904485, 9.016839)
+rotation_order = 1
+text = "
+114
+-A
+"
+font_size = 22
 
 [node name="PineTrees" type="Node3D" parent="."]
 
@@ -2769,7 +2777,7 @@ wait_time = 5.0
 one_shot = true
 
 [node name="Kidnap" parent="." instance=ExtResource("26_ov7qd")]
-transform = Transform3D(0.25, 0, 0, 0, 0.25, 0, 0, 0, 0.25, 5.8738375, 0.03849697, -9.402044)
+transform = Transform3D(0.25, 0, 0, 0, 0.25, 0, 0, 0, 0.25, 5.8738375, 0.51520073, -9.402044)
 
 [connection signal="body_entered" from="LoadingSystem" to="." method="_on_area_3d_body_entered"]
 [connection signal="body_exited" from="LoadingSystem" to="." method="_on_area_3d_body_exited"]
