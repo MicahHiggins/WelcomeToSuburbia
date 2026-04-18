@@ -169,7 +169,7 @@ script = ExtResource("3_h60nn")
 [node name="Footstep" type="AudioStreamPlayer3D" parent="PlayerAudios"]
 stream = ExtResource("3_5hfox")
 volume_db = -4.552
-max_db = -0.045
+max_db = -3.521
 bus = &"SFX"
 
 [node name="heartBeat" type="AudioStreamPlayer3D" parent="PlayerAudios"]
