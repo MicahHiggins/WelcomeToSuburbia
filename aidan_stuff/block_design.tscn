@@ -171,7 +171,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.043141365)
 script = ExtResource("1_jmv40")
 
 [node name="Cellar Investigate" parent="." instance=ExtResource("23_5xofl")]
-transform = Transform3D(-0.5, 0, -4.371139e-08, 0, 0.5, 0, 4.371139e-08, 0, -0.5, -5.9443893, 0, 15.849679)
+transform = Transform3D(-0.5, 0, -4.371139e-08, 0, 0.5, 0, 4.371139e-08, 0, -0.5, 5.883498, 0, -15.985107)
 
 [node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="Cellar Investigate"]
 stream = ExtResource("3_jwb48")
@@ -2654,13 +2654,26 @@ shape = SubResource("BoxShape3D_milrp")
 [node name="Timer" type="Timer" parent="IterationDetector"]
 
 [node name="AudioCues" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.685093, 0, -7.384315)
 
 [node name="heartBeatDetector" parent="AudioCues" instance=ExtResource("20_u2ehm")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.2216754, -0.20272827, 12.371513)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.3857403, 0.39871454, 9.012432)
 priority = 1
 
+[node name="CollisionShape3D" parent="AudioCues/heartBeatDetector" index="0"]
+transform = Transform3D(0.12, 0, 0, 0, 0.12, 0, 0, 0, 0.12, 0.17049885, 0, 0)
+
 [node name="QuestMarker!" parent="AudioCues/heartBeatDetector" index="1"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.099029064, 0, -0.9018469)
+transform = Transform3D(0.12, 0, 0, 0, 0.12, 0, 0, 0, 0.12, 0.07003689, 0.032768726, 0)
+
+[node name="Label3D" type="Label3D" parent="AudioCues"]
+transform = Transform3D(-1.0926498e-08, -0.003926829, 0.24996912, -0.002617946, 0.24995542, 0.003926614, -0.24998626, -0.0026176227, -4.1131832e-05, -1.2889471, 0.48904485, 9.016839)
+rotation_order = 1
+text = "
+114
+-A
+"
+font_size = 22
 
 [node name="PineTrees" type="Node3D" parent="."]
 
@@ -2716,7 +2729,7 @@ transform = Transform3D(0.1, 0, 0, 0, 0.1, 0, 0, 0, 0.1, 1.0495567, 0, -11.19676
 transform = Transform3D(0.1, 0, 0, 0, 0.1, 0, 0, 0, 0.1, 0.849617, 0, -0.8997407)
 
 [node name="Dog" type="Node3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.7971344, 0.29864478, 15.185915)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15.607286, 0.29864478, -0.28181815)
 
 [node name="Area3D" type="Area3D" parent="Dog"]
 transform = Transform3D(0.05, 0, 0, 0, 0.05, 0, 0, 0, 0.05, 0, 0, 0)
@@ -2764,7 +2777,7 @@ wait_time = 5.0
 one_shot = true
 
 [node name="Kidnap" parent="." instance=ExtResource("26_ov7qd")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.0124893, 0.03849697, 9.736746)
+transform = Transform3D(0.25, 0, 0, 0, 0.25, 0, 0, 0, 0.25, 5.8738375, 0.51520073, -9.402044)
 
 [connection signal="body_entered" from="LoadingSystem" to="." method="_on_area_3d_body_entered"]
 [connection signal="body_exited" from="LoadingSystem" to="." method="_on_area_3d_body_exited"]

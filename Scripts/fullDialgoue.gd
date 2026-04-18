@@ -10,7 +10,7 @@ static var bobDialogue = [
 	["You can't leave", "I can't leave", "..."]
 ]
 static var abigailDialogue = [
-	["Welcome to Suburbia! I haven't seen you around here before", "Our HOA is absolutely magnificent, isn't it?", "I've never seen anything so perfect before!"],
+	["Welcome to Suburbia!\n I haven't seen you two\n around here before", "Our HOA is absolutely \nmagnificent, isn't it?", "I've never seen anything \nso perfect before!"],
 	["Without the Home Owners Association,\n this neighborhood wouldn’t be so pretty", "...", "..."],
 	["I heard the Campbells have lost Fido!\n Wherever can he be?", "Well, luckily, we have the safest neighborhood\n in the state!", "He can't be too far..."]
 ]
@@ -24,7 +24,7 @@ static var campbellsDialogue = [
 ]
 static var issDialogue = [
 	["...", "oh, hello", "I'm Isaac"],
-	["you two seem... new here", "I've been... Investigating", "111"], 
-	["are you two... stuck here like me?", "I have a bad feeling about this place", "a really, really, bad feeling"],
+	[""], 
+	["you two seem... new here\n you don't look like us", "I don't know how long\n I've been here... ", "take a look around...\n familiarize this place"],
 	["Ah, I knew it", "There's something over there", "Go there, figure out what it is..."]
 ]

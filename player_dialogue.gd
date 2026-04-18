@@ -1,9 +1,9 @@
 extends CanvasLayer
 
 @export var playerSpeech = RichTextLabel
-var dialogueStart = 5
-var dialogueVisible = 6
-var dialogueWait = 2
+const dialogueStart = 5
+const dialogueVisible = 6
+const dialogueWait = 2
 #GlobalVariables.dialogueSignal.emit()
 
 func _ready() -> void:

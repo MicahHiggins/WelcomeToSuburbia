@@ -46,7 +46,7 @@ func _process(delta: float) -> void:
 func iterationChange(value: int):
 	
 	#Dog disappears at iteration 3 (2), "teleports" to random location (house near abigail)
-	if value >= 2 && questHub.campbellProg == 0:
+	if value == 2 && questHub.campbellProg == 0:
 		#questHub.campbellProg = 1
 		#print("DOG DISAPPEARS!")
 		#quest_anim.play("Move_blue")
@@ -56,8 +56,7 @@ func iterationChange(value: int):
 		quest_marker_.visible = true
 		#questMarker.campbells = true
 		
-	else:
-		dog.visible = true
+
 	
 func campbellProgression(value: int):
 	
@@ -66,6 +65,8 @@ func campbellProgression(value: int):
 		0:
 			quest_marker_.visible = false
 			dog.visible = true
+		
+				
 		1:
 			quest_marker_.visible = true
 			dog.visible = false

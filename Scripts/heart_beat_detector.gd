@@ -10,6 +10,7 @@ signal heart_beat
 func _ready() -> void:
 	collision_shape_3d.set_deferred("disabled", true)
 	questHub.iteration_changed.connect(iterationChange)
+	questHub.isaacQuest.connect(isaacTrigger)
 	quest_marker_.visible = false
 	
 	match(GlobalVariables.isaac_quest_progression):
@@ -34,6 +35,16 @@ func iterationChange(value: int):
 	if GlobalVariables.isaac_quest_progression > 1:
 		queue_free()
 		print("itereationChanged! Heartbeat! Error/DQ!")
+		
+func isaacTrigger(value: int):
+	if GlobalVariables.isaac_quest_progression == 1:
+		quest_marker_.visible = true
+		collision_shape_3d.set_deferred("disabled", false) 
+		
+	if GlobalVariables.isaac_quest_progression > 1:
+		queue_free()
+		print("itereationChanged! Heartbeat! Error/DQ!")
+	
 			
 func _on_body_entered(body: Node3D) -> void:
 	if  body.is_in_group("player") && body.is_multiplayer_authority():

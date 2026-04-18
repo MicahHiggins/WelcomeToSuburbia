@@ -25,7 +25,9 @@ func _ready() -> void:
 
 func playTune(value: int):
 	
-	print("GOTTEN PLAYTUNE!")
+	wttn_1.stop()
+	wttn_2.stop()
+	wttn_3.stop()
 	
 	var num = randNum_start()
 	print("playTune", num)

@@ -106,12 +106,12 @@ func campDial():
 
 func issDial():
 	
-	if GlobalVariables.iterations >= 1 && GlobalVariables.isaac_quest_progression == 0:
+	if GlobalVariables.iterations == 1 && GlobalVariables.isaac_quest_progression == 0:
 		#isaacQuest.isaacQToggle = false
 		print("DOES THIS HAPPEN TWICE?")
 		#GlobalVariables.iterations += 1
-		questHub.isaacTrigger()
 		questHub.it_change()
+		questHub.isaacTrigger()
 		#questHub.campbellTrigger()
 		
 		print("DM: After issac talking trigger!")
@@ -125,6 +125,7 @@ func issDial():
 			dialogue.uniqueDialogue = npcDialogue.issDialogue[isaacQuest.ISAACQUEST_TURN_IN][iss_local]
 			#questHub.it_change()
 			if GlobalVariables.isaac_quest_progression == 3:
+				print("WHAT THE HEEEEELLLL")
 				questHub.isaacTrigger()
 			
 	
@@ -162,7 +163,7 @@ func dialogueMan(npc_name):
 		
 func enter_dialogue():
 	var number = 0
-	questHub.audio_play_talk(0)
+	#questHub.audio_play_talk(0)
 	#GlobalVariables.playerTalking = true
 	print(GlobalVariables.playerTalking)
 	if talking == false:

@@ -22,7 +22,9 @@ class_name soundScape
 @onready var child_3: AudioStreamPlayer = $children/child3
 @onready var child_4: AudioStreamPlayer = $children/child4
 
-@onready var soundArr = [bird_1, bird_2, bird_3, bird_4, wind_1, wind_2, wind_3, wind_4, child_1, child_2, child_3, child_4]
+@onready var soundArr = [bird_1, bird_2, bird_3, bird_4, child_1, child_2, child_3, child_4]
+@onready var windArr = [wind_1, wind_2, wind_3, wind]
+
 var sound
 
 
@@ -38,11 +40,14 @@ func randNum(range1: float, range2: float):
 	return randf_range(range1, range2)
 
 func randomNumTransition():
-	return randi_range(2, 10)
+	return randi_range(5, 15)
 	
 	
 func randSound():
-	return randi_range(0, 11)
+	return randi_range(0, 7)
+	
+func randWind():
+	return randi_range(0, 3)
 	
 	
 
@@ -54,15 +59,38 @@ func _ready() -> void:
 func levelOut():
 	#print("LEVL OUT!")
 	soundToggle = false
+	
+	
+func windPlay():
+	var windNum = randWind()
+	
+	match(windNum):
+		0:
+			wind_1.play()
+		1:
+			wind_2.play()
+		2:
+			wind_3.play()
+		3:
+			wind_4.play()
+			
+	await get_tree().create_timer(15).timeout 
+	
+	windPlay()
+	
+		
+	
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
 	if soundToggle == false:
-		#print("SOUND TOGGLE!")
-		playTrack3.emit()
 		soundToggle = true
-		var master_bus_index = AudioServer.get_bus_index("soundScape")
-		AudioServer.set_bus_mute(master_bus_index, true)
+		playTrack3.emit()
+		
+		var ssMute = AudioServer.get_bus_index("soundScape")
+		var windMute = AudioServer.get_bus_index("wind")
+		AudioServer.set_bus_mute(ssMute, true)
+		AudioServer.set_bus_mute(windMute, true)
 		
 	
 func soundManipulation(sound: AudioStreamPlayer):
@@ -126,8 +154,7 @@ var start := false
 
 func _on_audio_manager_game_start() -> void:
 	if start == false:
-		sound = soundArr[randSound()]
-		soundManipulation(sound)
+		windPlay()
 		start = true
 		
 	var num = randomNumTransition()

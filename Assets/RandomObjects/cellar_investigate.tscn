@@ -54,6 +54,7 @@ collision_layer = 3
 script = ExtResource("1_rx571")
 
 [node name="QuestMarker!" parent="." instance=ExtResource("2_8eug6")]
+transform = Transform3D(0.25, 0, 0, 0, 0.25, 0, 0, 0, 0.25, 0, 0.33334744, 0)
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
 transform = Transform3D(2.6, 0, 0, 0, 1, 0, 0, 0, 2.72, 0, 0, 0)
