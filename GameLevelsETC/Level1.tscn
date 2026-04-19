@@ -124,5 +124,5 @@ cellar_root_path = NodePath("")
 [node name="Spawn" type="Marker3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 55.014503, 2.4970512, 55.606415)
 
-[node name="Crawler" parent="Spawn" instance=ExtResource("8_d084q")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.3250885, 0)
+[node name="Crawler" parent="." instance=ExtResource("8_d084q")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 55.014503, 6.8221397, 76.606415)
