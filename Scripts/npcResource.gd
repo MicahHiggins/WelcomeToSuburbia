@@ -77,7 +77,7 @@ func abiDial():
 var DBToggle := false
 func campDial():
 
-	if GlobalVariables.iterations >= 2 && questHub.campbellProg == 1:
+	if GlobalVariables.iterations >= 2 && questHub.campbellProg == 0:
 	
 		
 		print("Campbell Talked To! in iter 3-5")
@@ -88,19 +88,19 @@ func campDial():
 	if (GlobalVariables.iterations >= 2):
 		dialogue.uniqueDialogue =  npcDialogue.campbellsDialogue[2][camp_local]
 	
-		if GlobalVariables.iterations < 6 && questHub.campbellProg == 3:
+		if GlobalVariables.iterations < 6 && questHub.campbellProg == 2:
 			#if camp_local == 2 && DBToggle == false:
 				#DBToggle = true
 				#camp_local = 0
 			dialogue.uniqueDialogue = npcDialogue.campbellsDialogue[FIDOFOUND][camp_local]
 			#questHub.campbellProg = 4
 			questHub.campbellTrigger()
-		elif questHub.campbellProg > 3:
+		elif questHub.campbellProg > 2:
 			dialogue.uniqueDialogue = npcDialogue.campbellsDialogue[FIDOFOUND][camp_local]
 			
 			
 		elif GlobalVariables.iterations > 6:
-			questHub.campbellProg = 5
+			questHub.campbellProg = 4
 			dialogue.uniqueDialogue = npcDialogue.campbellsDialogue[FIDOLOST][camp_local]
 			
 				
