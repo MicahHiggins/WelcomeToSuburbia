@@ -83,7 +83,7 @@ func campDial():
 		print("Campbell Talked To! in iter 3-5")
 		questHub.it_change()
 		
-		#questHub.campbellTrigger()
+		questHub.campbellTrigger()
 		
 	if (GlobalVariables.iterations >= 2):
 		dialogue.uniqueDialogue =  npcDialogue.campbellsDialogue[2][camp_local]
@@ -95,6 +95,9 @@ func campDial():
 			dialogue.uniqueDialogue = npcDialogue.campbellsDialogue[FIDOFOUND][camp_local]
 			#questHub.campbellProg = 4
 			questHub.campbellTrigger()
+		elif questHub.campbellProg > 3:
+			dialogue.uniqueDialogue = npcDialogue.campbellsDialogue[FIDOFOUND][camp_local]
+			
 			
 		elif GlobalVariables.iterations > 6:
 			questHub.campbellProg = 5
