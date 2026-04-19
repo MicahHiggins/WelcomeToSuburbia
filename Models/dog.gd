@@ -72,7 +72,7 @@ func campbellProgression(value: int):
 			
 					
 			1:
-				quest_marker_.visible = true
+				quest_marker_.visible = false
 				dog.visible = false
 			2:
 				quest_marker_.visible = false

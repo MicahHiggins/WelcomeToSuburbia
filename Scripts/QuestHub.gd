@@ -61,7 +61,7 @@ func server_request_campbell_up():
 	if found_fido_early == true:
 		found_fido_early = false
 		print("BRUH")
-		questHub.campbellProg = 3
+		questHub.campbellProg = 2
 	
 	# 3. Server broadcasts the NEW values to everyone
 	sync_campbell_state.rpc(questHub.campbellProg, GlobalVariables.iterations)

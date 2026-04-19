@@ -42,7 +42,7 @@ func _process(delta: float) -> void:
 
 func campbellProgression(value: int):
 
-	if questHub.campbellProg == 2:
+	if questHub.campbellProg == 1:
 		print("FIDO Progression!!!")
 		print("Fido Progression: ", questHub.campbellProg)
 		quest_marker_.visible = true
@@ -73,7 +73,7 @@ func iterationChange(value: int):
 
 func _on_area_3d_body_entered(body: Node3D) -> void:
 
-	if body.is_in_group("player") && body.is_multiplayer_authority() && questHub.campbellProg > 0:
+	if body.is_in_group("player") && questHub.campbellProg > 0:
 		visible = false
 		#questHub.campbellProg = 3
 		questHub.found_fido_early = true
