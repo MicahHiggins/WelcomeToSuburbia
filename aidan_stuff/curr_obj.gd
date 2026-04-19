@@ -39,13 +39,16 @@ func campbellProgression(value: int):
 			side.text = "Find Fido (The Dog)"
 	if questHub.campbellProg == 2:
 		side.text =  "Tell the Campbell Family\n you found Fido!"
-	if value == 2 && questHub.campbellProg == 1:
+	if value == 2 && questHub.campbellProg == 0:
 		side.text = "Investigate the Crying\n (Campbells)"
 	if questHub.campbellProg == 3:
 		side.text = "none"
 
 #Iteration change (ref questHub.gd)
 func iterationChange(value: int):
+	
+	if value == 2 && questHub.campbellProg == 0:
+		side.text = "Investigate the Crying\n (Campbells)"
 	
 	if value == 1 && isaacQuestDB == false:
 		isaacQuestDB = true
