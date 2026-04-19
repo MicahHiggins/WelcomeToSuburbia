@@ -16,18 +16,22 @@ func _ready() -> void:
 	
 	match(questHub.campbellProg):
 		0:
-			quest_marker_.visible = false
-			dog.visible = true
+			if GlobalVariables.iterations >= 2:
+				quest_marker_.visible = true
+				dog.visible = false
 		1:
-			quest_marker_.visible = true
+			quest_marker_.visible = false
 			dog.visible = false
 		2:
-			quest_marker_.visible = false
+			quest_marker_.visible = true
 			dog.visible = false
 		3:
 			quest_marker_.visible = true
 			dog.visible = false
 		4:
+			quest_marker_.visible = false
+			dog.visible = false
+		_: 
 			quest_marker_.visible = false
 			dog.visible = false
 	#if questMarker.campbells == true:
@@ -59,24 +63,24 @@ func iterationChange(value: int):
 
 	
 func campbellProgression(value: int):
-	
-	#bro this system is so good bro i stfg this shit is so ass
-	match(questHub.campbellProg):
-		0:
-			quest_marker_.visible = false
-			dog.visible = true
-		
-				
-		1:
-			quest_marker_.visible = true
-			dog.visible = false
-		2:
-			quest_marker_.visible = false
-			dog.visible = false
-		3:
-			quest_marker_.visible = true
-			dog.visible = false
-		4:
-			quest_marker_.visible = false
-			dog.visible = false
+	if GlobalVariables.iterations >= 2:
+		#bro this system is so good bro i stfg this shit is so ass
+		match(questHub.campbellProg):
+			0:
+				quest_marker_.visible = true
+				dog.visible = false
+			
+					
+			1:
+				quest_marker_.visible = true
+				dog.visible = false
+			2:
+				quest_marker_.visible = false
+				dog.visible = false
+			3:
+				quest_marker_.visible = true
+				dog.visible = false
+			4:
+				quest_marker_.visible = false
+				dog.visible = false
 	

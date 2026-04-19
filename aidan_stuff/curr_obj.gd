@@ -31,17 +31,17 @@ func _process(delta: float) -> void:
 
 #checks if campbells are talked to during iteration 3-5
 func campbellProgression(value: int):
-	if value >= 2 && value <= 5 && questHub.campbellProg == 1:
+	if value >= 2 && value <= 5 && questHub.campbellProg == 0:
 		if questHub.campbellProg == 4:
 			side.text = "Tell Campbells you have found Fido"
 			#questHub.campbellProg = 4
-	if questHub.campbellProg == 2:
+	if questHub.campbellProg == 1:
 			side.text = "Find Fido (The Dog)"
-	if questHub.campbellProg == 3:
+	if questHub.campbellProg == 2:
 		side.text =  "Tell the Campbell Family\n you found Fido!"
 	if value == 2 && questHub.campbellProg == 1:
 		side.text = "Investigate the Crying\n (Campbells)"
-	if questHub.campbellProg == 4:
+	if questHub.campbellProg == 3:
 		side.text = "none"
 
 #Iteration change (ref questHub.gd)
