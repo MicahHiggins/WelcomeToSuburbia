@@ -126,3 +126,4 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 55.014503, 2.4970512, 55.6064
 
 [node name="Crawler" parent="." instance=ExtResource("8_d084q")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 55.014503, 6.8221397, 76.606415)
+visible = false
