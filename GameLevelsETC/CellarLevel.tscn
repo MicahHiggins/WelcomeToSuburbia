@@ -104,3 +104,4 @@ light_indirect_energy = 0.5
 light_specular = 0.2
 
 [node name="Flashlight" parent="." instance=ExtResource("6_f1x8v")]
+transform = Transform3D(0.1, 0, 0, 0, 0.1, 0, 0, 0, 0.2, 0, 0, 0)
