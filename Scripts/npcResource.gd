@@ -61,10 +61,7 @@ func bobDial():
 			dialogue.uniqueDialogue = npcDialogue.bobDialogue[GlobalVariables.iterations][bob_local]
 			
 		bob_local += 1
-		
-		
-		
-		
+
 func abiDial():
 		if (GlobalVariables.iterations >= 3):
 			dialogue.uniqueDialogue =  npcDialogue.abigailDialogue[4][abi_local]
