@@ -2168,6 +2168,7 @@ transform = Transform3D(0.13999991, 0, 8.058851e-05, 0, 0.13999988, 0, -8.058851
 transform = Transform3D(-8.5525986e-05, 0, -0.13999997, 0, 0.13999999, 0, 0.13999997, 0, -8.5525986e-05, 10.09155, 0.14870933, 4.097175)
 
 [node name="LoadingSystem" type="Area3D" parent="."]
+transform = Transform3D(0.8, 0, 0, 0, 0.8, 0, 0, 0, 0.8, 0, 0, 0)
 collision_layer = 0
 collision_mask = 8
 

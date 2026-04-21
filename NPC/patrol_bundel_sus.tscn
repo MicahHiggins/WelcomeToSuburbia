@@ -30,7 +30,7 @@ tracks/0/path = NodePath("NPC_SUS/random npc:position")
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.26666668),
+"times": PackedFloat32Array(0, 0.23333333),
 "transitions": PackedFloat32Array(1, 1),
 "update": 0,
 "values": [Vector3(0, -1.0188178, 0), Vector3(0, -3, 0)]
@@ -55,12 +55,10 @@ libraries = {
 &"": SubResource("AnimationLibrary_ds24v")
 }
 
-[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="jumpscare"]
+[node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="jumpscare"]
 stream = ExtResource("3_x1yi4")
-volume_db = -10.301
-pitch_scale = 0.66
-mix_target = 1
-bus = &"Reverb"
+volume_db = 3.945
+pitch_scale = 0.7
 
 [node name="hoa_quest" type="Node3D" parent="."]
 script = ExtResource("3_2cvra")

@@ -54,8 +54,8 @@ func _input(event: InputEvent) -> void:
 		#enter_dialogue()
 		
 func bobDial():
-		if (GlobalVariables.iterations >= 2):
-			dialogue.uniqueDialogue =  npcDialogue.bobDialogue[2][bob_local]
+		if (GlobalVariables.iterations >= 4):
+			dialogue.uniqueDialogue =  npcDialogue.bobDialogue[4][bob_local]
 			
 		else:
 			dialogue.uniqueDialogue = npcDialogue.bobDialogue[GlobalVariables.iterations][bob_local]
@@ -66,8 +66,8 @@ func bobDial():
 		
 		
 func abiDial():
-		if (GlobalVariables.iterations >= 3):
-			dialogue.uniqueDialogue =  npcDialogue.abigailDialogue[2][abi_local]
+		if (GlobalVariables.iterations >= 4):
+			dialogue.uniqueDialogue =  npcDialogue.abigailDialogue[4][abi_local]
 		else:
 			dialogue.uniqueDialogue = npcDialogue.abigailDialogue[GlobalVariables.iterations][abi_local]
 			
