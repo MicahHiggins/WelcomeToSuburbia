@@ -15,7 +15,7 @@ damping = 0.0
 
 [sub_resource type="AudioEffectReverb" id="AudioEffectReverb_n8wo2"]
 resource_name = "Reverb"
-wet = 0.15
+wet = 0.66
 
 [sub_resource type="AudioEffectPanner" id="AudioEffectPanner_g28q7"]
 resource_name = "Panner"

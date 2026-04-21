@@ -23,6 +23,7 @@ func _on_talk_detection_body_entered(body: Node3D) -> void:
 		if jumpscared_played == false:
 			jumpscared_played = true
 			audio_stream_player.play()
+			await get_tree().create_timer(0.2).timeout
 			jumpscare.play("duck")
 		
 
