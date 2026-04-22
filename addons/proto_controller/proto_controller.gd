@@ -85,7 +85,7 @@ var is_sprinting: bool = false
 
 @export var item_manager_name: StringName = &"ItemManager"
 
-var SERVER_ID: int = -1
+const SERVER_ID: int = 1
 
 # Breathing Audio
 const BREATHING_THRESHOLD := 0.5
