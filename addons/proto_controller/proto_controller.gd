@@ -1004,6 +1004,7 @@ func _try_use_attack() -> void:
 	_last_attack_time = now
 	_play_attack_local()
 	_net_broadcast_attack_anim()
+	_notify_bat_swing_gates()
 	request_use_attack_rpc()
 
 func _net_broadcast_attack_anim() -> void:
@@ -1033,6 +1034,10 @@ func _play_attack_local() -> void:
 			held_anim.stop()
 			held_anim.play(String(attack_anim_name))
 
+
+func _notify_bat_swing_gates() -> void:
+	var pid := int(get_multiplayer_authority())
+	get_tree().call_group("bat_swing_gate", "notify_swing", pid)
 # =========================
 #      FRAME / PHYSICS
 # =========================
