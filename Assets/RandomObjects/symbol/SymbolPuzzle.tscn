@@ -12,7 +12,7 @@
 [ext_resource type="Script" uid="uid://brt7ixudi60mk" path="res://Assets/RandomObjects/symbol/buttons_4_see.gd" id="10_2j2dh"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_lcf58"]
-radius = 1.745
+radius = 1.0
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_lam6w"]
 texture = ExtResource("3_lcf58")
@@ -194,10 +194,10 @@ layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5
-offset_left = -558.0
-offset_top = -2.0
-offset_right = -271.0
-offset_bottom = 164.0
+offset_left = -166.0
+offset_top = -7.0
+offset_right = 121.0
+offset_bottom = 159.0
 grow_horizontal = 2
 theme_override_font_sizes/font_size = 30
 text = "Move away to exit...

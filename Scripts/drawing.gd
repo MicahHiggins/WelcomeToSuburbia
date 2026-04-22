@@ -23,7 +23,7 @@ func _ready() -> void:
 	for x in gridSize:
 		for y in gridSize:
 			# Setup the Grey Grid Lines (every 10 tiles)
-			for i in range(0, 31, 10):
+			for i in range(0, 31, 5):
 				if i > 0:
 					var g_pos1 = Vector2i(x + 20, i)
 					var g_pos2 = Vector2i(i + 20, y)
