@@ -2281,5 +2281,9 @@ shape = SubResource("BoxShape3D_lobfv")
 
 [connection signal="puzzleOneComplete" from="Bedrooms/bedroom2/toy_piano" to="." method="_on_toy_piano_puzzle_one_complete"]
 [connection signal="puzzleTwoComplete" from="Puzzle2/Drawing/drawing" to="." method="_on_drawing_puzzle_two_complete"]
+[connection signal="body_entered" from="SwingGate" to="." method="_on_swing_gate_body_entered"]
+[connection signal="body_exited" from="SwingGate" to="SwingGate" method="_on_body_exited"]
+[connection signal="body_entered" from="SwingGate2" to="SwingGate2" method="_on_body_entered"]
+[connection signal="body_exited" from="SwingGate2" to="SwingGate2" method="_on_body_exited"]
 
 [editable path="Puzzle2"]
