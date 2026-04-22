@@ -454,10 +454,10 @@ material = SubResource("StandardMaterial3D_rkcnq")
 size = Vector3(16, 5, 16)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_dwtrd"]
-size = Vector3(3.7436523, 0.53027344, 1.7646484)
+size = Vector3(3.7436523, 0.20391846, 1.7646484)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_un8vx"]
-size = Vector3(2.5213623, 0.4248047, 4.258911)
+size = Vector3(2.5213623, 0.09790039, 4.258911)
 
 [node name="Kidnap" type="Node3D"]
 script = ExtResource("1_6rn1s")
@@ -727,7 +727,7 @@ collision_layer = 15
 authority_only_physics = false
 
 [node name="Shelf" type="MeshInstance3D" parent="Bedrooms/bedroom2"]
-transform = Transform3D(-2.0815234e-08, 0.0010388906, 0.47619268, -1.16415315e-10, 0.5952399, -0.0008311139, -0.4761924, -1.9093079e-10, -2.0815044e-08, -1.9190041, -1.3467678, -16.26862)
+transform = Transform3D(-2.0815234e-08, 0.0010388906, 0.47619262, -1.16415315e-10, 0.5952399, -0.0008311138, -0.4761924, -1.9093079e-10, -2.081504e-08, -1.9190041, -1.3467678, -16.26862)
 visible = false
 mesh = SubResource("BoxMesh_dwtrd")
 skeleton = NodePath("../../..")
@@ -2239,18 +2239,20 @@ transform = Transform3D(1.9106855e-15, 4.371139e-08, -1, 1, -4.371139e-08, 0, -4
 
 [node name="StaticBody3D" type="StaticBody3D" parent="."]
 transform = Transform3D(2.1000006, 0, 0, 0, 1.6800001, 0, 0, 0, 2.1000006, -0.2010994, -2.3001947, 24.339613)
+collision_layer = 4
+collision_mask = 0
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.3718262, -0.23486328, -0.38232422)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.3718262, -0.39804077, -0.38232422)
 shape = SubResource("BoxShape3D_dwtrd")
 
 [node name="StaticBody3D2" type="StaticBody3D" parent="."]
 transform = Transform3D(-2.099999, 0.0016153234, 0.00012779227, 0.002019005, 1.679999, -0.0024647142, -0.0001301201, -0.0019716753, -2.0999997, -2.9492183, -2.0398018, -19.396973)
 collision_layer = 4
-collision_mask = 4
+collision_mask = 0
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D2"]
-transform = Transform3D(1, 2.1468697e-08, 1.6007107e-10, -4.658736e-08, 1.0000578, -1.0477379e-08, -7.275958e-12, 7.566996e-10, 1.0000445, 0.76068103, -0.28759754, -1.1015215)
+transform = Transform3D(1, 3.445107e-08, 3.4197e-10, -7.487628e-08, 1.0000936, -1.7113052e-08, 2.1827873e-11, 4.0745363e-10, 1.0000715, 0.76068175, -0.45106065, -1.1015215)
 shape = SubResource("BoxShape3D_un8vx")
 
 [connection signal="puzzleOneComplete" from="Bedrooms/bedroom2/toy_piano" to="." method="_on_toy_piano_puzzle_one_complete"]
