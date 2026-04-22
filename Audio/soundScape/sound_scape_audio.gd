@@ -136,6 +136,10 @@ func soundManipulation(sound: AudioStreamPlayer):
 			sound.pitch_scale = randNum(0.05, 0.3)
 			#sound.panning_strength = randNum(0, 3)
 			sound.play()
+		_: 
+			sound.pitch_scale = randNum(0.05, 0.3)
+			
+			sound.play()
 	#sound.finished
 			
 

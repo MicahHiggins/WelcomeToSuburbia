@@ -16,6 +16,8 @@ func server_trigger_event():
 		return
 	
 	print("Server: Triggering global iteration change")
+	if GlobalVariables.iterations >=  1:
+		return null
 	questHub.it_change()
 	
 	# 3. Tell everyone to remove this node from their game

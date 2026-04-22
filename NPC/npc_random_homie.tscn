@@ -15,6 +15,7 @@ radius = 2.0
 [node name="NPC_Random_Homie" type="CharacterBody3D" groups=["NPC"]]
 collision_mask = 3
 script = ExtResource("1_m8t8r")
+move_speed = 2.5
 
 [node name="interact" type="Area3D" parent="."]
 collision_layer = 0

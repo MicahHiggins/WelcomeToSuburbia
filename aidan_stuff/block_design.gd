@@ -2,6 +2,9 @@ extends Node3D
 
 @onready var houses: Node3D = $Houses
 @onready var roads: Node3D = $Roads
+@onready var sidewalk: Node3D = $Sidewalk
+@onready var fences: Node3D = $Fences
+@onready var hedges: Node3D = $Hedges
 
 
 const PATROL_BUNDLE: PackedScene = preload("res://aidan_stuff/patrol_path.tscn")
@@ -29,6 +32,9 @@ func _ready() -> void:
 	GlobalVariables.dialogueSignal.emit()
 	houses.visible = false
 	roads.visible = false
+	sidewalk.visible = false
+	hedges.visible = false
+	fences.visible = false
 
 	# late joiners: if someone joins after we spawned, server tells them the current state
 	if multiplayer.has_multiplayer_peer() and multiplayer.is_server():
@@ -91,6 +97,9 @@ func _rpc_set_active(active: bool, block_xform: Transform3D) -> void:
 
 	houses.visible = active
 	roads.visible = active
+	sidewalk.visible = active
+	hedges.visible = active
+	fences.visible = active
 	print("SET")
 
 	if active:

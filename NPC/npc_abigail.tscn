@@ -16,6 +16,7 @@ radius = 2.0
 [node name="NPC_Abigail" type="CharacterBody3D" groups=["NPC"]]
 collision_mask = 3
 script = ExtResource("1_momcg")
+move_speed = 2.5
 
 [node name="interact" type="Area3D" parent="."]
 collision_layer = 0
