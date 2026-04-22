@@ -41,7 +41,7 @@ var _player_spawner: Node = null
 var _players_root: Node3D = null
 
 # ------------------------------------------------------------
-# Pause menu LevelSelect buttons (matches your scene tree)
+# Pause menu LevelSelect buttons 
 # Menu/pause/LevelSelect/lvl1Button
 # Menu/pause/LevelSelect/lvl2Button
 # Menu/pause/LevelSelect/lvl3Button
@@ -66,10 +66,10 @@ var _lvl3_btn: Button = null
 
 # Drag ONLY the UI you want hidden until the intro finishes:
 # Host / Join / Quit buttons, JoinCode LineEdit, etc.
-# Do NOT put your title art/background in here.
+
 @export var intro_gate_nodes: Array[CanvasItem] = []
 
-# Optional: “Press Any Key” prompt (will hide when intro starts)
+# “Press Any Key” prompt (will hide when intro starts)
 @export var press_any_node: CanvasItem = null
 
 var _intro_started: bool = false
@@ -185,11 +185,10 @@ func _init_press_any_intro() -> void:
 
 	# IMPORTANT:
 	# - We do NOT hide the whole CanvasLayer.
-	# - Your normal title screen art stays visible.
-	# - We ONLY hide the nodes you drag into intro_gate_nodes.
+	# - We ONLY hide the nodes in intro_gate_nodes.
 	_set_gate_nodes_visible(false)
 
-	# Show press-any prompt if you have one
+	
 	if press_any_node != null:
 		press_any_node.visible = true
 
