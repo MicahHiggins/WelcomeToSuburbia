@@ -103,7 +103,7 @@ _data = {
 
 [node name="ProtoController" type="CharacterBody3D" groups=["player"]]
 collision_layer = 8
-collision_mask = 3
+collision_mask = 11
 script = ExtResource("1_ucva2")
 base_speed = 3.2
 jump_velocity = 3.5
@@ -135,7 +135,7 @@ hear_radius = 80.0
 unit_size = 0.8
 base_volume_db = 4.0
 playback_buffer_sec = 0.05
-far_cut_db = 20.0
+far_cut_db = 50.0
 debug_interval_sec = 4.0
 
 [node name="VoicePlayer3D" type="AudioStreamPlayer3D" parent="Head"]
