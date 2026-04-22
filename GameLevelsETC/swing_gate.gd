@@ -33,8 +33,12 @@ func _on_body_entered(body: Node) -> void:
 	if multiplayer.has_multiplayer_peer():
 		if not _is_my_local_player(body):
 			return
-		var pid := int(multiplayer.get_unique_id())
-		rpc_id(SERVER_ID, "_rpc_set_inside", pid, true)
+		var pid := int((body as Node).get_multiplayer_authority())
+
+		if multiplayer.is_server():
+			_rpc_set_inside(pid, true)
+		else:
+			rpc_id(SERVER_ID, "_rpc_set_inside", pid, true)
 	else:
 		var pid2 := _peer_id_from_player(body)
 		if pid2 > 0:
@@ -48,8 +52,12 @@ func _on_body_exited(body: Node) -> void:
 	if multiplayer.has_multiplayer_peer():
 		if not _is_my_local_player(body):
 			return
-		var pid := int(multiplayer.get_unique_id())
-		rpc_id(SERVER_ID, "_rpc_set_inside", pid, false)
+		var pid := int((body as Node).get_multiplayer_authority())
+
+		if multiplayer.is_server():
+			_rpc_set_inside(pid, false)
+		else:
+			rpc_id(SERVER_ID, "_rpc_set_inside", pid, false)
 	else:
 		var pid2 := _peer_id_from_player(body)
 		if pid2 > 0:
