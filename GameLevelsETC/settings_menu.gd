@@ -14,20 +14,22 @@ extends CanvasLayer
 @onready var soundscape_slider = $Sound/SoundScapeSlider
 @onready var sound_back_button = $Sound/BackButton
 
-@onready var actions_container = $Controls/ActionsContainer
-@onready var controls_back_button = $Controls/BackButton
+@onready var actions_container = $Controls/VBoxContainer/ScrollContainer/ActionsContainer
+@onready var controls_back_button = $Controls/VBoxContainer/BackButton
 
 var opened_from: String = ""
 var waiting_for_action: String = ""
 
 var rebind_actions := {
-	"Move Forward": "move_forward",
-	"Move Back": "move_back",
-	"Move Left": "move_left",
-	"Move Right": "move_right",
-	"Jump": "jump",
 	"Interact": "interact",
-	"Sprint": "sprint"
+	"Quit / Back": "quit",
+	"Free Fly": "freefly",
+	"Sprint": "sprint",
+	"Drop Item": "drop",
+	"Use / Attack": "use-attack",
+	"Toggle Flashlight": "toggle_flashlight",
+	"Voice Chat": "voice",
+	"Begin / Start": "begin"
 }
 
 func _ready() -> void:
@@ -136,22 +138,39 @@ func db_to_slider(db: float) -> float:
 # =========================
 
 func build_controls_menu() -> void:
+	# Clear old rows
 	for child in actions_container.get_children():
 		child.queue_free()
+
+	# Load your font once
+	var font = load("res://addons/Font/GimletDisplay-Regular-Testing.otf")
+	var font_size = 28
 
 	for display_name in rebind_actions.keys():
 		var action_name = rebind_actions[display_name]
 
+		# Whole row
 		var row := HBoxContainer.new()
+		row.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		row.custom_minimum_size = Vector2(0, 60)
 
+		# Action name label
 		var action_label := Label.new()
 		action_label.text = display_name
-		action_label.custom_minimum_size = Vector2(220, 0)
+		action_label.custom_minimum_size = Vector2(190, 60)
+		action_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		action_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+		action_label.add_theme_font_override("font", font)
+		action_label.add_theme_font_size_override("font_size", font_size)
 
+		# Rebind button
 		var key_button := Button.new()
 		key_button.name = action_name
 		key_button.text = get_action_display_text(action_name)
+		key_button.custom_minimum_size = Vector2(260, 60)
 		key_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		key_button.add_theme_font_override("font", font)
+		key_button.add_theme_font_size_override("font_size", font_size)
 		key_button.pressed.connect(_on_rebind_button_pressed.bind(action_name))
 
 		row.add_child(action_label)
@@ -175,17 +194,33 @@ func _on_rebind_button_pressed(action_name: String) -> void:
 				else:
 					child.text = get_action_display_text(child.name)
 
-func _input(event: InputEvent) -> void:
+func _unhandled_input(event: InputEvent) -> void:
 	if not visible:
 		return
 
-	if waiting_for_action == "":
-		return
-
 	if event is InputEventKey and event.pressed and not event.echo:
-		rebind_action(waiting_for_action, event)
-		waiting_for_action = ""
-		refresh_controls_menu()
+		if waiting_for_action != "":
+			if event.keycode == KEY_ESCAPE:
+				waiting_for_action = ""
+				refresh_controls_menu()
+				get_viewport().set_input_as_handled()
+				return
+
+			rebind_action(waiting_for_action, event)
+			waiting_for_action = ""
+			refresh_controls_menu()
+			get_viewport().set_input_as_handled()
+			return
+
+		if event.keycode == KEY_ESCAPE:
+			if controls_page.visible:
+				_on_controls_back_pressed()
+			elif sound_page.visible:
+				_on_sound_back_pressed()
+			elif main_page.visible:
+				_on_main_back_pressed()
+
+			get_viewport().set_input_as_handled()
 
 func rebind_action(action_name: String, event: InputEventKey) -> void:
 	var old_events = InputMap.action_get_events(action_name)

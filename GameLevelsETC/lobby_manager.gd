@@ -1,7 +1,10 @@
 extends Node3D
 class_name LobbyManager
 
-@onready var settings_menu = %SettingsMenu
+@onready var menu_root = $"../Menu"
+@onready var main_menu = $"../Menu/CanvasLayer"
+@onready var pause_menu = $"../Menu/pause"
+@onready var settings_menu = $"../Menu/SettingsMenu"
 # Steam lobby + menu logic lives here (GameRoot-level, persists across levels)
 
 @export var player_scene: PackedScene
@@ -597,8 +600,13 @@ func _on_pause_back_to_menu_pressed() -> void:
 	_capture_mouse(false)
 
 func _on_pause_settings_pressed() -> void:
-	hide()
-	settings_menu.open_from("pause")
+	if pause_menu != null:
+		pause_menu.hide()
+
+	if settings_menu != null:
+		settings_menu.open_from("pause")
+	else:
+		push_error("SettingsMenu node was not found.")
 
 func _on_pause_copy_code_pressed() -> void:
 	var code_text := ""

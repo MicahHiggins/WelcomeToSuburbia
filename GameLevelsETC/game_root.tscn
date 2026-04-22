@@ -260,10 +260,9 @@ _data = {
 [node name="LobbyManager" type="Node3D" parent="." node_paths=PackedStringArray("intro_anim_player", "intro_gate_nodes", "press_any_node")]
 script = ExtResource("1_l5n62")
 player_scene = ExtResource("2_6bcdd")
-level_select_root_path = NodePath("../Menu/PauseMenu/LevelSelect")
-intro_anim_player = NodePath("../Menu/MainMenu/AnimationPlayer")
-intro_gate_nodes = [NodePath("../Menu/MainMenu/Host"), NodePath("../Menu/MainMenu/Join"), NodePath("../Menu/MainMenu/quit2")]
-press_any_node = NodePath("../Menu/MainMenu/start text")
+intro_anim_player = NodePath("../Menu/CanvasLayer/AnimationPlayer")
+intro_gate_nodes = [NodePath("../Menu/CanvasLayer/Host"), NodePath("../Menu/CanvasLayer/Join"), NodePath("../Menu/CanvasLayer/quit2")]
+press_any_node = NodePath("../Menu/CanvasLayer/start text")
 
 [node name="PlayersRoot" type="Node3D" parent="."]
 
@@ -283,28 +282,28 @@ script = ExtResource("9_nqjqn")
 
 [node name="Menu" type="Node" parent="."]
 
-[node name="MainMenu" type="CanvasLayer" parent="Menu"]
+[node name="CanvasLayer" type="CanvasLayer" parent="Menu"]
 
-[node name="Grass" type="Panel" parent="Menu/MainMenu"]
+[node name="Grass" type="Panel" parent="Menu/CanvasLayer"]
 offset_left = -41.0
 offset_top = -24.0
 offset_right = 1182.0
 offset_bottom = 1201.0
 theme_override_styles/panel = SubResource("StyleBoxTexture_mekh1")
 
-[node name="BackPostcard" type="Panel" parent="Menu/MainMenu"]
+[node name="BackPostcard" type="Panel" parent="Menu/CanvasLayer"]
 offset_left = 576.0
 offset_right = 576.0
 offset_bottom = 646.0
 theme_override_styles/panel = SubResource("StyleBoxTexture_7i78e")
 
-[node name="TitleScreen" type="Panel" parent="Menu/MainMenu"]
+[node name="TitleScreen" type="Panel" parent="Menu/CanvasLayer"]
 offset_left = -8.0
 offset_right = 1146.0
 offset_bottom = 646.0
 theme_override_styles/panel = SubResource("StyleBoxTexture_fan4m")
 
-[node name="Host" type="Button" parent="Menu/MainMenu"]
+[node name="Host" type="Button" parent="Menu/CanvasLayer"]
 anchors_preset = -1
 anchor_right = 0.2560764
 anchor_bottom = 0.10185185
@@ -317,7 +316,7 @@ theme_override_font_sizes/font_size = 28
 text = "Host
 "
 
-[node name="Join" type="Button" parent="Menu/MainMenu"]
+[node name="Join" type="Button" parent="Menu/CanvasLayer"]
 anchors_preset = -1
 anchor_left = -0.0034722222
 anchor_right = 0.2560764
@@ -331,7 +330,7 @@ theme_override_font_sizes/font_size = 28
 text = "Join
 "
 
-[node name="quit2" type="Button" parent="Menu/MainMenu"]
+[node name="quit2" type="Button" parent="Menu/CanvasLayer"]
 offset_left = 26.0
 offset_top = 24.0
 offset_right = 148.0
@@ -341,13 +340,13 @@ theme_override_font_sizes/font_size = 24
 text = "Quit
 "
 
-[node name="joinCode" type="LineEdit" parent="Menu/MainMenu"]
+[node name="joinCode" type="LineEdit" parent="Menu/CanvasLayer"]
 offset_left = 189.0
 offset_top = 450.0
 offset_right = 366.0
 offset_bottom = 490.0
 
-[node name="start text" type="Label" parent="Menu/MainMenu"]
+[node name="start text" type="Label" parent="Menu/CanvasLayer"]
 offset_left = 327.0
 offset_top = 568.0
 offset_right = 851.0
@@ -359,20 +358,20 @@ theme_override_fonts/font = ExtResource("9_fan4m")
 theme_override_font_sizes/font_size = 40
 text = "Press any button to start"
 
-[node name="AnimationPlayer" type="AnimationPlayer" parent="Menu/MainMenu"]
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Menu/CanvasLayer"]
 libraries = {
 &"": SubResource("AnimationLibrary_mekh1")
 }
 
-[node name="PauseMenu" type="CanvasLayer" parent="Menu"]
+[node name="pause" type="CanvasLayer" parent="Menu"]
 
-[node name="Background" type="ColorRect" parent="Menu/PauseMenu"]
+[node name="Background" type="ColorRect" parent="Menu/pause"]
 offset_right = 1162.0
 offset_bottom = 649.0
 mouse_filter = 2
 color = Color(0, 0, 0, 0.7254902)
 
-[node name="quit" type="Button" parent="Menu/PauseMenu"]
+[node name="quit" type="Button" parent="Menu/pause"]
 offset_left = 39.0
 offset_top = 55.0
 offset_right = 208.0
@@ -382,7 +381,7 @@ theme_override_font_sizes/font_size = 24
 text = "Quit
 "
 
-[node name="menu" type="Button" parent="Menu/PauseMenu"]
+[node name="menu" type="Button" parent="Menu/pause"]
 offset_left = 41.0
 offset_top = 127.0
 offset_right = 206.0
@@ -392,16 +391,16 @@ theme_override_font_sizes/font_size = 24
 text = "Menu
 "
 
-[node name="settings" type="Button" parent="Menu/PauseMenu"]
-offset_left = 41.0
-offset_top = 207.0
-offset_right = 206.0
-offset_bottom = 276.0
+[node name="settings" type="Button" parent="Menu/pause"]
+offset_left = 215.0
+offset_top = 55.0
+offset_right = 384.0
+offset_bottom = 120.0
 theme_override_fonts/font = ExtResource("9_fan4m")
 theme_override_font_sizes/font_size = 24
 text = "Settings"
 
-[node name="code" type="Label" parent="Menu/PauseMenu"]
+[node name="code" type="Label" parent="Menu/pause"]
 offset_left = 92.0
 offset_top = 199.0
 offset_right = 158.0
@@ -409,7 +408,7 @@ offset_bottom = 225.0
 theme_override_fonts/font = ExtResource("10_fan4m")
 theme_override_font_sizes/font_size = 24
 
-[node name="copy" type="Button" parent="Menu/PauseMenu"]
+[node name="copy" type="Button" parent="Menu/pause"]
 offset_left = 97.0
 offset_top = 232.0
 offset_right = 1129.0
@@ -417,7 +416,7 @@ offset_bottom = 1264.0
 scale = Vector2(0.05, 0.05)
 icon = ExtResource("9_7i78e")
 
-[node name="tutorial" type="Label" parent="Menu/PauseMenu"]
+[node name="tutorial" type="Label" parent="Menu/pause"]
 offset_left = 39.0
 offset_top = 325.0
 offset_right = 355.0
@@ -434,33 +433,33 @@ Mouse Click: Use Item
 Tab: Switch Item
 F: Interact with NPCs"
 
-[node name="LevelSelect" type="VBoxContainer" parent="Menu/PauseMenu"]
+[node name="LevelSelect" type="VBoxContainer" parent="Menu/pause"]
 offset_left = 784.0
 offset_top = 63.0
 offset_right = 1065.0
 offset_bottom = 185.0
 
-[node name="lvl1Button" type="Button" parent="Menu/PauseMenu/LevelSelect"]
+[node name="lvl1Button" type="Button" parent="Menu/pause/LevelSelect"]
 layout_mode = 2
 theme_override_fonts/font = ExtResource("10_fan4m")
 theme_override_font_sizes/font_size = 24
 text = "Level 1"
 
-[node name="lvl2Button" type="Button" parent="Menu/PauseMenu/LevelSelect"]
+[node name="lvl2Button" type="Button" parent="Menu/pause/LevelSelect"]
 layout_mode = 2
 theme_override_fonts/font = ExtResource("10_fan4m")
 theme_override_font_sizes/font_size = 24
 text = "Level 2"
 
-[node name="lvl3Button" type="Button" parent="Menu/PauseMenu/LevelSelect"]
+[node name="lvl3Button" type="Button" parent="Menu/pause/LevelSelect"]
 layout_mode = 2
 theme_override_fonts/font = ExtResource("10_fan4m")
 theme_override_font_sizes/font_size = 24
 text = "Level 3"
 
-[node name="IterationChanngeButton" parent="Menu/PauseMenu" instance=ExtResource("13_nqjqn")]
+[node name="IterationChanngeButton" parent="Menu/pause" instance=ExtResource("13_nqjqn")]
 
-[node name="CurrObj" type="VBoxContainer" parent="Menu/PauseMenu"]
+[node name="CurrObj" type="VBoxContainer" parent="Menu/pause"]
 offset_left = 775.0
 offset_top = 210.0
 offset_right = 1080.0
@@ -469,7 +468,7 @@ size_flags_horizontal = 4
 theme_override_constants/separation = 12
 script = ExtResource("15_mekh1")
 
-[node name="Label" type="Label" parent="Menu/PauseMenu/CurrObj"]
+[node name="Label" type="Label" parent="Menu/pause/CurrObj"]
 layout_mode = 2
 size_flags_horizontal = 6
 theme_override_colors/font_color = Color(1, 1, 1, 1)
@@ -483,7 +482,7 @@ theme_override_fonts/font = ExtResource("9_fan4m")
 theme_override_font_sizes/font_size = 24
 text = "Main Objectives:"
 
-[node name="main" type="Label" parent="Menu/PauseMenu/CurrObj"]
+[node name="main" type="Label" parent="Menu/pause/CurrObj"]
 layout_mode = 2
 size_flags_horizontal = 6
 size_flags_vertical = 8
@@ -500,7 +499,7 @@ theme_override_font_sizes/font_size = 30
 text = "Find Your Home (130)
 "
 
-[node name="sideLabel" type="Label" parent="Menu/PauseMenu/CurrObj"]
+[node name="sideLabel" type="Label" parent="Menu/pause/CurrObj"]
 layout_mode = 2
 size_flags_horizontal = 6
 size_flags_vertical = 8
@@ -516,7 +515,7 @@ theme_override_fonts/font = ExtResource("9_fan4m")
 theme_override_font_sizes/font_size = 24
 text = "Side Objectives:"
 
-[node name="side" type="Label" parent="Menu/PauseMenu/CurrObj"]
+[node name="side" type="Label" parent="Menu/pause/CurrObj"]
 layout_mode = 2
 size_flags_horizontal = 6
 size_flags_vertical = 8
@@ -535,36 +534,60 @@ none
 "
 
 [node name="SettingsMenu" type="CanvasLayer" parent="Menu"]
-visible = false
 script = ExtResource("16_3kyh0")
 
-[node name="MainPage" type="VBoxContainer" parent="Menu/SettingsMenu"]
+[node name="ColorRect" type="ColorRect" parent="Menu/SettingsMenu"]
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -37.0
-offset_top = -64.0
-offset_right = 37.0
-offset_bottom = 64.0
+offset_left = -281.0
+offset_top = -217.9375
+offset_right = 281.0
+offset_bottom = 217.9375
 grow_horizontal = 2
 grow_vertical = 2
+color = Color(0.10980392, 0.10980392, 0.16470589, 0.88235295)
+
+[node name="MainPage" type="VBoxContainer" parent="Menu/SettingsMenu"]
+visible = false
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -57.5
+offset_top = -83.0
+offset_right = 57.5
+offset_bottom = 83.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 12
 
 [node name="Label" type="Label" parent="Menu/SettingsMenu/MainPage"]
 layout_mode = 2
+size_flags_horizontal = 4
+theme_override_fonts/font = ExtResource("12_nqjqn")
+theme_override_font_sizes/font_size = 45
 text = "Settings"
 
 [node name="Sound" type="Button" parent="Menu/SettingsMenu/MainPage"]
 layout_mode = 2
+theme_override_fonts/font = ExtResource("12_nqjqn")
+theme_override_font_sizes/font_size = 30
 text = "Sound"
 
 [node name="Controls" type="Button" parent="Menu/SettingsMenu/MainPage"]
 layout_mode = 2
+theme_override_fonts/font = ExtResource("12_nqjqn")
+theme_override_font_sizes/font_size = 30
 text = "Controls"
 
 [node name="BackButton" type="Button" parent="Menu/SettingsMenu/MainPage"]
 layout_mode = 2
+theme_override_fonts/font = ExtResource("12_nqjqn")
+theme_override_font_sizes/font_size = 30
 text = "Back"
 
 [node name="Sound" type="VBoxContainer" parent="Menu/SettingsMenu"]
@@ -580,13 +603,20 @@ offset_right = 57.5
 offset_bottom = 25.0
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_constants/separation = 12
 
 [node name="Title" type="Label" parent="Menu/SettingsMenu/Sound"]
 layout_mode = 2
+size_flags_horizontal = 4
+theme_override_fonts/font = ExtResource("9_fan4m")
+theme_override_font_sizes/font_size = 45
 text = "Sound Settings"
 
 [node name="MusicLabel" type="Label" parent="Menu/SettingsMenu/Sound"]
 layout_mode = 2
+size_flags_horizontal = 4
+theme_override_fonts/font = ExtResource("12_nqjqn")
+theme_override_font_sizes/font_size = 30
 text = "Music"
 
 [node name="MusicSlider" type="HSlider" parent="Menu/SettingsMenu/Sound"]
@@ -596,6 +626,9 @@ step = 0.01
 
 [node name="Label" type="Label" parent="Menu/SettingsMenu/Sound"]
 layout_mode = 2
+size_flags_horizontal = 4
+theme_override_fonts/font = ExtResource("12_nqjqn")
+theme_override_font_sizes/font_size = 30
 text = "Sound Effects"
 
 [node name="SFXSlider" type="HSlider" parent="Menu/SettingsMenu/Sound"]
@@ -605,6 +638,9 @@ step = 0.01
 
 [node name="Label2" type="Label" parent="Menu/SettingsMenu/Sound"]
 layout_mode = 2
+size_flags_horizontal = 4
+theme_override_fonts/font = ExtResource("12_nqjqn")
+theme_override_font_sizes/font_size = 30
 text = "Environment"
 
 [node name="SoundScapeSlider" type="HSlider" parent="Menu/SettingsMenu/Sound"]
@@ -614,35 +650,59 @@ step = 0.01
 
 [node name="BackButton" type="Button" parent="Menu/SettingsMenu/Sound"]
 layout_mode = 2
+theme_override_fonts/font = ExtResource("12_nqjqn")
+theme_override_font_sizes/font_size = 30
 text = "Back"
 
 [node name="Controls" type="VBoxContainer" parent="Menu/SettingsMenu"]
-visible = false
-offset_right = 40.0
-offset_bottom = 40.0
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -82.0
+offset_top = -41.5
+offset_right = 82.0
+offset_bottom = 41.5
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 4
 
-[node name="Label" type="Label" parent="Menu/SettingsMenu/Controls"]
+[node name="VBoxContainer" type="VBoxContainer" parent="Menu/SettingsMenu/Controls"]
 layout_mode = 2
+
+[node name="Label" type="Label" parent="Menu/SettingsMenu/Controls/VBoxContainer"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("9_fan4m")
+theme_override_font_sizes/font_size = 35
 text = "Controls"
+horizontal_alignment = 1
 
-[node name="ActionsContainer" type="VBoxContainer" parent="Menu/SettingsMenu/Controls"]
+[node name="ScrollContainer" type="ScrollContainer" parent="Menu/SettingsMenu/Controls/VBoxContainer"]
+custom_minimum_size = Vector2(0, 300)
+layout_mode = 2
+horizontal_scroll_mode = 0
+vertical_scroll_mode = 2
+
+[node name="ActionsContainer" type="VBoxContainer" parent="Menu/SettingsMenu/Controls/VBoxContainer/ScrollContainer"]
 layout_mode = 2
 
-[node name="ControlsInfo" type="Label" parent="Menu/SettingsMenu/Controls"]
+[node name="ControlsInfo" type="Label" parent="Menu/SettingsMenu/Controls/VBoxContainer"]
 layout_mode = 2
+theme_override_fonts/font = ExtResource("12_nqjqn")
 
-[node name="BackButton" type="Button" parent="Menu/SettingsMenu/Controls"]
+[node name="BackButton" type="Button" parent="Menu/SettingsMenu/Controls/VBoxContainer"]
 layout_mode = 2
 
 [node name="Interact" type="CanvasLayer" parent="Menu"]
 
 [node name="NPCDialogue" type="CanvasLayer" parent="Menu"]
 
-[connection signal="pressed" from="Menu/MainMenu/Host" to="LobbyManager" method="_on_host_pressed"]
-[connection signal="pressed" from="Menu/MainMenu/Join" to="LobbyManager" method="_on_join_pressed"]
-[connection signal="pressed" from="Menu/MainMenu/quit2" to="LobbyManager" method="_on_pause_quit_pressed"]
-[connection signal="pressed" from="Menu/PauseMenu/quit" to="LobbyManager" method="_on_pause_quit_pressed"]
-[connection signal="pressed" from="Menu/PauseMenu/menu" to="LobbyManager" method="_on_pause_back_to_menu_pressed"]
-[connection signal="pressed" from="Menu/PauseMenu/settings" to="LobbyManager" method="_on_pause_settings_pressed"]
-[connection signal="pressed" from="Menu/PauseMenu/settings" to="LobbyManager" method="_on_settings_pressed"]
-[connection signal="pressed" from="Menu/PauseMenu/copy" to="LobbyManager" method="_on_pause_copy_code_pressed"]
+[connection signal="pressed" from="Menu/CanvasLayer/Host" to="LobbyManager" method="_on_host_pressed"]
+[connection signal="pressed" from="Menu/CanvasLayer/Join" to="LobbyManager" method="_on_join_pressed"]
+[connection signal="pressed" from="Menu/CanvasLayer/quit2" to="LobbyManager" method="_on_pause_quit_pressed"]
+[connection signal="pressed" from="Menu/pause/quit" to="LobbyManager" method="_on_pause_quit_pressed"]
+[connection signal="pressed" from="Menu/pause/menu" to="LobbyManager" method="_on_pause_back_to_menu_pressed"]
+[connection signal="pressed" from="Menu/pause/settings" to="LobbyManager" method="_on_settings_pressed"]
+[connection signal="pressed" from="Menu/pause/settings" to="LobbyManager" method="_on_pause_settings_pressed"]
+[connection signal="pressed" from="Menu/pause/copy" to="LobbyManager" method="_on_pause_copy_code_pressed"]
