@@ -9,17 +9,16 @@
 script = ExtResource("1_b6s0p")
 
 [node name="WP_1" type="Marker3D" parent="patrol_path" groups=["patrol_path"]]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.996, 0.487, -9.855)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.542867, 0.487, -7.9693727)
 
 [node name="WP_2" type="Marker3D" parent="patrol_path" groups=["patrol_path"]]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.861, 0.487, -9.906)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.739911, 0.487, -1.1857147)
 
 [node name="WP_3" type="Marker3D" parent="patrol_path"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.47979736, 0.48744488, -8.1766615)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.324345, 0.48744488, 7.577979)
 
 [node name="NPC_Abigail" parent="." instance=ExtResource("2_8sq2l")]
 transform = Transform3D(0.25, 0, 0, 0, 0.25, 0, 0, 0, 0.25, -7.8117085, 0.65578914, -9.66823)
-move_speed = 2.5
 
 [node name="abigailDialogue" parent="NPC_Abigail" index="5"]
 health = null
