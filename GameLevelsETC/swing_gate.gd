@@ -2,8 +2,10 @@ extends Area3D
 class_name BatSwingGate
 
 @export var required_player_count: int = 2
-@export var play_anim_player: AnimationPlayer = null
-@export var play_anim_name: StringName = &""
+
+@export var play_video_player: VideoStreamPlayer = null
+@export var start_video_on_show: bool = true
+
 @export var also_change_to_level_3: bool = true
 @export var level_3_index: int = 3
 
@@ -25,6 +27,9 @@ func _ready() -> void:
 		body_entered.connect(_on_body_entered)
 	if not body_exited.is_connected(_on_body_exited):
 		body_exited.connect(_on_body_exited)
+
+	if play_video_player != null:
+		play_video_player.visible = false
 
 
 func _server_peer_id() -> int:
@@ -123,7 +128,7 @@ func notify_swing(peer_id: int) -> void:
 		_mark_swing_local(peer_id)
 
 
-@rpc("any_peer", "call_local", "reliable")
+@rpc("any_peer", "reliable")
 func _rpc_set_inside(peer_id: int, is_inside: bool) -> void:
 	print("GATE RPC_SET_INSIDE | sender:", multiplayer.get_remote_sender_id(), " peer_id:", peer_id, " inside:", is_inside, " server:", multiplayer.is_server())
 	if multiplayer.has_multiplayer_peer() and not multiplayer.is_server():
@@ -171,7 +176,7 @@ func _server_mark_swing(peer_id: int) -> void:
 	if count >= required_player_count:
 		_done = true
 		print("GATE COMPLETE -> PLAY + OPTIONAL LEVEL CHANGE")
-		rpc("_rpc_play_gate_anim")
+		rpc("_rpc_play_gate_video")
 		if also_change_to_level_3:
 			_call_level_change_level3()
 
@@ -191,24 +196,24 @@ func _mark_swing_local(peer_id: int) -> void:
 
 	if count >= required_player_count:
 		_done = true
-		_play_anim_local()
+		_play_video_local()
 
 
 @rpc("any_peer", "call_local", "reliable")
-func _rpc_play_gate_anim() -> void:
-	print("GATE RPC_PLAY_GATE_ANIM | local:", multiplayer.get_unique_id())
-	_play_anim_local()
+func _rpc_play_gate_video() -> void:
+	print("GATE RPC_PLAY_GATE_VIDEO | local:", multiplayer.get_unique_id())
+	_play_video_local()
 
 
-func _play_anim_local() -> void:
-	print("GATE PLAY_ANIM_LOCAL | ap:", play_anim_player, " anim:", String(play_anim_name))
-	if play_anim_player == null:
+func _play_video_local() -> void:
+	print("GATE PLAY_VIDEO_LOCAL | vsp:", play_video_player)
+	if play_video_player == null:
 		return
-	var a := String(play_anim_name)
-	if a == "":
-		return
-	if play_anim_player.has_animation(a):
-		play_anim_player.play(a)
+
+	play_video_player.visible = true
+	if start_video_on_show:
+		play_video_player.stop()
+		play_video_player.play()
 
 
 func _call_level_change_level3() -> void:
