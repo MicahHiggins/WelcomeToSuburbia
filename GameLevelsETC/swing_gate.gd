@@ -20,6 +20,9 @@ func _enter_tree() -> void:
 
 
 func _ready() -> void:
+	print("GATE READY | name:", name, " path:", get_path(), " mp:", multiplayer.has_multiplayer_peer(), " server:", multiplayer.is_server())
+	print("GATE MASK/LAYER | layer:", collision_layer, " mask:", collision_mask, " monitoring:", monitoring, " monitorable:", monitorable)
+
 	if not body_entered.is_connected(_on_body_entered):
 		body_entered.connect(_on_body_entered)
 	if not body_exited.is_connected(_on_body_exited):
@@ -27,45 +30,75 @@ func _ready() -> void:
 
 
 func _on_body_entered(body: Node) -> void:
-	if body == null or not body.is_in_group("player"):
+	print("GATE ENTER RAW | body:", body, " name:", (body.name if body != null else "null"))
+
+	if body == null:
+		return
+
+	print("GATE ENTER CHECK | is_player_group:", body.is_in_group("player"), " class:", body.get_class())
+
+	if not body.is_in_group("player"):
 		return
 
 	if multiplayer.has_multiplayer_peer():
-		if not _is_my_local_player(body):
+		var is_local := _is_my_local_player(body)
+		print("GATE ENTER MP | is_local:", is_local, " auth:", int(body.get_multiplayer_authority()), " my_uid:", multiplayer.get_unique_id())
+		if not is_local:
 			return
-		var pid := int((body as Node).get_multiplayer_authority())
+
+		var pid := int(body.get_multiplayer_authority())
 
 		if multiplayer.is_server():
+			print("GATE ENTER -> SERVER LOCAL APPLY | pid:", pid)
 			_rpc_set_inside(pid, true)
 		else:
+			print("GATE ENTER -> RPC TO SERVER | pid:", pid)
 			rpc_id(SERVER_ID, "_rpc_set_inside", pid, true)
 	else:
 		var pid2 := _peer_id_from_player(body)
+		print("GATE ENTER SP | pid:", pid2)
 		if pid2 > 0:
 			_inside[pid2] = true
+			print("GATE INSIDE NOW:", _inside)
 
 
 func _on_body_exited(body: Node) -> void:
-	if body == null or not body.is_in_group("player"):
+	print("GATE EXIT RAW | body:", body, " name:", (body.name if body != null else "null"))
+
+	if body == null:
+		return
+
+	print("GATE EXIT CHECK | is_player_group:", body.is_in_group("player"), " class:", body.get_class())
+
+	if not body.is_in_group("player"):
 		return
 
 	if multiplayer.has_multiplayer_peer():
-		if not _is_my_local_player(body):
+		var is_local := _is_my_local_player(body)
+		print("GATE EXIT MP | is_local:", is_local, " auth:", int(body.get_multiplayer_authority()), " my_uid:", multiplayer.get_unique_id())
+		if not is_local:
 			return
-		var pid := int((body as Node).get_multiplayer_authority())
+
+		var pid := int(body.get_multiplayer_authority())
 
 		if multiplayer.is_server():
+			print("GATE EXIT -> SERVER LOCAL APPLY | pid:", pid)
 			_rpc_set_inside(pid, false)
 		else:
+			print("GATE EXIT -> RPC TO SERVER | pid:", pid)
 			rpc_id(SERVER_ID, "_rpc_set_inside", pid, false)
 	else:
 		var pid2 := _peer_id_from_player(body)
+		print("GATE EXIT SP | pid:", pid2)
 		if pid2 > 0:
 			_inside.erase(pid2)
 			_swung.erase(pid2)
+			print("GATE INSIDE NOW:", _inside, " SWUNG NOW:", _swung)
 
 
 func notify_swing(peer_id: int) -> void:
+	print("GATE NOTIFY_SWING | peer_id:", peer_id, " mp:", multiplayer.has_multiplayer_peer(), " server:", multiplayer.is_server(), " inside_has:", _inside.has(peer_id), " done:", _done)
+
 	if multiplayer.has_multiplayer_peer():
 		if multiplayer.is_server():
 			_server_mark_swing(peer_id)
@@ -75,8 +108,10 @@ func notify_swing(peer_id: int) -> void:
 		_mark_swing_local(peer_id)
 
 
-@rpc("any_peer", "reliable")
+@rpc("any_peer", "call_local", "reliable")
 func _rpc_set_inside(peer_id: int, is_inside: bool) -> void:
+	print("GATE RPC_SET_INSIDE | sender:", multiplayer.get_remote_sender_id(), " peer_id:", peer_id, " inside:", is_inside, " server:", multiplayer.is_server())
+
 	if not multiplayer.is_server():
 		return
 	if peer_id <= 0:
@@ -88,20 +123,26 @@ func _rpc_set_inside(peer_id: int, is_inside: bool) -> void:
 		_inside.erase(peer_id)
 		_swung.erase(peer_id)
 
+	print("GATE STATE | inside:", _inside, " swung:", _swung)
+
 
 @rpc("any_peer", "reliable")
 func _rpc_client_swing(peer_id: int) -> void:
+	print("GATE RPC_CLIENT_SWING | sender:", multiplayer.get_remote_sender_id(), " peer_id:", peer_id, " server:", multiplayer.is_server())
 	if not multiplayer.is_server():
 		return
 	_server_mark_swing(peer_id)
 
 
 func _server_mark_swing(peer_id: int) -> void:
+	print("GATE SERVER_MARK_SWING | peer_id:", peer_id, " inside_has:", _inside.has(peer_id), " done:", _done)
+
 	if _done:
 		return
 	if peer_id <= 0:
 		return
 	if not _inside.has(peer_id):
+		print("GATE SWING IGNORED (not inside) | peer_id:", peer_id)
 		return
 
 	_swung[peer_id] = true
@@ -111,8 +152,11 @@ func _server_mark_swing(peer_id: int) -> void:
 		if _swung.get(int(k), false) == true:
 			count += 1
 
+	print("GATE SWUNG COUNT:", count, " required:", required_player_count, " swung:", _swung)
+
 	if count >= required_player_count:
 		_done = true
+		print("GATE COMPLETE -> PLAY + OPTIONAL LEVEL CHANGE")
 		rpc("_rpc_play_gate_anim")
 		if also_change_to_level_3:
 			_call_level_change_level3()
@@ -138,10 +182,12 @@ func _mark_swing_local(peer_id: int) -> void:
 
 @rpc("any_peer", "call_local", "reliable")
 func _rpc_play_gate_anim() -> void:
+	print("GATE RPC_PLAY_GATE_ANIM | local:", multiplayer.get_unique_id())
 	_play_anim_local()
 
 
 func _play_anim_local() -> void:
+	print("GATE PLAY_ANIM_LOCAL | ap:", play_anim_player, " anim:", String(play_anim_name))
 	if play_anim_player == null:
 		return
 	var a := String(play_anim_name)
@@ -153,6 +199,7 @@ func _play_anim_local() -> void:
 
 func _call_level_change_level3() -> void:
 	var lf := get_tree().get_first_node_in_group("level_flow_manager")
+	print("GATE LEVEL CHANGE | lf:", lf)
 	if lf == null:
 		return
 	if lf.has_method("request_level_change"):

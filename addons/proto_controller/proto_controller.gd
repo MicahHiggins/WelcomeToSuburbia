@@ -1034,7 +1034,6 @@ func _play_attack_local() -> void:
 			held_anim.stop()
 			held_anim.play(String(attack_anim_name))
 
-
 func _notify_bat_swing_gates() -> void:
 	var pid := int(get_multiplayer_authority())
 	get_tree().call_group("bat_swing_gate", "notify_swing", pid)
