@@ -9,6 +9,7 @@ extends CanvasLayer
 @onready var controls_button = $MainPage/Controls
 @onready var main_back_button = $MainPage/BackButton
 
+@onready var master_slider = $Sound/MasterSlider
 @onready var music_slider = $Sound/MusicSlider
 @onready var sfx_slider = $Sound/SFXSlider
 @onready var soundscape_slider = $Sound/SoundScapeSlider
@@ -46,6 +47,9 @@ func _ready() -> void:
 	music_slider.value_changed.connect(_on_music_slider_changed)
 	sfx_slider.value_changed.connect(_on_sfx_slider_changed)
 	soundscape_slider.value_changed.connect(_on_soundscape_slider_changed)
+	master_slider.value_changed.connect(_on_master_slider_changed)
+
+
 
 	load_bus_volumes_into_sliders()
 	build_controls_menu()
@@ -96,10 +100,13 @@ func _on_controls_back_pressed() -> void:
 # =========================
 
 func load_bus_volumes_into_sliders() -> void:
+	master_slider.value = db_to_slider(get_bus_volume_db_safe("Master"))
 	music_slider.value = db_to_slider(get_bus_volume_db_safe("Music"))
 	sfx_slider.value = db_to_slider(get_bus_volume_db_safe("SFX"))
 	soundscape_slider.value = db_to_slider(get_bus_volume_db_safe("SoundScape"))
-
+func _on_master_slider_changed(value: float) -> void:
+	set_bus_volume_from_slider("Master", value)
+	
 func _on_music_slider_changed(value: float) -> void:
 	set_bus_volume_from_slider("Music", value)
 

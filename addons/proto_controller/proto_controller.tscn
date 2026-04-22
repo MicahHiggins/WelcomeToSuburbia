@@ -1,7 +1,7 @@
 [gd_scene load_steps=20 format=3 uid="uid://bs72ogkvdd7d6"]
 
 [ext_resource type="Script" uid="uid://psbmqqwxvny5" path="res://addons/proto_controller/proto_controller.gd" id="1_ucva2"]
-[ext_resource type="Script" uid="uid://6tcwk75iwlkk" path="res://addons/proto_controller/voice_chat.gd" id="2_q1ipm"]
+[ext_resource type="Script" path="res://addons/proto_controller/voice_chat.gd" id="2_q1ipm"]
 [ext_resource type="Script" uid="uid://boitue63820b1" path="res://addons/proto_controller/ray_cast_3d.gd" id="2_wr06p"]
 [ext_resource type="AudioStream" uid="uid://77vhd06aou5i" path="res://Audio/SFX/Steps_gravel-006.ogg" id="3_5hfox"]
 [ext_resource type="Script" uid="uid://cfienyrl5pmdh" path="res://addons/proto_controller/player_audio.gd" id="3_h60nn"]
