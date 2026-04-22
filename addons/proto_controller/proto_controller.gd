@@ -1316,20 +1316,32 @@ func server_teleport_to(xform: Transform3D) -> void:
 
 @rpc("any_peer", "call_local", "reliable")
 func server_add_inventory_item(item_id: StringName) -> void:
-	var sender: int = multiplayer.get_remote_sender_id()
+	var sender := multiplayer.get_remote_sender_id()
+	var sid := _server_peer_id()
 	if multiplayer.has_multiplayer_peer():
-		if sender != 0 and sender != SERVER_ID:
+		if sender != 0 and sender != sid:
 			return
 		if sender == 0 and not multiplayer.is_server():
-			return
-
-	for it in inventory:
-		if it == item_id:
 			return
 
 	inventory.append(item_id)
 	inventory_changed.emit(inventory)
 
+
+func _server_peer_id() -> int:
+	if not multiplayer.has_multiplayer_peer():
+		return -1
+	if multiplayer.is_server():
+		return multiplayer.get_unique_id()
+	var peers := multiplayer.get_peers()
+	if peers == null or peers.is_empty():
+		return -1
+	var best := int(peers[0])
+	for p_any in peers:
+		var p := int(p_any)
+		if p < best:
+			best = p
+	return best
 # =========================
 #  CELLAR ROLE RPCs
 # =========================
@@ -1371,11 +1383,13 @@ func server_set_forced_pose(enabled: bool, target_pos: Vector3) -> void:
 
 @rpc("any_peer", "call_local", "reliable")
 func server_set_inventory(new_inventory: Array[StringName]) -> void:
-	var sender: int = multiplayer.get_remote_sender_id()
-	if sender != 0 and sender != SERVER_ID:
-		return
-	if sender == 0 and not multiplayer.is_server():
-		return
+	var sender := multiplayer.get_remote_sender_id()
+	var sid := _server_peer_id()
+	if multiplayer.has_multiplayer_peer():
+		if sender != 0 and sender != sid:
+			return
+		if sender == 0 and not multiplayer.is_server():
+			return
 
 	inventory = new_inventory.duplicate()
 	inventory_changed.emit(inventory)
