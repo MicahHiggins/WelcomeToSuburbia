@@ -4,14 +4,22 @@ extends Node3D
 @onready var sprite_3d: Sprite3D = $Rotator/Sprite3D
 @onready var sprite_3d2: Sprite3D = $Rotator/Sprite3D2
 
-# Default image shown when iteration is not special
-@export var default_texture: Texture2D = preload("res://Assets/Images/Arrow.png")
+@export var default_texture: Texture2D = preload("res://Assets/Images/suburbia_title_card.png")
+@export var default_sprite_scale: Vector3 = Vector3(0.27, 0.27, 0.27)
 
-# Images for special iterations
 var unique_iteration_images := {
-	2: preload("res://Assets/Images/BB_are_you_lost.webp"),
-	4: preload("res://Assets/Images/BB_where_are_you_going.webp"),
-	6: preload("res://Assets/Images/BB_youll_never_get_home.webp")
+	2: {
+		"texture": preload("res://Assets/Images/BB_are_you_lost.webp"),
+		"scale": Vector3(0.4, 0.4, 0.4)
+	},
+	4: {
+		"texture": preload("res://Assets/Images/BB_where_are_you_going.webp"),
+		"scale": Vector3(0.27, 0.27, 0.27)
+	},
+	6: {
+		"texture": preload("res://Assets/Images/BB_youll_never_get_home.webp"),
+		"scale": Vector3(0.27, 0.27, 0.27)
+	}
 }
 
 var player: Node3D = null
@@ -43,12 +51,17 @@ func update_image() -> void:
 
 	var iteration: int = GlobalVariables.iterations
 	var texture_to_use: Texture2D = default_texture
+	var scale_to_use: Vector3 = default_sprite_scale
 
 	if iteration in unique_iteration_images:
-		texture_to_use = unique_iteration_images[iteration]
+		texture_to_use = unique_iteration_images[iteration]["texture"]
+		scale_to_use = unique_iteration_images[iteration]["scale"]
 
 	sprite_3d.texture = texture_to_use
 	sprite_3d2.texture = texture_to_use
+
+	sprite_3d.scale = scale_to_use
+	sprite_3d2.scale = scale_to_use
 
 func face_player_y_only() -> void:
 	var to_player: Vector3 = player.global_position - rotator.global_position
