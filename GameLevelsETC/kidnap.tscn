@@ -1,4 +1,4 @@
-[gd_scene load_steps=50 format=3 uid="uid://dw6fx71adu107"]
+[gd_scene load_steps=52 format=3 uid="uid://dw6fx71adu107"]
 
 [ext_resource type="Script" uid="uid://duigu086blnlq" path="res://GameLevelsETC/kidnap.gd" id="1_6rn1s"]
 [ext_resource type="PackedScene" uid="uid://bs2jm62cmkbrk" path="res://addons/instant-realistic-light/light_scene.tscn" id="1_wff52"]
@@ -427,6 +427,12 @@ size = Vector3(3, 0.099, 1.5)
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_un8vx"]
 albedo_color = Color(0.4509804, 0.33333334, 0.08627451, 1)
 
+[sub_resource type="BoxShape3D" id="BoxShape3D_dwtrd"]
+size = Vector3(3.7436523, 0.53027344, 1.7646484)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_un8vx"]
+size = Vector3(2.5213623, 0.4248047, 4.258911)
+
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_rkcnq"]
 albedo_color = Color(0.60271376, 0.7674062, 0.73615, 1)
 albedo_texture = ExtResource("15_ii0sn")
@@ -596,6 +602,8 @@ transform = Transform3D(-1.486188e-08, 0, 0.34000015, 0, 0.34, 0, -0.34000015, 0
 
 [node name="Bat" parent="Bedrooms/bedroom1" instance=ExtResource("15_dwtrd")]
 transform = Transform3D(-3.4969116e-08, -0.8000001, 0, 0.8000001, -3.4969112e-08, 0, 0, 0, 0.8000001, -1.8231024, -1.2399532, 2.7910442)
+collision_layer = 15
+authority_only_physics = false
 
 [node name="Shelf2" type="MeshInstance3D" parent="Bedrooms/bedroom1"]
 transform = Transform3D(0.47619087, 0, 0, 0, 0.5952399, 0, 0, 0, 0.47619262, 0.6285904, -1.421977, -20.330544)
@@ -603,6 +611,15 @@ visible = false
 mesh = SubResource("BoxMesh_dwtrd")
 skeleton = NodePath("../../..")
 surface_material_override/0 = SubResource("StandardMaterial3D_un8vx")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="Bedrooms/bedroom1"]
+transform = Transform3D(1.0000004, 0, 0, 0, 1, 0, 0, 0, 1.0000004, 0, -1.4424384, 2.7583342)
+collision_layer = 4
+collision_mask = 4
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Bedrooms/bedroom1/StaticBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.3718262, -0.23486328, -0.38232422)
+shape = SubResource("BoxShape3D_dwtrd")
 
 [node name="bedroom2" parent="Bedrooms" instance=ExtResource("13_vmkem")]
 transform = Transform3D(-1.4999993, 0.0011538021, 9.1280155e-05, 0.0014421464, 1.1999987, -0.0017605099, -9.294293e-05, -0.0014083382, -1.4999992, 0.3168704, 0.11224883, -13.854978)
@@ -715,13 +732,24 @@ transform = Transform3D(-0.34000015, 2.4563462e-11, -2.9725925e-08, 1.6999735e-1
 
 [node name="Bat" parent="Bedrooms/bedroom2" instance=ExtResource("15_dwtrd")]
 transform = Transform3D(3.989129e-10, 3.4979166e-08, 0.80000025, 0.8, -3.4691766e-08, 2.4982683e-11, 3.4982804e-08, 0.80000097, -3.4968252e-08, 2.735105, -1.2487528, -0.41625214)
+collision_layer = 15
+authority_only_physics = false
 
 [node name="Shelf" type="MeshInstance3D" parent="Bedrooms/bedroom2"]
-transform = Transform3D(-2.0815234e-08, 0.0010388906, 0.4761927, -1.16415315e-10, 0.5952399, -0.0008311139, -0.4761924, -1.9093079e-10, -2.0815046e-08, -1.9190041, -1.3467678, -16.26862)
+transform = Transform3D(-2.0815234e-08, 0.0010388906, 0.47619268, -1.16415315e-10, 0.5952399, -0.0008311139, -0.4761924, -1.9093079e-10, -2.0815044e-08, -1.9190041, -1.3467678, -16.26862)
 visible = false
 mesh = SubResource("BoxMesh_dwtrd")
 skeleton = NodePath("../../..")
 surface_material_override/0 = SubResource("StandardMaterial3D_un8vx")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="Bedrooms/bedroom2"]
+transform = Transform3D(1, 2.1948665e-10, 0, -2.1081803e-11, 1.0000005, 4.656613e-10, 0, 4.0745363e-10, 1.0000005, 1.6146301, -1.3096486, 0.0011310577)
+collision_layer = 4
+collision_mask = 4
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Bedrooms/bedroom2/StaticBody3D"]
+transform = Transform3D(1, 2.1468697e-08, 1.6007107e-10, -4.658736e-08, 1.0000578, -1.0477379e-08, -7.275958e-12, 7.566996e-10, 1.0000445, 0.76068103, -0.28759754, -1.1015215)
+shape = SubResource("BoxShape3D_un8vx")
 
 [node name="Neighborhood" type="Node3D" parent="."]
 transform = Transform3D(1.5, 0, 0, 0, 1.5, 0, 0, 0, 1.5, 0, 0, 0)
