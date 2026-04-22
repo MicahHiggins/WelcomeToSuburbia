@@ -1,4 +1,4 @@
-[gd_scene load_steps=52 format=3 uid="uid://dw6fx71adu107"]
+[gd_scene load_steps=54 format=3 uid="uid://dw6fx71adu107"]
 
 [ext_resource type="Script" uid="uid://duigu086blnlq" path="res://GameLevelsETC/kidnap.gd" id="1_6rn1s"]
 [ext_resource type="PackedScene" uid="uid://bs2jm62cmkbrk" path="res://addons/instant-realistic-light/light_scene.tscn" id="1_wff52"]
@@ -27,6 +27,7 @@
 [ext_resource type="PackedScene" uid="uid://drk8i4p1of8ar" path="res://aidan_stuff/whitefence_1.tscn" id="20_eyvg3"]
 [ext_resource type="PackedScene" uid="uid://ret8ne1fmk7l" path="res://Assets/RandomObjects/road/road.tscn" id="21_qolbo"]
 [ext_resource type="PackedScene" uid="uid://c5jxy2ugosnbe" path="res://Assets/RandomObjects/symbol/SymbolPuzzle.tscn" id="22_itlhn"]
+[ext_resource type="Script" uid="uid://d0mbqw6whadcn" path="res://GameLevelsETC/swing_gate.gd" id="28_un8vx"]
 
 [sub_resource type="Animation" id="Animation_2uf5w"]
 length = 0.001
@@ -454,10 +455,13 @@ material = SubResource("StandardMaterial3D_rkcnq")
 size = Vector3(16, 5, 16)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_dwtrd"]
-size = Vector3(3.7436523, 0.20391846, 1.7646484)
+size = Vector3(3.7436523, 0.49482727, 1.4140625)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_un8vx"]
-size = Vector3(2.5213623, 0.09790039, 4.258911)
+size = Vector3(2.1230164, 0.43530273, 4.258911)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_lobfv"]
+size = Vector3(3.1307373, 3.428711, 1.9243164)
 
 [node name="Kidnap" type="Node3D"]
 script = ExtResource("1_6rn1s")
@@ -727,7 +731,7 @@ collision_layer = 15
 authority_only_physics = false
 
 [node name="Shelf" type="MeshInstance3D" parent="Bedrooms/bedroom2"]
-transform = Transform3D(-2.0815234e-08, 0.0010388906, 0.47619262, -1.16415315e-10, 0.5952399, -0.0008311138, -0.4761924, -1.9093079e-10, -2.081504e-08, -1.9190041, -1.3467678, -16.26862)
+transform = Transform3D(-2.0815234e-08, 0.0010388906, 0.4761926, -1.16415315e-10, 0.5952399, -0.0008311137, -0.4761924, -1.9093079e-10, -2.081504e-08, -1.9190041, -1.3467678, -16.26862)
 visible = false
 mesh = SubResource("BoxMesh_dwtrd")
 skeleton = NodePath("../../..")
@@ -2243,7 +2247,7 @@ collision_layer = 4
 collision_mask = 0
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.3718262, -0.39804077, -0.38232422)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.3718262, -0.25258636, -0.2070303)
 shape = SubResource("BoxShape3D_dwtrd")
 
 [node name="StaticBody3D2" type="StaticBody3D" parent="."]
@@ -2252,8 +2256,28 @@ collision_layer = 4
 collision_mask = 0
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D2"]
-transform = Transform3D(1, 3.445107e-08, 3.4197e-10, -7.487628e-08, 1.0000936, -1.7113052e-08, 2.1827873e-11, 4.0745363e-10, 1.0000715, 0.76068175, -0.45106065, -1.1015215)
+transform = Transform3D(1, 5.0577174e-08, 4.0017767e-10, -1.09568056e-07, 1.0001376, -2.3748726e-08, 5.0931703e-11, 7.566996e-10, 1.0001048, 0.9598547, -0.28233945, -1.1015215)
 shape = SubResource("BoxShape3D_un8vx")
+
+[node name="SwingGate" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 12.420419)
+collision_layer = 8
+collision_mask = 8
+script = ExtResource("28_un8vx")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="SwingGate"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.06085205, -1.2143555, 0.4621582)
+shape = SubResource("BoxShape3D_lobfv")
+
+[node name="SwingGate2" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -13.80077)
+collision_layer = 8
+collision_mask = 8
+script = ExtResource("28_un8vx")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="SwingGate2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.06085205, -1.2143555, 0.4621582)
+shape = SubResource("BoxShape3D_lobfv")
 
 [connection signal="puzzleOneComplete" from="Bedrooms/bedroom2/toy_piano" to="." method="_on_toy_piano_puzzle_one_complete"]
 [connection signal="puzzleTwoComplete" from="Puzzle2/Drawing/drawing" to="." method="_on_drawing_puzzle_two_complete"]
