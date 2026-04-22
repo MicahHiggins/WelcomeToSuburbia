@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://bh8wge84bqmlq"]
 
 [ext_resource type="Script" uid="uid://dgi5u1idu5luo" path="res://Scripts/cutscenes.gd" id="1_3mh18"]
-[ext_resource type="VideoStream" uid="uid://c8jmabeang0oa" path="res://Assets/Videos/aidans_midterm_animation1.ogv" id="1_ao1cf"]
+[ext_resource type="VideoStream" uid="uid://c0hco4i14qcfw" path="res://Assets/Videos/KidnapwithSound (1).ogv" id="2_3mh18"]
 
 [node name="Cutscenes" type="CanvasLayer" node_paths=PackedStringArray("level_2_cutscene")]
 script = ExtResource("1_3mh18")
@@ -13,6 +13,6 @@ offset_left = -51.0
 offset_top = -35.0
 offset_right = 1229.0
 offset_bottom = 685.0
-stream = ExtResource("1_ao1cf")
+stream = ExtResource("2_3mh18")
 autoplay = true
 paused = true
