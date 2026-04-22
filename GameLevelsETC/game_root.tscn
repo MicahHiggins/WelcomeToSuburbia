@@ -614,6 +614,8 @@ text = "Sound Settings"
 
 [node name="MasterLabel" type="Label" parent="Menu/SettingsMenu/Sound"]
 layout_mode = 2
+theme_override_fonts/font = ExtResource("12_nqjqn")
+theme_override_font_sizes/font_size = 30
 text = "Master Volume"
 
 [node name="MasterSlider" type="HSlider" parent="Menu/SettingsMenu/Sound"]
@@ -712,6 +714,6 @@ layout_mode = 2
 [connection signal="pressed" from="Menu/CanvasLayer/quit2" to="LobbyManager" method="_on_pause_quit_pressed"]
 [connection signal="pressed" from="Menu/pause/quit" to="LobbyManager" method="_on_pause_quit_pressed"]
 [connection signal="pressed" from="Menu/pause/menu" to="LobbyManager" method="_on_pause_back_to_menu_pressed"]
-[connection signal="pressed" from="Menu/pause/settings" to="LobbyManager" method="_on_settings_pressed"]
 [connection signal="pressed" from="Menu/pause/settings" to="LobbyManager" method="_on_pause_settings_pressed"]
+[connection signal="pressed" from="Menu/pause/settings" to="LobbyManager" method="_on_settings_pressed"]
 [connection signal="pressed" from="Menu/pause/copy" to="LobbyManager" method="_on_pause_copy_code_pressed"]
