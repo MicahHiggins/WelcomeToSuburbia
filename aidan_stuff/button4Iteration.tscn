@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3 uid="uid://b3tivaphj7o57"]
+[gd_scene load_steps=3 format=3 uid="uid://b3tivaphj7o57"]
 
 [ext_resource type="Script" uid="uid://qpid2qt5mt4e" path="res://aidan_stuff/button_4_iteration.gd" id="1_ggpet"]
+[ext_resource type="FontFile" uid="uid://c5y1av38605l6" path="res://addons/Font/GimletVariable-VF-Testing.ttf" id="2_6n2ne"]
 
 [node name="IterationChanngeButton" type="Control"]
 layout_mode = 3
@@ -21,6 +22,8 @@ offset_top = 74.0
 offset_right = 73.0
 offset_bottom = 105.0
 grow_horizontal = 2
+theme_override_fonts/font = ExtResource("2_6n2ne")
+theme_override_font_sizes/font_size = 24
 text = "Increase Iteration
 "
 

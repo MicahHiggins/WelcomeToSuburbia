@@ -201,6 +201,7 @@ transform = Transform3D(0.21213204, 0, 0.21213204, 0, 0.3, 0, -0.21213204, 0, 0.
 
 [node name="Label3D" type="Label3D" parent="BillboardRoot/Rotator"]
 transform = Transform3D(-0.21213204, 0, -0.21213204, 0, 0.3, 0, 0.21213204, 0, -0.21213204, -0.09330177, 4.3504243, -0.14616203)
+visible = false
 pixel_size = 0.05
 text = "Welcome to Suburbia!"
 line_spacing = -7.0
@@ -209,6 +210,7 @@ width = 188.0
 
 [node name="Label3D2" type="Label3D" parent="BillboardRoot/Rotator"]
 transform = Transform3D(0.212132, 0, 0.2121321, 0, 0.3, 0, -0.2121321, 0, 0.212132, 0.123, 4.35, 0.159)
+visible = false
 pixel_size = 0.05
 text = "Welcome to Suburbia!"
 line_spacing = -7.0

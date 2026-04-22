@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3 uid="uid://dphhgsxb3ams8"]
+[gd_scene load_steps=3 format=3 uid="uid://dphhgsxb3ams8"]
 
 [ext_resource type="Script" uid="uid://da2ga67men3o" path="res://player_dialogue.gd" id="1_71f3p"]
+[ext_resource type="FontFile" uid="uid://g7ve53wy4c3c" path="res://addons/Font/MADE TOMMY Medium_PERSONAL USE.otf" id="2_ojule"]
 
 [node name="PlayerDialogue" type="CanvasLayer" node_paths=PackedStringArray("playerSpeech")]
 script = ExtResource("1_71f3p")
@@ -19,6 +20,7 @@ grow_vertical = 2
 theme_override_colors/default_color = Color(1, 1, 1, 1)
 theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_constants/outline_size = 4
+theme_override_fonts/normal_font = ExtResource("2_ojule")
 theme_override_font_sizes/normal_font_size = 20
 text = "Example Text"
 fit_content = true
