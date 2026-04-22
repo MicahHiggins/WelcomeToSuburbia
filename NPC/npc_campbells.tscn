@@ -1,4 +1,4 @@
-[gd_scene load_steps=17 format=3 uid="uid://c11d0ync6fj8o"]
+[gd_scene load_steps=15 format=3 uid="uid://c11d0ync6fj8o"]
 
 [ext_resource type="Script" uid="uid://csc5bob5s77t" path="res://Scripts/npc_bob.gd" id="1_k38it"]
 [ext_resource type="Script" uid="uid://cicakuq5a1gle" path="res://Scripts/state_machine.gd" id="2_76l8o"]
@@ -8,15 +8,13 @@
 [ext_resource type="Script" uid="uid://bdyreatjqakvi" path="res://Scripts/npcResource.gd" id="5_u5i8w"]
 [ext_resource type="PackedScene" uid="uid://bcggylgytgib6" path="res://Models/dog.tscn" id="6_u5i8w"]
 [ext_resource type="PackedScene" uid="uid://bix7glsjl8lbf" path="res://NPC/campbell_father_model.tscn" id="9_j5sfe"]
-[ext_resource type="PackedScene" uid="uid://cao3it45xwei0" path="res://NPC/campbell_mother.tscn" id="10_lvv75"]
-[ext_resource type="PackedScene" uid="uid://couhu7dkhkyfi" path="res://NPC/campbell_child.tscn" id="11_b5vy5"]
 [ext_resource type="Script" uid="uid://c1bnlyaj1lygf" path="res://NPC/audio_cue.gd" id="12_vmf3g"]
 [ext_resource type="AudioStream" uid="uid://cqelxa4fjpjps" path="res://Audio/SFX/toddlerCrying.wav" id="13_uhujl"]
 [ext_resource type="AudioStream" uid="uid://cb5on36hl4m05" path="res://Audio/SFX/Dog1.wav" id="14_7hfet"]
 [ext_resource type="PackedScene" uid="uid://b77j3k2ulob7o" path="res://Assets/RandomObjects/questMarkerBlue.tscn" id="14_vmf3g"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_g4ita"]
-radius = 1.0
+radius = 2.0
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_5x2h4"]
 
@@ -32,21 +30,6 @@ collision_mask = 8
 [node name="interact_shape" type="CollisionShape3D" parent="interact"]
 transform = Transform3D(5, 0, 0, 0, 5, 0, 0, 0, 5, 0, 0, 0)
 shape = SubResource("SphereShape3D_g4ita")
-
-[node name="father_body" type="CollisionShape3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.845227, -0.357467, 1.4594342)
-shape = SubResource("CapsuleShape3D_5x2h4")
-debug_color = Color(0.65632045, 0.5013817, 0.35583058, 0.41960785)
-
-[node name="mother_body" type="CollisionShape3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.8768134, -0.357467, 1.4594342)
-shape = SubResource("CapsuleShape3D_5x2h4")
-debug_color = Color(0.65632045, 0.5013817, 0.35583058, 0.41960785)
-
-[node name="child_body" type="CollisionShape3D" parent="."]
-transform = Transform3D(0.7, 0, 0, 0, 0.7, 0, 0, 0, 0.7, -0.7605126, -0.4581964, -0.41729707)
-shape = SubResource("CapsuleShape3D_5x2h4")
-debug_color = Color(0.65632045, 0.5013817, 0.35583058, 0.41960785)
 
 [node name="StateMachine" type="Node" parent="."]
 script = ExtResource("2_76l8o")
@@ -74,19 +57,18 @@ shape = SubResource("SphereShape3D_g4ita")
 
 [node name="CampbellsDialogue" type="Node3D" parent="."]
 script = ExtResource("5_u5i8w")
-npc_name = "The Campbells"
+npc_name = "Mr. Campbell"
 
 [node name="campbell_father" parent="." groups=["NPC_Body"] instance=ExtResource("9_j5sfe")]
-transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0.80557716, -1.2366176, 1.3822143)
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, -0.16982186, -1.2366176, 0.29358685)
 
-[node name="campbell_mother" parent="." groups=["NPC_Body"] instance=ExtResource("10_lvv75")]
-transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, -0.87497413, -1.2366176, 1.3822143)
-
-[node name="campbell_child" parent="." groups=["NPC_Body"] instance=ExtResource("11_b5vy5")]
-transform = Transform3D(-0.7, 0, -6.119594e-08, 0, 0.7, 0, 6.119594e-08, 0, -0.7, -0.74684536, -1.2366176, -0.48773575)
+[node name="father_body" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.13017201, -0.357467, 0.3708067)
+shape = SubResource("CapsuleShape3D_5x2h4")
+debug_color = Color(0.65632045, 0.5013817, 0.35583058, 0.41960785)
 
 [node name="Quest" parent="." instance=ExtResource("6_u5i8w")]
-transform = Transform3D(0.14999999, 0, 0, 0, 0.14940615, -0.013334143, 0, 0.013334143, 0.14940615, 0.63112676, -0.6064683, -1.4637898)
+transform = Transform3D(0.14999999, 0, 0, 0, 0.14940615, -0.013334143, 0, 0.013334143, 0.14940615, 0.47744453, -0.6064683, -0.44584262)
 
 [node name="AudioCue" type="Node3D" parent="."]
 transform = Transform3D(4, 0, 0, 0, 4, 0, 0, 0, 4, 3.610983, -1.7697887, 38.888893)
@@ -96,9 +78,10 @@ script = ExtResource("12_vmf3g")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.9622278, 0, -10.077015)
 stream = ExtResource("13_uhujl")
 attenuation_model = 2
-volume_db = -62.104
+volume_db = -0.989
 unit_size = 47.13
-max_db = -21.094
+max_db = -4.614
+pitch_scale = 0.63
 max_distance = 81.3
 panning_strength = 1.2
 bus = &"SFX"
@@ -115,7 +98,7 @@ panning_strength = 1.14
 bus = &"SFX"
 
 [node name="QuestMarkerBlue" parent="." instance=ExtResource("14_vmf3g")]
-transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 0, 0.28481317, 0)
+transform = Transform3D(0.25, 0, 0, 0, 0.25, 0, 0, 0, 0.25, -0.16655058, 0.82498515, 0.37000203)
 
 [connection signal="body_entered" from="interact" to="." method="_on_interact_body_entered"]
 [connection signal="body_exited" from="interact" to="." method="_on_interact_body_exited"]
