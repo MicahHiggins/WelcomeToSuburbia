@@ -9,10 +9,7 @@ const MAX_PLAYERS: int = 4
 const SERVER_ID: int = 1
 
 # ------------------------------------------------------------
-# ADDED: 4-digit join code system
-# - Host generates a 4-digit code (0000-9999)
-# - Code is stored as lobby data "join_code"
-# - Join searches lobby list for matching code, then joins that lobby_id
+# 4-digit join code system
 # ------------------------------------------------------------
 const LOBBY_CODE_KEY: String = "join_code"
 @export var join_code_digits: int = 4
@@ -44,7 +41,7 @@ var _player_spawner: Node = null
 var _players_root: Node3D = null
 
 # ------------------------------------------------------------
-# ADDED: Pause menu LevelSelect buttons (matches your scene tree)
+# Pause menu LevelSelect buttons (matches your scene tree)
 # Menu/pause/LevelSelect/lvl1Button
 # Menu/pause/LevelSelect/lvl2Button
 # Menu/pause/LevelSelect/lvl3Button
@@ -57,6 +54,26 @@ var _players_root: Node3D = null
 var _lvl1_btn: Button = null
 var _lvl2_btn: Button = null
 var _lvl3_btn: Button = null
+
+# ============================================================
+# PRESS ANY BUTTON INTRO (INSPECTOR-DRIVEN)
+# ============================================================
+@export var use_press_any_intro: bool = true
+
+# Drag your AnimationPlayer here in inspector (inside Menu/CanvasLayer somewhere)
+@export var intro_anim_player: AnimationPlayer = null
+@export var intro_anim_name: StringName = &"postcard switch"
+
+# Drag ONLY the UI you want hidden until the intro finishes:
+# Host / Join / Quit buttons, JoinCode LineEdit, etc.
+# Do NOT put your title art/background in here.
+@export var intro_gate_nodes: Array[CanvasItem] = []
+
+# Optional: “Press Any Key” prompt (will hide when intro starts)
+@export var press_any_node: CanvasItem = null
+
+var _intro_started: bool = false
+var _intro_finished: bool = false
 
 
 func _ready() -> void:
@@ -79,8 +96,11 @@ func _ready() -> void:
 	_init_menu_refs()
 	_init_steam()
 
-	# ADDED: hook up pause menu level select buttons
+	# hook up pause menu level select buttons
 	_init_level_select_buttons()
+
+	# press-any intro setup (ONLY hides the nodes you drag into intro_gate_nodes)
+	_init_press_any_intro()
 
 	# global multiplayer signals
 	multiplayer.peer_connected.connect(_on_peer_connected)
@@ -95,6 +115,13 @@ func _process(_delta: float) -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
+	# Gate everything until intro is done
+	if use_press_any_intro and not _intro_finished:
+		if _event_counts_as_any_press(event):
+			_start_intro()
+		return
+
+	# existing behavior after intro
 	if event.is_action_pressed("ui_cancel"):
 		if peer == null:
 			_capture_mouse(false)
@@ -113,10 +140,6 @@ func _init_menu_refs() -> void:
 		push_warning("[LobbyManager] Menu root not found. Fix menu_root_path if you want UI.")
 		return
 
-	# Expected:
-	# Menu/CanvasLayer
-	# Menu/pause
-	# Menu/pause/code
 	_menu_canvas = menu_root.get_node_or_null("CanvasLayer") as CanvasLayer
 	if _menu_canvas == null:
 		push_warning("[LobbyManager] Menu/CanvasLayer not found.")
@@ -142,10 +165,94 @@ func _init_menu_refs() -> void:
 	if _join_code_node == null:
 		push_warning("[LobbyManager] Could not find join code LineEdit under Menu/CanvasLayer.")
 
+	# (Optional) If your buttons are connected via the editor already, leave them.
+	# If not, you can connect Host/Join/Quit in editor to these methods:
+	# - _on_host_pressed
+	# - _on_join_pressed
+	# - _on_pause_quit_pressed (or Quit button can just call get_tree().quit())
+
+
+# =========================
+#   INTRO (PRESS ANY)
+# =========================
+func _init_press_any_intro() -> void:
+	if not use_press_any_intro:
+		_intro_finished = true
+		return
+
+	_intro_started = false
+	_intro_finished = false
+
+	# IMPORTANT:
+	# - We do NOT hide the whole CanvasLayer.
+	# - Your normal title screen art stays visible.
+	# - We ONLY hide the nodes you drag into intro_gate_nodes.
+	_set_gate_nodes_visible(false)
+
+	# Show press-any prompt if you have one
+	if press_any_node != null:
+		press_any_node.visible = true
+
+	# Auto-wire the anim finished signal if we have an anim player
+	if intro_anim_player != null:
+		if not intro_anim_player.animation_finished.is_connected(_on_intro_anim_finished):
+			intro_anim_player.animation_finished.connect(_on_intro_anim_finished)
+
+
+func _event_counts_as_any_press(event: InputEvent) -> bool:
+	if event is InputEventKey:
+		return (event as InputEventKey).pressed and not (event as InputEventKey).echo
+	if event is InputEventMouseButton:
+		return (event as InputEventMouseButton).pressed
+	if event is InputEventJoypadButton:
+		return (event as InputEventJoypadButton).pressed
+	return false
+
+
+func _start_intro() -> void:
+	if _intro_started:
+		return
+	_intro_started = true
+
+	if press_any_node != null:
+		press_any_node.visible = false
+
+	# If no anim player, just instantly reveal UI
+	if intro_anim_player == null:
+		_finish_intro()
+		return
+
+	var a := String(intro_anim_name)
+	if a == "" or not intro_anim_player.has_animation(a):
+		push_warning("[LobbyManager] Intro animation missing: " + a)
+		_finish_intro()
+		return
+
+	# Play intro animation. We do NOT hide the animated nodes, so the result stays on screen.
+	intro_anim_player.play(a)
+
+
+func _on_intro_anim_finished(anim: StringName) -> void:
+	# Only finish when our intro anim finishes
+	if String(anim) != String(intro_anim_name):
+		return
+	_finish_intro()
+
+
+func _finish_intro() -> void:
+	_intro_finished = true
+	_set_gate_nodes_visible(true)
+	# Leave the animation result visible; we do nothing to your title/animated nodes.
+
+
+func _set_gate_nodes_visible(on: bool) -> void:
+	for n in intro_gate_nodes:
+		if n != null:
+			n.visible = on
+
 
 # ------------------------------------------------------------
-# ADDED: pause menu LevelSelect wiring
-# This only connects if nodes exist, so it won't crash if the UI changes.
+# pause menu LevelSelect wiring
 # ------------------------------------------------------------
 func _init_level_select_buttons() -> void:
 	var ls_root: Node = get_node_or_null(level_select_root_path)
@@ -164,8 +271,6 @@ func _init_level_select_buttons() -> void:
 	if _lvl3_btn != null and not _lvl3_btn.pressed.is_connected(_on_lvl3_pressed):
 		_lvl3_btn.pressed.connect(_on_lvl3_pressed)
 
-
-# ADDED: button callbacks delegate to LevelFlowManager
 func _on_lvl1_pressed() -> void:
 	_request_level_change(1)
 
@@ -223,8 +328,6 @@ func _init_steam() -> void:
 
 		Steam.lobby_created.connect(_on_lobby_created)
 		Steam.lobby_joined.connect(_on_lobby_joined)
-
-		# ADDED: lobby list results for 4-digit join
 		Steam.lobby_match_list.connect(_on_lobby_match_list)
 	else:
 		steam_initialized = false
@@ -259,13 +362,11 @@ func _on_join_pressed() -> void:
 		push_error("Join code must be numeric.")
 		return
 
-	# ADDED: normalize to digits you want (default 4)
 	code_str = _normalize_join_code(code_str)
 	if code_str == "":
 		push_error("Join code must be %d digits." % join_code_digits)
 		return
 
-	# ADDED: join by 4-digit code (search lobby list -> join first match)
 	_find_lobby_by_4_digit_code(code_str)
 
 
@@ -309,8 +410,6 @@ func _find_lobby_by_4_digit_code(code: String) -> void:
 	if join_code_search_worldwide and Steam.has_method("addRequestLobbyListDistanceFilter"):
 		Steam.addRequestLobbyListDistanceFilter(Steam.LOBBY_DISTANCE_FILTER_WORLDWIDE)
 
-	# FIX: this build expects (key, value, comparison)
-	# comparison = 0 is "equal" in the builds that use this signature
 	Steam.addRequestLobbyListStringFilter(LOBBY_CODE_KEY, code, 0)
 
 	if debug_join_code:
@@ -326,7 +425,6 @@ func _on_lobby_match_list(lobbies: Array) -> void:
 	if code == "":
 		return
 
-	# FIX: do NOT call getNumLobbyMatches/getLobbyByIndex (not in your build)
 	if lobbies != null and lobbies.size() > 0:
 		var lobby_id: int = int(lobbies[0])
 		if debug_join_code:
@@ -348,11 +446,9 @@ func _on_lobby_created(result: int, lobby_id: int) -> void:
 	print("Lobby created successfully. Lobby ID:", lobby_id)
 	current_lobby_id = lobby_id
 
-	# ADDED: generate + store 4-digit join code
 	var join_code := _make_join_code_4_digit()
 	Steam.setLobbyData(lobby_id, LOBBY_CODE_KEY, join_code)
 
-	# show the 4-digit code in the UI (same field)
 	if _join_code_node != null:
 		_join_code_node.text = join_code
 
@@ -368,7 +464,6 @@ func _on_lobby_joined(lobby_id: int, _permissions, _locked: bool, chat_response:
 	print("Entered lobby successfully. Lobby ID:", lobby_id)
 	current_lobby_id = lobby_id
 
-	# ADDED: if we joined by lobby id directly, try to display its 4-digit code
 	if _join_code_node != null:
 		var code := str(Steam.getLobbyData(lobby_id, LOBBY_CODE_KEY))
 		if code != "" and code != "0":
@@ -398,10 +493,8 @@ func _host_game(_lobby_id: int) -> void:
 
 	print("SteamMultiplayerPeer host created. My unique_id:", multiplayer.get_unique_id())
 
-	# spawn local player through PlayerSpawner (under PlayersRoot)
 	_player_spawner.call("spawn_local_player", multiplayer.get_unique_id(), player_scene)
 
-	# server kicks off the game level load once the lobby is ready
 	if _level_flow != null and _level_flow.has_method("on_lobby_ready_server"):
 		_level_flow.call("on_lobby_ready_server")
 
@@ -429,7 +522,6 @@ func _join_game(lobby_id: int) -> void:
 
 	print("SteamMultiplayerPeer client created. Host SteamID:", host_id)
 
-	# spawn local player through PlayerSpawner (under PlayersRoot)
 	_player_spawner.call("spawn_local_player", multiplayer.get_unique_id(), player_scene)
 
 	if _menu_canvas != null:
@@ -455,12 +547,10 @@ func _on_peer_connected(id: int) -> void:
 	if not multiplayer.is_server():
 		return
 
-	# send existing player ids to the joining peer
 	for child in _players_root.get_children():
 		if String(child.name).is_valid_int():
 			rpc_id(id, "add_player", int(String(child.name)))
 
-	# then broadcast the new player
 	rpc("add_player", id)
 
 
@@ -471,9 +561,6 @@ func _on_peer_disconnected(id: int) -> void:
 		del_player(id)
 
 
-# =========================
-#   RPC: spawn/remove players on all peers
-# =========================
 @rpc("any_peer", "call_local", "reliable")
 func add_player(id: int) -> void:
 	_player_spawner.call("spawn_remote_player", id, player_scene)
@@ -491,21 +578,17 @@ func _on_pause_quit_pressed() -> void:
 
 
 func _on_pause_back_to_menu_pressed() -> void:
-	# leave lobby
 	if current_lobby_id != 0 and Steam.isSteamRunning():
 		Steam.leaveLobby(current_lobby_id)
 		current_lobby_id = 0
 
-	# drop peer
 	if peer != null:
 		multiplayer.multiplayer_peer = null
 		peer = null
 
-	# despawn all players (under PlayersRoot)
 	for child in _players_root.get_children():
 		child.queue_free()
 
-	# show menu again
 	if _pause_menu != null:
 		_pause_menu.hide()
 	if _menu_canvas != null:
