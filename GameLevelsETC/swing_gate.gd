@@ -9,8 +9,8 @@ const SERVER_ID: int = 1
 @export var also_change_to_level_3: bool = true
 @export var level_3_index: int = 3
 
-var _inside: Dictionary = {}     # int -> bool
-var _swung: Dictionary = {}      # int -> bool
+var _inside: Dictionary = {}
+var _swung: Dictionary = {}
 var _done: bool = false
 
 
@@ -27,45 +27,58 @@ func _ready() -> void:
 
 
 func _on_body_entered(body: Node) -> void:
-	if not multiplayer.has_multiplayer_peer():
-		return
-	if not multiplayer.is_server():
-		return
 	if body == null or not body.is_in_group("player"):
 		return
 
-	var pid := _peer_id_from_player(body)
-	if pid <= 0:
-		return
-
-	_inside[pid] = true
+	if multiplayer.has_multiplayer_peer():
+		if not _is_my_local_player(body):
+			return
+		var pid := int(multiplayer.get_unique_id())
+		rpc_id(SERVER_ID, "_rpc_set_inside", pid, true)
+	else:
+		var pid2 := _peer_id_from_player(body)
+		if pid2 > 0:
+			_inside[pid2] = true
 
 
 func _on_body_exited(body: Node) -> void:
-	if not multiplayer.has_multiplayer_peer():
-		return
-	if not multiplayer.is_server():
-		return
 	if body == null or not body.is_in_group("player"):
 		return
 
-	var pid := _peer_id_from_player(body)
-	if pid <= 0:
-		return
-
-	_inside.erase(pid)
-	_swung.erase(pid)
+	if multiplayer.has_multiplayer_peer():
+		if not _is_my_local_player(body):
+			return
+		var pid := int(multiplayer.get_unique_id())
+		rpc_id(SERVER_ID, "_rpc_set_inside", pid, false)
+	else:
+		var pid2 := _peer_id_from_player(body)
+		if pid2 > 0:
+			_inside.erase(pid2)
+			_swung.erase(pid2)
 
 
 func notify_swing(peer_id: int) -> void:
-	if not multiplayer.has_multiplayer_peer():
+	if multiplayer.has_multiplayer_peer():
+		if multiplayer.is_server():
+			_server_mark_swing(peer_id)
+		else:
+			rpc_id(SERVER_ID, "_rpc_client_swing", peer_id)
+	else:
 		_mark_swing_local(peer_id)
+
+
+@rpc("any_peer", "reliable")
+func _rpc_set_inside(peer_id: int, is_inside: bool) -> void:
+	if not multiplayer.is_server():
+		return
+	if peer_id <= 0:
 		return
 
-	if multiplayer.is_server():
-		_server_mark_swing(peer_id)
+	if is_inside:
+		_inside[peer_id] = true
 	else:
-		rpc_id(SERVER_ID, "_rpc_client_swing", peer_id)
+		_inside.erase(peer_id)
+		_swung.erase(peer_id)
 
 
 @rpc("any_peer", "reliable")
@@ -102,6 +115,7 @@ func _mark_swing_local(peer_id: int) -> void:
 		return
 	if peer_id <= 0:
 		return
+
 	_swung[peer_id] = true
 
 	var count := 0
@@ -146,3 +160,11 @@ func _peer_id_from_player(p: Node) -> int:
 	if nm.is_valid_int():
 		return int(nm)
 	return -1
+
+
+func _is_my_local_player(body: Node) -> bool:
+	if body == null:
+		return false
+	if not body.has_method("is_multiplayer_authority"):
+		return false
+	return (body as Node).is_multiplayer_authority()
