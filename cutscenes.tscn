@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://bh8wge84bqmlq"]
 
 [ext_resource type="Script" uid="uid://dgi5u1idu5luo" path="res://Scripts/cutscenes.gd" id="1_3mh18"]
-[ext_resource type="VideoStream" uid="uid://bj2hwqdjbgyyq" path="res://Assets/Videos/KidnapwithSound.ogv" id="2_3mh18"]
+[ext_resource type="VideoStream" uid="uid://c0hco4i14qcfw" path="res://Assets/Videos/KidnapwithSound (1).ogv" id="2_3mh18"]
 
 [node name="Cutscenes" type="CanvasLayer" node_paths=PackedStringArray("level_2_cutscene")]
 script = ExtResource("1_3mh18")
