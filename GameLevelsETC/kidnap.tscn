@@ -732,7 +732,7 @@ collision_layer = 15
 authority_only_physics = false
 
 [node name="Shelf" type="MeshInstance3D" parent="Bedrooms/bedroom2"]
-transform = Transform3D(-2.0815234e-08, 0.0010388906, 0.4761926, -1.16415315e-10, 0.5952399, -0.0008311137, -0.4761924, -1.9093079e-10, -2.081504e-08, -1.9190041, -1.3467678, -16.26862)
+transform = Transform3D(-2.0815234e-08, 0.0010388906, 0.47619256, -1.16415315e-10, 0.5952399, -0.00083111366, -0.4761924, -1.9093079e-10, -2.0815039e-08, -1.9190041, -1.3467678, -16.26862)
 visible = false
 mesh = SubResource("BoxMesh_dwtrd")
 skeleton = NodePath("../../..")
@@ -2262,7 +2262,7 @@ shape = SubResource("BoxShape3D_un8vx")
 
 [node name="SwingGate" type="Area3D" parent="." node_paths=PackedStringArray("play_video_player")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 12.420419)
-collision_layer = 15
+collision_layer = 8
 collision_mask = 8
 script = ExtResource("28_un8vx")
 play_video_player = NodePath("../CutsceneTC")
@@ -2271,11 +2271,13 @@ play_video_player = NodePath("../CutsceneTC")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.06085205, -1.2143555, 0.4621582)
 shape = SubResource("BoxShape3D_lobfv")
 
-[node name="SwingGate2" type="Area3D" parent="."]
+[node name="SwingGate2" type="Area3D" parent="." node_paths=PackedStringArray("play_video_player")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -13.80077)
-collision_layer = 15
+collision_layer = 8
 collision_mask = 8
 script = ExtResource("28_un8vx")
+required_item_id = &"Bat"
+play_video_player = NodePath("../CutsceneTC")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="SwingGate2"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.06085205, -1.2143555, 0.4621582)

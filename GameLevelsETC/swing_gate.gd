@@ -2,228 +2,165 @@ extends Area3D
 class_name BatSwingGate
 
 @export var required_player_count: int = 2
+@export var required_item_id: StringName = &"bat"
 
 @export var play_video_player: VideoStreamPlayer = null
 @export var start_video_on_show: bool = true
 
 @export var also_change_to_level_3: bool = true
 @export var level_3_index: int = 3
+@export var level_change_delay_sec: float = 3.0
 
-var _inside: Dictionary = {}
-var _swung: Dictionary = {}
-var _done: bool = false
-
+var _done := false
+var _level_change_queued := false
+var _level_change_timer := 0.0
+var _debug_tick := 0.0
 
 func _enter_tree() -> void:
 	if not is_in_group("bat_swing_gate"):
 		add_to_group("bat_swing_gate")
 
-
 func _ready() -> void:
-	print("GATE READY | name:", name, " path:", get_path(), " mp:", multiplayer.has_multiplayer_peer(), " server:", multiplayer.is_server(), " my_uid:", multiplayer.get_unique_id())
-	print("GATE MASK/LAYER | layer:", collision_layer, " mask:", collision_mask, " monitoring:", monitoring, " monitorable:", monitorable)
-
-	if not body_entered.is_connected(_on_body_entered):
-		body_entered.connect(_on_body_entered)
-	if not body_exited.is_connected(_on_body_exited):
-		body_exited.connect(_on_body_exited)
-
 	if play_video_player != null:
 		play_video_player.visible = false
 
-
-func _server_peer_id() -> int:
-	if not multiplayer.has_multiplayer_peer():
-		return -1
-	if multiplayer.is_server():
-		return multiplayer.get_unique_id()
-	var peers := multiplayer.get_peers()
-	if peers == null or peers.is_empty():
-		return -1
-	var best := int(peers[0])
-	for p_any in peers:
-		var p := int(p_any)
-		if p < best:
-			best = p
-	return best
-
-
-func _on_body_entered(body: Node) -> void:
-	print("GATE ENTER RAW | body:", body, " name:", (body.name if body != null else "null"))
-	if body == null:
-		return
-
-	print("GATE ENTER CHECK | is_player_group:", body.is_in_group("player"), " class:", body.get_class())
-	if not body.is_in_group("player"):
-		return
-
-	if multiplayer.has_multiplayer_peer():
-		var is_local := _is_my_local_player(body)
-		print("GATE ENTER MP | is_local:", is_local, " auth:", int(body.get_multiplayer_authority()), " my_uid:", multiplayer.get_unique_id())
-		if not is_local:
-			return
-
-		var pid := int(body.get_multiplayer_authority())
-		var sid := _server_peer_id()
-		print("GATE ENTER -> SERVER TARGET | sid:", sid, " pid:", pid)
-
-		if multiplayer.is_server():
-			_rpc_set_inside(pid, true)
-		else:
-			if sid > 0:
-				rpc_id(sid, "_rpc_set_inside", pid, true)
-	else:
-		var pid2 := _peer_id_from_player(body)
-		print("GATE ENTER SP | pid:", pid2)
-		if pid2 > 0:
-			_inside[pid2] = true
-			print("GATE INSIDE NOW:", _inside)
-
-
-func _on_body_exited(body: Node) -> void:
-	print("GATE EXIT RAW | body:", body, " name:", (body.name if body != null else "null"))
-	if body == null:
-		return
-
-	print("GATE EXIT CHECK | is_player_group:", body.is_in_group("player"), " class:", body.get_class())
-	if not body.is_in_group("player"):
-		return
-
-	if multiplayer.has_multiplayer_peer():
-		var is_local := _is_my_local_player(body)
-		print("GATE EXIT MP | is_local:", is_local, " auth:", int(body.get_multiplayer_authority()), " my_uid:", multiplayer.get_unique_id())
-		if not is_local:
-			return
-
-		var pid := int(body.get_multiplayer_authority())
-		var sid := _server_peer_id()
-		print("GATE EXIT -> SERVER TARGET | sid:", sid, " pid:", pid)
-
-		if multiplayer.is_server():
-			_rpc_set_inside(pid, false)
-		else:
-			if sid > 0:
-				rpc_id(sid, "_rpc_set_inside", pid, false)
-	else:
-		var pid2 := _peer_id_from_player(body)
-		print("GATE EXIT SP | pid:", pid2)
-		if pid2 > 0:
-			_inside.erase(pid2)
-			_swung.erase(pid2)
-			print("GATE INSIDE NOW:", _inside, " SWUNG NOW:", _swung)
-
-
-func notify_swing(peer_id: int) -> void:
-	print("GATE NOTIFY_SWING | peer_id:", peer_id, " mp:true?", multiplayer.has_multiplayer_peer(), " server:", multiplayer.is_server(), " done:", _done)
-
-	if multiplayer.has_multiplayer_peer():
-		if multiplayer.is_server():
-			_server_mark_swing(peer_id)
-		else:
-			var sid := _server_peer_id()
-			print("GATE SWING -> SERVER TARGET | sid:", sid, " peer_id:", peer_id)
-			if sid > 0:
-				rpc_id(sid, "_rpc_client_swing", peer_id)
-	else:
-		_mark_swing_local(peer_id)
-
-
-@rpc("any_peer", "reliable")
-func _rpc_set_inside(peer_id: int, is_inside: bool) -> void:
-	print("GATE RPC_SET_INSIDE | sender:", multiplayer.get_remote_sender_id(), " peer_id:", peer_id, " inside:", is_inside, " server:", multiplayer.is_server())
 	if multiplayer.has_multiplayer_peer() and not multiplayer.is_server():
-		return
-	if peer_id <= 0:
-		return
-
-	if is_inside:
-		_inside[peer_id] = true
+		monitoring = false
+		monitorable = false
 	else:
-		_inside.erase(peer_id)
-		_swung.erase(peer_id)
+		monitoring = true
+		monitorable = true
 
-	print("GATE STATE | inside:", _inside, " swung:", _swung)
+	print("GATE READY | path:", get_path(), " server:", multiplayer.is_server(), " uid:", multiplayer.get_unique_id())
+	print("GATE MASK/LAYER | layer:", collision_layer, " mask:", collision_mask, " monitoring:", monitoring, " monitorable:", monitorable)
 
-
-@rpc("any_peer", "reliable")
-func _rpc_client_swing(peer_id: int) -> void:
-	print("GATE RPC_CLIENT_SWING | sender:", multiplayer.get_remote_sender_id(), " peer_id:", peer_id, " server:", multiplayer.is_server())
-	if multiplayer.has_multiplayer_peer() and not multiplayer.is_server():
+func _physics_process(delta: float) -> void:
+	if _level_change_queued:
+		_level_change_timer -= delta
+		if _level_change_timer <= 0.0:
+			_level_change_queued = false
+			_call_level_change_level3()
 		return
-	_server_mark_swing(peer_id)
-
-
-func _server_mark_swing(peer_id: int) -> void:
-	print("GATE SERVER_MARK_SWING | peer_id:", peer_id, " inside_has:", _inside.has(peer_id), " done:", _done)
 
 	if _done:
 		return
-	if peer_id <= 0:
-		return
-	if not _inside.has(peer_id):
-		print("GATE SWING IGNORED (not inside) | peer_id:", peer_id)
+
+	if multiplayer.has_multiplayer_peer() and not multiplayer.is_server():
 		return
 
-	_swung[peer_id] = true
+	if not _is_coordinator_gate():
+		return
 
-	var count := 0
-	for k in _swung.keys():
-		if _swung.get(int(k), false) == true:
-			count += 1
+	_debug_tick -= delta
+	var do_debug := false
+	if _debug_tick <= 0.0:
+		_debug_tick = 0.50
+		do_debug = true
 
-	print("GATE SWUNG COUNT:", count, " required:", required_player_count, " swung:", _swung)
+	_try_complete_gate_server(do_debug)
 
-	if count >= required_player_count:
+func _try_complete_gate_server(do_debug: bool) -> void:
+	var inside_any := _collect_overlapping_union()
+
+	var ok_count := 0
+	var ok_pids: Array[int] = []
+
+	var players := get_tree().get_nodes_in_group("player")
+	for p_any in players:
+		var p := p_any as Node
+		if p == null:
+			continue
+
+		var pid := _peer_id_from_player(p)
+		if pid <= 0:
+			continue
+
+		var in_any := inside_any.has(pid)
+		var has_item := _player_has_required_item(p)
+
+		if do_debug:
+			var inv = p.get("inventory")
+			print("GATE DEBUG | pid:", pid, " in_any:", in_any, " has_item:", has_item, " inv:", inv, " inside_any:", inside_any.keys())
+
+		if not in_any:
+			continue
+		if not has_item:
+			continue
+
+		ok_count += 1
+		ok_pids.append(pid)
+		if ok_count >= required_player_count:
+			break
+
+	if do_debug:
+		print("GATE DEBUG | ok_count:", ok_count, " required:", required_player_count, " ok_pids:", ok_pids)
+
+	if ok_count >= required_player_count:
 		_done = true
-		print("GATE COMPLETE -> PLAY + OPTIONAL LEVEL CHANGE")
 		rpc("_rpc_play_gate_video")
 		if also_change_to_level_3:
-			_call_level_change_level3()
+			_level_change_queued = true
+			_level_change_timer = maxf(0.0, level_change_delay_sec)
 
+func _collect_overlapping_union() -> Dictionary:
+	var union: Dictionary = {}
+	var gates := get_tree().get_nodes_in_group("bat_swing_gate")
 
-func _mark_swing_local(peer_id: int) -> void:
-	if _done:
-		return
-	if peer_id <= 0:
-		return
+	for g_any in gates:
+		var g := g_any as Area3D
+		if g == null:
+			continue
+		if not g.monitoring:
+			continue
 
-	_swung[peer_id] = true
+		var bodies := g.get_overlapping_bodies()
+		for b_any in bodies:
+			var b := b_any as Node
+			if b == null:
+				continue
+			if not b.is_in_group("player"):
+				continue
+			var pid := _peer_id_from_player(b)
+			if pid > 0:
+				union[pid] = true
 
-	var count := 0
-	for k in _swung.keys():
-		if _swung.get(int(k), false) == true:
-			count += 1
+	return union
 
-	if count >= required_player_count:
-		_done = true
-		_play_video_local()
+func _player_has_required_item(p: Node) -> bool:
+	var want := String(required_item_id).to_lower()
 
+	var inv = p.get("inventory")
+	if inv is Array:
+		for it in inv:
+			if String(it).to_lower() == want:
+				return true
+
+	if p.has_method("has_item_id"):
+		return bool(p.call("has_item_id", required_item_id))
+
+	return false
 
 @rpc("any_peer", "call_local", "reliable")
 func _rpc_play_gate_video() -> void:
-	print("GATE RPC_PLAY_GATE_VIDEO | local:", multiplayer.get_unique_id())
 	_play_video_local()
 
-
 func _play_video_local() -> void:
-	print("GATE PLAY_VIDEO_LOCAL | vsp:", play_video_player)
 	if play_video_player == null:
 		return
-
 	play_video_player.visible = true
 	if start_video_on_show:
 		play_video_player.stop()
 		play_video_player.play()
 
-
 func _call_level_change_level3() -> void:
+	if multiplayer.has_multiplayer_peer() and not multiplayer.is_server():
+		return
 	var lf := get_tree().get_first_node_in_group("level_flow_manager")
-	print("GATE LEVEL CHANGE | lf:", lf)
 	if lf == null:
+		print("GATE LEVEL CHANGE | no level_flow_manager in group")
 		return
 	if lf.has_method("request_level_change"):
 		lf.call("request_level_change", level_3_index)
-
 
 func _peer_id_from_player(p: Node) -> int:
 	if p == null:
@@ -235,10 +172,16 @@ func _peer_id_from_player(p: Node) -> int:
 		return int(nm)
 	return -1
 
-
-func _is_my_local_player(body: Node) -> bool:
-	if body == null:
-		return false
-	if not body.has_method("is_multiplayer_authority"):
-		return false
-	return (body as Node).is_multiplayer_authority()
+func _is_coordinator_gate() -> bool:
+	var gates := get_tree().get_nodes_in_group("bat_swing_gate")
+	var best: Node = null
+	var best_id := 9223372036854775807
+	for g_any in gates:
+		var g := g_any as Node
+		if g == null:
+			continue
+		var iid := int(g.get_instance_id())
+		if iid < best_id:
+			best_id = iid
+			best = g
+	return best == self

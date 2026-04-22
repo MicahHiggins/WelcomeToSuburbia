@@ -1035,7 +1035,7 @@ func _play_attack_local() -> void:
 			held_anim.play(String(attack_anim_name))
 
 func _notify_bat_swing_gates() -> void:
-	var pid := int(get_multiplayer_authority())
+	var pid := int(multiplayer.get_unique_id()) if multiplayer.has_multiplayer_peer() else int(get_multiplayer_authority())
 	get_tree().call_group("bat_swing_gate", "notify_swing", pid)
 # =========================
 #      FRAME / PHYSICS
