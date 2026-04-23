@@ -94,7 +94,7 @@ volume_db = -48.515
 unit_size = 17.86
 max_db = -14.937
 max_distance = 397.67
-panning_strength = 1.14
+panning_strength = 1.69
 bus = &"SFX"
 
 [node name="QuestMarkerBlue" parent="." instance=ExtResource("14_vmf3g")]
