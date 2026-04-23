@@ -1,4 +1,4 @@
-[gd_scene load_steps=24 format=3 uid="uid://c2ocvg8ruxbbg"]
+[gd_scene load_steps=26 format=3 uid="uid://c2ocvg8ruxbbg"]
 
 [ext_resource type="Script" uid="uid://dywhk2ngguw7a" path="res://GameLevelsETC/lobby_manager.gd" id="1_l5n62"]
 [ext_resource type="Script" uid="uid://l6pyeyjgkntn" path="res://GameLevelsETC/item_manager.gd" id="1_lbg40"]
@@ -13,10 +13,12 @@
 [ext_resource type="FontFile" uid="uid://b8sauwugqtx80" path="res://addons/Font/GimletDisplay-Bold-Testing.otf" id="9_fan4m"]
 [ext_resource type="Script" uid="uid://744qvh7h6rs5" path="res://GameLevelsETC/player_spawner.gd" id="9_nqjqn"]
 [ext_resource type="FontFile" uid="uid://c5y1av38605l6" path="res://addons/Font/GimletVariable-VF-Testing.ttf" id="10_fan4m"]
+[ext_resource type="AudioStream" uid="uid://bqausc616kevw" path="res://Audio/UI/pageFlip.mp3" id="12_6yvpa"]
 [ext_resource type="FontFile" uid="uid://c5b8bpjyyhhdm" path="res://addons/Font/GimletDisplay-Regular-Testing.otf" id="12_nqjqn"]
 [ext_resource type="PackedScene" uid="uid://b3tivaphj7o57" path="res://aidan_stuff/button4Iteration.tscn" id="13_nqjqn"]
 [ext_resource type="Script" uid="uid://c8d8y0v8e3yhm" path="res://aidan_stuff/curr_obj.gd" id="15_mekh1"]
 [ext_resource type="Script" uid="uid://da4fkcqmq3u8p" path="res://GameLevelsETC/settings_menu.gd" id="16_3kyh0"]
+[ext_resource type="AudioStream" uid="uid://b21ipttksf73w" path="res://Audio/UI/UIClick.mp3" id="19_8agcw"]
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_mekh1"]
 texture = ExtResource("7_fan4m")
@@ -137,6 +139,42 @@ tracks/8/keys = {
 "update": 0,
 "values": [Vector2(0, 646)]
 }
+tracks/9/type = "value"
+tracks/9/imported = false
+tracks/9/enabled = true
+tracks/9/path = NodePath("../../UI Sounds/PageFlip:stream")
+tracks/9/interp = 1
+tracks/9/loop_wrap = true
+tracks/9/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [ExtResource("12_6yvpa")]
+}
+tracks/10/type = "value"
+tracks/10/imported = false
+tracks/10/enabled = true
+tracks/10/path = NodePath("../../UI Sounds/PageFlip:playing")
+tracks/10/interp = 1
+tracks/10/loop_wrap = true
+tracks/10/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+tracks/11/type = "value"
+tracks/11/imported = false
+tracks/11/enabled = true
+tracks/11/path = NodePath("../../UI Sounds/PageFlip:stream_paused")
+tracks/11/interp = 1
+tracks/11/loop_wrap = true
+tracks/11/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
 
 [sub_resource type="Animation" id="Animation_fan4m"]
 resource_name = "postcard switch"
@@ -248,6 +286,42 @@ tracks/8/keys = {
 "transitions": PackedFloat32Array(1, 1, 1),
 "update": 0,
 "values": [Vector2(0, 646), Vector2(576, 646), Vector2(1154, 646)]
+}
+tracks/9/type = "value"
+tracks/9/imported = false
+tracks/9/enabled = true
+tracks/9/path = NodePath("../../UI Sounds/PageFlip:stream")
+tracks/9/interp = 1
+tracks/9/loop_wrap = true
+tracks/9/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [ExtResource("12_6yvpa")]
+}
+tracks/10/type = "value"
+tracks/10/imported = false
+tracks/10/enabled = true
+tracks/10/path = NodePath("../../UI Sounds/PageFlip:playing")
+tracks/10/interp = 1
+tracks/10/loop_wrap = true
+tracks/10/keys = {
+"times": PackedFloat32Array(0.5),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+tracks/11/type = "value"
+tracks/11/imported = false
+tracks/11/enabled = true
+tracks/11/path = NodePath("../../UI Sounds/PageFlip:stream_paused")
+tracks/11/interp = 1
+tracks/11/loop_wrap = true
+tracks/11/keys = {
+"times": PackedFloat32Array(0.5),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
 }
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_mekh1"]
@@ -711,11 +785,20 @@ layout_mode = 2
 
 [node name="NPCDialogue" type="CanvasLayer" parent="Menu"]
 
+[node name="UI Sounds" type="Node" parent="."]
+
+[node name="PageFlip" type="AudioStreamPlayer" parent="UI Sounds"]
+stream = ExtResource("12_6yvpa")
+bus = &"SFX"
+
+[node name="UiClick" type="AudioStreamPlayer" parent="UI Sounds"]
+stream = ExtResource("19_8agcw")
+
 [connection signal="pressed" from="Menu/CanvasLayer/Host" to="LobbyManager" method="_on_host_pressed"]
 [connection signal="pressed" from="Menu/CanvasLayer/Join" to="LobbyManager" method="_on_join_pressed"]
 [connection signal="pressed" from="Menu/CanvasLayer/quit2" to="LobbyManager" method="_on_pause_quit_pressed"]
 [connection signal="pressed" from="Menu/pause/quit" to="LobbyManager" method="_on_pause_quit_pressed"]
 [connection signal="pressed" from="Menu/pause/menu" to="LobbyManager" method="_on_pause_back_to_menu_pressed"]
-[connection signal="pressed" from="Menu/pause/settings" to="LobbyManager" method="_on_pause_settings_pressed"]
 [connection signal="pressed" from="Menu/pause/settings" to="LobbyManager" method="_on_settings_pressed"]
+[connection signal="pressed" from="Menu/pause/settings" to="LobbyManager" method="_on_pause_settings_pressed"]
 [connection signal="pressed" from="Menu/pause/copy" to="LobbyManager" method="_on_pause_copy_code_pressed"]

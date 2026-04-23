@@ -7,6 +7,8 @@ class_name LobbyManager
 @onready var settings_menu = $"../Menu/SettingsMenu"
 # Steam lobby + menu logic lives here (GameRoot-level, persists across levels)
 
+
+#@onready var page_flip: AudioStreamPlayer = $"../UI Sounds/PageFlip"
 @export var player_scene: PackedScene
 
 const APP_ID: int = 480
@@ -227,6 +229,8 @@ func _start_intro() -> void:
 		return
 
 	var a := String(intro_anim_name)
+	
+	
 	if a == "" or not intro_anim_player.has_animation(a):
 		push_warning("[LobbyManager] Intro animation missing: " + a)
 		_finish_intro()

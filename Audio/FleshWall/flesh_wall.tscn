@@ -1,0 +1,47 @@
+[gd_scene load_steps=9 format=3 uid="uid://cahfyn2urr2aa"]
+
+[ext_resource type="Script" uid="uid://dmqgxdad1j7u" path="res://Audio/FleshWall/flesh_wall.gd" id="1_6onty"]
+[ext_resource type="AudioStream" uid="uid://dgrkog6715pwb" path="res://Audio/FleshWall/slime1.wav" id="2_3215k"]
+[ext_resource type="AudioStream" uid="uid://ccrdwsklfg52u" path="res://Audio/FleshWall/slime2.wav" id="3_456tp"]
+[ext_resource type="AudioStream" uid="uid://c1l47xm51qdob" path="res://Audio/FleshWall/slime3.wav" id="4_nkwfb"]
+[ext_resource type="AudioStream" uid="uid://dj3hd1e5toy40" path="res://Audio/FleshWall/slimeLong.wav" id="5_k6han"]
+[ext_resource type="AudioStream" uid="uid://d1ontj08n4x63" path="res://Audio/FleshWall/bang1.wav" id="6_8f7lj"]
+[ext_resource type="AudioStream" uid="uid://dfawjnsowdw61" path="res://Audio/FleshWall/bang2.wav" id="7_xc4k7"]
+[ext_resource type="AudioStream" uid="uid://sodjvu76wes" path="res://Audio/SoundTrack/'Chase' Slow+reverbed.wav" id="8_3215k"]
+
+[node name="FleshWall" type="Node3D"]
+script = ExtResource("1_6onty")
+
+[node name="Slime1" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("2_3215k")
+volume_db = -4.771
+bus = &"SFX"
+
+[node name="Slime2" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("3_456tp")
+volume_db = -4.771
+bus = &"SFX"
+
+[node name="Slime3" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("4_nkwfb")
+volume_db = -4.771
+bus = &"SFX"
+
+[node name="SlimeLong" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("5_k6han")
+volume_db = 4.66
+pitch_scale = 0.88
+bus = &"SFX"
+
+[node name="Bang1" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("6_8f7lj")
+volume_db = -5.725
+bus = &"SFX"
+
+[node name="Bang2" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("7_xc4k7")
+volume_db = -5.725
+bus = &"SFX"
+
+[node name="\'chase\'Slow+reverbed" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("8_3215k")

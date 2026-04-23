@@ -1,10 +1,11 @@
-[gd_scene load_steps=13 format=3 uid="uid://bf38tvkrxj6ds"]
+[gd_scene load_steps=14 format=3 uid="uid://bf38tvkrxj6ds"]
 
 [ext_resource type="Script" uid="uid://dqvoninhsiala" path="res://GameLevelsETC/cellar_3_door_hallway.gd" id="1_tmgbf"]
 [ext_resource type="PackedScene" uid="uid://dqbgiq51e15mw" path="res://Assets/RandomObjects/stone_block.tscn" id="2_3njtq"]
 [ext_resource type="PackedScene" uid="uid://bk12xaa431jqc" path="res://Assets/RandomObjects/symbol/symbol.tscn" id="3_3njtq"]
 [ext_resource type="PackedScene" uid="uid://b6vnu6i8g7uqc" path="res://Assets/RandomObjects/symbol/symbol_correct.tscn" id="3_720kl"]
 [ext_resource type="Script" uid="uid://drk1xq8qdpgsn" path="res://GameLevelsETC/fleshviroment.gd" id="5_4a1gr"]
+[ext_resource type="PackedScene" uid="uid://cahfyn2urr2aa" path="res://Audio/FleshWall/flesh_wall.tscn" id="5_dwvhb"]
 [ext_resource type="PackedScene" uid="uid://bsrc4sxs0q266" path="res://Assets/RandomObjects/flashlight/flashlight.tscn" id="6_f1x8v"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_720kl"]
@@ -32,6 +33,8 @@ chase_slam_time_sec = 1.0
 correct_symbol_scene = ExtResource("3_720kl")
 wrong_symbol_scene_a = ExtResource("3_3njtq")
 wrong_symbol_scene_b = ExtResource("3_3njtq")
+
+[node name="FleshWall" parent="HallwayGen" instance=ExtResource("5_dwvhb")]
 
 [node name="TriggerArea" type="Node3D" parent="."]
 

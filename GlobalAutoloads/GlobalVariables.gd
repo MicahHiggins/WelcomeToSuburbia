@@ -17,6 +17,8 @@ var iteration5 = 0
 var puzzleType = 0
 var algoDebug = false
 
+var winPuzzle3 := false
+
 signal dialogueSignal
 
 signal cellarLevel
