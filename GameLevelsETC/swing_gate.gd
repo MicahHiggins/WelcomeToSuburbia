@@ -18,6 +18,11 @@ class_name BatSwingGate
 # Fallback delay if video can't be measured / finished signal doesn't fire.
 @export var level_change_delay_sec: float = 3.0
 
+# NEW: clear/drop inventory right before we start the gate animation/transition
+@export var clear_inventories_on_trigger: bool = true
+@export var inventory_property_name: StringName = &"inventory" # Array on player
+@export var try_drop_methods: bool = true # tries common drop/clear methods first
+
 @export var debug_enabled: bool = false
 @export var debug_print_every_sec: float = 1.0
 
@@ -130,6 +135,11 @@ func _try_complete_gate_server(do_dbg: bool) -> void:
 
 	if ok_count >= required_player_count:
 		_done = true
+
+		# NEW: clear/drop inventories right before video/transition kicks off
+		if clear_inventories_on_trigger:
+			_server_clear_all_player_inventories(do_dbg)
+
 		if debug_enabled:
 			print("GATE TRIGGERED | playing video")
 
@@ -142,6 +152,61 @@ func _try_complete_gate_server(do_dbg: bool) -> void:
 				_level_change_queued = true
 				_level_change_timer = maxf(0.0, level_change_delay_sec)
 
+func _server_clear_all_player_inventories(do_dbg: bool) -> void:
+	if multiplayer.has_multiplayer_peer() and not multiplayer.is_server():
+		return
+
+	var players: Array = get_tree().get_nodes_in_group("player")
+	if do_dbg:
+		print("GATE INV | clearing inventories | players:", players.size())
+
+	for p_any in players:
+		var p: Node = p_any as Node
+		if p == null:
+			continue
+
+		# Prefer explicit methods if your player script has them.
+		if try_drop_methods:
+			if p.has_method("drop_all_items"):
+				p.call("drop_all_items")
+				if do_dbg:
+					print("GATE INV |", p.name, " -> drop_all_items()")
+				continue
+			if p.has_method("drop_all_inventory"):
+				p.call("drop_all_inventory")
+				if do_dbg:
+					print("GATE INV |", p.name, " -> drop_all_inventory()")
+				continue
+			if p.has_method("clear_inventory"):
+				p.call("clear_inventory")
+				if do_dbg:
+					print("GATE INV |", p.name, " -> clear_inventory()")
+				continue
+
+		# Generic fallback: clear Array property named "inventory".
+		var inv_any: Variant = p.get(inventory_property_name)
+		if inv_any is Array:
+			var inv: Array = inv_any as Array
+
+			# If there is a per-item drop function, use it.
+			if try_drop_methods and p.has_method("drop_item"):
+				for it in inv:
+					p.call("drop_item", it)
+				if do_dbg:
+					print("GATE INV |", p.name, " -> drop_item(xN) then clear")
+				inv.clear()
+				p.set(inventory_property_name, inv)
+				continue
+
+			# Otherwise just hard-clear.
+			inv.clear()
+			p.set(inventory_property_name, inv)
+			if do_dbg:
+				print("GATE INV |", p.name, " -> inventory cleared (property)")
+
+		elif do_dbg:
+			print("GATE INV |", p.name, " -> no Array inventory property:", String(inventory_property_name))
+
 func _deferred_wait_then_change_level() -> void:
 	if multiplayer.has_multiplayer_peer() and not multiplayer.is_server():
 		return
@@ -153,17 +218,14 @@ func _deferred_wait_then_change_level() -> void:
 	if play_video_player != null and is_instance_valid(play_video_player):
 		# Prefer finished signal if we can.
 		if play_video_player.has_signal("finished"):
-			# If it ends quickly, finished will fire; if it doesn't (some streams), fallback timer still covers it.
 			var got_finish := false
 			var cb := func():
 				got_finish = true
 			if not play_video_player.finished.is_connected(cb):
 				play_video_player.finished.connect(cb, CONNECT_ONE_SHOT)
 
-			# Wait up to estimated length (or fallback) then proceed anyway.
 			var t := get_tree().create_timer(maxf(0.05, wait_sec))
 			await t.timeout
-			# If finished fired earlier, cool; if not, timer was our cap.
 		else:
 			var t2 := get_tree().create_timer(maxf(0.05, wait_sec))
 			await t2.timeout
@@ -177,7 +239,6 @@ func _deferred_wait_then_change_level() -> void:
 	_call_level_change_level3()
 
 func _estimate_video_seconds() -> float:
-	# Fallback if anything is missing.
 	var fallback := maxf(0.0, level_change_delay_sec)
 
 	if play_video_player == null or not is_instance_valid(play_video_player):
@@ -187,14 +248,12 @@ func _estimate_video_seconds() -> float:
 	if s == null:
 		return fallback
 
-	# Many streams support get_length(); if not, fallback.
 	var len_sec: float = 0.0
 	if s.has_method("get_length"):
 		len_sec = float(s.call("get_length"))
 	if len_sec <= 0.0:
 		return fallback
 
-	# Add a tiny cushion so we don’t cut the last frame.
 	return len_sec + 0.15
 
 func _is_puzzle2_done() -> bool:
