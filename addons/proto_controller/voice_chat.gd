@@ -1,24 +1,24 @@
+# res://voice_chat.gd
 extends Node
 class_name VoiceChat
 
 @export var enable_voice: bool = true
-@export var push_to_talk: bool = true
-@export var ptt_action: StringName = &"voice"
 
-# PERF: 30hz is often unnecessary and can spike CPU/bandwidth
+# TOGGLE TALK (press V on/off)
+@export var toggle_to_talk: bool = true
+@export var ptt_action: StringName = &"voice" # bind to V in InputMap
+
+# PERF
 @export var send_rate_hz: float = 20.0
 @export var max_compressed_bytes: int = 8192
 
 # --- PROXIMITY (AudioStreamPlayer3D base settings) ---
-# Target: feels good at ~40m, quieter by ~80m
 @export var hear_radius: float = 80.0
 @export var unit_size: float = 1.0
 @export var base_volume_db: float = -2.0
-
-# lower buffer reduces latency; too low can crackle
 @export var playback_buffer_sec: float = 0.28
 
-# --- EXTRA PROXIMITY CURVE (stacks on top of 3D attenuation) ---
+# --- EXTRA PROXIMITY CURVE ---
 @export var use_extra_distance_gain: bool = true
 @export var near_boost_db: float = 7.0
 @export var far_cut_db: float = -10.0
@@ -29,22 +29,28 @@ class_name VoiceChat
 @export var fx_start_m: float = 40.0
 @export var fx_full_m: float = 80.0
 
-# very slight "kid" pitch (close only)
 @export var kid_pitch_near: float = 1.06
 @export var kid_pitch_far: float = 1.00
 
-# far muffling + subtle distortion vibe
 @export var lowpass_near_hz: float = 11000.0
 @export var lowpass_far_hz: float = 2200.0
 @export var far_flutter_hz: float = 2.0
 @export var far_flutter_amt: float = 0.010
 
-# soft clip (distortion) ramps in after 40m
 @export var softclip_start: float = 0.00
 @export var softclip_full: float = 0.18
 
 # script is on Head, VoicePlayer3D is a child under Head
 @export var voice_player_path: NodePath = NodePath("VoicePlayer3D")
+
+# UI (small icon bottom)
+@export var show_talk_icon: bool = true
+@export var icon_anchor: Vector2 = Vector2(12.0, -14.0) # (x from left, y from bottom)
+@export var icon_size: float = 18.0
+@export var icon_color_off: Color = Color(1, 1, 1, 0.35)
+@export var icon_color_on: Color = Color(1, 1, 1, 0.90)
+@export var icon_outline_color: Color = Color(0, 0, 0, 0.75)
+@export var icon_outline_px: int = 3
 
 @export var debug_print: bool = false
 @export var debug_interval_sec: float = 0.75
@@ -62,11 +68,20 @@ var _playback: AudioStreamGeneratorPlayback = null
 var _dbg_t: float = 0.0
 var _gain_t: float = 0.0
 
-# cache (avoid repeated lookups)
 var _listener_cam: Camera3D = null
+
+# toggle state
+var _talk_toggle_on: bool = false
+var _toggle_prev_pressed: bool = false
+
+# UI
+var _ui_layer: CanvasLayer = null
+var _icon_label: Label = null
+
 
 func _enter_tree() -> void:
 	_inherit_authority_from_owner()
+
 
 func _ready() -> void:
 	_steam = _get_steam_singleton()
@@ -86,6 +101,11 @@ func _ready() -> void:
 	_voice_player.play()
 
 	_playback = _voice_player.get_stream_playback() as AudioStreamGeneratorPlayback
+
+	if _is_local_authority_player() and show_talk_icon:
+		_build_talk_icon_ui()
+		_update_talk_icon()
+
 	set_process(true)
 
 	if debug_print:
@@ -96,6 +116,7 @@ func _ready() -> void:
 			" sr:", _sample_rate,
 			" playback:", _playback != null)
 
+
 func _apply_voice_player_defaults() -> void:
 	_voice_player.max_distance = hear_radius
 	_voice_player.attenuation_model = AudioStreamPlayer3D.ATTENUATION_INVERSE_DISTANCE
@@ -104,16 +125,18 @@ func _apply_voice_player_defaults() -> void:
 	_voice_player.volume_db = base_volume_db
 	_voice_player.stream_paused = false
 
-	# optional built-in muffle support (only if property exists on this version)
-	# helps sell "far / through flesh"
 	if "attenuation_filter_cutoff_hz" in _voice_player:
 		_voice_player.attenuation_filter_cutoff_hz = lowpass_near_hz
 	if "attenuation_filter_db" in _voice_player:
 		_voice_player.attenuation_filter_db = -6.0
 
+
 func _process(dt: float) -> void:
 	if not enable_voice:
 		_stop_recording_if_needed()
+		if _is_local_authority_player():
+			_talk_toggle_on = false
+			_update_talk_icon()
 		return
 
 	_run_steam_callbacks_safe()
@@ -121,11 +144,12 @@ func _process(dt: float) -> void:
 	if _listener_cam == null or not is_instance_valid(_listener_cam):
 		_listener_cam = get_viewport().get_camera_3d()
 
-	# ONLY the local authority instance captures + broadcasts
+	# local authority handles toggle + send
 	if _is_local_authority_player():
+		_update_toggle_state()
 		_capture_and_send_voice()
 	else:
-		# listeners apply distance gain + distance FX
+		# listeners
 		_gain_t += dt
 		var step: float = 1.0 / maxf(gain_update_hz, 1.0)
 		if _gain_t >= step:
@@ -138,6 +162,70 @@ func _process(dt: float) -> void:
 	if debug_print and _dbg_t >= debug_interval_sec:
 		_dbg_t = 0.0
 		_debug_tick()
+
+
+# =========================
+#   TOGGLE INPUT
+# =========================
+func _update_toggle_state() -> void:
+	if not toggle_to_talk:
+		return
+	if not InputMap.has_action(ptt_action):
+		return
+
+	var pressed: bool = Input.is_action_pressed(ptt_action)
+	if pressed and not _toggle_prev_pressed:
+		_talk_toggle_on = not _talk_toggle_on
+		_update_talk_icon()
+	_toggle_prev_pressed = pressed
+
+
+func _wants_talk() -> bool:
+	if not enable_voice:
+		return false
+	if not _steam_ok:
+		return false
+
+	if not InputMap.has_action(ptt_action):
+		return false
+
+	# toggle mode only (what you asked for)
+	return _talk_toggle_on
+
+
+# =========================
+#   UI ICON
+# =========================
+func _build_talk_icon_ui() -> void:
+	_ui_layer = CanvasLayer.new()
+	_ui_layer.name = "VoiceUI"
+	_ui_layer.layer = 900
+	add_child(_ui_layer)
+
+	_icon_label = Label.new()
+	_icon_label.name = "VoiceIcon"
+	_icon_label.text = "🎙"
+	_icon_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_icon_label.anchor_left = 0.0
+	_icon_label.anchor_top = 1.0
+	_icon_label.anchor_right = 0.0
+	_icon_label.anchor_bottom = 1.0
+	_icon_label.position = Vector2(icon_anchor.x, icon_anchor.y)
+	_icon_label.add_theme_color_override("font_color", icon_color_off)
+	_icon_label.add_theme_color_override("font_outline_color", icon_outline_color)
+	_icon_label.add_theme_constant_override("outline_size", icon_outline_px)
+
+	# approximate sizing
+	_icon_label.add_theme_font_size_override("font_size", int(icon_size))
+	_ui_layer.add_child(_icon_label)
+
+
+func _update_talk_icon() -> void:
+	if _icon_label == null:
+		return
+	var c := icon_color_on if _talk_toggle_on else icon_color_off
+	_icon_label.add_theme_color_override("font_color", c)
+
 
 # =========================
 #   AUTHORITY
@@ -162,6 +250,7 @@ func _is_local_authority_player() -> bool:
 	if not multiplayer.has_multiplayer_peer():
 		return true
 	return int(get_multiplayer_authority()) == int(multiplayer.get_unique_id())
+
 
 # =========================
 #   STEAM
@@ -189,20 +278,10 @@ func _run_steam_callbacks_safe() -> void:
 	elif _steam.has_method("runCallbacks"):
 		_steam.call("runCallbacks")
 
+
 # =========================
 #   SEND
 # =========================
-func _wants_talk() -> bool:
-	if not enable_voice:
-		return false
-	if not _steam_ok:
-		return false
-	if push_to_talk:
-		if not InputMap.has_action(ptt_action):
-			return false
-		return Input.is_action_pressed(ptt_action)
-	return true
-
 func _start_recording_if_needed() -> void:
 	if _recording:
 		return
@@ -257,6 +336,7 @@ func _read_compressed_voice() -> PackedByteArray:
 
 	return out
 
+
 # =========================
 #   RECEIVE / PLAY
 # =========================
@@ -266,7 +346,6 @@ func _rpc_voice_packet(compressed: PackedByteArray) -> void:
 		return
 	if _is_local_authority_player():
 		return
-
 	_play_compressed_local(compressed)
 
 func _play_compressed_local(compressed: PackedByteArray) -> void:
@@ -298,7 +377,6 @@ func _play_compressed_local(compressed: PackedByteArray) -> void:
 
 	_push_pcm_to_playback(_playback, pcm)
 
-# PERF: prefer push_buffer() (one call) over thousands of push_frame() calls
 func _push_pcm_to_playback(pb: AudioStreamGeneratorPlayback, pcm: PackedByteArray) -> void:
 	var sample_count: int = pcm.size() / 2
 	if sample_count <= 0:
@@ -309,8 +387,6 @@ func _push_pcm_to_playback(pb: AudioStreamGeneratorPlayback, pcm: PackedByteArra
 		return
 
 	var to_push: int = mini(sample_count, room)
-
-	# distance-based “far” soft clip (listener-side only)
 	var sc: float = _current_softclip_amount()
 
 	if pb.has_method("push_buffer"):
@@ -326,8 +402,6 @@ func _push_pcm_to_playback(pb: AudioStreamGeneratorPlayback, pcm: PackedByteArra
 				s16 -= 65536
 
 			var f: float = float(s16) / 32768.0
-
-			# soft clip (tiny) to feel “crunchy” far away
 			if sc > 0.0001:
 				f = _softclip(f, sc)
 
@@ -337,7 +411,6 @@ func _push_pcm_to_playback(pb: AudioStreamGeneratorPlayback, pcm: PackedByteArra
 		pb.call("push_buffer", frames)
 		return
 
-	# fallback
 	var idx2: int = 0
 	for i2 in range(to_push):
 		var lo2: int = int(pcm[idx2])
@@ -352,15 +425,15 @@ func _push_pcm_to_playback(pb: AudioStreamGeneratorPlayback, pcm: PackedByteArra
 		idx2 += 2
 
 func _softclip(x: float, amt: float) -> float:
-	# amt ~ 0.0..0.25 (keep subtle)
 	var k := 1.0 + amt * 6.0
 	return tanh(x * k) / tanh(k)
+
 
 # =========================
 #   EXTRA DISTANCE GAIN + DISTANCE FX
 # =========================
 func _distance_to_listener() -> float:
-	if _listener_cam == null:
+	if _listener_cam == null or _voice_player == null:
 		return 0.0
 	return _listener_cam.global_position.distance_to(_voice_player.global_position)
 
@@ -378,11 +451,8 @@ func _apply_extra_distance_gain() -> void:
 	var d: float = _distance_to_listener()
 	var t: float = clampf(d / maxd, 0.0, 1.0)
 
-	# Make it feel strong up to ~40m, then taper more
-	# (this shapes the curve without needing a custom attenuation model)
 	var shaped: float = pow(t, gain_curve_pow)
 	var extra_db: float = lerp(near_boost_db, far_cut_db, shaped)
-
 	_voice_player.volume_db = base_volume_db + extra_db
 
 func _apply_distance_fx() -> void:
@@ -391,17 +461,13 @@ func _apply_distance_fx() -> void:
 
 	var t := _fx_t()
 
-	# slight “kid” pitch close, fades to normal as distance increases
 	var kid_pitch := lerp(kid_pitch_near, kid_pitch_far, t)
-
-	# add a tiny flutter far away (distortion vibe)
 	var flutter := 0.0
 	if t > 0.001:
 		flutter = sin(Time.get_ticks_msec() * 0.001 * TAU * far_flutter_hz) * (far_flutter_amt * t)
 
 	_voice_player.pitch_scale = maxf(0.01, kid_pitch + flutter)
 
-	# muffle far away (lowpass cutoff drops as t increases)
 	var lp := lerp(lowpass_near_hz, lowpass_far_hz, t)
 	if "attenuation_filter_cutoff_hz" in _voice_player:
 		_voice_player.attenuation_filter_cutoff_hz = lp
@@ -410,27 +476,13 @@ func _current_softclip_amount() -> float:
 	var t := _fx_t()
 	return lerp(softclip_start, softclip_full, t)
 
+
 # =========================
 #   DEBUG
 # =========================
 func _debug_tick() -> void:
-	var mp_on: bool = multiplayer.has_multiplayer_peer()
-	var local_uid: int = (multiplayer.get_unique_id() if mp_on else -1)
-
-	var ptt_ok: bool = (not push_to_talk) or InputMap.has_action(ptt_action)
-	var ptt_pressed: bool = false
-	if ptt_ok and push_to_talk:
-		ptt_pressed = Input.is_action_pressed(ptt_action)
-
-	print("VOICE DBG | mp:", mp_on,
-		" node_auth:", int(get_multiplayer_authority()),
-		" local_uid:", local_uid,
-		" local_auth:", _is_local_authority_player(),
-		" ptt_ok:", ptt_ok,
-		" ptt:", ptt_pressed,
+	print("VOICE DBG | local_auth:", _is_local_authority_player(),
+		" talk_on:", _talk_toggle_on,
 		" recording:", _recording,
-		" sr:", _sample_rate,
 		" maxd:", hear_radius,
-		" unit:", unit_size,
-		" base_db:", base_volume_db,
 		" fx_t:", _fx_t())
