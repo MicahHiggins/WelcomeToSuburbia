@@ -2302,6 +2302,7 @@ collision_layer = 8
 collision_mask = 8
 script = ExtResource("28_un8vx")
 play_video_player = NodePath("../CutsceneTC")
+debug_enabled = true
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="SwingGate"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.06085205, -1.2143555, 0.4621582)
@@ -2313,6 +2314,7 @@ collision_layer = 8
 collision_mask = 8
 script = ExtResource("28_un8vx")
 play_video_player = NodePath("../CutsceneTC")
+debug_enabled = true
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="SwingGate2"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.06085205, -1.2143555, 0.4621582)

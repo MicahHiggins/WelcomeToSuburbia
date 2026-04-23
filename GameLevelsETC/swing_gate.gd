@@ -39,8 +39,9 @@ func _ready() -> void:
 		set_deferred("monitoring", true)
 		set_deferred("monitorable", true)
 
+	# print AFTER deferred flags apply
 	if debug_enabled:
-		_print_ready_dump()
+		call_deferred("_print_ready_dump")
 
 func _physics_process(delta: float) -> void:
 	if _level_change_queued:
@@ -57,8 +58,6 @@ func _physics_process(delta: float) -> void:
 
 	# server-only
 	if multiplayer.has_multiplayer_peer() and not multiplayer.is_server():
-		if debug_enabled and not _printed_ready:
-			_print_ready_dump()
 		return
 
 	# coordinator-only
@@ -67,7 +66,7 @@ func _physics_process(delta: float) -> void:
 			_dbg_t -= delta
 			if _dbg_t <= 0.0:
 				_dbg_t = maxf(0.05, debug_print_every_sec)
-				print("GATE | not coordinator (skipping) | me:", name, " iid:", int(get_instance_id()))
+				print("GATE | not coordinator (skipping) | me:", name, " path:", String(get_path()), " coordinator:", _coordinator_path())
 		return
 
 	var do_dbg := false
@@ -83,7 +82,7 @@ func _physics_process(delta: float) -> void:
 func _try_complete_gate_server(do_dbg: bool) -> void:
 	if do_dbg:
 		print("==================================================")
-		print("GATE CHECK #", _dbg_frame, " name:", name, " server:", multiplayer.is_server(), " uid:", multiplayer.get_unique_id())
+		print("GATE CHECK #", _dbg_frame, " name:", name, " path:", String(get_path()), " server:", multiplayer.is_server(), " uid:", multiplayer.get_unique_id())
 		print("GATE STATE | done:", _done, " queued:", _level_change_queued, " monitoring:", monitoring, " monitorable:", monitorable)
 		print("GATE CONFIG | require_puzzle2_done:", require_puzzle2_done, " group:", String(puzzle_state_group), " need_players:", required_player_count)
 
@@ -162,7 +161,7 @@ func _is_puzzle2_done_verbose(do_dbg: bool) -> bool:
 			if n == null:
 				continue
 			var v: Variant = n.get("puzzle2_done")
-			print(" - STATE NODE | name:", n.name, " path:", n.get_path(), " puzzle2_done raw:", v, " type:", typeof(v))
+			print(" - STATE NODE | name:", n.name, " path:", String(n.get_path()), " puzzle2_done raw:", v, " type:", typeof(v))
 
 	var st: Node = nodes[0] as Node
 	if st == null:
@@ -191,6 +190,7 @@ func _collect_overlapping_union(do_dbg: bool) -> Dictionary:
 
 		if do_dbg:
 			print(" - gate:", g.name,
+				" path:", String(g.get_path()),
 				" monitoring:", g.monitoring,
 				" monitorable:", g.monitorable
 			)
@@ -208,8 +208,8 @@ func _collect_overlapping_union(do_dbg: bool) -> Dictionary:
 			if b2 == null:
 				continue
 
-			var is_player := b2.is_in_group("player")
-			var pid2 := _peer_id_from_player(b2)
+			var is_player: bool = b2.is_in_group("player")
+			var pid2: int = _peer_id_from_player(b2)
 
 			if do_dbg:
 				print("   - body:", b2.name,
@@ -264,23 +264,41 @@ func _peer_id_from_player(p: Node) -> int:
 		return int(nm)
 	return -1
 
+# NEW: deterministic coordinator by scene-tree path
 func _is_coordinator_gate() -> bool:
 	var gates: Array = get_tree().get_nodes_in_group("bat_swing_gate")
+	if gates.is_empty():
+		return true
+
 	var best: Node = null
-	var best_id: int = 2147483647
+	var best_path: String = ""
+
 	for g_any in gates:
 		var g: Node = g_any as Node
 		if g == null:
 			continue
-		var iid: int = int(g.get_instance_id())
-		if iid < best_id:
-			best_id = iid
+		var p: String = String(g.get_path())
+		if best == null or p < best_path:
 			best = g
+			best_path = p
+
 	return best == self
+
+func _coordinator_path() -> String:
+	var gates: Array = get_tree().get_nodes_in_group("bat_swing_gate")
+	var best_path: String = ""
+	for g_any in gates:
+		var g: Node = g_any as Node
+		if g == null:
+			continue
+		var p: String = String(g.get_path())
+		if best_path == "" or p < best_path:
+			best_path = p
+	return best_path
 
 func _print_ready_dump() -> void:
 	_printed_ready = true
-	print("GATE READY | name:", name, " path:", get_path(),
+	print("GATE READY | name:", name, " path:", String(get_path()),
 		" server:", multiplayer.is_server(),
 		" has_peer:", multiplayer.has_multiplayer_peer(),
 		" uid:", multiplayer.get_unique_id()
@@ -290,5 +308,6 @@ func _print_ready_dump() -> void:
 	)
 	print("GATE GROUPS | bat_swing_gate:", get_tree().get_nodes_in_group("bat_swing_gate").size(),
 		" player:", get_tree().get_nodes_in_group("player").size(),
-		" puzzle_state:", get_tree().get_nodes_in_group(String(puzzle_state_group)).size()
+		" puzzle_state:", get_tree().get_nodes_in_group(String(puzzle_state_group)).size(),
+		" coordinator:", _coordinator_path()
 	)
