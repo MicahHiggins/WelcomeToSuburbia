@@ -1,0 +1,113 @@
+[gd_scene load_steps=11 format=3 uid="uid://1t83iwhp72wj"]
+
+[ext_resource type="Script" uid="uid://b3sd07w261utp" path="res://Max's Folder (do not touch!!!)/nice_event.gd" id="1_oqlpa"]
+[ext_resource type="Texture2D" uid="uid://wfqaj1cp28lj" path="res://Max's Folder (do not touch!!!)/DialogueManager/CreepyManDM.jpg" id="3_2i2yj"]
+[ext_resource type="PackedScene" uid="uid://b77j3k2ulob7o" path="res://Assets/RandomObjects/questMarkerBlue.tscn" id="3_4a7dt"]
+[ext_resource type="AudioStream" uid="uid://cqelxa4fjpjps" path="res://Audio/SFX/toddlerCrying.wav" id="4_4a7dt"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_oqlpa"]
+radius = 0.75
+
+[sub_resource type="Animation" id="Animation_4a7dt"]
+resource_name = "move"
+length = 2.0
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("MeshInstance3D:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 2),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector3(0, 0.045366257, -0.95514786), Vector3(0, 0.045366257, -0.56507134)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Label3D:position")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 2),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector3(0, -0.20913112, -0.8953252), Vector3(0, -0.20913112, -0.50524867)]
+}
+
+[sub_resource type="Animation" id="Animation_0o7vy"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("MeshInstance3D:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(0, 0.045366257, -0.95514786)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Label3D:position")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(0, -0.20913112, -0.8953252)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_tplpm"]
+_data = {
+&"RESET": SubResource("Animation_0o7vy"),
+&"move": SubResource("Animation_4a7dt")
+}
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_4a7dt"]
+albedo_texture = ExtResource("3_2i2yj")
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_0o7vy"]
+material = SubResource("StandardMaterial3D_4a7dt")
+
+[node name="NiceEvent" type="Node3D"]
+script = ExtResource("1_oqlpa")
+
+[node name="AreaDet" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.4668947)
+collision_layer = 0
+collision_mask = 8
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="AreaDet"]
+shape = SubResource("SphereShape3D_oqlpa")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+&"": SubResource("AnimationLibrary_tplpm")
+}
+
+[node name="Label3D" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.20913112, -0.8953252)
+text = "Don't look at the sun"
+font_size = 21
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.25, 0, 0, 0, -0.013332338, -0.24964425, 0, 0.24964425, -0.013332338, 0, 0.045366257, -0.95514786)
+mesh = SubResource("PlaneMesh_0o7vy")
+
+[node name="QuestMarkerBlue" parent="." instance=ExtResource("3_4a7dt")]
+transform = Transform3D(0.12, 0, 0, 0, -5.2453664e-09, -0.12, 0, 0.12, -5.2453664e-09, 0, 0, -0.42315993)
+
+[node name="wailing" type="AudioStreamPlayer3D" parent="."]
+stream = ExtResource("4_4a7dt")
+volume_db = -17.088
+max_db = -1.66
+pitch_scale = 0.36
+bus = &"SFX"
+
+[connection signal="body_entered" from="AreaDet" to="." method="_on_area_det_body_entered"]

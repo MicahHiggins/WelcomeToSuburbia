@@ -48,6 +48,8 @@ func playTune(value: int):
 			wttn_3.play()
 		6: 
 			wttn_3.play()
+		_:
+			wttn_3.play()
 			
 			
 
