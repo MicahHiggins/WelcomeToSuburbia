@@ -3,6 +3,11 @@ extends Node3D
 
 
 @onready var piano_failure: AnimationPlayer = $pianoFailure
+@onready var track_1: AudioStreamPlayer = $"../../../Sound/Track1"
+@onready var drawer_1: AudioStreamPlayer3D = $"../../../Sound/Drawer1"
+@onready var drawer_2: AudioStreamPlayer3D = $"../../../Sound/Drawer2"
+@onready var move_bookcase: AudioStreamPlayer = $"../../../Sound/moveBookcase"
+@onready var move_bat: AudioStreamPlayer = $"../../../Sound/moveBat"
 
 @onready var animation_player: AnimationPlayer = $AnimationPlayer
 @onready var note_1: AudioStreamPlayer3D = $Audio/note1
@@ -97,13 +102,21 @@ func _apply_puzzle_result_local(fail: bool) -> void:
 		animation_player.stop()
 		piano_failure.play("pianoSuccess")
 		puzzleFail = false
+		
 	else:
 		puzzleOneComplete.emit()
 		piano_failure.play("green")
+		
+		#audio cue
+		track_1.play()
+		drawer_1.play()
+		drawer_2.play()
+		move_bookcase.play()
 		%R2SpotLight3D.visible = false
 		%R1SpotLight3D.visible = false
 		%R2OmniLight3D.visible = false
 		%R1OmniLight3D.visible = false
+		
 		for i in range(7):
 			notesArr[i].play()
 			animation_player.play(animArr[i])
