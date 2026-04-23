@@ -116,12 +116,12 @@ func _on_button_pressed() -> void:
 	if percentage >= 60.0:
 		label.text = "You Win: %.2f%%" % percentage
 		puzzleTwoComplete.emit()
-<<<<<<< HEAD
+
 		_request_puzzle_two_complete()
 		label.text = "You Win: %.2f%%" % percentage
 		_request_puzzle_two_complete()
-=======
->>>>>>> parent of e2899e4 (yipeee)
+
+
 	else:
 		label.text = "You Lose: %.2f%%" % percentage
 

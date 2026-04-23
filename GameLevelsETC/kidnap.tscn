@@ -1,8 +1,10 @@
-<<<<<<< HEAD
+
 [gd_scene load_steps=55 format=3 uid="uid://dw6fx71adu107"]
-=======
+
 [gd_scene load_steps=50 format=3 uid="uid://dw6fx71adu107"]
->>>>>>> parent of e2899e4 (yipeee)
+
+
+[gd_scene load_steps=50 format=3 uid="uid://dw6fx71adu107"]
 
 [ext_resource type="Script" uid="uid://duigu086blnlq" path="res://GameLevelsETC/kidnap.gd" id="1_6rn1s"]
 [ext_resource type="PackedScene" uid="uid://bs2jm62cmkbrk" path="res://addons/instant-realistic-light/light_scene.tscn" id="1_wff52"]
@@ -31,11 +33,11 @@
 [ext_resource type="PackedScene" uid="uid://drk8i4p1of8ar" path="res://aidan_stuff/whitefence_1.tscn" id="20_eyvg3"]
 [ext_resource type="PackedScene" uid="uid://ret8ne1fmk7l" path="res://Assets/RandomObjects/road/road.tscn" id="21_qolbo"]
 [ext_resource type="PackedScene" uid="uid://c5jxy2ugosnbe" path="res://Assets/RandomObjects/symbol/SymbolPuzzle.tscn" id="22_itlhn"]
-<<<<<<< HEAD
+
 [ext_resource type="Script" uid="uid://d0mbqw6whadcn" path="res://GameLevelsETC/swing_gate.gd" id="28_un8vx"]
 [ext_resource type="VideoStream" uid="uid://doknykexsa8pq" path="res://Assets/Videos/CTreform.ogv" id="29_lobfv"]
-=======
->>>>>>> parent of e2899e4 (yipeee)
+
+
 
 [sub_resource type="Animation" id="Animation_2uf5w"]
 length = 0.001
@@ -2249,7 +2251,7 @@ transform = Transform3D(1.9106855e-15, 4.371139e-08, -1, 1, -4.371139e-08, 0, -4
 [node name="etch-a-sketch2" parent="Puzzle2" index="1"]
 transform = Transform3D(1.9106855e-15, 4.371139e-08, -1, 1, -4.371139e-08, 0, -4.371139e-08, -1, -4.371139e-08, -4.570696, -0.57986665, 25.593967)
 
-<<<<<<< HEAD
+
 [node name="Control" type="Control" parent="."]
 layout_mode = 3
 anchors_preset = 0
@@ -2316,17 +2318,18 @@ shape = SubResource("BoxShape3D_lobfv")
 [node name="CutsceneTC" type="VideoStreamPlayer" parent="."]
 stream = ExtResource("29_lobfv")
 
-=======
->>>>>>> parent of e2899e4 (yipeee)
+
+
 [connection signal="puzzleOneComplete" from="Bedrooms/bedroom2/toy_piano" to="." method="_on_toy_piano_puzzle_one_complete"]
 [connection signal="puzzleTwoComplete" from="Puzzle2/Drawing/drawing" to="." method="_on_drawing_puzzle_two_complete"]
-<<<<<<< HEAD
 [connection signal="timerStart" from="Puzzle2/Drawing/drawing" to="Control" method="_on_drawing_timer_start"]
 [connection signal="body_entered" from="SwingGate" to="." method="_on_swing_gate_body_entered"]
 [connection signal="body_exited" from="SwingGate" to="SwingGate" method="_on_body_exited"]
 [connection signal="body_entered" from="SwingGate2" to="SwingGate2" method="_on_body_entered"]
 [connection signal="body_exited" from="SwingGate2" to="SwingGate2" method="_on_body_exited"]
-=======
->>>>>>> parent of e2899e4 (yipeee)
+
+[connection signal="puzzleOneComplete" from="Bedrooms/bedroom2/toy_piano" to="." method="_on_toy_piano_puzzle_one_complete"]
+[connection signal="puzzleTwoComplete" from="Puzzle2/Drawing/drawing" to="." method="_on_drawing_puzzle_two_complete"]
+
 
 [editable path="Puzzle2"]
