@@ -27,8 +27,8 @@
 [ext_resource type="PackedScene" uid="uid://drk8i4p1of8ar" path="res://aidan_stuff/whitefence_1.tscn" id="20_eyvg3"]
 [ext_resource type="PackedScene" uid="uid://ret8ne1fmk7l" path="res://Assets/RandomObjects/road/road.tscn" id="21_qolbo"]
 [ext_resource type="PackedScene" uid="uid://c5jxy2ugosnbe" path="res://Assets/RandomObjects/symbol/SymbolPuzzle.tscn" id="22_itlhn"]
-[ext_resource type="Script" path="res://GameLevelsETC/swing_gate.gd" id="28_un8vx"]
-[ext_resource type="VideoStream" path="res://Assets/Videos/CTreform.ogv" id="29_lobfv"]
+[ext_resource type="Script" uid="uid://d0mbqw6whadcn" path="res://GameLevelsETC/swing_gate.gd" id="28_un8vx"]
+[ext_resource type="VideoStream" uid="uid://doknykexsa8pq" path="res://Assets/Videos/CTreform.ogv" id="29_lobfv"]
 [ext_resource type="AudioStream" uid="uid://p0dbfrvjgn0u" path="res://Audio/'Chase' - Welcome to Surburbia! (OST) - Copy (2) - Copy.wav" id="30_ppsdj"]
 [ext_resource type="AudioStream" uid="uid://tvy1uqshfyhc" path="res://Audio/PuzzleRoom/knocking.mp3" id="31_wt8sx"]
 [ext_resource type="AudioStream" uid="uid://dpherhbvfkck2" path="res://Audio/PuzzleRoom/bookCaseMove.mp3" id="32_vmkem"]
@@ -756,7 +756,7 @@ collision_layer = 15
 authority_only_physics = false
 
 [node name="Shelf" type="MeshInstance3D" parent="Bedrooms/bedroom2"]
-transform = Transform3D(-2.0815234e-08, 0.0010388906, 0.47619247, -1.16415315e-10, 0.5952399, -0.0008311135, -0.4761924, -1.9093079e-10, -2.0815035e-08, -1.9190041, -1.3467678, -16.26862)
+transform = Transform3D(-2.0815234e-08, 0.0010388906, 0.47619244, -1.16415315e-10, 0.5952399, -0.00083111343, -0.4761924, -1.9093079e-10, -2.0815033e-08, -1.9190041, -1.3467678, -16.26862)
 visible = false
 mesh = SubResource("BoxMesh_dwtrd")
 skeleton = NodePath("../../..")

@@ -64,7 +64,14 @@ func play_anim_networked(anim: StringName) -> void:
 func _rpc_request_play_anim(anim_name: String) -> void:
 	if not multiplayer.is_server():
 		return
-	_play_anim_server(StringName(anim_name))
+
+	var anim := StringName(anim_name)
+
+	# ensure server flag is set even if animation repeats / race conditions
+	if anim == &"puzzle2Complete":
+		puzzle2_done = true
+
+	_play_anim_server(anim)
 
 func _play_anim_server(anim: StringName) -> void:
 	if _last_anim == anim:
