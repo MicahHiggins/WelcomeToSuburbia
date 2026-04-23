@@ -1,4 +1,4 @@
-[gd_scene load_steps=22 format=3 uid="uid://c2ocvg8ruxbbg"]
+[gd_scene load_steps=23 format=3 uid="uid://c2ocvg8ruxbbg"]
 
 [ext_resource type="Script" uid="uid://dywhk2ngguw7a" path="res://GameLevelsETC/lobby_manager.gd" id="1_l5n62"]
 [ext_resource type="Script" uid="uid://l6pyeyjgkntn" path="res://GameLevelsETC/item_manager.gd" id="1_lbg40"]
@@ -15,6 +15,7 @@
 [ext_resource type="FontFile" uid="uid://c5b8bpjyyhhdm" path="res://addons/Font/GimletDisplay-Regular-Testing.otf" id="12_nqjqn"]
 [ext_resource type="PackedScene" uid="uid://b3tivaphj7o57" path="res://aidan_stuff/button4Iteration.tscn" id="13_nqjqn"]
 [ext_resource type="Script" uid="uid://c8d8y0v8e3yhm" path="res://aidan_stuff/curr_obj.gd" id="15_mekh1"]
+[ext_resource type="Script" uid="uid://da4fkcqmq3u8p" path="res://GameLevelsETC/settings_menu.gd" id="16_3kyh0"]
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_mekh1"]
 texture = ExtResource("7_fan4m")
@@ -390,6 +391,15 @@ theme_override_font_sizes/font_size = 24
 text = "Menu
 "
 
+[node name="settings" type="Button" parent="Menu/pause"]
+offset_left = 215.0
+offset_top = 55.0
+offset_right = 384.0
+offset_bottom = 120.0
+theme_override_fonts/font = ExtResource("9_fan4m")
+theme_override_font_sizes/font_size = 24
+text = "Settings"
+
 [node name="code" type="Label" parent="Menu/pause"]
 offset_left = 92.0
 offset_top = 199.0
@@ -523,6 +533,178 @@ text = "
 none
 "
 
+[node name="SettingsMenu" type="CanvasLayer" parent="Menu"]
+script = ExtResource("16_3kyh0")
+
+[node name="ColorRect" type="ColorRect" parent="Menu/SettingsMenu"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -281.0
+offset_top = -217.9375
+offset_right = 281.0
+offset_bottom = 217.9375
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.10980392, 0.10980392, 0.16470589, 0.88235295)
+
+[node name="MainPage" type="VBoxContainer" parent="Menu/SettingsMenu"]
+visible = false
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -57.5
+offset_top = -83.0
+offset_right = 57.5
+offset_bottom = 83.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 12
+
+[node name="Label" type="Label" parent="Menu/SettingsMenu/MainPage"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_fonts/font = ExtResource("12_nqjqn")
+theme_override_font_sizes/font_size = 45
+text = "Settings"
+
+[node name="Sound" type="Button" parent="Menu/SettingsMenu/MainPage"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("12_nqjqn")
+theme_override_font_sizes/font_size = 30
+text = "Sound"
+
+[node name="Controls" type="Button" parent="Menu/SettingsMenu/MainPage"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("12_nqjqn")
+theme_override_font_sizes/font_size = 30
+text = "Controls"
+
+[node name="BackButton" type="Button" parent="Menu/SettingsMenu/MainPage"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("12_nqjqn")
+theme_override_font_sizes/font_size = 30
+text = "Back"
+
+[node name="Sound" type="VBoxContainer" parent="Menu/SettingsMenu"]
+visible = false
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -57.5
+offset_top = -25.0
+offset_right = 57.5
+offset_bottom = 25.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 12
+
+[node name="Title" type="Label" parent="Menu/SettingsMenu/Sound"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_fonts/font = ExtResource("9_fan4m")
+theme_override_font_sizes/font_size = 45
+text = "Sound Settings"
+
+[node name="MasterLabel" type="Label" parent="Menu/SettingsMenu/Sound"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("12_nqjqn")
+theme_override_font_sizes/font_size = 30
+text = "Master Volume"
+
+[node name="MasterSlider" type="HSlider" parent="Menu/SettingsMenu/Sound"]
+layout_mode = 2
+max_value = 2.0
+step = 0.1
+
+[node name="MusicLabel" type="Label" parent="Menu/SettingsMenu/Sound"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_fonts/font = ExtResource("12_nqjqn")
+theme_override_font_sizes/font_size = 30
+text = "Music"
+
+[node name="MusicSlider" type="HSlider" parent="Menu/SettingsMenu/Sound"]
+layout_mode = 2
+max_value = 1.0
+step = 0.01
+
+[node name="Label" type="Label" parent="Menu/SettingsMenu/Sound"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_fonts/font = ExtResource("12_nqjqn")
+theme_override_font_sizes/font_size = 30
+text = "Sound Effects"
+
+[node name="SFXSlider" type="HSlider" parent="Menu/SettingsMenu/Sound"]
+layout_mode = 2
+max_value = 1.0
+step = 0.01
+
+[node name="Label2" type="Label" parent="Menu/SettingsMenu/Sound"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_fonts/font = ExtResource("12_nqjqn")
+theme_override_font_sizes/font_size = 30
+text = "Environment"
+
+[node name="SoundScapeSlider" type="HSlider" parent="Menu/SettingsMenu/Sound"]
+layout_mode = 2
+max_value = 1.0
+step = 0.01
+
+[node name="BackButton" type="Button" parent="Menu/SettingsMenu/Sound"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("12_nqjqn")
+theme_override_font_sizes/font_size = 30
+text = "Back"
+
+[node name="Controls" type="VBoxContainer" parent="Menu/SettingsMenu"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -82.0
+offset_top = -41.5
+offset_right = 82.0
+offset_bottom = 41.5
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 4
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Menu/SettingsMenu/Controls"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Menu/SettingsMenu/Controls/VBoxContainer"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("9_fan4m")
+theme_override_font_sizes/font_size = 35
+text = "Controls"
+horizontal_alignment = 1
+
+[node name="ScrollContainer" type="ScrollContainer" parent="Menu/SettingsMenu/Controls/VBoxContainer"]
+custom_minimum_size = Vector2(0, 300)
+layout_mode = 2
+horizontal_scroll_mode = 0
+vertical_scroll_mode = 2
+
+[node name="ActionsContainer" type="VBoxContainer" parent="Menu/SettingsMenu/Controls/VBoxContainer/ScrollContainer"]
+layout_mode = 2
+
+[node name="ControlsInfo" type="Label" parent="Menu/SettingsMenu/Controls/VBoxContainer"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("12_nqjqn")
+
+[node name="BackButton" type="Button" parent="Menu/SettingsMenu/Controls/VBoxContainer"]
+layout_mode = 2
+
 [node name="Interact" type="CanvasLayer" parent="Menu"]
 
 [node name="NPCDialogue" type="CanvasLayer" parent="Menu"]
@@ -532,4 +714,6 @@ none
 [connection signal="pressed" from="Menu/CanvasLayer/quit2" to="LobbyManager" method="_on_pause_quit_pressed"]
 [connection signal="pressed" from="Menu/pause/quit" to="LobbyManager" method="_on_pause_quit_pressed"]
 [connection signal="pressed" from="Menu/pause/menu" to="LobbyManager" method="_on_pause_back_to_menu_pressed"]
+[connection signal="pressed" from="Menu/pause/settings" to="LobbyManager" method="_on_pause_settings_pressed"]
+[connection signal="pressed" from="Menu/pause/settings" to="LobbyManager" method="_on_settings_pressed"]
 [connection signal="pressed" from="Menu/pause/copy" to="LobbyManager" method="_on_pause_copy_code_pressed"]

@@ -135,7 +135,7 @@ _data = {
 [node name="Bat" type="CharacterBody3D" groups=["pickup"]]
 transform = Transform3D(0.2, 0, 0, 0, 0.2, 0, 0, 0, 0.2, 0, 0.07747479, 0)
 collision_layer = 4
-collision_mask = 8
+collision_mask = 4
 script = ExtResource("1_5ksxd")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="." groups=["pickup"]]
@@ -146,9 +146,10 @@ shape = SubResource("CapsuleShape3D_osd2w")
 transform = Transform3D(1.0000002, 0, 0, 0, 1.0000002, 0, 0, 0, 1.0000001, 0, 0, 0)
 
 [node name="batclean_low" parent="batclean_low2" index="0"]
-layers = 9
+layers = 4
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="batclean_low2/batclean_low" index="0" groups=["pickup"]]
+layers = 4
 mesh = SubResource("ArrayMesh_hg5e5")
 surface_material_override/0 = SubResource("StandardMaterial3D_hhpfs")
 

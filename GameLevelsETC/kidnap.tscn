@@ -1,4 +1,4 @@
-[gd_scene load_steps=54 format=3 uid="uid://dw6fx71adu107"]
+[gd_scene load_steps=55 format=3 uid="uid://dw6fx71adu107"]
 
 [ext_resource type="Script" uid="uid://duigu086blnlq" path="res://GameLevelsETC/kidnap.gd" id="1_6rn1s"]
 [ext_resource type="PackedScene" uid="uid://bs2jm62cmkbrk" path="res://addons/instant-realistic-light/light_scene.tscn" id="1_wff52"]
@@ -30,7 +30,8 @@
 [ext_resource type="PackedScene" uid="uid://drk8i4p1of8ar" path="res://aidan_stuff/whitefence_1.tscn" id="20_eyvg3"]
 [ext_resource type="PackedScene" uid="uid://ret8ne1fmk7l" path="res://Assets/RandomObjects/road/road.tscn" id="21_qolbo"]
 [ext_resource type="PackedScene" uid="uid://c5jxy2ugosnbe" path="res://Assets/RandomObjects/symbol/SymbolPuzzle.tscn" id="22_itlhn"]
-[ext_resource type="Script" uid="uid://ctlv1mvt8vd7x" path="res://GameLevelsETC/Timer.gd" id="31_wt8sx"]
+[ext_resource type="Script" uid="uid://d0mbqw6whadcn" path="res://GameLevelsETC/swing_gate.gd" id="28_un8vx"]
+[ext_resource type="VideoStream" uid="uid://doknykexsa8pq" path="res://Assets/Videos/CTreform.ogv" id="29_lobfv"]
 
 [sub_resource type="Animation" id="Animation_2uf5w"]
 length = 0.001
@@ -457,6 +458,15 @@ uv2_scale = Vector3(15, 15, 15)
 material = SubResource("StandardMaterial3D_rkcnq")
 size = Vector3(16, 5, 16)
 
+[sub_resource type="BoxShape3D" id="BoxShape3D_dwtrd"]
+size = Vector3(3.7436523, 0.49482727, 1.4140625)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_un8vx"]
+size = Vector3(2.1230164, 0.43530273, 4.258911)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_lobfv"]
+size = Vector3(3.1307373, 3.428711, 1.9243164)
+
 [node name="Kidnap" type="Node3D"]
 script = ExtResource("1_6rn1s")
 
@@ -628,6 +638,8 @@ transform = Transform3D(-1.486188e-08, 0, 0.34000015, 0, 0.34, 0, -0.34000015, 0
 
 [node name="Bat" parent="Bedrooms/bedroom1" instance=ExtResource("15_dwtrd")]
 transform = Transform3D(-3.4969116e-08, -0.8000001, 0, 0.8000001, -3.4969112e-08, 0, 0, 0, 0.8000001, -1.8231024, -1.2399532, 2.7910442)
+collision_layer = 15
+authority_only_physics = false
 
 [node name="Shelf2" type="MeshInstance3D" parent="Bedrooms/bedroom1"]
 transform = Transform3D(0.47619087, 0, 0, 0, 0.5952399, 0, 0, 0, 0.47619262, 0.6285904, -1.421977, -20.330544)
@@ -747,6 +759,8 @@ transform = Transform3D(-0.34000015, 2.4563462e-11, -2.9725925e-08, 1.6999735e-1
 
 [node name="Bat" parent="Bedrooms/bedroom2" instance=ExtResource("15_dwtrd")]
 transform = Transform3D(3.989129e-10, 3.4979166e-08, 0.80000025, 0.8, -3.4691766e-08, 2.4982683e-11, 3.4982804e-08, 0.80000097, -3.4968252e-08, 2.735105, -1.2487528, -0.41625214)
+collision_layer = 15
+authority_only_physics = false
 
 [node name="Shelf" type="MeshInstance3D" parent="Bedrooms/bedroom2"]
 transform = Transform3D(-2.0815234e-08, 0.0010388906, 0.47619265, -1.16415315e-10, 0.5952399, -0.00083111384, -0.4761924, -1.9093079e-10, -2.0815042e-08, -1.9190041, -1.3467678, -16.26862)
@@ -2281,10 +2295,57 @@ metadata/_edit_use_anchors_ = true
 
 [node name="Timer" type="Timer" parent="."]
 wait_time = 120.0
+[node name="StaticBody3D" type="StaticBody3D" parent="."]
+transform = Transform3D(2.1000006, 0, 0, 0, 1.6800001, 0, 0, 0, 2.1000006, -0.2010994, -2.3001947, 24.339613)
+collision_layer = 4
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.3718262, -0.25258636, -0.2070303)
+shape = SubResource("BoxShape3D_dwtrd")
+
+[node name="StaticBody3D2" type="StaticBody3D" parent="."]
+transform = Transform3D(-2.099999, 0.0016153234, 0.00012779227, 0.002019005, 1.679999, -0.0024647142, -0.0001301201, -0.0019716753, -2.0999997, -2.9492183, -2.0398018, -19.396973)
+collision_layer = 4
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D2"]
+transform = Transform3D(1, 5.0577174e-08, 4.0017767e-10, -1.09568056e-07, 1.0001376, -2.3748726e-08, 5.0931703e-11, 7.566996e-10, 1.0001048, 0.9598547, -0.28233945, -1.1015215)
+shape = SubResource("BoxShape3D_un8vx")
+
+[node name="SwingGate" type="Area3D" parent="." node_paths=PackedStringArray("play_video_player")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 12.420419)
+collision_layer = 8
+collision_mask = 8
+script = ExtResource("28_un8vx")
+play_video_player = NodePath("../CutsceneTC")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="SwingGate"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.06085205, -1.2143555, 0.4621582)
+shape = SubResource("BoxShape3D_lobfv")
+
+[node name="SwingGate2" type="Area3D" parent="." node_paths=PackedStringArray("play_video_player")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -13.80077)
+collision_layer = 8
+collision_mask = 8
+script = ExtResource("28_un8vx")
+required_item_id = &"Bat"
+play_video_player = NodePath("../CutsceneTC")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="SwingGate2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.06085205, -1.2143555, 0.4621582)
+shape = SubResource("BoxShape3D_lobfv")
+
+[node name="CutsceneTC" type="VideoStreamPlayer" parent="."]
+stream = ExtResource("29_lobfv")
 
 [connection signal="puzzleOneComplete" from="Bedrooms/bedroom2/toy_piano" to="." method="_on_toy_piano_puzzle_one_complete"]
 [connection signal="timerStart" from="Bedrooms/bedroom2/toy_piano" to="Control" method="_on_toy_piano_timer_start"]
 [connection signal="puzzleTwoComplete" from="Puzzle2/Drawing/drawing" to="." method="_on_drawing_puzzle_two_complete"]
 [connection signal="timerStart" from="Puzzle2/Drawing/drawing" to="Control" method="_on_drawing_timer_start"]
+[connection signal="body_entered" from="SwingGate" to="." method="_on_swing_gate_body_entered"]
+[connection signal="body_exited" from="SwingGate" to="SwingGate" method="_on_body_exited"]
+[connection signal="body_entered" from="SwingGate2" to="SwingGate2" method="_on_body_entered"]
+[connection signal="body_exited" from="SwingGate2" to="SwingGate2" method="_on_body_exited"]
 
 [editable path="Puzzle2"]
