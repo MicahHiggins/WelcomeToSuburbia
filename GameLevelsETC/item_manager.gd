@@ -481,6 +481,58 @@ func apply_drop(item_key: NodePath, world_xform: Transform3D, impulse_forward: V
 
 	call_deferred("_deferred_finalize_drop", item_key)
 
+
+# --- ADD TO ItemManager.gd ---
+
+@rpc("any_peer", "reliable")
+func server_force_drop_for_peer(item_key: NodePath, peer_id: int) -> void:
+	if not multiplayer.is_server():
+		return
+	if peer_id <= 0:
+		return
+	_server_drop_for_peer(item_key, peer_id)
+
+func _server_drop_for_peer(item_key: NodePath, peer_id: int) -> void:
+	if not multiplayer.is_server():
+		return
+
+	var item: Node3D = _resolve_item_anywhere(item_key) as Node3D
+	if item == null:
+		return
+
+	if not _held_by.has(item_key):
+		return
+	if int(_held_by[item_key]) != peer_id:
+		return
+
+	var p: Node3D = _player_for_peer(peer_id)
+	if p == null:
+		return
+
+	_held_by[item_key] = -1
+	if item.has_meta("locked"):
+		item.set_meta("locked", false)
+
+	var forward: Vector3 = (-p.global_transform.basis.z).normalized()
+	var drop_pos: Vector3 = p.global_position + forward * drop_forward_distance + Vector3.UP * drop_up_offset
+	var drop_xform: Transform3D = Transform3D(item.global_transform.basis, drop_pos)
+
+	var sid := _server_peer_id()
+	if sid > 0:
+		item.set_multiplayer_authority(sid)
+
+	_last_world_xform[item_key] = drop_xform
+
+	rpc("apply_drop", item_key, drop_xform, forward)
+
+	if "inventory" in p and p.has_method("server_set_inventory"):
+		var id_to_remove: StringName = StringName(item.name)
+		var new_inv: Array[StringName] = (p.inventory as Array[StringName]).duplicate()
+		var idx: int = new_inv.find(id_to_remove)
+		if idx != -1:
+			new_inv.remove_at(idx)
+		p.rpc_id(peer_id, "server_set_inventory", new_inv)
+		
 @rpc("any_peer", "reliable")
 func request_use_attack(item_key: NodePath) -> void:
 	if not multiplayer.is_server():

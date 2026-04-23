@@ -1,6 +1,60 @@
-[gd_scene load_steps=2 format=3 uid="uid://b6vnu6i8g7uqc"]
+[gd_scene load_steps=7 format=4 uid="uid://b6vnu6i8g7uqc"]
 
-[ext_resource type="PackedScene" uid="uid://bk12xaa431jqc" path="res://Assets/RandomObjects/symbol/symbol.tscn" id="1_rdv1g"]
+[ext_resource type="Script" uid="uid://dibtxmcc3x423" path="res://Scripts/symbol.gd" id="1_6x0kf"]
+[ext_resource type="Shader" uid="uid://bmhpbpjw1o8xe" path="res://symbol.gdshader" id="2_mxybs"]
 
-[node name="SymbolCorrect" instance=ExtResource("1_rdv1g")]
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_dl64b"]
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_us8cn"]
+_surfaces = [{
+"aabb": AABB(-1.4, -1, -0.11, 2.85, 2.28, 0.22),
+"format": 34896613377,
+"index_count": 60,
+"index_data": PackedByteArray("BgABAAcABwAIAAYABwACAAgAAQACAAcABQAIAAIAAQAFAAIABQAAAAgABgAIAAAACQAFAAEACgABAAYABgAAAAoAAQADAAkAAQAKAAMACQAEAAUABQAEAAAAAwAEAAkACgAAAAsACgALAAMAAAAEAAsAAwALAAQA"),
+"lods": [1.1558931, PackedByteArray("AQADAAQABAAFAAEAAAAEAAMABQAEAAAAAQAAAAMABQAAAAIAAAABAAIAAQAFAAIA"), 1.6166766, PackedByteArray("AAABAAIAAQAAAAIAAAABAAMAAQAAAAMA")],
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 12,
+"vertex_data": PackedByteArray("S2cAAP//AAD9aW9fAAAAAAAAHoH//wAA///x2gAAAACO4P////8AAP1pb1///wAAayg1VAAAAAAAAB6BAAAAAGsoNVT//wAAjuD//wAAAABLZwAAAAAAAP//8dr//wAA")
+}]
+blend_shape_mode = 0
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_gla8s"]
+resource_name = "Check_WallCheckmark"
+_surfaces = [{
+"aabb": AABB(-1.4, -1, -0.11, 2.85, 2.28, 0.22),
+"format": 34896613383,
+"index_count": 60,
+"index_data": PackedByteArray("BgABAAcABwAIAAYABwACAAgAAQACAAcABQAIAAIAAQAFAAIABQAAAAgABgAIAAAACQAFAAEACgABAAYABgAAAAoAAQADAAkAAQAKAAMACQAEAAUABQAEAAAAAwAEAAkACgAAAAsACgALAAMAAAAEAAsAAwALAAQA"),
+"lods": [1.1558931, PackedByteArray("AQADAAQABAAFAAEAAAAEAAMABQAEAAAAAQAAAAMABQAAAAIAAAABAAIAAQAFAAIA"), 1.6166766, PackedByteArray("AAABAAIAAQAAAAIAAAABAAMAAQAAAAMA")],
+"material": SubResource("StandardMaterial3D_dl64b"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 12,
+"vertex_data": PackedByteArray("S2cAAP//Z+b9aW9fAAA8+wAAHoH//9O1///x2gAAyPeO4P/////w5P1pb1///y/Xayg1VAAAjuQAAB6BAAD542soNVT//yW/juD//wAA2/NLZwAAAAAz8///8dr//57yJXK0WHW/3ByDgrXF9MvGcvCNQaffi8upx1bC6r9oecqSTniEy7yKGT5DiubVqUR6")
+}]
+blend_shape_mode = 0
+shadow_mesh = SubResource("ArrayMesh_us8cn")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ntnbh"]
+render_priority = 0
+shader = ExtResource("2_mxybs")
+shader_parameter/reveal = 0.0
+shader_parameter/glow_color = Color(0.3, 0.9, 1, 1)
+shader_parameter/glow_strength = 10.0
+shader_parameter/base_alpha = 0.75
+shader_parameter/base_brightness = 0.45
+shader_parameter/flicker_amount = 0.15
+shader_parameter/pulse_amount = 0.25
+shader_parameter/pulse_speed = 2.2
+
+[node name="SymbolCorrect" type="Node3D" groups=["uv_reveal"]]
+script = ExtResource("1_6x0kf")
 glow_color = Color(0.18022034, 0.7713724, 0.08022242, 1)
+
+[node name="WallCheckmark" type="MeshInstance3D" parent="."]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 0, 0)
+layers = 256
+mesh = SubResource("ArrayMesh_gla8s")
+skeleton = NodePath("")
+surface_material_override/0 = SubResource("ShaderMaterial_ntnbh")
