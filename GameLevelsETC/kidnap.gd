@@ -4,10 +4,17 @@ extends Node3D
 
 @export var replicate_last_anim_to_late_joiners: bool = true
 
+# NEW: server-approved state for the gate to read
+var puzzle2_done: bool = false
+
 var _anim_player: AnimationPlayer = null
 var _last_anim: StringName = &""
 
 func _ready() -> void:
+	# NEW: so the gate can find this node
+	if not is_in_group("puzzle_state"):
+		add_to_group("puzzle_state")
+
 	if multiplayer.has_multiplayer_peer() and multiplayer.is_server() and replicate_last_anim_to_late_joiners:
 		if not multiplayer.peer_connected.is_connected(_on_peer_connected):
 			multiplayer.peer_connected.connect(_on_peer_connected)
@@ -27,12 +34,29 @@ func _get_anim_player() -> AnimationPlayer:
 	_anim_player = get_node_or_null("Cohesion") as AnimationPlayer
 	return _anim_player
 
+func _server_peer_id() -> int:
+	if not multiplayer.has_multiplayer_peer():
+		return -1
+	if multiplayer.is_server():
+		return multiplayer.get_unique_id()
+	var peers: Array = multiplayer.get_peers()
+	if peers.is_empty():
+		return -1
+	var best: int = int(peers[0])
+	for p_any in peers:
+		var p: int = int(p_any)
+		if p < best:
+			best = p
+	return best
+
 func play_anim_networked(anim: StringName) -> void:
 	if multiplayer.has_multiplayer_peer():
 		if multiplayer.is_server():
 			_play_anim_server(anim)
 		else:
-			rpc_id(1, "_rpc_request_play_anim", String(anim))
+			var sid := _server_peer_id()
+			if sid > 0:
+				rpc_id(sid, "_rpc_request_play_anim", String(anim))
 	else:
 		_play_anim_local(anim)
 
@@ -46,6 +70,10 @@ func _play_anim_server(anim: StringName) -> void:
 	if _last_anim == anim:
 		return
 	_last_anim = anim
+
+	# NEW: flip the server flag when puzzle2 completes
+	if anim == &"puzzle2Complete":
+		puzzle2_done = true
 
 	_play_anim_local(anim)
 
