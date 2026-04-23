@@ -8,7 +8,7 @@ var cutscene_2_bool: bool = false
 var cutscene_1_bool: bool = false
 
 func _ready() -> void:
-	GlobalVariables.level2change.connect(change_second_cutscene)
+	#GlobalVariables.level2change.connect(change_second_cutscene)
 	GlobalVariables.level1Start.connect(change_first_cutscene)
 
 
