@@ -25,7 +25,7 @@ func _process(delta: float) -> void:
 	
 	#FIDO FOUND!
 	if objToggle == true:
-		side.text =  "Tell the Campbell Family\n you found Fido!"
+		side.text =  "Tell Mr. Campbell\n you found Fido!"
 	
 
 
@@ -33,12 +33,12 @@ func _process(delta: float) -> void:
 func campbellProgression(value: int):
 	if value >= 2 && value <= 5 && questHub.campbellProg == 0:
 		if questHub.campbellProg == 4:
-			side.text = "Tell Campbells you have found Fido"
+			side.text = "Tell Mr. Campbell\n you found Fido!"
 			#questHub.campbellProg = 4
 	if questHub.campbellProg == 1:
-			side.text = "Find Fido (The Dog)"
+			side.text = "Find Fido (The Dog)\n for Mr. Campbell"
 	if questHub.campbellProg == 2:
-		side.text =  "Tell the Campbell Family\n you found Fido!"
+		side.text =  "TTell Mr. Campbell\n you found Fido!"
 	if value == 2 && questHub.campbellProg == 0:
 		side.text = "Investigate the Crying\n (Campbells)"
 	if questHub.campbellProg == 3:
@@ -48,12 +48,12 @@ func campbellProgression(value: int):
 func iterationChange(value: int):
 	
 	if value == 2 && questHub.campbellProg == 0:
-		side.text = "Investigate the Crying\n (Campbells)"
+		side.text = "Investigate the Crying\n (Mr. Campbell)"
 	
 	if value == 1 && isaacQuestDB == false:
 		isaacQuestDB = true
 		print("UI Debugging...")
-		prev_text_main = "Find Your Home (130)"
+		prev_text_main = "Find Home"
 		main.text = main.text + "\n Talk to Issac (corner)"
 		
 

@@ -1,4 +1,4 @@
-[gd_scene load_steps=26 format=3 uid="uid://c2ocvg8ruxbbg"]
+[gd_scene load_steps=27 format=3 uid="uid://c2ocvg8ruxbbg"]
 
 [ext_resource type="Script" uid="uid://dywhk2ngguw7a" path="res://GameLevelsETC/lobby_manager.gd" id="1_l5n62"]
 [ext_resource type="Script" uid="uid://l6pyeyjgkntn" path="res://GameLevelsETC/item_manager.gd" id="1_lbg40"]
@@ -16,8 +16,9 @@
 [ext_resource type="AudioStream" uid="uid://bqausc616kevw" path="res://Audio/UI/pageFlip.mp3" id="12_6yvpa"]
 [ext_resource type="FontFile" uid="uid://c5b8bpjyyhhdm" path="res://addons/Font/GimletDisplay-Regular-Testing.otf" id="12_nqjqn"]
 [ext_resource type="PackedScene" uid="uid://b3tivaphj7o57" path="res://aidan_stuff/button4Iteration.tscn" id="13_nqjqn"]
-[ext_resource type="Script" uid="uid://c8d8y0v8e3yhm" path="res://aidan_stuff/curr_obj.gd" id="15_mekh1"]
 [ext_resource type="Script" uid="uid://da4fkcqmq3u8p" path="res://GameLevelsETC/settings_menu.gd" id="16_3kyh0"]
+[ext_resource type="PackedScene" uid="uid://7t52hrqxmla1" path="res://Max's Folder (do not touch!!!)/journal.tscn" id="17_6yvpa"]
+[ext_resource type="Texture2D" uid="uid://cu63ynb1re5v0" path="res://Audio/UI/PostCard.png" id="18_8agcw"]
 [ext_resource type="AudioStream" uid="uid://b21ipttksf73w" path="res://Audio/UI/UIClick.mp3" id="19_8agcw"]
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_mekh1"]
@@ -510,10 +511,10 @@ Tab: Switch Item
 F: Interact with NPCs"
 
 [node name="LevelSelect" type="VBoxContainer" parent="Menu/pause"]
-offset_left = 784.0
-offset_top = 63.0
-offset_right = 1065.0
-offset_bottom = 185.0
+offset_left = 794.0
+offset_top = 31.0
+offset_right = 1075.0
+offset_bottom = 153.0
 
 [node name="lvl1Button" type="Button" parent="Menu/pause/LevelSelect"]
 layout_mode = 2
@@ -535,79 +536,20 @@ text = "Level 3"
 
 [node name="IterationChanngeButton" parent="Menu/pause" instance=ExtResource("13_nqjqn")]
 
-[node name="CurrObj" type="VBoxContainer" parent="Menu/pause"]
-offset_left = 775.0
-offset_top = 210.0
-offset_right = 1080.0
-offset_bottom = 459.0
-size_flags_horizontal = 4
-theme_override_constants/separation = 12
-script = ExtResource("15_mekh1")
+[node name="Journal" parent="Menu/pause" instance=ExtResource("17_6yvpa")]
+offset_left = -40.0
+offset_top = 42.0
+offset_right = -40.0
+offset_bottom = 42.0
+scale = Vector2(1.5, 1.5)
 
-[node name="Label" type="Label" parent="Menu/pause/CurrObj"]
-layout_mode = 2
-size_flags_horizontal = 6
-theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_colors/font_shadow_color = Color(0.39607844, 0.9529412, 0.8901961, 0)
-theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
-theme_override_constants/paragraph_spacing = -5
-theme_override_constants/shadow_offset_x = 12
-theme_override_constants/shadow_offset_y = 8
-theme_override_constants/outline_size = 6
-theme_override_fonts/font = ExtResource("9_fan4m")
-theme_override_font_sizes/font_size = 24
-text = "Main Objectives:"
-
-[node name="main" type="Label" parent="Menu/pause/CurrObj"]
-layout_mode = 2
-size_flags_horizontal = 6
-size_flags_vertical = 8
-theme_override_colors/font_color = Color(1, 0.14117648, 0.3529412, 1)
-theme_override_colors/font_shadow_color = Color(0.39607844, 0.9529412, 0.8901961, 0)
-theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
-theme_override_constants/line_spacing = 15
-theme_override_constants/paragraph_spacing = -20
-theme_override_constants/shadow_offset_x = 12
-theme_override_constants/shadow_offset_y = 8
-theme_override_constants/outline_size = 4
-theme_override_fonts/font = ExtResource("10_fan4m")
-theme_override_font_sizes/font_size = 30
-text = "Find Your Home (130)
-"
-
-[node name="sideLabel" type="Label" parent="Menu/pause/CurrObj"]
-layout_mode = 2
-size_flags_horizontal = 6
-size_flags_vertical = 8
-theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_colors/font_shadow_color = Color(0.39607844, 0.9529412, 0.8901961, 0)
-theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
-theme_override_constants/line_spacing = 1
-theme_override_constants/paragraph_spacing = -24
-theme_override_constants/shadow_offset_x = 12
-theme_override_constants/shadow_offset_y = 8
-theme_override_constants/outline_size = 6
-theme_override_fonts/font = ExtResource("9_fan4m")
-theme_override_font_sizes/font_size = 24
-text = "Side Objectives:"
-
-[node name="side" type="Label" parent="Menu/pause/CurrObj"]
-layout_mode = 2
-size_flags_horizontal = 6
-size_flags_vertical = 8
-theme_override_colors/font_color = Color(0.29533136, 0.5175257, 0.8186027, 1)
-theme_override_colors/font_shadow_color = Color(0.39607844, 0.9529412, 0.8901961, 0)
-theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
-theme_override_constants/line_spacing = 12
-theme_override_constants/paragraph_spacing = -18
-theme_override_constants/shadow_offset_x = 12
-theme_override_constants/shadow_offset_y = 8
-theme_override_constants/outline_size = 4
-theme_override_fonts/font = ExtResource("10_fan4m")
-theme_override_font_sizes/font_size = 26
-text = "
-none
-"
+[node name="postcard" type="TextureRect" parent="Menu/pause"]
+offset_left = 484.0
+offset_top = 207.0
+offset_right = 1054.0
+offset_bottom = 823.0
+scale = Vector2(0.54828835, 0.54828835)
+texture = ExtResource("18_8agcw")
 
 [node name="SettingsMenu" type="CanvasLayer" parent="Menu"]
 script = ExtResource("16_3kyh0")
