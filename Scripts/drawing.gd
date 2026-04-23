@@ -123,12 +123,7 @@ func _on_button_pressed() -> void:
 		correct.play()
 		cabinet_move.play()
 		puzzleTwoComplete.emit()
-		
-		
-	label.text = "Calculating Results..."
-	await get_tree().create_timer(1.0).timeout
-
-	if percentage >= 60.0:
+		_request_puzzle_two_complete()
 		label.text = "You Win: %.2f%%" % percentage
 		_request_puzzle_two_complete()
 	else:
