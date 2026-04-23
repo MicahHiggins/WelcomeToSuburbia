@@ -1,10 +1,5 @@
 extends Node3D
 
-@onready var track_2: AudioStreamPlayer = $"../../../Track2"
-@onready var knocking: AudioStreamPlayer3D = $"../../../knocking"
-@onready var knocking_2: AudioStreamPlayer3D = $"../../../knocking2"
-@onready var drawer_1: AudioStreamPlayer3D = $"../../../Drawer1"
-@onready var drawer_2: AudioStreamPlayer3D = $"../../../Drawer2"
 
 
 @onready var piano_failure: AnimationPlayer = $pianoFailure
@@ -27,8 +22,6 @@ var arrPlay = []
 var globalPuzzleChecker := 0
 var puzzleFail := false
 signal puzzleOneComplete
-
-signal timerStart
 # Called when the node enters the scene tree for the first time.
 #func _on_mousefree_input_event(camera: Node, event: InputEvent, event_position: Vector3, normal: Vector3, shape_idx: int) -> void:
 	## Check for Left Mouse Button Click
@@ -103,27 +96,10 @@ func _apply_puzzle_result_local(fail: bool) -> void:
 	if fail == true:
 		animation_player.stop()
 		piano_failure.play("pianoSuccess")
-		
-		#CUE AUDIO
-		
-		
 		puzzleFail = false
 	else:
 		puzzleOneComplete.emit()
-		
-		#CUE AUDIO
-		knocking.play()
-		knocking_2.play()
-		drawer_1.play()
-		drawer_2.play()
-		
-		
-		
 		piano_failure.play("green")
-		
-		await get_tree().create_timer(0.3).timeout
-		timerStart.emit()
-		track_2.play()
 		%R2SpotLight3D.visible = false
 		%R1SpotLight3D.visible = false
 		%R2OmniLight3D.visible = false

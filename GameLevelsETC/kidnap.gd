@@ -1,7 +1,5 @@
 extends Node3D
 
-
-
 @onready var cohesion: AnimationPlayer = $Cohesion
 
 @export var replicate_last_anim_to_late_joiners: bool = true

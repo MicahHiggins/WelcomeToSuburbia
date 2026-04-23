@@ -1,4 +1,4 @@
-[gd_scene load_steps=19 format=3 uid="uid://c5jxy2ugosnbe"]
+[gd_scene load_steps=16 format=3 uid="uid://c5jxy2ugosnbe"]
 
 [ext_resource type="Script" uid="uid://dtdv2huwkhvfh" path="res://Scripts/symbolManager.gd" id="1_tf5p5"]
 [ext_resource type="Texture2D" uid="uid://wy5xfggc16ak" path="res://Max's Folder (do not touch!!!)/Tiles/drawn.png" id="2_tkebk"]
@@ -10,9 +10,6 @@
 [ext_resource type="Script" uid="uid://cy8r7bxw3kxbj" path="res://Assets/RandomObjects/symbol/buttons_4_draw.gd" id="7_ymkyp"]
 [ext_resource type="Texture2D" uid="uid://dohc0ilahbkwf" path="res://Assets/RandomObjects/etch-a-sketch/etchSketchPic.jpg" id="8_mf04g"]
 [ext_resource type="Script" uid="uid://brt7ixudi60mk" path="res://Assets/RandomObjects/symbol/buttons_4_see.gd" id="10_2j2dh"]
-[ext_resource type="AudioStream" uid="uid://dsvyj2qvcf7mm" path="res://Audio/Level2/winSound.mp3" id="11_pqyab"]
-[ext_resource type="AudioStream" uid="uid://ci50ma80hwpgs" path="res://Audio/Level2/incorrect.mp3" id="12_w8njt"]
-[ext_resource type="AudioStream" uid="uid://c8jq28ufvp6sn" path="res://Audio/Level2/cabinetMove.mp3" id="13_v5j6a"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_lcf58"]
 radius = 1.0
@@ -240,18 +237,6 @@ scale = Vector2(0.6228621, 0.66976655)
 texture = ExtResource("8_mf04g")
 flip_h = true
 flip_v = true
-
-[node name="Sounds" type="Node3D" parent="."]
-
-[node name="correct" type="AudioStreamPlayer" parent="Sounds"]
-stream = ExtResource("11_pqyab")
-
-[node name="incorrect" type="AudioStreamPlayer" parent="Sounds"]
-stream = ExtResource("12_w8njt")
-volume_db = -1.095
-
-[node name="cabinetMove" type="AudioStreamPlayer" parent="Sounds"]
-stream = ExtResource("13_v5j6a")
 
 [connection signal="body_entered" from="etch-a-sketch/ObsArea" to="Buttons4See" method="_on_obs_area_body_entered"]
 [connection signal="body_exited" from="etch-a-sketch/ObsArea" to="Buttons4See" method="_on_obs_area_body_exited"]

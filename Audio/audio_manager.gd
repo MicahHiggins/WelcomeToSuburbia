@@ -1,16 +1,9 @@
 extends Node3D
 
-
-
 @onready var breathing: AudioStreamPlayer = %Breathing
 @onready var anim: AnimationPlayer = $AnimationPlayer
 
-var togglePuzzle := false
-
 signal gameStart
-
-
-
 
 
 
