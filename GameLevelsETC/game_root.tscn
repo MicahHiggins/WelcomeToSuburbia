@@ -15,7 +15,7 @@
 [ext_resource type="FontFile" uid="uid://c5b8bpjyyhhdm" path="res://addons/Font/GimletDisplay-Regular-Testing.otf" id="12_nqjqn"]
 [ext_resource type="PackedScene" uid="uid://b3tivaphj7o57" path="res://aidan_stuff/button4Iteration.tscn" id="13_nqjqn"]
 [ext_resource type="Script" uid="uid://c8d8y0v8e3yhm" path="res://aidan_stuff/curr_obj.gd" id="15_mekh1"]
-[ext_resource type="Script" uid="uid://da4fkcqmq3u8p" path="res://GameLevelsETC/settings_menu.gd" id="16_3kyh0"]
+[ext_resource type="Script" path="res://GameLevelsETC/settings_menu.gd" id="16_3kyh0"]
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_mekh1"]
 texture = ExtResource("7_fan4m")
@@ -356,7 +356,7 @@ theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
 theme_override_constants/outline_size = 3
 theme_override_fonts/font = ExtResource("9_fan4m")
 theme_override_font_sizes/font_size = 40
-text = "Press any button to start"
+text = "Press space bar to start"
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="Menu/CanvasLayer"]
 libraries = {
