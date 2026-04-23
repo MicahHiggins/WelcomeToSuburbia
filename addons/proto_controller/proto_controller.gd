@@ -85,8 +85,6 @@ var is_sprinting: bool = false
 
 @export var item_manager_name: StringName = &"ItemManager"
 
-const SERVER_ID: int = 1
-
 # Breathing Audio
 const BREATHING_THRESHOLD := 0.5
 var breathing_active := false
@@ -283,31 +281,23 @@ func _ready() -> void:
 func _init_skin_nodes() -> void:
 	_boy_skin = get_node_or_null(boy_node_path) as Node3D
 	_girl_skin = get_node_or_null(girl_node_path) as Node3D
-
-	# default to something deterministic so we don't flash the wrong mesh for 1 frame
 	_apply_skin_local(0)
 
 func _init_skin_assignment() -> void:
-	# singleplayer: just boy
 	if not multiplayer.has_multiplayer_peer():
 		_set_skin_server_and_broadcast(0)
 		return
 
-	# server decides once per player instance (authority id tells us who this node belongs to)
 	if multiplayer.is_server():
-		# make sure late joiners get correct skins for already-spawned players
 		if not multiplayer.peer_connected.is_connected(_on_peer_connected_send_skin):
 			multiplayer.peer_connected.connect(_on_peer_connected_send_skin)
-
 		_server_assign_skin()
 
 func _server_assign_skin() -> void:
-	# rule:
-	# - host (peer 1) = boy
-	# - everyone else = girl
 	var owner_id: int = int(get_multiplayer_authority())
-	var sid: int = 0 if owner_id == SERVER_ID else 1
-	_set_skin_server_and_broadcast(sid)
+	var sid: int = _server_peer_id()
+	var skin_pick: int = 0 if (sid > 0 and owner_id == sid) else 1
+	_set_skin_server_and_broadcast(skin_pick)
 
 func _set_skin_server_and_broadcast(sid: int) -> void:
 	_skin_id = sid
@@ -333,7 +323,6 @@ func _apply_skin_local(sid: int) -> void:
 		_girl_skin.process_mode = Node.PROCESS_MODE_INHERIT if sid == 1 else Node.PROCESS_MODE_DISABLED
 
 func _on_peer_connected_send_skin(peer_id: int) -> void:
-	# server only: when a new peer joins, each already-spawned player sends its skin to that peer
 	if not multiplayer.is_server():
 		return
 	rpc_id(peer_id, "_rpc_apply_skin", _skin_id)
@@ -369,22 +358,16 @@ func _net_maybe_send_anim(anim_state: StringName, sprinting: bool) -> void:
 		return
 	if not is_multiplayer_authority():
 		return
-
-	# only send on changes (keeps spam down)
 	if anim_state == _last_sent_anim_state and sprinting == _last_sent_sprint:
 		return
-
 	_last_sent_anim_state = anim_state
 	_last_sent_sprint = sprinting
-
 	rpc("_rpc_set_anim_state", String(anim_state), sprinting)
 
 @rpc("any_peer", "call_local", "unreliable")
 func _rpc_set_anim_state(anim_state: String, sprinting: bool) -> void:
-	# owner already plays locally
 	if multiplayer.has_multiplayer_peer() and is_multiplayer_authority():
 		return
-
 	_net_anim_state = StringName(anim_state)
 	_net_is_sprinting = sprinting
 	_play_body_anim_local(_net_anim_state)
@@ -436,7 +419,9 @@ func _net_maybe_send_camera_look() -> void:
 	if multiplayer.is_server():
 		lf.call("_server_set_peer_camera", multiplayer.get_unique_id(), cam.global_transform)
 	else:
-		lf.rpc_id(SERVER_ID, "_rpc_update_peer_camera", cam.global_transform)
+		var sid: int = _server_peer_id()
+		if sid > 0:
+			lf.rpc_id(sid, "_rpc_update_peer_camera", cam.global_transform)
 
 # helper: find player node by owner id
 func _find_player_by_owner(owner_id: int) -> Node3D:
@@ -463,7 +448,6 @@ func _get_leader_body_yaw_rad() -> float:
 	if leader_node != null:
 		return leader_node.global_transform.basis.get_euler().y
 
-	# fallback to leader cam yaw if we have it
 	var lf: Node = _get_level_flow()
 	if lf != null and lf.has_method("get_peer_camera_xform") and cellar_leader_peer_id > 0:
 		var leader_cam_xf: Transform3D = lf.call("get_peer_camera_xform", cellar_leader_peer_id) as Transform3D
@@ -475,7 +459,6 @@ func _get_leader_yaw_for_piggyback() -> float:
 	if cellar_piggyback_use_leader_body_yaw:
 		return _get_leader_body_yaw_rad()
 
-	# fallback: cam yaw
 	var lf: Node = _get_level_flow()
 	if lf != null and lf.has_method("get_peer_camera_xform") and cellar_leader_peer_id > 0:
 		var leader_cam_xf: Transform3D = lf.call("get_peer_camera_xform", cellar_leader_peer_id) as Transform3D
@@ -507,23 +490,19 @@ func _update_follower_camera_offset(delta: float) -> void:
 func _configure_footstep_audio_3d() -> void:
 	if footstep == null:
 		return
-	# "proximity" = 3D attenuation based on distance
 	footstep.max_distance = footstep_hear_radius
 	footstep.attenuation_model = AudioStreamPlayer3D.ATTENUATION_INVERSE_DISTANCE
-	# optional but helps: keep it from getting too loud close-up
 	footstep.unit_size = 1.0
 
 func _should_trigger_footstep() -> bool:
 	if footstep_play_only_on_floor and not is_on_floor():
 		return false
 
-	# movement magnitude, ignore vertical
 	var v := velocity
 	v.y = 0.0
 	if v.length() < footstep_min_speed_to_trigger:
 		return false
 
-	# don't trigger while piggyback follower (they're "on back")
 	if cellar_active and not cellar_is_leader:
 		return false
 
@@ -532,28 +511,23 @@ func _should_trigger_footstep() -> bool:
 func _footstep_interval() -> float:
 	return footstep_min_interval_run if is_sprinting else footstep_min_interval_walk
 
-# This method existed in your old proto_controller and was called deferred.
-# We re-add it so the error goes away.
 func _play_footstep_audio() -> void:
 	if footstep == null:
 		return
 	if footstep.stream == null:
 		return
-	
+
 	footstep.pitch_scale = footstep_pitch_run if is_sprinting else footstep_pitch_walk
 
-	# restart cleanly so rapid footsteps sound consistent
 	if footstep.playing:
 		footstep.stop()
 	footstep.play()
 
-	# broadcast so other clients hear it too (proximity via AudioStreamPlayer3D)
 	if multiplayer.has_multiplayer_peer():
 		rpc("_rpc_play_footstep", global_position, footstep.pitch_scale)
 
 @rpc("any_peer", "call_local", "unreliable")
 func _rpc_play_footstep(pos: Vector3, pitch: float) -> void:
-	# owner already played locally; don't double-play
 	if multiplayer.has_multiplayer_peer() and is_multiplayer_authority():
 		return
 	if footstep == null or footstep.stream == null:
@@ -565,7 +539,6 @@ func _rpc_play_footstep(pos: Vector3, pitch: float) -> void:
 	footstep.play()
 
 func _net_maybe_step_audio() -> void:
-	# only the authoritative player should decide when a footstep happens
 	if multiplayer.has_multiplayer_peer() and not is_multiplayer_authority():
 		return
 
@@ -577,7 +550,6 @@ func _net_maybe_step_audio() -> void:
 		return
 
 	_last_footstep_time = now
-	#call_deferred("_play_footstep_audio")
 
 # =========================
 #      TALK / NPC INTERACT
@@ -636,7 +608,9 @@ func _request_start_talk(npc_path: NodePath) -> void:
 	if multiplayer.is_server():
 		_server_start_talk(multiplayer.get_unique_id(), String(npc_path))
 	else:
-		rpc_id(SERVER_ID, "_rpc_request_start_talk", String(npc_path))
+		var sid: int = _server_peer_id()
+		if sid > 0:
+			rpc_id(sid, "_rpc_request_start_talk", String(npc_path))
 
 func _request_stop_talk(npc_path: NodePath) -> void:
 	if not multiplayer.has_multiplayer_peer():
@@ -646,7 +620,9 @@ func _request_stop_talk(npc_path: NodePath) -> void:
 	if multiplayer.is_server():
 		_server_stop_talk(multiplayer.get_unique_id(), String(npc_path))
 	else:
-		rpc_id(SERVER_ID, "_rpc_request_stop_talk", String(npc_path))
+		var sid: int = _server_peer_id()
+		if sid > 0:
+			rpc_id(sid, "_rpc_request_stop_talk", String(npc_path))
 
 @rpc("any_peer", "reliable")
 func _rpc_request_start_talk(npc_path_str: String) -> void:
@@ -1004,6 +980,7 @@ func _try_use_attack() -> void:
 	_last_attack_time = now
 	_play_attack_local()
 	_net_broadcast_attack_anim()
+	_notify_bat_swing_gates()
 	request_use_attack_rpc()
 
 func _net_broadcast_attack_anim() -> void:
@@ -1015,7 +992,6 @@ func _net_broadcast_attack_anim() -> void:
 
 @rpc("any_peer", "call_local", "reliable")
 func _rpc_play_attack_anim() -> void:
-	# owner already did it
 	if multiplayer.has_multiplayer_peer() and is_multiplayer_authority():
 		return
 	_play_body_anim_local(attack_anim_name)
@@ -1032,6 +1008,10 @@ func _play_attack_local() -> void:
 		if held_anim != null and held_anim.has_animation(String(attack_anim_name)):
 			held_anim.stop()
 			held_anim.play(String(attack_anim_name))
+
+func _notify_bat_swing_gates() -> void:
+	var pid: int = int(multiplayer.get_unique_id()) if multiplayer.has_multiplayer_peer() else int(get_multiplayer_authority())
+	get_tree().call_group("bat_swing_gate", "notify_swing", pid)
 
 # =========================
 #      FRAME / PHYSICS
@@ -1073,7 +1053,6 @@ func _physics_process(delta: float) -> void:
 		return
 
 	_net_interpolate_remote()
-	# apply whatever anim state we've received
 	if _net_anim_state != &"":
 		_play_body_anim_local(_net_anim_state)
 
@@ -1084,9 +1063,6 @@ func _physics_authority(delta: float) -> void:
 		move_and_collide(motion)
 		return
 
-	# ---------------------------------------
-	# PIGGYBACK FOLLOW (follower only)
-	# ---------------------------------------
 	if cellar_active and not cellar_is_leader:
 		velocity = Vector3.ZERO
 
@@ -1134,12 +1110,8 @@ func _physics_authority(delta: float) -> void:
 		global_position = global_position.lerp(target_pos, a_pos)
 
 		move_and_slide()
-
-		# follower anim pick (still send so other peers see it)
 		_pick_and_sync_body_anim()
-
 		return
-	# ---------------------------------------
 
 	if has_gravity and not is_on_floor():
 		velocity += get_gravity() * delta
@@ -1216,14 +1188,9 @@ func _physics_authority(delta: float) -> void:
 				%FootstepAnimation.play("walk")
 
 	move_and_slide()
-
-	# -------------------------
-	# AFTER MOVE: pick anim + replicate
-	# -------------------------
 	_pick_and_sync_body_anim()
 
 func _pick_and_sync_body_anim() -> void:
-	# idle / walk / run based on velocity + sprint flag
 	var anim_pick: StringName = anim_idle
 	var flat_v := velocity
 	flat_v.y = 0.0
@@ -1313,8 +1280,10 @@ func server_teleport_to(xform: Transform3D) -> void:
 @rpc("any_peer", "call_local", "reliable")
 func server_add_inventory_item(item_id: StringName) -> void:
 	var sender: int = multiplayer.get_remote_sender_id()
+	var sid: int = _server_peer_id()
+
 	if multiplayer.has_multiplayer_peer():
-		if sender != 0 and sender != SERVER_ID:
+		if sender != 0 and sender != sid:
 			return
 		if sender == 0 and not multiplayer.is_server():
 			return
@@ -1351,7 +1320,7 @@ func server_set_cellar_role(
 	cellar_follow_lerp = follow_lerp
 
 	velocity = Vector3.ZERO
-	_pb_yaw_has = false # reset smoothing when roles switch
+	_pb_yaw_has = false
 
 	if cellar_hide_body_for_follower:
 		_set_body_visible(is_leader)
@@ -1368,10 +1337,13 @@ func server_set_forced_pose(enabled: bool, target_pos: Vector3) -> void:
 @rpc("any_peer", "call_local", "reliable")
 func server_set_inventory(new_inventory: Array[StringName]) -> void:
 	var sender: int = multiplayer.get_remote_sender_id()
-	if sender != 0 and sender != SERVER_ID:
-		return
-	if sender == 0 and not multiplayer.is_server():
-		return
+	var sid: int = _server_peer_id()
+
+	if multiplayer.has_multiplayer_peer():
+		if sender != 0 and sender != sid:
+			return
+		if sender == 0 and not multiplayer.is_server():
+			return
 
 	inventory = new_inventory.duplicate()
 	inventory_changed.emit(inventory)
@@ -1379,7 +1351,9 @@ func server_set_inventory(new_inventory: Array[StringName]) -> void:
 @rpc("any_peer", "call_local", "unreliable")
 func server_show_hint(msg: String, seconds: float = 1.25) -> void:
 	var sender: int = multiplayer.get_remote_sender_id()
-	if sender != 0 and sender != SERVER_ID:
+	var sid: int = _server_peer_id()
+
+	if sender != 0 and sender != sid:
 		return
 	if sender == 0 and not multiplayer.is_server():
 		return
@@ -1399,7 +1373,9 @@ func request_pickup_rpc(item_path: NodePath) -> void:
 	if multiplayer.is_server():
 		im.request_pickup(item_path)
 	else:
-		im.rpc_id(SERVER_ID, "request_pickup", item_path)
+		var sid: int = _server_peer_id()
+		if sid > 0:
+			im.rpc_id(sid, "request_pickup", item_path)
 
 func request_drop_rpc() -> void:
 	var im: Node = _get_item_manager()
@@ -1414,7 +1390,9 @@ func request_drop_rpc() -> void:
 	if multiplayer.is_server():
 		im.request_drop(item_key)
 	else:
-		im.rpc_id(SERVER_ID, "request_drop", item_key)
+		var sid: int = _server_peer_id()
+		if sid > 0:
+			im.rpc_id(sid, "request_drop", item_key)
 
 func request_use_attack_rpc() -> void:
 	var im: Node = _get_item_manager()
@@ -1429,13 +1407,14 @@ func request_use_attack_rpc() -> void:
 	if multiplayer.is_server():
 		im.request_use_attack(item_key)
 	else:
-		im.rpc_id(SERVER_ID, "request_use_attack", item_key)
+		var sid: int = _server_peer_id()
+		if sid > 0:
+			im.rpc_id(sid, "request_use_attack", item_key)
 
 # =========================
 #      MOUSE / UI HELPERS
 # =========================
 func _rotate_look(delta_rel: Vector2) -> void:
-	# Slow leader turning while piggybacking so the follower doesn’t get whipped
 	if cellar_active and cellar_is_leader and _cellar_has_follower():
 		delta_rel *= cellar_leader_turn_mult
 
@@ -1443,7 +1422,6 @@ func _rotate_look(delta_rel: Vector2) -> void:
 	look_rotation.x = clamp(look_rotation.x, deg_to_rad(-85.0), deg_to_rad(85.0))
 	look_rotation.y -= delta_rel.x * look_speed
 
-	# follower yaw clamp around leader BODY (smoothed) so we get “on back” feel
 	if cellar_active and not cellar_is_leader and cellar_leader_peer_id > 0:
 		var leader_yaw := _get_leader_yaw_for_piggyback()
 		if _pb_yaw_has:
@@ -1520,7 +1498,6 @@ func _hide_meshes_recursive(root: Node, visible: bool) -> void:
 		if ch == null:
 			continue
 
-		# never hide camera/head chain
 		if ch == head or ch == cam:
 			continue
 		if ch.get_parent() == head:
@@ -1532,3 +1509,18 @@ func _hide_meshes_recursive(root: Node, visible: bool) -> void:
 			mi.visible = visible
 
 		_hide_meshes_recursive(ch, visible)
+
+func _server_peer_id() -> int:
+	if not multiplayer.has_multiplayer_peer():
+		return -1
+	if multiplayer.is_server():
+		return multiplayer.get_unique_id()
+	var peers := multiplayer.get_peers()
+	if peers == null or peers.is_empty():
+		return -1
+	var best := int(peers[0])
+	for p_any in peers:
+		var p := int(p_any)
+		if p < best:
+			best = p
+	return best

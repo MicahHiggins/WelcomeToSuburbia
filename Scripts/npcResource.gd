@@ -147,7 +147,7 @@ func dialogueMan(npc_name):
 					abi_local = 2
 				abiDial()
 			
-			"The Campbells":
+			"Mr. Campbell":
 				if camp_local == 3:
 					camp_local = 2
 				campDial()
@@ -179,7 +179,7 @@ func enter_dialogue():
 				number = bob_local
 			"Abigail":
 				number = abi_local
-			"The Campbells":
+			"Mr. Campbell":
 				number = camp_local
 			"Isaac":
 				number = iss_local
