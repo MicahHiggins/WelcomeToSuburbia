@@ -2330,5 +2330,7 @@ stream = ExtResource("29_lobfv")
 [connection signal="puzzleOneComplete" from="Bedrooms/bedroom2/toy_piano" to="." method="_on_toy_piano_puzzle_one_complete"]
 [connection signal="puzzleTwoComplete" from="Puzzle2/Drawing/drawing" to="." method="_on_drawing_puzzle_two_complete"]
 
+[connection signal="puzzleOneComplete" from="Bedrooms/bedroom2/toy_piano" to="." method="_on_toy_piano_puzzle_one_complete"]
+[connection signal="puzzleTwoComplete" from="Puzzle2/Drawing/drawing" to="." method="_on_drawing_puzzle_two_complete"]
 
 [editable path="Puzzle2"]
