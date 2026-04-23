@@ -22,6 +22,7 @@ signal dialogueSignal
 signal cellarLevel
 
 signal level2change
+signal level1Start
 
 signal interact
 var playerTalking = false
