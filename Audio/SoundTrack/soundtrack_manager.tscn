@@ -1,7 +1,7 @@
 [gd_scene load_steps=6 format=3 uid="uid://ctgohi32dunti"]
 
-[ext_resource type="AudioStream" uid="uid://p0dbfrvjgn0u" path="res://Audio/'Chase' - Welcome to Surburbia! (OST) - Copy (2) - Copy.wav" id="1_h74bn"]
 [ext_resource type="Script" uid="uid://dodaq0wqbp286" path="res://Audio/SoundTrack/soundtrack_manager.gd" id="1_leubx"]
+[ext_resource type="AudioStream" uid="uid://sodjvu76wes" path="res://Audio/SoundTrack/'Chase' Slow+reverbed.wav" id="2_ldjqn"]
 [ext_resource type="AudioStream" uid="uid://bxv4ejrglrjcp" path="res://Audio/SoundTrack/WelcomeToThe Neighborhood!1.1.wav" id="3_ldjqn"]
 [ext_resource type="AudioStream" uid="uid://cyx2njh2qttb3" path="res://Audio/SoundTrack/WelcomeToThe Neighborhood!1.2.wav" id="4_xil7p"]
 [ext_resource type="AudioStream" uid="uid://dukoh5vgwwp7e" path="res://Audio/SoundTrack/WelcomeToThe Neighborhood!1.3.wav" id="5_i0wtg"]
@@ -10,7 +10,7 @@
 script = ExtResource("1_leubx")
 
 [node name="track3" type="AudioStreamPlayer" parent="."]
-stream = ExtResource("1_h74bn")
+stream = ExtResource("2_ldjqn")
 volume_db = -12.511
 bus = &"Music"
 

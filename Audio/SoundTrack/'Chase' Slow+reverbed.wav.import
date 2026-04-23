@@ -1,0 +1,24 @@
+[remap]
+
+importer="wav"
+type="AudioStreamWAV"
+uid="uid://sodjvu76wes"
+path="res://.godot/imported/'Chase' Slow+reverbed.wav-ef7ee4d37442052798e05a9b835f88e0.sample"
+
+[deps]
+
+source_file="res://Audio/SoundTrack/'Chase' Slow+reverbed.wav"
+dest_files=["res://.godot/imported/'Chase' Slow+reverbed.wav-ef7ee4d37442052798e05a9b835f88e0.sample"]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=2
