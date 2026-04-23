@@ -1,9 +1,10 @@
-[gd_scene load_steps=23 format=3 uid="uid://c2ocvg8ruxbbg"]
+[gd_scene load_steps=24 format=3 uid="uid://c2ocvg8ruxbbg"]
 
 [ext_resource type="Script" uid="uid://dywhk2ngguw7a" path="res://GameLevelsETC/lobby_manager.gd" id="1_l5n62"]
 [ext_resource type="Script" uid="uid://l6pyeyjgkntn" path="res://GameLevelsETC/item_manager.gd" id="1_lbg40"]
 [ext_resource type="PackedScene" uid="uid://bs72ogkvdd7d6" path="res://addons/proto_controller/proto_controller.tscn" id="2_6bcdd"]
 [ext_resource type="Script" uid="uid://w8c1ppjt0y6g" path="res://Scripts/level_flow_manager.gd" id="5_l5n62"]
+[ext_resource type="Script" uid="uid://mt5ig6x28jap" path="res://GameLevelsETC/menuMusic.gd" id="7_0eitk"]
 [ext_resource type="Texture2D" uid="uid://po54angge88i" path="res://Assets/Images/grass.jpg" id="7_fan4m"]
 [ext_resource type="Texture2D" uid="uid://c3ke3yreooel0" path="res://Assets/Images/suburbia_title_card.png" id="7_l5n62"]
 [ext_resource type="Texture2D" uid="uid://5sfpc0c2xw26" path="res://Assets/Images/suburbia_back_postcard.png" id="8_6bcdd"]
@@ -281,6 +282,7 @@ default_level = ExtResource("8_nqjqn")
 script = ExtResource("9_nqjqn")
 
 [node name="Menu" type="Node" parent="."]
+script = ExtResource("7_0eitk")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="Menu"]
 
@@ -714,6 +716,6 @@ layout_mode = 2
 [connection signal="pressed" from="Menu/CanvasLayer/quit2" to="LobbyManager" method="_on_pause_quit_pressed"]
 [connection signal="pressed" from="Menu/pause/quit" to="LobbyManager" method="_on_pause_quit_pressed"]
 [connection signal="pressed" from="Menu/pause/menu" to="LobbyManager" method="_on_pause_back_to_menu_pressed"]
-[connection signal="pressed" from="Menu/pause/settings" to="LobbyManager" method="_on_pause_settings_pressed"]
 [connection signal="pressed" from="Menu/pause/settings" to="LobbyManager" method="_on_settings_pressed"]
+[connection signal="pressed" from="Menu/pause/settings" to="LobbyManager" method="_on_pause_settings_pressed"]
 [connection signal="pressed" from="Menu/pause/copy" to="LobbyManager" method="_on_pause_copy_code_pressed"]

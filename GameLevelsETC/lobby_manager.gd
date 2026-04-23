@@ -347,6 +347,7 @@ func _on_host_pressed() -> void:
 		push_error("Steam not initialized; cannot host.")
 		return
 	print("Requesting Steam lobby creation...")
+	GlobalVariables.menuMusic.emit()
 	Steam.createLobby(Steam.LOBBY_TYPE_PUBLIC, MAX_PLAYERS)
 
 
@@ -370,7 +371,7 @@ func _on_join_pressed() -> void:
 	if code_str == "":
 		push_error("Join code must be %d digits." % join_code_digits)
 		return
-
+	GlobalVariables.menuMusic.emit()
 	_find_lobby_by_4_digit_code(code_str)
 
 

@@ -25,6 +25,9 @@ signal level2change
 signal level1Start
 
 signal interact
+
+signal menuMusic
+
 var playerTalking = false
 
 #for questing
