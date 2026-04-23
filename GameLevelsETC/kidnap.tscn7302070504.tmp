@@ -1,13 +1,11 @@
-[gd_scene load_steps=54 format=3 uid="uid://dw6fx71adu107"]
+[gd_scene load_steps=51 format=3 uid="uid://dw6fx71adu107"]
 
 [ext_resource type="Script" uid="uid://duigu086blnlq" path="res://GameLevelsETC/kidnap.gd" id="1_6rn1s"]
 [ext_resource type="PackedScene" uid="uid://bs2jm62cmkbrk" path="res://addons/instant-realistic-light/light_scene.tscn" id="1_wff52"]
 [ext_resource type="Script" uid="uid://bkb35cbdsgdbh" path="res://addons/instant-realistic-light/light_scene.gd" id="2_itlhn"]
 [ext_resource type="AudioStream" uid="uid://p0dbfrvjgn0u" path="res://Audio/'Chase' - Welcome to Surburbia! (OST) - Copy (2) - Copy.wav" id="2_un8vx"]
 [ext_resource type="PackedScene" uid="uid://becgpkre4p052" path="res://Assets/RandomObjects/bedrooms/bedroom_copy.tscn" id="3_6rn1s"]
-[ext_resource type="AudioStream" uid="uid://t8dbi55q1bxi" path="res://Audio/Level2/knocking.mp3" id="3_lobfv"]
 [ext_resource type="PackedScene" uid="uid://c3n0vm5w6w6vy" path="res://Assets/RandomObjects/Placeholder_Bedroom/Bed Single.glb" id="4_pm42j"]
-[ext_resource type="AudioStream" uid="uid://dqig1xi6p87bl" path="res://Audio/Level2/bookCaseMove.mp3" id="4_ppsdj"]
 [ext_resource type="PackedScene" uid="uid://bu5i4g02sn2jl" path="res://Assets/RandomObjects/Placeholder_Bedroom/Night Stand.glb" id="5_2uf5w"]
 [ext_resource type="PackedScene" uid="uid://drmny2fipxk8a" path="res://Assets/RandomObjects/Placeholder_Bedroom/Lamp.glb" id="6_lyc4m"]
 [ext_resource type="PackedScene" uid="uid://dldyyjso303qk" path="res://Assets/RandomObjects/Placeholder_Bedroom/Dresser.glb" id="7_dwtrd"]
@@ -30,7 +28,6 @@
 [ext_resource type="PackedScene" uid="uid://drk8i4p1of8ar" path="res://aidan_stuff/whitefence_1.tscn" id="20_eyvg3"]
 [ext_resource type="PackedScene" uid="uid://ret8ne1fmk7l" path="res://Assets/RandomObjects/road/road.tscn" id="21_qolbo"]
 [ext_resource type="PackedScene" uid="uid://c5jxy2ugosnbe" path="res://Assets/RandomObjects/symbol/SymbolPuzzle.tscn" id="22_itlhn"]
-[ext_resource type="Script" uid="uid://ctlv1mvt8vd7x" path="res://GameLevelsETC/Timer.gd" id="31_wt8sx"]
 
 [sub_resource type="Animation" id="Animation_2uf5w"]
 length = 0.001
@@ -462,31 +459,6 @@ script = ExtResource("1_6rn1s")
 
 [node name="Track2" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("2_un8vx")
-volume_db = -11.516
-bus = &"Music"
-
-[node name="knocking" type="AudioStreamPlayer3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.103809, -0.9413917, 19.073006)
-stream = ExtResource("3_lobfv")
-volume_db = 2.805
-panning_strength = 1.76
-bus = &"SFX"
-
-[node name="knocking2" type="AudioStreamPlayer3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -27.41776)
-stream = ExtResource("3_lobfv")
-volume_db = 4.807
-panning_strength = 1.93
-
-[node name="Drawer1" type="AudioStreamPlayer3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.268392, -2.646204, -19.268675)
-stream = ExtResource("4_ppsdj")
-volume_db = 11.015
-max_db = 2.742
-pitch_scale = 0.83
-
-[node name="Drawer2" type="AudioStreamPlayer3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.2865806, -2.6855896, 23.830563)
 
 [node name="Cohesion" type="AnimationPlayer" parent="."]
 libraries = {
@@ -749,7 +721,7 @@ transform = Transform3D(-0.34000015, 2.4563462e-11, -2.9725925e-08, 1.6999735e-1
 transform = Transform3D(3.989129e-10, 3.4979166e-08, 0.80000025, 0.8, -3.4691766e-08, 2.4982683e-11, 3.4982804e-08, 0.80000097, -3.4968252e-08, 2.735105, -1.2487528, -0.41625214)
 
 [node name="Shelf" type="MeshInstance3D" parent="Bedrooms/bedroom2"]
-transform = Transform3D(-2.0815234e-08, 0.0010388906, 0.47619265, -1.16415315e-10, 0.5952399, -0.00083111384, -0.4761924, -1.9093079e-10, -2.0815042e-08, -1.9190041, -1.3467678, -16.26862)
+transform = Transform3D(-2.0815234e-08, 0.0010388906, 0.47619268, -1.16415315e-10, 0.5952399, -0.0008311139, -0.4761924, -1.9093079e-10, -2.0815044e-08, -1.9190041, -1.3467678, -16.26862)
 visible = false
 mesh = SubResource("BoxMesh_dwtrd")
 skeleton = NodePath("../../..")
@@ -2259,32 +2231,7 @@ transform = Transform3D(1.9106855e-15, 4.371139e-08, -1, 1, -4.371139e-08, 0, -4
 [node name="etch-a-sketch2" parent="Puzzle2" index="1"]
 transform = Transform3D(1.9106855e-15, 4.371139e-08, -1, 1, -4.371139e-08, 0, -4.371139e-08, -1, -4.371139e-08, -4.570696, -0.57986665, 25.593967)
 
-[node name="Control" type="Control" parent="."]
-layout_mode = 3
-anchors_preset = 0
-offset_right = 40.0
-offset_bottom = 40.0
-script = ExtResource("31_wt8sx")
-
-[node name="Label" type="Label" parent="Control"]
-layout_mode = 1
-anchors_preset = -1
-anchor_left = 22.275
-anchor_top = 0.45
-anchor_right = 25.5
-anchor_bottom = 1.45
-grow_horizontal = 2
-grow_vertical = 2
-theme_override_font_sizes/font_size = 27
-text = "Time Left:"
-metadata/_edit_use_anchors_ = true
-
-[node name="Timer" type="Timer" parent="."]
-wait_time = 120.0
-
 [connection signal="puzzleOneComplete" from="Bedrooms/bedroom2/toy_piano" to="." method="_on_toy_piano_puzzle_one_complete"]
-[connection signal="timerStart" from="Bedrooms/bedroom2/toy_piano" to="Control" method="_on_toy_piano_timer_start"]
 [connection signal="puzzleTwoComplete" from="Puzzle2/Drawing/drawing" to="." method="_on_drawing_puzzle_two_complete"]
-[connection signal="timerStart" from="Puzzle2/Drawing/drawing" to="Control" method="_on_drawing_timer_start"]
 
 [editable path="Puzzle2"]
