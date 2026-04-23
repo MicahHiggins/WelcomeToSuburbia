@@ -11,6 +11,11 @@ class_name BatSwingGate
 
 @export var also_change_to_level_3: bool = true
 @export var level_3_index: int = 3
+
+# If true, server waits for the video to finish before changing levels.
+@export var wait_for_video_finish: bool = true
+
+# Fallback delay if video can't be measured / finished signal doesn't fire.
 @export var level_change_delay_sec: float = 3.0
 
 @export var debug_enabled: bool = false
@@ -126,13 +131,71 @@ func _try_complete_gate_server(do_dbg: bool) -> void:
 	if ok_count >= required_player_count:
 		_done = true
 		if debug_enabled:
-			print("GATE TRIGGERED | playing video + scheduling level change in", level_change_delay_sec, "sec")
+			print("GATE TRIGGERED | playing video")
 
 		rpc("_rpc_play_gate_video")
 
 		if also_change_to_level_3:
-			_level_change_queued = true
-			_level_change_timer = maxf(0.0, level_change_delay_sec)
+			if wait_for_video_finish:
+				call_deferred("_deferred_wait_then_change_level")
+			else:
+				_level_change_queued = true
+				_level_change_timer = maxf(0.0, level_change_delay_sec)
+
+func _deferred_wait_then_change_level() -> void:
+	if multiplayer.has_multiplayer_peer() and not multiplayer.is_server():
+		return
+
+	var wait_sec: float = _estimate_video_seconds()
+	if debug_enabled:
+		print("GATE | wait_for_video_finish=true | estimated wait:", wait_sec)
+
+	if play_video_player != null and is_instance_valid(play_video_player):
+		# Prefer finished signal if we can.
+		if play_video_player.has_signal("finished"):
+			# If it ends quickly, finished will fire; if it doesn't (some streams), fallback timer still covers it.
+			var got_finish := false
+			var cb := func():
+				got_finish = true
+			if not play_video_player.finished.is_connected(cb):
+				play_video_player.finished.connect(cb, CONNECT_ONE_SHOT)
+
+			# Wait up to estimated length (or fallback) then proceed anyway.
+			var t := get_tree().create_timer(maxf(0.05, wait_sec))
+			await t.timeout
+			# If finished fired earlier, cool; if not, timer was our cap.
+		else:
+			var t2 := get_tree().create_timer(maxf(0.05, wait_sec))
+			await t2.timeout
+	else:
+		var t3 := get_tree().create_timer(maxf(0.05, wait_sec))
+		await t3.timeout
+
+	if debug_enabled:
+		print("GATE | video wait done -> request level", level_3_index)
+
+	_call_level_change_level3()
+
+func _estimate_video_seconds() -> float:
+	# Fallback if anything is missing.
+	var fallback := maxf(0.0, level_change_delay_sec)
+
+	if play_video_player == null or not is_instance_valid(play_video_player):
+		return fallback
+
+	var s := play_video_player.stream
+	if s == null:
+		return fallback
+
+	# Many streams support get_length(); if not, fallback.
+	var len_sec: float = 0.0
+	if s.has_method("get_length"):
+		len_sec = float(s.call("get_length"))
+	if len_sec <= 0.0:
+		return fallback
+
+	# Add a tiny cushion so we don’t cut the last frame.
+	return len_sec + 0.15
 
 func _is_puzzle2_done() -> bool:
 	var nodes: Array = get_tree().get_nodes_in_group(String(puzzle_state_group))
@@ -264,7 +327,7 @@ func _peer_id_from_player(p: Node) -> int:
 		return int(nm)
 	return -1
 
-# NEW: deterministic coordinator by scene-tree path
+# deterministic coordinator by scene-tree path
 func _is_coordinator_gate() -> bool:
 	var gates: Array = get_tree().get_nodes_in_group("bat_swing_gate")
 	if gates.is_empty():

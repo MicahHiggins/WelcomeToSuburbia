@@ -756,7 +756,7 @@ collision_layer = 15
 authority_only_physics = false
 
 [node name="Shelf" type="MeshInstance3D" parent="Bedrooms/bedroom2"]
-transform = Transform3D(-2.0815234e-08, 0.0010388906, 0.47619244, -1.16415315e-10, 0.5952399, -0.00083111343, -0.4761924, -1.9093079e-10, -2.0815033e-08, -1.9190041, -1.3467678, -16.26862)
+transform = Transform3D(-2.0815234e-08, 0.0010388906, 0.4761924, -1.16415315e-10, 0.5952399, -0.00083111343, -0.4761924, -1.9093079e-10, -2.0815031e-08, -1.9190041, -1.3467678, -16.26862)
 visible = false
 mesh = SubResource("BoxMesh_dwtrd")
 skeleton = NodePath("../../..")
@@ -2302,7 +2302,6 @@ collision_layer = 8
 collision_mask = 8
 script = ExtResource("28_un8vx")
 play_video_player = NodePath("../CutsceneTC")
-debug_enabled = true
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="SwingGate"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.06085205, -1.2143555, 0.4621582)
@@ -2314,7 +2313,6 @@ collision_layer = 8
 collision_mask = 8
 script = ExtResource("28_un8vx")
 play_video_player = NodePath("../CutsceneTC")
-debug_enabled = true
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="SwingGate2"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.06085205, -1.2143555, 0.4621582)
