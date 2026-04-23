@@ -12,16 +12,12 @@ class_name BatSwingGate
 @export var also_change_to_level_3: bool = true
 @export var level_3_index: int = 3
 
-# If true, server waits for the video to finish before changing levels.
 @export var wait_for_video_finish: bool = true
-
-# Fallback delay if video can't be measured / finished signal doesn't fire.
 @export var level_change_delay_sec: float = 3.0
+@export var video_wait_timeout_sec: float = 12.0
 
-# NEW: clear/drop inventory right before we start the gate animation/transition
 @export var clear_inventories_on_trigger: bool = true
-@export var inventory_property_name: StringName = &"inventory" # Array on player
-@export var try_drop_methods: bool = true # tries common drop/clear methods first
+@export var item_manager_name: StringName = &"ItemManager"
 
 @export var debug_enabled: bool = false
 @export var debug_print_every_sec: float = 1.0
@@ -29,9 +25,14 @@ class_name BatSwingGate
 var _done: bool = false
 var _level_change_queued: bool = false
 var _level_change_timer: float = 0.0
+
 var _dbg_t: float = 0.0
 var _dbg_frame: int = 0
-var _printed_ready: bool = false
+
+var _video_waiting: bool = false
+var _video_wait_deadline: float = 0.0
+var _wait_pids: Array[int] = []
+var _video_done_by_pid: Dictionary = {} # int -> bool
 
 func _enter_tree() -> void:
 	if not is_in_group("bat_swing_gate"):
@@ -41,7 +42,6 @@ func _ready() -> void:
 	if play_video_player != null:
 		play_video_player.visible = false
 
-	# server-only authority
 	if multiplayer.has_multiplayer_peer() and not multiplayer.is_server():
 		set_deferred("monitoring", false)
 		set_deferred("monitorable", false)
@@ -49,34 +49,38 @@ func _ready() -> void:
 		set_deferred("monitoring", true)
 		set_deferred("monitorable", true)
 
-	# print AFTER deferred flags apply
-	if debug_enabled:
-		call_deferred("_print_ready_dump")
-
 func _physics_process(delta: float) -> void:
+	if multiplayer.has_multiplayer_peer() and not multiplayer.is_server():
+		return
+
 	if _level_change_queued:
 		_level_change_timer -= delta
 		if _level_change_timer <= 0.0:
 			_level_change_queued = false
-			if debug_enabled:
-				print("GATE | level change timer hit 0 -> request level", level_3_index)
 			_call_level_change_level3()
+		return
+
+	if _video_waiting:
+		_video_wait_deadline -= delta
+		if _all_wait_pids_done():
+			_video_waiting = false
+			_call_level_change_level3()
+			return
+		if _video_wait_deadline <= 0.0:
+			_video_waiting = false
+			_call_level_change_level3()
+			return
 		return
 
 	if _done:
 		return
 
-	# server-only
-	if multiplayer.has_multiplayer_peer() and not multiplayer.is_server():
-		return
-
-	# coordinator-only
 	if not _is_coordinator_gate():
 		if debug_enabled:
 			_dbg_t -= delta
 			if _dbg_t <= 0.0:
 				_dbg_t = maxf(0.05, debug_print_every_sec)
-				print("GATE | not coordinator (skipping) | me:", name, " path:", String(get_path()), " coordinator:", _coordinator_path())
+				print("GATE | not coordinator (skipping) | me:", name, " coordinator:", _coordinator_path())
 		return
 
 	var do_dbg := false
@@ -90,14 +94,7 @@ func _physics_process(delta: float) -> void:
 	_try_complete_gate_server(do_dbg)
 
 func _try_complete_gate_server(do_dbg: bool) -> void:
-	if do_dbg:
-		print("==================================================")
-		print("GATE CHECK #", _dbg_frame, " name:", name, " path:", String(get_path()), " server:", multiplayer.is_server(), " uid:", multiplayer.get_unique_id())
-		print("GATE STATE | done:", _done, " queued:", _level_change_queued, " monitoring:", monitoring, " monitorable:", monitorable)
-		print("GATE CONFIG | require_puzzle2_done:", require_puzzle2_done, " group:", String(puzzle_state_group), " need_players:", required_player_count)
-
-	var p2 := _is_puzzle2_done_verbose(do_dbg)
-	if require_puzzle2_done and not p2:
+	if require_puzzle2_done and not _is_puzzle2_done():
 		if do_dbg:
 			print("GATE BLOCKED | puzzle2_done=false")
 		return
@@ -108,138 +105,100 @@ func _try_complete_gate_server(do_dbg: bool) -> void:
 	var ok_pids: Array[int] = []
 	var players: Array = get_tree().get_nodes_in_group("player")
 
-	if do_dbg:
-		print("GATE PLAYERS IN GROUP:", players.size())
-
 	for p_any in players:
 		var p: Node = p_any as Node
 		if p == null:
 			continue
-
 		var pid: int = _peer_id_from_player(p)
-		var in_any: bool = union.has(pid)
-
-		if do_dbg:
-			print(" - P | name:", p.name,
-				" pid:", pid,
-				" in_gate_union:", in_any,
-				" authority:", int(p.get_multiplayer_authority())
-			)
-
-		if pid > 0 and in_any:
+		if pid <= 0:
+			continue
+		if union.has(pid):
 			ok_count += 1
 			ok_pids.append(pid)
 
 	if do_dbg:
 		print("GATE RESULT | ok_count:", ok_count, "/", required_player_count, " ok_pids:", ok_pids)
 
-	if ok_count >= required_player_count:
-		_done = true
-
-		# NEW: clear/drop inventories right before video/transition kicks off
-		if clear_inventories_on_trigger:
-			_server_clear_all_player_inventories(do_dbg)
-
-		if debug_enabled:
-			print("GATE TRIGGERED | playing video")
-
-		rpc("_rpc_play_gate_video")
-
-		if also_change_to_level_3:
-			if wait_for_video_finish:
-				call_deferred("_deferred_wait_then_change_level")
-			else:
-				_level_change_queued = true
-				_level_change_timer = maxf(0.0, level_change_delay_sec)
-
-func _server_clear_all_player_inventories(do_dbg: bool) -> void:
-	if multiplayer.has_multiplayer_peer() and not multiplayer.is_server():
+	if ok_count < required_player_count:
 		return
 
-	var players: Array = get_tree().get_nodes_in_group("player")
+	_done = true
+
+	if clear_inventories_on_trigger:
+		_server_drop_and_clear_for_pids(ok_pids, do_dbg)
+
+	rpc("_rpc_play_gate_video")
+
+	if not also_change_to_level_3:
+		return
+
+	if wait_for_video_finish:
+		_begin_video_wait_server(ok_pids, do_dbg)
+	else:
+		_level_change_queued = true
+		_level_change_timer = maxf(0.0, level_change_delay_sec)
+
+func _begin_video_wait_server(ok_pids: Array[int], do_dbg: bool) -> void:
+	_video_waiting = true
+	_video_wait_deadline = maxf(0.25, video_wait_timeout_sec)
+
+	_wait_pids.clear()
+	_video_done_by_pid.clear()
+
+	for pid in ok_pids:
+		_wait_pids.append(pid)
+		_video_done_by_pid[pid] = false
+
 	if do_dbg:
-		print("GATE INV | clearing inventories | players:", players.size())
+		print("GATE | begin video wait | wait_pids:", _wait_pids, " timeout:", _video_wait_deadline)
 
-	for p_any in players:
-		var p: Node = p_any as Node
-		if p == null:
-			continue
+func _all_wait_pids_done() -> bool:
+	for pid in _wait_pids:
+		if not _video_done_by_pid.has(pid):
+			return false
+		if not bool(_video_done_by_pid[pid]):
+			return false
+	return true
 
-		# Prefer explicit methods if your player script has them.
-		if try_drop_methods:
-			if p.has_method("drop_all_items"):
-				p.call("drop_all_items")
-				if do_dbg:
-					print("GATE INV |", p.name, " -> drop_all_items()")
-				continue
-			if p.has_method("drop_all_inventory"):
-				p.call("drop_all_inventory")
-				if do_dbg:
-					print("GATE INV |", p.name, " -> drop_all_inventory()")
-				continue
-			if p.has_method("clear_inventory"):
-				p.call("clear_inventory")
-				if do_dbg:
-					print("GATE INV |", p.name, " -> clear_inventory()")
-				continue
-
-		# Generic fallback: clear Array property named "inventory".
-		var inv_any: Variant = p.get(inventory_property_name)
-		if inv_any is Array:
-			var inv: Array = inv_any as Array
-
-			# If there is a per-item drop function, use it.
-			if try_drop_methods and p.has_method("drop_item"):
-				for it in inv:
-					p.call("drop_item", it)
-				if do_dbg:
-					print("GATE INV |", p.name, " -> drop_item(xN) then clear")
-				inv.clear()
-				p.set(inventory_property_name, inv)
-				continue
-
-			# Otherwise just hard-clear.
-			inv.clear()
-			p.set(inventory_property_name, inv)
-			if do_dbg:
-				print("GATE INV |", p.name, " -> inventory cleared (property)")
-
-		elif do_dbg:
-			print("GATE INV |", p.name, " -> no Array inventory property:", String(inventory_property_name))
-
-func _deferred_wait_then_change_level() -> void:
+@rpc("any_peer", "reliable")
+func _rpc_client_video_done(pid: int) -> void:
 	if multiplayer.has_multiplayer_peer() and not multiplayer.is_server():
 		return
+	if pid <= 0:
+		return
+	if _video_done_by_pid.has(pid):
+		_video_done_by_pid[pid] = true
+		if debug_enabled:
+			print("GATE | video done ack | pid:", pid)
 
-	var wait_sec: float = _estimate_video_seconds()
-	if debug_enabled:
-		print("GATE | wait_for_video_finish=true | estimated wait:", wait_sec)
+@rpc("any_peer", "call_local", "reliable")
+func _rpc_play_gate_video() -> void:
+	_play_video_local_and_ack()
+
+func _play_video_local_and_ack() -> void:
+	var wait_sec := _estimate_video_seconds_client()
 
 	if play_video_player != null and is_instance_valid(play_video_player):
-		# Prefer finished signal if we can.
-		if play_video_player.has_signal("finished"):
-			var got_finish := false
-			var cb := func():
-				got_finish = true
-			if not play_video_player.finished.is_connected(cb):
-				play_video_player.finished.connect(cb, CONNECT_ONE_SHOT)
+		play_video_player.visible = true
+		if start_video_on_show:
+			play_video_player.stop()
+			play_video_player.play()
 
-			var t := get_tree().create_timer(maxf(0.05, wait_sec))
-			await t.timeout
-		else:
-			var t2 := get_tree().create_timer(maxf(0.05, wait_sec))
-			await t2.timeout
+		var t := get_tree().create_timer(maxf(0.05, wait_sec))
+		await t.timeout
 	else:
-		var t3 := get_tree().create_timer(maxf(0.05, wait_sec))
-		await t3.timeout
+		var t2 := get_tree().create_timer(maxf(0.05, wait_sec))
+		await t2.timeout
 
-	if debug_enabled:
-		print("GATE | video wait done -> request level", level_3_index)
+	var pid := multiplayer.get_unique_id() if multiplayer.has_multiplayer_peer() else 1
+	if multiplayer.has_multiplayer_peer():
+		var sid := _server_peer_id()
+		if sid > 0:
+			rpc_id(sid, "_rpc_client_video_done", int(pid))
 
-	_call_level_change_level3()
-
-func _estimate_video_seconds() -> float:
-	var fallback := maxf(0.0, level_change_delay_sec)
+func _estimate_video_seconds_client() -> float:
+	# If the stream length is unknown, use the server timeout (not the 3s fallback).
+	var fallback := maxf(0.0, video_wait_timeout_sec)
 
 	if play_video_player == null or not is_instance_valid(play_video_player):
 		return fallback
@@ -251,10 +210,55 @@ func _estimate_video_seconds() -> float:
 	var len_sec: float = 0.0
 	if s.has_method("get_length"):
 		len_sec = float(s.call("get_length"))
+
 	if len_sec <= 0.0:
 		return fallback
 
 	return len_sec + 0.15
+
+func _server_drop_and_clear_for_pids(pids: Array[int], do_dbg: bool) -> void:
+	if multiplayer.has_multiplayer_peer() and not multiplayer.is_server():
+		return
+
+	var im := _get_item_manager()
+	var players := get_tree().get_nodes_in_group("player")
+
+	for p_any in players:
+		var p := p_any as Node
+		if p == null:
+			continue
+
+		var pid := _peer_id_from_player(p)
+		if pid <= 0 or not pids.has(pid):
+			continue
+
+		# Drop anything physically held (CarryObjectMarker child)
+		if im != null and p is Node3D:
+			var marker := (p as Node3D).get_node_or_null("Head/CarryObjectMarker") as Node
+			if marker != null and marker.get_child_count() > 0:
+				var held := marker.get_child(0) as Node
+				if held != null and held.has_meta("item_key"):
+					var key_str := String(held.get_meta("item_key"))
+					if key_str != "" and im.has_method("server_force_drop_for_peer"):
+						im.call("server_force_drop_for_peer", NodePath(key_str), pid)
+						if do_dbg:
+							print("GATE INV | force dropped held item for pid:", pid, " key:", key_str)
+
+		# Safety: clear inventory array too (UI / any leftover bookkeeping)
+		var inv_any: Variant = p.get("inventory")
+		if inv_any is Array:
+			var inv: Array = inv_any as Array
+			inv.clear()
+			p.set("inventory", inv)
+
+func _get_item_manager() -> Node:
+	var scene := get_tree().current_scene
+	if scene == null:
+		return null
+	var direct := scene.get_node_or_null(String(item_manager_name))
+	if direct != null:
+		return direct
+	return scene.find_child(String(item_manager_name), true, false)
 
 func _is_puzzle2_done() -> bool:
 	var nodes: Array = get_tree().get_nodes_in_group(String(puzzle_state_group))
@@ -266,103 +270,29 @@ func _is_puzzle2_done() -> bool:
 	var v: Variant = st.get("puzzle2_done")
 	return (v is bool) and bool(v)
 
-func _is_puzzle2_done_verbose(do_dbg: bool) -> bool:
-	var nodes: Array = get_tree().get_nodes_in_group(String(puzzle_state_group))
-
-	if do_dbg:
-		print("PUZZLE STATE NODES | group:", String(puzzle_state_group), " count:", nodes.size())
-
-	if nodes.is_empty():
-		if do_dbg:
-			print("PUZZLE STATE | NONE FOUND -> puzzle2_done=false")
-		return false
-
-	if do_dbg:
-		for n_any in nodes:
-			var n: Node = n_any as Node
-			if n == null:
-				continue
-			var v: Variant = n.get("puzzle2_done")
-			print(" - STATE NODE | name:", n.name, " path:", String(n.get_path()), " puzzle2_done raw:", v, " type:", typeof(v))
-
-	var st: Node = nodes[0] as Node
-	if st == null:
-		return false
-
-	var v2: Variant = st.get("puzzle2_done")
-	var ok: bool = (v2 is bool) and bool(v2)
-
-	if do_dbg:
-		print("PUZZLE STATE | using first node:", st.name, " puzzle2_done:", ok)
-
-	return ok
-
 func _collect_overlapping_union(do_dbg: bool) -> Dictionary:
 	var union: Dictionary = {}
 	var gates: Array = get_tree().get_nodes_in_group("bat_swing_gate")
 
-	if do_dbg:
-		print("GATE GROUP COUNT:", gates.size())
-		print("GATE OVERLAPS (per gate):")
-
 	for g_any in gates:
-		var g: Area3D = g_any as Area3D
-		if g == null:
+		var g := g_any as Area3D
+		if g == null or not g.monitoring:
 			continue
 
-		if do_dbg:
-			print(" - gate:", g.name,
-				" path:", String(g.get_path()),
-				" monitoring:", g.monitoring,
-				" monitorable:", g.monitorable
-			)
-
-		if not g.monitoring:
-			continue
-
-		var bodies: Array = g.get_overlapping_bodies()
-
-		if do_dbg:
-			print("   bodies:", bodies.size())
-
-		for b_any in bodies:
-			var b2: Node = b_any as Node
-			if b2 == null:
+		for b_any in g.get_overlapping_bodies():
+			var b := b_any as Node
+			if b == null:
 				continue
-
-			var is_player: bool = b2.is_in_group("player")
-			var pid2: int = _peer_id_from_player(b2)
-
-			if do_dbg:
-				print("   - body:", b2.name,
-					" is_player:", is_player,
-					" pid:", pid2,
-					" class:", b2.get_class()
-				)
-
-			if not is_player:
+			if not b.is_in_group("player"):
 				continue
-			if pid2 > 0:
-				union[pid2] = true
+			var pid := _peer_id_from_player(b)
+			if pid > 0:
+				union[pid] = true
 
 	if do_dbg:
 		print("GATE UNION PIDS:", union.keys())
 
 	return union
-
-@rpc("any_peer", "call_local", "reliable")
-func _rpc_play_gate_video() -> void:
-	_play_video_local()
-
-func _play_video_local() -> void:
-	if play_video_player == null:
-		if debug_enabled:
-			print("GATE VIDEO | play_video_player is null")
-		return
-	play_video_player.visible = true
-	if start_video_on_show:
-		play_video_player.stop()
-		play_video_player.play()
 
 func _call_level_change_level3() -> void:
 	if multiplayer.has_multiplayer_peer() and not multiplayer.is_server():
@@ -386,7 +316,21 @@ func _peer_id_from_player(p: Node) -> int:
 		return int(nm)
 	return -1
 
-# deterministic coordinator by scene-tree path
+func _server_peer_id() -> int:
+	if not multiplayer.has_multiplayer_peer():
+		return -1
+	if multiplayer.is_server():
+		return multiplayer.get_unique_id()
+	var peers: Array = multiplayer.get_peers()
+	if peers.is_empty():
+		return -1
+	var best: int = int(peers[0])
+	for p_any in peers:
+		var p: int = int(p_any)
+		if p < best:
+			best = p
+	return best
+
 func _is_coordinator_gate() -> bool:
 	var gates: Array = get_tree().get_nodes_in_group("bat_swing_gate")
 	if gates.is_empty():
@@ -394,7 +338,6 @@ func _is_coordinator_gate() -> bool:
 
 	var best: Node = null
 	var best_path: String = ""
-
 	for g_any in gates:
 		var g: Node = g_any as Node
 		if g == null:
@@ -403,7 +346,6 @@ func _is_coordinator_gate() -> bool:
 		if best == null or p < best_path:
 			best = g
 			best_path = p
-
 	return best == self
 
 func _coordinator_path() -> String:
@@ -417,19 +359,3 @@ func _coordinator_path() -> String:
 		if best_path == "" or p < best_path:
 			best_path = p
 	return best_path
-
-func _print_ready_dump() -> void:
-	_printed_ready = true
-	print("GATE READY | name:", name, " path:", String(get_path()),
-		" server:", multiplayer.is_server(),
-		" has_peer:", multiplayer.has_multiplayer_peer(),
-		" uid:", multiplayer.get_unique_id()
-	)
-	print("GATE FLAGS | monitoring:", monitoring, " monitorable:", monitorable,
-		" layer:", collision_layer, " mask:", collision_mask
-	)
-	print("GATE GROUPS | bat_swing_gate:", get_tree().get_nodes_in_group("bat_swing_gate").size(),
-		" player:", get_tree().get_nodes_in_group("player").size(),
-		" puzzle_state:", get_tree().get_nodes_in_group(String(puzzle_state_group)).size(),
-		" coordinator:", _coordinator_path()
-	)

@@ -756,7 +756,7 @@ collision_layer = 15
 authority_only_physics = false
 
 [node name="Shelf" type="MeshInstance3D" parent="Bedrooms/bedroom2"]
-transform = Transform3D(-2.0815234e-08, 0.0010388906, 0.47619238, -1.16415315e-10, 0.5952399, -0.0008311134, -0.4761924, -1.9093079e-10, -2.0815031e-08, -1.9190041, -1.3467678, -16.26862)
+transform = Transform3D(-2.0815234e-08, 0.0010388906, 0.47619236, -1.16415315e-10, 0.5952399, -0.0008311133, -0.4761924, -1.9093079e-10, -2.081503e-08, -1.9190041, -1.3467678, -16.26862)
 visible = false
 mesh = SubResource("BoxMesh_dwtrd")
 skeleton = NodePath("../../..")
