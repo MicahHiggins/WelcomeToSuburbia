@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=3 uid="uid://d1ibgfwne281y"]
+[gd_scene load_steps=17 format=3 uid="uid://d1ibgfwne281y"]
 
 [ext_resource type="Script" uid="uid://bw77jeuwa8wio" path="res://GameLevelsETC/level_1.gd" id="1_oh3op"]
 [ext_resource type="PackedScene" uid="uid://bs2jm62cmkbrk" path="res://addons/instant-realistic-light/light_scene.tscn" id="3_jo2a5"]
@@ -6,6 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://bst3bb8d7vieb" path="res://Max's Folder (do not touch!!!)/pcgRescaled.tscn" id="7_d084q"]
 [ext_resource type="Script" uid="uid://c5qchfyao7ahn" path="res://GameLevelsETC/tether_system.gd" id="7_ki0f2"]
 [ext_resource type="PackedScene" uid="uid://dqjphju0rm3il" path="res://NPC/WatchedCrawler.tscn" id="8_d084q"]
+[ext_resource type="VideoStream" uid="uid://rveiqlnsvich" path="res://Assets/Videos/MicahAnimationFULL.ogv" id="9_gsr76"]
 [ext_resource type="Script" uid="uid://cjg7ws1b5cnm7" path="res://GameLevelsETC/telleport_manager.gd" id="15_vlwaf"]
 [ext_resource type="PackedScene" uid="uid://bf38tvkrxj6ds" path="res://GameLevelsETC/CellarLevel.tscn" id="16_17epn"]
 
@@ -81,6 +82,9 @@ script = ExtResource("1_oh3op")
 spawn_radius = 200.0
 slow_spawn_interval = 3.0
 fast_spawn_interval = 0.75
+intro_video_path = NodePath("IntroLayer/VideoStreamPlayer")
+intro_black_rect_path = NodePath("IntroLayer/ColorRect")
+fade_out_duration_sec = 2.0
 
 [node name="PCGAttempt" parent="." instance=ExtResource("7_d084q")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.1072845, 9.536743e-07, -0.011600018)
@@ -128,3 +132,18 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 55.014503, 2.4970512, 55.6064
 [node name="Crawler" parent="." instance=ExtResource("8_d084q")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 55.014503, 6.8221397, 76.606415)
 visible = false
+
+[node name="IntroLayer" type="CanvasLayer" parent="."]
+
+[node name="VideoStreamPlayer" type="VideoStreamPlayer" parent="IntroLayer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+stream = ExtResource("9_gsr76")
+
+[node name="ColorRect" type="ColorRect" parent="IntroLayer"]
+offset_right = 1160.0
+offset_bottom = 660.0
+color = Color(0, 0, 0, 1)
