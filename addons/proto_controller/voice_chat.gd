@@ -115,7 +115,7 @@ func _apply_voice_player_defaults() -> void:
 	_voice_player.max_distance = hear_radius
 	_voice_player.attenuation_model = AudioStreamPlayer3D.ATTENUATION_INVERSE_DISTANCE
 	_voice_player.unit_size = unit_size
-	_voice_player.bus = &"Master"
+	_voice_player.bus = &"wind"
 	_voice_player.volume_db = base_volume_db
 	_voice_player.stream_paused = false
 
