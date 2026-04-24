@@ -1,7 +1,6 @@
 extends Node3D
 @onready var jumpscare: AnimationPlayer = $"../jumpscare"
-@onready var audio_stream_player_3d: AudioStreamPlayer3D = $"../jumpscare/AudioStreamPlayer3D"
-
+@onready var audio_stream_player_3d: AudioStreamPlayer = $"../jumpscare/AudioStreamPlayer"
 
 
 

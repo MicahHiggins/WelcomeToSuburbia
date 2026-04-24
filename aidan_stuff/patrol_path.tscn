@@ -21,7 +21,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.322, 0.487, 9.762)
 transform = Transform3D(-0.9944432, 0, 0.1052749, 0, 1, 0, -0.1052749, 0, -0.9944432, -9.685906, 0.48744488, 9.725661)
 
 [node name="NPC_bob" parent="." node_paths=PackedStringArray("patrol_path") instance=ExtResource("2_smt5i")]
-transform = Transform3D(0.25, 0, 0, 0, 0.25, 0, 0, 0, 0.25, 8.3438225, 0.80088663, 9.3888)
+transform = Transform3D(0.25, 0, 0, 0, 0.25, 0, 0, 0, 0.25, 7.8859577, 0.80088663, 9.3888)
 patrol_path = NodePath("../patrol_path")
 
 [editable path="NPC_bob"]
