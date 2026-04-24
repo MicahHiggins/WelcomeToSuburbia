@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3 uid="uid://cd7jramq1sifi"]
+
+[ext_resource type="PackedScene" uid="uid://7unje6m6klvl" path="res://Assets/RandomObjects/bush/Scrub_Bush_no_leaves.glb" id="1_2s5co"]
+
+[node name="Scrub_Bush_no_leaves" instance=ExtResource("1_2s5co")]
+
+[node name="Cube_518" parent="." index="0"]
+transform = Transform3D(0.08008957, -0.00059950654, 0.0039933664, 0.0016774872, 0.039655104, -0.011314839, -0.003513239, 0.0052677034, 0.08563223, 0, 0, 0)

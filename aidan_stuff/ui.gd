@@ -3,7 +3,6 @@ extends CanvasLayer
 class_name uiStuff
 
 
-
 @onready var item1: Label = $Item1Label
 @onready var item2: Label = $Item2Lable
 

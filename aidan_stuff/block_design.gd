@@ -5,6 +5,8 @@ extends Node3D
 @onready var sidewalk: Node3D = $Sidewalk
 @onready var fences: Node3D = $Fences
 @onready var hedges: Node3D = $Hedges
+@onready var trees: Node3D = $ScrubTree
+@onready var trees_no_leaves: Node3D = $ScrubTree_noLeaves
 
 
 const PATROL_BUNDLE: PackedScene = preload("res://aidan_stuff/patrol_path.tscn")
@@ -21,6 +23,7 @@ var patrol_instance_campbell: Node3D = null
 var patrol_instance_sus: Node3D = null
 var patrol_instance_issacc: Node3D = null
 var patrol_instance_rh: Node3D = null
+var ITER_check = 0
 
 var entered := false
 
@@ -29,18 +32,28 @@ func _ready() -> void:
 	#AudioManager.gameStart.emit()
 	
 	GlobalVariables.iterations = 0
+	ITER_check = GlobalVariables.iterations
 	GlobalVariables.dialogueSignal.emit()
 	houses.visible = false
 	roads.visible = false
 	sidewalk.visible = false
-	hedges.visible = false
 	fences.visible = false
+	trees_no_leaves.visible = false
 
 	# late joiners: if someone joins after we spawned, server tells them the current state
 	if multiplayer.has_multiplayer_peer() and multiplayer.is_server():
 		if not multiplayer.peer_connected.is_connected(_on_peer_connected):
 			multiplayer.peer_connected.connect(_on_peer_connected)
 
+func _process(delta: float) -> void:
+	if ITER_check == GlobalVariables.iterations:
+		return
+	else:
+		ITER_check = GlobalVariables.iterations
+		if GlobalVariables.iterations > 4:
+			trees.visible = false
+			trees_no_leaves.visible = true
+		
 func _on_peer_connected(peer_id: int) -> void:
 	# ADDED: defer one frame so the joining peer has finished instancing the level tree
 	call_deferred("_deferred_send_state_to_peer", peer_id)
@@ -98,7 +111,6 @@ func _rpc_set_active(active: bool, block_xform: Transform3D) -> void:
 	houses.visible = active
 	roads.visible = active
 	sidewalk.visible = active
-	hedges.visible = active
 	fences.visible = active
 	print("SET")
 

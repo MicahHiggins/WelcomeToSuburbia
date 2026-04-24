@@ -1,0 +1,16 @@
+[gd_scene load_steps=3 format=3 uid="uid://b0imxnolqdwgo"]
+
+[ext_resource type="PackedScene" uid="uid://belu38eeorbyv" path="res://Assets/RandomObjects/scrub_tree/Scrub_Tree_with_Leaves.glb" id="1_l5nqu"]
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_i37em"]
+
+[node name="Scrub_Tree_with_Leaves" instance=ExtResource("1_l5nqu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.47472382, 0, 0)
+
+[node name="StaticBody3D" type="StaticBody3D" parent="." index="1"]
+transform = Transform3D(1, 0, 0, 0, 2.4, 0, 0, 0, 1, 72.3976, -1.3514154, 20.460484)
+collision_mask = 8
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D" index="0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5178006, 0)
+shape = SubResource("CylinderShape3D_i37em")

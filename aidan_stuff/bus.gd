@@ -4,7 +4,7 @@ extends Node3D
 @onready var trigger_area_2: Area3D = $Area3D2
 @onready var animation_player: AnimationPlayer = $AnimationPlayer
 @onready var cooldown_timer: Timer = $BusCooldownTimer
-@onready var bus_mesh: Node3D = $busssss
+@onready var bus_mesh: Node3D = $busssss2
 
 var can_trigger: bool = true
 
@@ -25,7 +25,7 @@ func _ready() -> void:
 		print("Bus: busssss not found")
 		return
 
-	$busssss.visible = true
+	bus_mesh.visible = false
 
 	trigger_area_1.body_entered.connect(_on_trigger_area_1_body_entered)
 	trigger_area_2.body_entered.connect(_on_trigger_area_2_body_entered)
@@ -38,11 +38,11 @@ func _on_trigger_area_1_body_entered(body: Node) -> void:
 
 	if multiplayer.has_multiplayer_peer():
 		if multiplayer.is_server():
-			_server_try_trigger_bus("Bus_move")
+			_server_try_trigger_bus("BUS_MOVE")
 		else:
-			rpc_id(1, "_rpc_request_trigger_bus", "Bus_move")
+			rpc_id(1, "_rpc_request_trigger_bus", "BUS_MOVE")
 	else:
-		_server_try_trigger_bus("Bus_move")
+		_server_try_trigger_bus("BUS_MOVE")
 
 func _on_trigger_area_2_body_entered(body: Node) -> void:
 	if not _is_valid_trigger_body(body):
@@ -50,11 +50,11 @@ func _on_trigger_area_2_body_entered(body: Node) -> void:
 
 	if multiplayer.has_multiplayer_peer():
 		if multiplayer.is_server():
-			_server_try_trigger_bus("Bus_move2")
+			_server_try_trigger_bus("BUS_MOVE2")
 		else:
-			rpc_id(1, "_rpc_request_trigger_bus", "Bus_move2")
+			rpc_id(1, "_rpc_request_trigger_bus", "BUS_MOVE2")
 	else:
-		_server_try_trigger_bus("Bus_move2")
+		_server_try_trigger_bus("BUS_MOVE2")
 
 func _is_valid_trigger_body(body: Node) -> bool:
 	if body == null:
@@ -82,7 +82,7 @@ func _server_try_trigger_bus(animation_name: String) -> void:
 	var roll := randf()
 	print("Bus roll for ", animation_name, ": ", roll)
 
-	if roll < 0.5:
+	if roll < 1.0:
 		if multiplayer.has_multiplayer_peer():
 			rpc("_rpc_play_bus_animation", animation_name)
 		else:
@@ -106,15 +106,25 @@ func _rpc_start_bus_cooldown() -> void:
 
 @rpc("call_local", "reliable")
 func _rpc_play_bus_animation(animation_name: String) -> void:
+	var player := get_tree().get_first_node_in_group("player")
+
 	bus_mesh.visible = true
+	bus_mesh.show()
+
+	for child in bus_mesh.get_children():
+		if child is Node3D:
+			child.show()
+
+	if player:
+		bus_mesh.global_position = player.global_position + (-player.global_transform.basis.z * 8.0)
+		bus_mesh.global_position.y = player.global_position.y + 1.0
+		print("Moved bus in front of player: ", bus_mesh.global_position)
 
 	if animation_player.has_animation(animation_name):
 		animation_player.play(animation_name)
 		print("Playing animation: ", animation_name)
 	else:
 		print("No animation named: ", animation_name)
-		print("Available animations: ", animation_player.get_animation_list())
-
 func _on_cooldown_timeout() -> void:
 	can_trigger = true
 	print("Bus cooldown ended")

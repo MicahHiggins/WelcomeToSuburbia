@@ -100,9 +100,9 @@ func _ready() -> void:
 
 	_start_all_ik()
 
-	if debug_print:
-		print("CRAWLER DBG | ready miss_targets:%s miss_rays:%s visual:%s probeDown:%s probeFwd:%s"
-			% [miss_targets, miss_rays, _visual_root != null, _probe_down != null, _probe_forward != null])
+	#if debug_print:
+		##print("CRAWLER DBG | ready miss_targets:%s miss_rays:%s visual:%s probeDown:%s probeFwd:%s"
+			#% [miss_targets, miss_rays, _visual_root != null, _probe_down != null, _probe_forward != null])
 
 func _physics_process(delta: float) -> void:
 	_update_surface(delta)
@@ -324,10 +324,10 @@ func _debug_tick() -> void:
 			if bool(_stepping[ln]) or d > 0.02:
 				moving += 1
 
-	print("CRAWLER DBG | down:%s fwd:%s vel:%s miss_targets:%s miss_rays:%s skel:%s"
-		% [down_ok, fwd_ok, str(velocity), miss_targets, miss_rays, _find_skeleton() != null])
-	print("CRAWLER DBG | targets_moving:%s/8 step_dist:%s step_dur:%s"
-		% [moving, step_distance, step_duration])
+	#print("CRAWLER DBG | down:%s fwd:%s vel:%s miss_targets:%s miss_rays:%s skel:%s"
+	#	% [down_ok, fwd_ok, str(velocity), miss_targets, miss_rays, _find_skeleton() != null])
+	#print("CRAWLER DBG | targets_moving:%s/8 step_dist:%s step_dur:%s"
+	#	% [moving, step_distance, step_duration])
 
 	for ln in LEG_NAMES:
 		var cur := _foot_pos[ln] as Vector3
@@ -337,5 +337,5 @@ func _debug_tick() -> void:
 		var hit := bool(_leg_last_hit[ln])
 		var hp := _leg_last_hit_p[ln] as Vector3
 
-		print("  leg:%s stepping:%s dHome:%.3f rayHit:%s tgt:%s rayP:%s"
-			% [String(ln), bool(_stepping[ln]), d_home, hit, str(cur), str(hp)])
+		#print("  leg:%s stepping:%s dHome:%.3f rayHit:%s tgt:%s rayP:%s"
+		#	% [String(ln), bool(_stepping[ln]), d_home, hit, str(cur), str(hp)])
