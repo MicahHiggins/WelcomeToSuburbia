@@ -117,6 +117,7 @@ grow_vertical = 0
 size_flags_horizontal = 4
 
 [node name="currIter" type="Label" parent="."]
+visible = false
 anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5
@@ -128,6 +129,7 @@ text = "Curr Iteration: "
 script = ExtResource("6_d3d0q")
 
 [node name="curr_iss" type="Label" parent="."]
+visible = false
 anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5
@@ -140,6 +142,7 @@ text = "Curr Iteration: "
 script = ExtResource("8_bfmrh")
 
 [node name="curr_camp" type="Label" parent="."]
+visible = false
 anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5
