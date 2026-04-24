@@ -474,7 +474,6 @@ libraries = {
 }
 
 [node name="pause" type="CanvasLayer" parent="Menu"]
-visible = false
 
 [node name="Background" type="ColorRect" parent="Menu/pause"]
 offset_right = 1162.0
@@ -547,16 +546,10 @@ F: Interact with NPCs
 Hold V: Proximity Chat"
 
 [node name="LevelSelect" type="VBoxContainer" parent="Menu/pause"]
-offset_left = 794.0
-offset_top = 31.0
-offset_right = 1075.0
-offset_bottom = 153.0
-
-[node name="lvl1Button" type="Button" parent="Menu/pause/LevelSelect"]
-layout_mode = 2
-theme_override_fonts/font = ExtResource("10_fan4m")
-theme_override_font_sizes/font_size = 24
-text = "Level 1"
+offset_left = 857.0
+offset_top = 458.0
+offset_right = 1138.0
+offset_bottom = 580.0
 
 [node name="lvl2Button" type="Button" parent="Menu/pause/LevelSelect"]
 layout_mode = 2
@@ -570,7 +563,17 @@ theme_override_fonts/font = ExtResource("10_fan4m")
 theme_override_font_sizes/font_size = 24
 text = "Level 3"
 
+[node name="lvl1Button" type="Button" parent="Menu/pause/LevelSelect"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("10_fan4m")
+theme_override_font_sizes/font_size = 24
+text = "Level 1"
+
 [node name="IterationChanngeButton" parent="Menu/pause" instance=ExtResource("13_nqjqn")]
+offset_left = 416.0
+offset_top = 341.0
+offset_right = 416.0
+offset_bottom = 341.0
 
 [node name="postcard" type="TextureRect" parent="Menu/pause"]
 offset_left = 434.00003
