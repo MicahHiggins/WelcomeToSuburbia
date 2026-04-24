@@ -144,7 +144,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.6066794, 0.30353436)
 attenuation_model = 2
 unit_size = 1.0
 max_distance = 80.0
-bus = &"voiceChat"
 
 [node name="CarryObjectMarker" type="Marker3D" parent="Head"]
 transform = Transform3D(1, 0, 0, 0, 0.98183954, 0.18971238, 0, -0.18971238, 0.98183954, 0, -0.29213274, -0.9141203)
