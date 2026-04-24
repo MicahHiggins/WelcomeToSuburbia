@@ -2947,6 +2947,7 @@ transform = Transform3D(0.25, 0, 0, 0, 0.25, 0, 0, 0, 0.25, -17.475212, 0, 5.620
 transform = Transform3D(0.25, 0, 0, 0, 0.25, 0, 0, 0, 0.25, -21.326084, 0, 6.3929996)
 
 [node name="ScrubTree" type="Node3D" parent="."]
+visible = false
 
 [node name="Scrub_Tree_with_Leaves" parent="ScrubTree" instance=ExtResource("38_nkfvy")]
 transform = Transform3D(0.25, 0, 0, 0, 0.25, 0, 0, 0, 0.25, -7.0667806, 0, 0)
