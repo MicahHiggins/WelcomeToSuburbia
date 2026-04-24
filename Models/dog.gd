@@ -2,9 +2,10 @@ extends Node3D
 @onready var quest_marker_: Node3D = $"../QuestMarkerBlue"
 
 @onready var quest_anim: AnimationPlayer = $"../QuestMarker!/AnimationPlayer"
+@onready var dog_2: Node3D = $"."
 
 @onready var animation_player: AnimationPlayer = $AnimationPlayer
-@onready var dog: Node3D = $"."
+
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -18,22 +19,22 @@ func _ready() -> void:
 		0:
 			if GlobalVariables.iterations >= 2:
 				quest_marker_.visible = true
-				dog.visible = false
+				dog_2.visible = false
 		1:
 			quest_marker_.visible = false
-			dog.visible = false
+			dog_2.visible = false
 		2:
 			quest_marker_.visible = true
-			dog.visible = false
+			dog_2.visible = false
 		3:
-			quest_marker_.visible = true
-			dog.visible = false
+			quest_marker_.visible = false
+			dog_2.visible = false
 		4:
 			quest_marker_.visible = false
-			dog.visible = false
+			dog_2.visible = false
 		_: 
 			quest_marker_.visible = false
-			dog.visible = false
+			dog_2.visible = false
 	#if questMarker.campbells == true:
 		#visible = false
 		#quest_marker_.visible = true
@@ -56,7 +57,7 @@ func iterationChange(value: int):
 		#quest_anim.play("Move_blue")
 		#questHub.campbellTrigger()
 		print("DOES THIS WORK?: Dog")
-		dog.visible = false
+		dog_2.visible = false
 		quest_marker_.visible = true
 		#questMarker.campbells = true
 		
@@ -68,19 +69,19 @@ func campbellProgression(value: int):
 		match(questHub.campbellProg):
 			0:
 				quest_marker_.visible = true
-				dog.visible = false
+				dog_2.visible_ = true
 			
 					
 			1:
 				quest_marker_.visible = false
-				dog.visible = false
+				dog_2.visible = false
 			2:
 				quest_marker_.visible = false
-				dog.visible = false
+				#dog_2.visible = false
 			3:
-				quest_marker_.visible = true
-				dog.visible = false
+				quest_marker_.visible = false
+				
 			4:
 				quest_marker_.visible = false
-				dog.visible = false
+				dog_2.visible = false
 	

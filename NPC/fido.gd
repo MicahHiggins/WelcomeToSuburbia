@@ -7,6 +7,9 @@ class_name fido_dog
 @onready var area_3d: Area3D = $"../Area3D"
 @onready var fido_collision: CollisionShape3D = $"../Area3D/FidoCollision"
 @onready var quest_marker_: Node3D = $QuestMarkerBlue
+@onready var mesh_instance_3d: MeshInstance3D = $MeshInstance3D
+@onready var dog: Node3D = $Dog
+
 
 static var fido_toggle := false
 
@@ -25,6 +28,7 @@ func _ready() -> void:
 	match(questHub.campbellProg):
 		0: 
 			quest_marker_.visible = false
+			#fido.visible = true
 		1:
 			quest_marker_.visible = true
 		2:
@@ -50,6 +54,7 @@ func campbellProgression(value: int):
 func iterationChange(value: int):
 	print("FIDO DETECTED!")
 	
+
 	#If on iteration 3, turn fido on
 	if value == 2:
 	
