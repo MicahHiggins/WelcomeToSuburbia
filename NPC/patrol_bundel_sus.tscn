@@ -55,11 +55,10 @@ libraries = {
 &"": SubResource("AnimationLibrary_ds24v")
 }
 
-[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="jumpscare"]
+[node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="jumpscare"]
 stream = ExtResource("3_x1yi4")
 volume_db = 3.945
-pitch_scale = 0.47
-bus = &"SFX"
+pitch_scale = 0.7
 
 [node name="hoa_quest" type="Node3D" parent="."]
 script = ExtResource("3_2cvra")

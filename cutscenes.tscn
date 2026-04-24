@@ -15,7 +15,6 @@ offset_top = -35.0
 offset_right = 1229.0
 offset_bottom = 685.0
 stream = ExtResource("2_3mh18")
-volume_db = -2.0000002
 autoplay = true
 paused = true
 

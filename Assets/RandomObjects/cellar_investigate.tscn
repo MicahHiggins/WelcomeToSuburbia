@@ -1,9 +1,8 @@
-[gd_scene load_steps=11 format=3 uid="uid://gk88lcwyw5hu"]
+[gd_scene load_steps=10 format=3 uid="uid://gk88lcwyw5hu"]
 
 [ext_resource type="Script" uid="uid://doos5n53x8aul" path="res://cellar_investigate.gd" id="1_rx571"]
 [ext_resource type="PackedScene" uid="uid://diyfna0mvebm4" path="res://Assets/RandomObjects/quest_marker!.tscn" id="2_8eug6"]
 [ext_resource type="PackedScene" uid="uid://wac3jaa6tbq3" path="res://Assets/RandomObjects/humans/hooman.tscn" id="3_8eug6"]
-[ext_resource type="AudioStream" uid="uid://xd517vpa5epx" path="res://Audio/SFX/scream2.wav" id="4_u0bkj"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_u0bkj"]
 
@@ -79,11 +78,5 @@ script = null
 libraries = {
 &"": SubResource("AnimationLibrary_aomo8")
 }
-
-[node name="jumpscare1" type="AudioStreamPlayer" parent="."]
-stream = ExtResource("4_u0bkj")
-volume_db = -12.62
-pitch_scale = 1.44
-bus = &"SFX"
 
 [connection signal="body_entered" from="area4Quest" to="." method="_on_area_4_quest_body_entered"]

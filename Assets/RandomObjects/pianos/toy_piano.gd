@@ -1,5 +1,7 @@
 extends Node3D
 
+
+
 @onready var piano_failure: AnimationPlayer = $pianoFailure
 @onready var track_1: AudioStreamPlayer = $"../../../Sound/Track1"
 @onready var drawer_1: AudioStreamPlayer3D = $"../../../Sound/Drawer1"
@@ -25,7 +27,12 @@ var arrPlay = []
 var globalPuzzleChecker := 0
 var puzzleFail := false
 signal puzzleOneComplete
-
+# Called when the node enters the scene tree for the first time.
+#func _on_mousefree_input_event(camera: Node, event: InputEvent, event_position: Vector3, normal: Vector3, shape_idx: int) -> void:
+	## Check for Left Mouse Button Click
+	#if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+		#print("The object was clicked!")
+		# Call whatever logic you want here
 var _result_locked := false
 
 func _server_peer_id() -> int:
@@ -95,72 +102,25 @@ func _apply_puzzle_result_local(fail: bool) -> void:
 		animation_player.stop()
 		piano_failure.play("pianoSuccess")
 		puzzleFail = false
-
-		# IMPORTANT: let players try again (unlock + reset)
-		# do it after a short moment so the fail anim starts
-		call_deferred("_deferred_reset_after_fail")
+		
 	else:
 		puzzleOneComplete.emit()
 		piano_failure.play("green")
-
-		# AUDIO CUE: everyone hears these (NOT the notes)
-		if multiplayer.has_multiplayer_peer():
-			rpc("_rpc_play_success_audio_cues")
-		else:
-			_play_success_audio_cues_local()
-
+		
+		#audio cue
+		track_1.play()
+		drawer_1.play()
+		drawer_2.play()
+		move_bookcase.play()
 		%R2SpotLight3D.visible = false
 		%R1SpotLight3D.visible = false
 		%R2OmniLight3D.visible = false
 		%R1OmniLight3D.visible = false
-
-		# Notes remain LOCAL ONLY
+		
 		for i in range(7):
 			notesArr[i].play()
 			animation_player.play(animArr[i])
 			await get_tree().create_timer(.15).timeout
-
-func _deferred_reset_after_fail() -> void:
-	# tiny delay so fail feedback begins before reset
-	await get_tree().create_timer(0.25).timeout
-
-	if multiplayer.has_multiplayer_peer():
-		# host tells everyone to reset
-		if multiplayer.is_server():
-			rpc("_rpc_reset_for_retry")
-		else:
-			# clients don't decide resets
-			pass
-	else:
-		_reset_for_retry_local()
-
-@rpc("any_peer", "call_local", "reliable")
-func _rpc_reset_for_retry() -> void:
-	_reset_for_retry_local()
-
-func _reset_for_retry_local() -> void:
-	_result_locked = false
-	globalPuzzleChecker = 0
-	puzzleFail = false
-
-@rpc("any_peer", "call_local", "reliable")
-func _rpc_play_success_audio_cues() -> void:
-	_play_success_audio_cues_local()
-
-func _play_success_audio_cues_local() -> void:
-	# restart-safe (so it always plays)
-	if track_1 != null:
-		track_1.stop()
-		track_1.play()
-	if drawer_1 != null:
-		drawer_1.stop()
-		drawer_1.play()
-	if drawer_2 != null:
-		drawer_2.stop()
-		drawer_2.play()
-	if move_bookcase != null:
-		move_bookcase.stop()
-		move_bookcase.play()
 
 func _on_mousefree_body_entered(body: Node3D) -> void:
 	if body.is_in_group("player") && body.is_multiplayer_authority():
