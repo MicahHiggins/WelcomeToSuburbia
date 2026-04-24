@@ -1,0 +1,67 @@
+[gd_scene load_steps=4 format=3 uid="uid://di0cq2ulsgkek"]
+
+[ext_resource type="Script" uid="uid://b04i6ar3qh87c" path="res://aidan_stuff/curr_iter.gd" id="1_xy1a4"]
+[ext_resource type="Script" uid="uid://dwre5lc5qxuav" path="res://aidan_stuff/curr_iss.gd" id="2_imk31"]
+[ext_resource type="Script" uid="uid://d0n6panen3et2" path="res://aidan_stuff/curr_camp.gd" id="3_61ott"]
+
+[node name="DebugProgress" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="currIter" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -56.0
+offset_right = 59.0
+offset_bottom = 23.0
+grow_horizontal = 2
+text = "Curr Iteration: "
+script = ExtResource("1_xy1a4")
+
+[node name="curr_iss" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -53.0
+offset_top = 55.0
+offset_right = 62.0
+offset_bottom = 78.0
+grow_horizontal = 2
+text = "Curr Iteration: "
+script = ExtResource("2_imk31")
+
+[node name="curr_camp" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -57.0
+offset_top = 24.0
+offset_right = 58.0
+offset_bottom = 47.0
+grow_horizontal = 2
+text = "Curr Iteration: "
+script = ExtResource("3_61ott")
+
+[node name="Item1Label" type="Label" parent="."]
+visible = false
+layout_mode = 0
+offset_left = 908.0
+offset_top = 555.0
+offset_right = 948.0
+offset_bottom = 578.0
+
+[node name="Item2Lable" type="Label" parent="."]
+visible = false
+layout_mode = 0
+offset_left = 1034.0
+offset_top = 555.0
+offset_right = 1074.0
+offset_bottom = 578.0

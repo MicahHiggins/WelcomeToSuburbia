@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://dgi5u1idu5luo" path="res://Scripts/cutscenes.gd" id="1_3mh18"]
 [ext_resource type="VideoStream" uid="uid://c0hco4i14qcfw" path="res://Assets/Videos/KidnapwithSound (1).ogv" id="2_3mh18"]
-[ext_resource type="VideoStream" uid="uid://c8jmabeang0oa" path="res://Assets/Videos/aidans_midterm_animation1.ogv" id="3_nnxko"]
+[ext_resource type="VideoStream" uid="uid://rveiqlnsvich" path="res://Assets/Videos/MicahAnimationFULL.ogv" id="3_nnxko"]
 
 [node name="Cutscenes" type="CanvasLayer" node_paths=PackedStringArray("level_2_cutscene")]
 script = ExtResource("1_3mh18")
@@ -21,6 +21,6 @@ paused = true
 
 [node name="IntroCutscene" type="VideoStreamPlayer" parent="."]
 visible = false
-offset_right = 40.0
-offset_bottom = 40.0
+offset_right = 1920.0
+offset_bottom = 1080.0
 stream = ExtResource("3_nnxko")
