@@ -126,9 +126,6 @@ script = ExtResource("15_vlwaf")
 cellar_scene = ExtResource("16_17epn")
 cellar_root_path = NodePath("")
 
-[node name="Spawn" type="Marker3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 55.014503, 2.4970512, 55.606415)
-
 [node name="Crawler" parent="." instance=ExtResource("8_d084q")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 55.014503, 6.8221397, 76.606415)
 visible = false
@@ -148,10 +145,10 @@ offset_right = 1160.0
 offset_bottom = 660.0
 color = Color(0, 0, 0, 1)
 
-[node name="Spawn2" type="Node3D" parent="."]
+[node name="Spawn" type="Node3D" parent="."]
 
-[node name="SpawnHost" type="Marker3D" parent="Spawn2"]
+[node name="SpawnHost" type="Marker3D" parent="Spawn"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 60.076946, -1.0910182, 58.385757)
 
-[node name="SpawnJoin" type="Marker3D" parent="Spawn2"]
+[node name="SpawnJoin" type="Marker3D" parent="Spawn"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 57.48046, -0.7124307, 57.944424)
