@@ -5,8 +5,8 @@
 [ext_resource type="Script" uid="uid://bkb35cbdsgdbh" path="res://addons/instant-realistic-light/light_scene.gd" id="4_d084q"]
 [ext_resource type="PackedScene" uid="uid://bst3bb8d7vieb" path="res://Max's Folder (do not touch!!!)/pcgRescaled.tscn" id="7_d084q"]
 [ext_resource type="Script" uid="uid://c5qchfyao7ahn" path="res://GameLevelsETC/tether_system.gd" id="7_ki0f2"]
-[ext_resource type="PackedScene" uid="uid://dqjphju0rm3il" path="res://NPC/WatchedCrawler.tscn" id="8_d084q"]
 [ext_resource type="VideoStream" uid="uid://rveiqlnsvich" path="res://Assets/Videos/MicahAnimationFULL.ogv" id="9_gsr76"]
+[ext_resource type="PackedScene" uid="uid://cmrqbt412sk4a" path="res://ladder.tscn" id="10_5owxm"]
 [ext_resource type="Script" uid="uid://cjg7ws1b5cnm7" path="res://GameLevelsETC/telleport_manager.gd" id="15_vlwaf"]
 [ext_resource type="PackedScene" uid="uid://bf38tvkrxj6ds" path="res://GameLevelsETC/CellarLevel.tscn" id="16_17epn"]
 
@@ -126,10 +126,6 @@ script = ExtResource("15_vlwaf")
 cellar_scene = ExtResource("16_17epn")
 cellar_root_path = NodePath("")
 
-[node name="Crawler" parent="." instance=ExtResource("8_d084q")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 55.014503, 6.8221397, 76.606415)
-visible = false
-
 [node name="IntroLayer" type="CanvasLayer" parent="."]
 
 [node name="VideoStreamPlayer" type="VideoStreamPlayer" parent="IntroLayer"]
@@ -152,3 +148,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 60.076946, -1.0910182, 58.385
 
 [node name="SpawnJoin" type="Marker3D" parent="Spawn"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 57.48046, -0.7124307, 57.944424)
+
+[node name="Ladder" parent="." instance=ExtResource("10_5owxm")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 55.63675, 0, 48.425625)

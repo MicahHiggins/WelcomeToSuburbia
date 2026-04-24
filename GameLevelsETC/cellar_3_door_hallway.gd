@@ -148,35 +148,28 @@ const REVEAL_NAMES: Array[String] = ["Reveal1", "Reveal2", "Reveal3"]
 func _ready() -> void:
 	_rng.randomize()
 	add_to_group("level_post_ready")
-
 	if _world_root == null:
 		return
 	if _triggers_root == null:
 		return
 	if block_scene == null:
 		return
-
 	_world_origin = global_position if use_generator_as_origin else Vector3.ZERO
-
 	door_open_height_blocks = clampi(door_open_height_blocks, 1, wall_height_blocks)
 	next_hub_start_gap_cells = maxi(6, next_hub_start_gap_cells)
 	back_hall_len = maxi(10, back_hall_len)
 	final_room_extra_len = maxi(0, final_room_extra_len)
 	wrong_door_gust_steps = maxi(2, wrong_door_gust_steps)
-
 	chase_start_behind_spawn_cells = maxi(1, chase_start_behind_spawn_cells)
 	chase_interval_sec = maxf(0.05, chase_interval_sec)
 	chase_slam_time_sec = maxf(0.05, chase_slam_time_sec)
 	chase_max_steps = maxi(0, chase_max_steps)
 	caught_grace_cells = maxi(0, caught_grace_cells)
-
 	door_sets_total = maxi(1, door_sets_total)
-
 	_resolve_symbols_root()
 	_ensure_fade_ui()
 	_bind_trigger_signals()
 	set_process(true)
-
 	if not multiplayer.has_multiplayer_peer():
 		_seed = int(Time.get_ticks_msec()) ^ randi()
 		_build_initial(_seed)
@@ -205,36 +198,28 @@ func _process(_dt: float) -> void:
 		return
 	if _watch_owner_id <= 0:
 		return
-
 	var p: Node3D = _player_for_owner(_watch_owner_id)
 	if p == null:
 		return
-
 	var wall_center: Vector3 = _cell_to_world(_pending_delete_wall_cell)
 	var fwd_world: Vector3 = Vector3(float(_pending_delete_forward.x), 0.0, float(_pending_delete_forward.y)).normalized()
 	var threshold: Vector3 = wall_center + fwd_world * (block_size_m * pass_threshold_forward_cells)
-
 	var d_now: float = (p.global_position - wall_center).dot(fwd_world)
 	var d_thr: float = (threshold - wall_center).dot(fwd_world)
-
 	if d_now >= d_thr:
 		_watch_pass_active = false
-
 		var keys_to_delete: Array[String] = []
 		for k in _pending_delete_wall_keys:
 			keys_to_delete.append(k)
 		for k2 in _pending_delete_open_keys:
 			keys_to_delete.append(k2)
-
 		var seen: Dictionary = {}
 		var uniq: Array[String] = []
 		for kk in keys_to_delete:
 			if not seen.has(kk):
 				seen[kk] = true
 				uniq.append(kk)
-
 		rpc("_rpc_delete_many", uniq)
-
 		if _pending_delete_symbol_hub_id >= 0:
 			rpc("_rpc_delete_symbols_by_hub", _pending_delete_symbol_hub_id)
 			_pending_delete_symbol_hub_id = -1
@@ -262,25 +247,20 @@ func _build_initial(seed: int) -> void:
 	if _built:
 		return
 	_built = true
-
 	_seed = seed
 	_rng.seed = seed
-
 	_chase_running = false
 	_restart_in_progress = false
 	_final_mode = false
 	_victory_done = false
-
 	_clear_world()
 	_clear_all_symbols()
-
 	_cursor = Vector2i(0, 0)
 	_forward = Vector2i(0, 1)
 	_correct_count = 0
 	_reroll_nonce = 0
 	_hub_id = 0
 	_pending_delete_symbol_hub_id = -1
-
 	_build_hub_geometry()
 	_move_triggers_to_hub()
 	_place_spawn_marker()
@@ -292,15 +272,19 @@ func _pick_progress_door_for_current_hub() -> int:
 	local_rng.seed = h
 	return local_rng.randi_range(0, 2)
 
+func _place_solid_column(cell: Vector2i) -> void:
+	_spawn_block(cell.x, 0, cell.y)
+	if build_ceiling:
+		_spawn_block(cell.x, wall_height_blocks + 1, cell.y)
+	for h in range(1, wall_height_blocks + 1):
+		_spawn_block(cell.x, h, cell.y)
+
 func _build_hub_geometry() -> void:
 	_clamp_door_offsets()
-
 	_hub_id += 1
 	_pending_delete_symbol_hub_id = -1
-
 	_revealed = [false, false, false]
 	_progress_door = _pick_progress_door_for_current_hub()
-
 	_door_panel_blocks = [[], [], []]
 	_cap_blocks = [[], [], []]
 	_door_panel_keys = [[], [], []]
@@ -317,13 +301,25 @@ func _build_hub_geometry() -> void:
 
 	var door_wall_cell: Vector2i = _cursor + _forward * entry_len_before_doors
 	_build_end_wall_with_doors(door_wall_cell, _forward)
+
 	_place_door_panels_behind_openings(door_wall_cell, _forward)
 
 	var offs: Array[int] = _door_offsets()
-	for i in range(offs.size()):
-		var open_cell: Vector2i = _door_open_cell(door_wall_cell, _forward, int(offs[i]))
-		var cap_cell: Vector2i = open_cell + _forward
-		_place_cap_wall_record(cap_cell, i)
+
+	# final hub: cap wall must be at the same depth as ladder (and 3-wide to stop side holes)
+	if _final_mode:
+		var open_cell_f: Vector2i = _door_open_cell(door_wall_cell, _forward, door_x_offset_final)
+		var cap_center: Vector2i = open_cell_f + _forward * ladder_spawn_forward_cells
+		var right: Vector2i = _right_vec(_forward)
+
+		_place_cap_wall_record(cap_center, 0)
+		_place_solid_column(cap_center + right)
+		_place_solid_column(cap_center - right)
+	else:
+		for i in range(offs.size()):
+			var open_cell: Vector2i = _door_open_cell(door_wall_cell, _forward, int(offs[i]))
+			var cap_cell: Vector2i = open_cell + _forward
+			_place_cap_wall_record(cap_cell, i)
 
 	_active_door_wall_cell = door_wall_cell
 	_active_door_wall_forward = _forward
@@ -349,7 +345,6 @@ func _bind_trigger_signals() -> void:
 			d.set_meta("door_index", i)
 			if not d.body_entered.is_connected(_on_door_entered):
 				d.body_entered.connect(_on_door_entered.bind(d))
-
 		var r: Area3D = _triggers_root.get_node_or_null(REVEAL_NAMES[i]) as Area3D
 		if r != null:
 			r.set_meta("door_index", i)
@@ -357,19 +352,10 @@ func _bind_trigger_signals() -> void:
 				r.body_entered.connect(_on_reveal_entered.bind(r))
 
 func _move_triggers_to_hub() -> void:
-	var base_y: float = _floor_top_y() + reveal_trigger_height_offset_m
-	var door_wall_cell: Vector2i = _cursor + _forward * entry_len_before_doors
-	var fwd_world: Vector3 = Vector3(float(_forward.x), 0.0, float(_forward.y)).normalized()
-
-	var offs: Array[int] = _door_offsets()
-
-	for i in range(3):
-		var active: bool = i < offs.size()
-
-		var door_area: Area3D = _triggers_root.get_node_or_null(DOOR_NAMES[i]) as Area3D
-		var reveal_area: Area3D = _triggers_root.get_node_or_null(REVEAL_NAMES[i]) as Area3D
-
-		if not active:
+	if _final_mode:
+		for i in range(3):
+			var door_area: Area3D = _triggers_root.get_node_or_null(DOOR_NAMES[i]) as Area3D
+			var reveal_area: Area3D = _triggers_root.get_node_or_null(REVEAL_NAMES[i]) as Area3D
 			if door_area != null:
 				door_area.monitoring = false
 				door_area.monitorable = false
@@ -378,25 +364,46 @@ func _move_triggers_to_hub() -> void:
 				reveal_area.monitoring = false
 				reveal_area.monitorable = false
 				reveal_area.global_position = Vector3(0.0, -10000.0, 0.0)
+		return
+
+	var base_y: float = _floor_top_y() + reveal_trigger_height_offset_m
+	var door_wall_cell: Vector2i = _cursor + _forward * entry_len_before_doors
+	var fwd_world: Vector3 = Vector3(float(_forward.x), 0.0, float(_forward.y)).normalized()
+	var offs: Array[int] = _door_offsets()
+
+	for i in range(3):
+		var active: bool = i < offs.size()
+		var door_area2: Area3D = _triggers_root.get_node_or_null(DOOR_NAMES[i]) as Area3D
+		var reveal_area2: Area3D = _triggers_root.get_node_or_null(REVEAL_NAMES[i]) as Area3D
+
+		if not active:
+			if door_area2 != null:
+				door_area2.monitoring = false
+				door_area2.monitorable = false
+				door_area2.global_position = Vector3(0.0, -10000.0, 0.0)
+			if reveal_area2 != null:
+				reveal_area2.monitoring = false
+				reveal_area2.monitorable = false
+				reveal_area2.global_position = Vector3(0.0, -10000.0, 0.0)
 			continue
 
-		var door_cell: Vector2i = door_wall_cell + _right_vec(_forward) * int(offs[i])
+		var open_cell: Vector2i = _door_open_cell(door_wall_cell, _forward, int(offs[i]))
 
-		if door_area != null:
-			door_area.monitoring = true
-			door_area.monitorable = true
-			var p: Vector3 = _cell_to_world(door_cell)
+		if door_area2 != null:
+			door_area2.monitoring = true
+			door_area2.monitorable = true
+			var p: Vector3 = _cell_to_world(open_cell)
 			p.y = base_y
-			p -= fwd_world * door_trigger_forward_offset_m
-			door_area.global_position = p
+			p -= fwd_world * (block_size_m * 1.0)
+			door_area2.global_position = p
 
-		if reveal_area != null:
-			reveal_area.monitoring = true
-			reveal_area.monitorable = true
-			var reveal_cell: Vector2i = door_cell - _forward * reveal_distance_cells
+		if reveal_area2 != null:
+			reveal_area2.monitoring = true
+			reveal_area2.monitorable = true
+			var reveal_cell: Vector2i = open_cell - _forward * reveal_distance_cells
 			var rp: Vector3 = _cell_to_world(reveal_cell)
 			rp.y = base_y
-			reveal_area.global_position = rp
+			reveal_area2.global_position = rp
 
 func _on_reveal_entered(body: Node3D, area: Area3D) -> void:
 	if body == null or not body.is_in_group("player"):
@@ -405,7 +412,6 @@ func _on_reveal_entered(body: Node3D, area: Area3D) -> void:
 		return
 	if multiplayer.has_multiplayer_peer() and not multiplayer.is_server():
 		return
-
 	var idx: int = int(area.get_meta("door_index", -1))
 	if idx < 0 or idx > 2:
 		return
@@ -420,15 +426,12 @@ func _on_door_entered(body: Node3D, door_area: Area3D) -> void:
 		return
 	if multiplayer.has_multiplayer_peer() and not multiplayer.is_server():
 		return
-
 	var idx: int = int(door_area.get_meta("door_index", -1))
 	if idx < 0 or idx > 2:
 		return
-
 	var owner_id: int = int(body.get_multiplayer_authority())
 	if owner_id <= 0:
 		return
-
 	_server_like_enter_door(idx, owner_id)
 
 func _server_like_enter_door(door_idx: int, player_owner_id: int) -> void:
@@ -436,28 +439,15 @@ func _server_like_enter_door(door_idx: int, player_owner_id: int) -> void:
 		return
 	if not _revealed[door_idx]:
 		return
-
 	if _final_mode:
-		if _victory_done:
-			return
-		if door_idx != 0:
-			return
-		_victory_done = true
-		_stop_chase_server()
-		rpc("_rpc_cache_open_blocks", 0)
-		rpc("_rpc_open_door_anim_cached")
-		rpc("_rpc_spawn_ladder_at_final")
-		_watch_pass_active = false
 		return
 
 	if door_idx == _progress_door:
 		_correct_count += 1
-
 		_pending_delete_wall_cell = _active_door_wall_cell
 		_pending_delete_forward = _active_door_wall_forward
 		_pending_delete_wall_keys = _active_door_wall_keys.duplicate()
 		_pending_delete_symbol_hub_id = _hub_id
-
 		rpc("_rpc_cache_open_blocks", door_idx)
 
 		if _correct_count >= door_sets_total:
@@ -475,9 +465,7 @@ func _server_like_enter_door(door_idx: int, player_owner_id: int) -> void:
 
 		var new_cursor: Vector2i = _active_door_wall_cell + _forward * next_hub_start_gap_cells
 		rpc("_rpc_build_next_hub_at_cursor", new_cursor, _forward, _seed, _correct_count, _reroll_nonce)
-
 		rpc("_rpc_open_door_anim_cached")
-
 		_watch_pass_active = true
 		_watch_owner_id = player_owner_id
 		return
@@ -495,18 +483,14 @@ func _stop_chase_server() -> void:
 func _deferred_wrong_gust(player_owner_id: int) -> void:
 	if multiplayer.has_multiplayer_peer() and not multiplayer.is_server():
 		return
-
 	var p: Node3D = _player_for_owner(player_owner_id)
 	if p == null:
 		return
-
 	var fwd_world: Vector3 = Vector3(float(_forward.x), 0.0, float(_forward.y)).normalized()
 	var start_pos: Vector3 = p.global_position
 	var end_pos: Vector3 = start_pos - fwd_world * (wrong_door_gust_distance_cells * block_size_m)
-
 	var steps: int = maxi(2, wrong_door_gust_steps)
 	var dt: float = wrong_door_gust_duration / float(steps)
-
 	for i in range(1, steps + 1):
 		var a: float = float(i) / float(steps)
 		var tt: float = 1.0 - pow(1.0 - a, 2.0)
@@ -547,26 +531,23 @@ func _rpc_build_final_at_cursor(new_cursor: Vector2i, new_forward: Vector2i, see
 	_final_mode = true
 	_build_hub_geometry()
 	_move_triggers_to_hub()
+	_rpc_spawn_ladder_at_final()
 
 @rpc("any_peer", "call_local", "reliable")
 func _rpc_cache_open_blocks(door_idx: int) -> void:
 	_open_panel_blocks.clear()
 	_open_cap_blocks.clear()
 	_pending_delete_open_keys.clear()
-
 	var panel_keys_any: Array = _door_panel_keys[door_idx] as Array
 	for k in panel_keys_any:
 		_pending_delete_open_keys.append(String(k))
-
 	var cap_keys_any: Array = _cap_keys[door_idx] as Array
 	for k2 in cap_keys_any:
 		_pending_delete_open_keys.append(String(k2))
-
 	for b in (_door_panel_blocks[door_idx] as Array):
 		var n := b as Node3D
 		if n != null and is_instance_valid(n):
 			_open_panel_blocks.append(n)
-
 	for b2 in (_cap_blocks[door_idx] as Array):
 		var n2 := b2 as Node3D
 		if n2 != null and is_instance_valid(n2):
@@ -580,7 +561,6 @@ func _rpc_open_door_anim_cached() -> void:
 		0.0,
 		float(right2.y) * block_size_m * door_slide_cells
 	)
-
 	var blocks: Array[Node3D] = []
 	for n in _open_panel_blocks:
 		if n != null and is_instance_valid(n):
@@ -588,7 +568,6 @@ func _rpc_open_door_anim_cached() -> void:
 	for n2 in _open_cap_blocks:
 		if n2 != null and is_instance_valid(n2):
 			blocks.append(n2)
-
 	var i: int = 0
 	for blk in blocks:
 		var end_p: Vector3 = blk.global_position + slide_vec
@@ -614,16 +593,28 @@ func _rpc_delete_many(keys: Array[String]) -> void:
 func _rpc_spawn_ladder_at_final() -> void:
 	if ladder_scene == null:
 		return
+
+	for ch_any in _world_root.get_children():
+		var ch := ch_any as Node
+		if ch != null and ch.name == "FinalLadder":
+			ch.queue_free()
+
 	var inst := ladder_scene.instantiate() as Node3D
 	if inst == null:
 		return
+	inst.name = "FinalLadder"
 
 	var door_wall_cell: Vector2i = _cursor + _forward * entry_len_before_doors
 	var open_cell: Vector2i = _door_open_cell(door_wall_cell, _forward, door_x_offset_final)
-	var ladder_cell: Vector2i = open_cell + _forward * ladder_spawn_forward_cells
 
-	var wp: Vector3 = _cell_to_world(ladder_cell)
+	var fwd_world: Vector3 = Vector3(float(_forward.x), 0.0, float(_forward.y)).normalized()
+
+	var wp: Vector3 = _cell_to_world(open_cell)
+	wp -= fwd_world * (block_size_m * 1.0)
+	wp += fwd_world * (block_size_m * float(ladder_spawn_forward_cells))
+
 	wp.y = _world_origin.y + y_offset_m + float(ladder_spawn_height_blocks) * block_size_m
+
 	inst.global_position = wp
 	_world_root.add_child(inst)
 
@@ -634,14 +625,11 @@ func _start_chase_if_needed() -> void:
 		return
 	if _chase_running:
 		return
-
 	_chase_running = true
 	_restart_in_progress = false
 	_chase_forward = Vector2i(0, 1)
-
 	var behind: int = clampi(chase_start_behind_spawn_cells, 1, maxi(1, back_hall_len - 1))
 	_chase_wall_cell = Vector2i(0, spawn_cell_z - behind)
-
 	call_deferred("_deferred_run_chase")
 
 func _deferred_run_chase() -> void:
@@ -650,43 +638,34 @@ func _deferred_run_chase() -> void:
 func _run_chase_async() -> void:
 	if multiplayer.has_multiplayer_peer() and not multiplayer.is_server():
 		return
-
 	var t0 := get_tree().create_timer(maxf(0.0, chase_start_delay_sec))
 	await t0.timeout
-
 	var steps_left: int = chase_max_steps
 	var safety_loops: int = 0
-
 	while true:
 		if not _chase_running or _restart_in_progress:
 			return
-
 		if chase_max_steps > 0:
 			steps_left -= 1
 			if steps_left < 0:
 				_chase_running = false
 				return
-
 		if _is_any_player_caught(_chase_wall_cell, _chase_forward):
 			_chase_running = false
 			await _server_restart_with_fade()
 			return
-
 		rpc("_rpc_slam_wall_face", _chase_wall_cell, _chase_forward, chase_drop_height_m, chase_slam_time_sec, chase_stagger_sec)
 		_chase_wall_cell += _chase_forward
-
 		safety_loops += 1
 		if safety_loops > 200000:
 			_chase_running = false
 			return
-
 		var tmr := get_tree().create_timer(chase_interval_sec)
 		await tmr.timeout
 
 func _is_any_player_caught(wall_cell: Vector2i, forward: Vector2i) -> bool:
 	var wall_prog: int = wall_cell.x * forward.x + wall_cell.y * forward.y
 	wall_prog -= caught_grace_cells
-
 	var players: Array = get_tree().get_nodes_in_group("player")
 	for n_any in players:
 		var p: Node3D = n_any as Node3D
@@ -711,31 +690,25 @@ func _server_restart_with_fade() -> void:
 		return
 	_restart_in_progress = true
 	_chase_running = false
-
 	if fade_enabled:
 		rpc("_rpc_fade_black", fade_in_sec, fade_hold_sec, fade_out_sec)
 		var t := get_tree().create_timer(maxf(0.0, fade_in_sec + fade_hold_sec))
 		await t.timeout
-
 	var new_seed: int = int(Time.get_ticks_msec()) ^ randi()
 	_seed = new_seed
-
 	if multiplayer.has_multiplayer_peer():
 		rpc("_rpc_build_initial", new_seed)
 	else:
 		_rpc_build_initial(new_seed)
-
 	if restart_teleport_players_to_spawn:
 		var t2 := get_tree().create_timer(maxf(0.0, restart_teleport_delay_sec))
 		await t2.timeout
 		_teleport_all_players_to_spawn_server()
-
 	_restart_in_progress = false
 
 func _teleport_all_players_to_spawn_server() -> void:
 	if multiplayer.has_multiplayer_peer() and not multiplayer.is_server():
 		return
-
 	var spawn_pos: Vector3
 	if _spawn_marker != null and is_instance_valid(_spawn_marker):
 		spawn_pos = _spawn_marker.global_position
@@ -743,7 +716,6 @@ func _teleport_all_players_to_spawn_server() -> void:
 		var c := Vector2i(0, spawn_cell_z)
 		spawn_pos = _cell_to_world(c)
 		spawn_pos.y = _floor_top_y() + spawn_height_above_floor
-
 	var players: Array = get_tree().get_nodes_in_group("player")
 	for n_any in players:
 		var p: Node3D = n_any as Node3D
@@ -762,14 +734,11 @@ func _rpc_fade_black(in_sec: float, hold_sec: float, out_sec: float) -> void:
 	_ensure_fade_ui()
 	if _fade_rect == null:
 		return
-
 	var tw: Tween = create_tween()
 	_fade_rect.visible = true
-
 	var c: Color = _fade_rect.color
 	c.a = 0.0
 	_fade_rect.color = c
-
 	tw.tween_property(_fade_rect, "color:a", 1.0, maxf(0.01, in_sec)).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 	tw.tween_interval(maxf(0.0, hold_sec))
 	tw.tween_property(_fade_rect, "color:a", 0.0, maxf(0.01, out_sec)).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
@@ -785,7 +754,6 @@ func _ensure_fade_ui() -> void:
 	_fade_layer.name = "FadeLayer"
 	_fade_layer.layer = 999
 	add_child(_fade_layer)
-
 	_fade_rect = ColorRect.new()
 	_fade_rect.name = "FadeRect"
 	_fade_rect.anchor_left = 0.0
@@ -806,7 +774,6 @@ func _rpc_slam_wall_face(wall_cell: Vector2i, forward: Vector2i, drop_h: float, 
 	var half_w: int = int(_hall_width_now() / 2)
 	var right: Vector2i = _right_vec(forward)
 	var right_world: Vector3 = Vector3(float(right.x), 0.0, float(right.y)).normalized()
-
 	var blocks: Array[Dictionary] = []
 	for w in range(-half_w + 1, half_w):
 		var c: Vector2i = wall_cell + right * w
@@ -814,36 +781,29 @@ func _rpc_slam_wall_face(wall_cell: Vector2i, forward: Vector2i, drop_h: float, 
 			var b: Node3D = _spawn_block(c.x, h, c.y)
 			if b != null:
 				blocks.append({"node": b, "w": w, "h": h})
-
 	var i: int = 0
 	for info_any in blocks:
 		var info: Dictionary = info_any
 		var blk: Node3D = info.get("node") as Node3D
 		if blk == null or not is_instance_valid(blk):
 			continue
-
 		var w_i: int = int(info.get("w", 0))
 		var h_i: int = int(info.get("h", 1))
 		var dest: Vector3 = blk.global_position
-
 		var sign_side: float = 0.0
 		if w_i > 0:
 			sign_side = 1.0
 		elif w_i < 0:
 			sign_side = -1.0
-
 		var hh: int = int(("%d:%d:%d" % [int(dest.x * 100.0), int(dest.y * 100.0), int(dest.z * 100.0)]).hash())
 		var jx: float = (float((hh >> 0) & 1023) / 1023.0) * 2.0 - 1.0
 		var jz: float = (float((hh >> 10) & 1023) / 1023.0) * 2.0 - 1.0
 		var jy: float = (float((hh >> 20) & 1023) / 1023.0) * 2.0 - 1.0
 		var jitter: Vector3 = Vector3(jx, jy, jz) * organic_jitter_m
-
 		var inward: Vector3 = (-right_world * sign_side) * (organic_inset_m if organic_slam_enabled else 0.0)
 		var up_extra: float = (organic_extra_up_m if organic_slam_enabled else 0.0) * (float(h_i) / float(maxi(1, wall_height_blocks)))
-
 		var start_pos: Vector3 = dest + inward + Vector3(0.0, drop_h + up_extra, 0.0) + jitter
 		blk.global_position = start_pos
-
 		var tw := create_tween()
 		tw.tween_interval(float(i) * stagger)
 		tw.tween_property(blk, "global_position", dest, maxf(0.01, slam_t)).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
@@ -852,20 +812,16 @@ func _rpc_slam_wall_face(wall_cell: Vector2i, forward: Vector2i, drop_h: float, 
 func _build_hall_segment(start: Vector2i, forward: Vector2i, length: int) -> void:
 	var half_w: int = int(_hall_width_now() / 2)
 	var right: Vector2i = _right_vec(forward)
-
 	for i in range(0, length + 1):
 		var base: Vector2i = start + forward * i
-
 		for w in range(-half_w, half_w + 1):
 			var c: Vector2i = base + right * w
 			_spawn_block(c.x, 0, c.y)
-
 		var left_edge: Vector2i = base + right * (-half_w)
 		var right_edge: Vector2i = base + right * (half_w)
 		for h in range(1, wall_height_blocks + 1):
 			_spawn_block(left_edge.x, h, left_edge.y)
 			_spawn_block(right_edge.x, h, right_edge.y)
-
 		if build_ceiling:
 			var ch: int = wall_height_blocks + 1
 			for w2 in range(-half_w, half_w + 1):
@@ -885,14 +841,12 @@ func _place_end_wall_full(wall_cell: Vector2i, forward: Vector2i) -> void:
 func _build_end_wall_with_doors(door_wall_cell: Vector2i, forward: Vector2i) -> void:
 	var half_w: int = int(_hall_width_now() / 2)
 	var right: Vector2i = _right_vec(forward)
-
 	for w in range(-half_w, half_w + 1):
 		var c: Vector2i = door_wall_cell + right * w
 		for h in range(1, wall_height_blocks + 1):
 			_spawn_block(c.x, h, c.y)
 		if build_ceiling:
 			_spawn_block(c.x, wall_height_blocks + 1, c.y)
-
 	var offs: Array[int] = _door_offsets()
 	for off_any in offs:
 		var off: int = int(off_any)
@@ -904,16 +858,20 @@ func _door_open_cell(door_wall_cell: Vector2i, forward: Vector2i, door_offset: i
 	return door_cell + forward
 
 func _place_door_panels_behind_openings(door_wall_cell: Vector2i, forward: Vector2i) -> void:
+	# CHANGED: final mode door should be "already open" (no blocking panels)
+	if _final_mode:
+		for i in range(3):
+			(_door_panel_blocks[i] as Array).clear()
+			(_door_panel_keys[i] as Array).clear()
+		return
+
 	var right: Vector2i = _right_vec(forward)
 	var offs: Array[int] = _door_offsets()
-
 	for i in range(offs.size()):
 		(_door_panel_blocks[i] as Array).clear()
 		(_door_panel_keys[i] as Array).clear()
-
 		var door_cell_in_wall: Vector2i = door_wall_cell + right * int(offs[i])
 		var panel_cell: Vector2i = door_cell_in_wall + forward
-
 		for h in range(1, door_open_height_blocks + 1):
 			var inst: Node3D = _spawn_block(panel_cell.x, h, panel_cell.y)
 			if inst != null:
@@ -923,11 +881,9 @@ func _place_door_panels_behind_openings(door_wall_cell: Vector2i, forward: Vecto
 func _place_cap_wall_record(cell: Vector2i, door_idx: int) -> void:
 	(_cap_blocks[door_idx] as Array).clear()
 	(_cap_keys[door_idx] as Array).clear()
-
 	_spawn_block(cell.x, 0, cell.y)
 	if build_ceiling:
 		_spawn_block(cell.x, wall_height_blocks + 1, cell.y)
-
 	for h in range(1, wall_height_blocks + 1):
 		var bh: Node3D = _spawn_block(cell.x, h, cell.y)
 		if bh != null:
@@ -949,25 +905,19 @@ func _spawn_block(x: int, y_level_blocks: int, z: int) -> Node3D:
 	var k: String = _key(x, y_level_blocks, z)
 	if _spawned.has(k):
 		return _spawned[k] as Node3D
-
 	var inst: Node3D = block_scene.instantiate() as Node3D
 	if inst == null:
 		return null
-
 	_world_root.add_child(inst)
-
 	var wp: Vector3 = _cell_to_world(Vector2i(x, z))
 	wp.y = _world_origin.y + y_offset_m + float(y_level_blocks) * block_size_m
 	inst.global_position = wp
-
 	_spawned[k] = inst
-
 	if not _phase.has(k):
 		var hh: int = int(k.hash())
 		_phase[k] = float(hh % 628) / 100.0
 		_base_pos[k] = inst.global_position
 		_base_scale[k] = inst.scale
-
 	return inst
 
 func _remove_wall_column_height(x: int, z: int, height_blocks: int) -> void:
@@ -1031,19 +981,15 @@ func _spawn_symbols_for_current_hub(door_wall_cell: Vector2i, forward: Vector2i,
 		return
 	if correct_symbol_scene == null or wrong_symbol_scene_a == null:
 		return
-
 	for ch_any in _symbols_root.get_children():
 		var ch: Node = ch_any as Node
 		if ch != null and ch.has_meta("hub_id") and int(ch.get_meta("hub_id")) == hub_id:
 			ch.queue_free()
-
 	var right: Vector2i = _right_vec(forward)
 	var fwd_world: Vector3 = Vector3(float(forward.x), 0.0, float(forward.y)).normalized()
-
 	var wrong_scene_2: PackedScene = (wrong_symbol_scene_b if wrong_symbol_scene_b != null else wrong_symbol_scene_a)
 	var wrong_a_door: int = (_progress_door + 1) % 3
 	var wrong_b_door: int = (_progress_door + 2) % 3
-
 	for door_i in range(3):
 		var ps: PackedScene = null
 		if door_i == _progress_door:
@@ -1054,28 +1000,22 @@ func _spawn_symbols_for_current_hub(door_wall_cell: Vector2i, forward: Vector2i,
 			ps = wrong_scene_2
 		if ps == null:
 			continue
-
 		var inst_any := ps.instantiate()
 		var inst := inst_any as Node3D
 		if inst == null:
 			_symbols_root.add_child(inst_any)
 			continue
-
 		inst.set_meta("hub_id", hub_id)
 		inst.set_meta("door_index", door_i)
 		inst.name = "DoorSymbol_%d_%d" % [hub_id, door_i]
 		_symbols_root.add_child(inst)
-
 		var door_cell: Vector2i = door_wall_cell + right * door_x_offsets_three[door_i]
 		var base: Vector3 = _cell_to_world(door_cell)
-
 		var y_top: float = _floor_top_y() + (float(door_open_height_blocks) * block_size_m) + symbol_extra_y_offset_m
 		y_top += float(symbol_up_blocks) * block_size_m
-
 		var push_fwd: float = symbol_inside_offset_m + symbol_forward_extra_m
 		var pos: Vector3 = base - fwd_world * push_fwd
 		pos.y = y_top
-
 		inst.global_position = pos
 
 @rpc("any_peer", "call_local", "reliable")

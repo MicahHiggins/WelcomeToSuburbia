@@ -1,8 +1,9 @@
-[gd_scene load_steps=14 format=3 uid="uid://bf38tvkrxj6ds"]
+[gd_scene load_steps=15 format=3 uid="uid://bf38tvkrxj6ds"]
 
 [ext_resource type="Script" uid="uid://dqvoninhsiala" path="res://GameLevelsETC/cellar_3_door_hallway.gd" id="1_tmgbf"]
 [ext_resource type="PackedScene" uid="uid://dqbgiq51e15mw" path="res://Assets/RandomObjects/stone_block.tscn" id="2_3njtq"]
 [ext_resource type="PackedScene" uid="uid://bk12xaa431jqc" path="res://Assets/RandomObjects/symbol/symbol.tscn" id="3_3njtq"]
+[ext_resource type="PackedScene" uid="uid://cmrqbt412sk4a" path="res://ladder.tscn" id="3_26xw6"]
 [ext_resource type="PackedScene" uid="uid://b6vnu6i8g7uqc" path="res://Assets/RandomObjects/symbol/symbol_correct.tscn" id="3_720kl"]
 [ext_resource type="Script" uid="uid://drk1xq8qdpgsn" path="res://GameLevelsETC/fleshviroment.gd" id="5_4a1gr"]
 [ext_resource type="PackedScene" uid="uid://cahfyn2urr2aa" path="res://Audio/FleshWall/flesh_wall.tscn" id="5_dwvhb"]
@@ -27,9 +28,11 @@ ambient_light_energy = 2.0
 
 [node name="HallwayGen" type="Node3D" parent="."]
 script = ExtResource("1_tmgbf")
-spawn_marker_path = NodePath("")
+spawn_marker_path = NodePath("../Spawn")
 block_scene = ExtResource("2_3njtq")
 chase_slam_time_sec = 1.0
+ladder_scene = ExtResource("3_26xw6")
+ladder_spawn_forward_cells = 0
 correct_symbol_scene = ExtResource("3_720kl")
 wrong_symbol_scene_a = ExtResource("3_3njtq")
 wrong_symbol_scene_b = ExtResource("3_3njtq")
@@ -59,6 +62,7 @@ collision_layer = 9
 collision_mask = 9
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="TriggerArea/Door3"]
+transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0)
 shape = SubResource("BoxShape3D_fljmn")
 
 [node name="Progress" type="Area3D" parent="TriggerArea"]
