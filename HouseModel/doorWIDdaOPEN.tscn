@@ -202,7 +202,7 @@ size = Vector3(4.245331, 9.176453, 1)
 
 [node name="DOOOOOOOR" type="Node3D" groups=["interactable"]]
 script = ExtResource("1_k8ps0")
-required_iteration = 6
+required_iteration = 3
 open_anim = &"DOOR OPEN"
 close_anim = &"fastclose"
 

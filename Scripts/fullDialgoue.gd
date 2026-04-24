@@ -9,12 +9,14 @@ static var bobDialogue = [
 	["I tried going to work but I can’t get\n out of this damn neighborhood", "My neighbors keep staring at me. Be careful\n around these creeps.", "Something feels weird."],
 	["Have you tried going anywhere else?", "Anywhere else but here?", "Please tell me you've been somewhere else"],
 	["I can't you leave", "I can't leave", "..."],
+	["You will see", "You will all see what you have done to me", "I must scream"],
 	["PLEASE", "PLEASE HELP", "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"]
 ]
 static var abigailDialogue = [
 	["Welcome to Suburbia! I haven't seen you two\n around here before", "Our HOA is absolutely magnificent,\n isn't it?", "I've never seen anything so perfect\n before!"],
 	["Without the Home Owners Association,\n this neighborhood wouldn’t be so pretty", "...", "..."],
 	["I heard Mr. Campbell have lost Fido!\n Wherever can he be?", "Well, luckily, we have the safest neighborhood\n in the state!", "He can't be too far..."],
+	["You will see", "You will all see what you have done to me", "I must scream"],
 	["I cannot help you", "I CANNOT HELP YOU", "HAHAHAHAHHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHA"]
 ]
 
@@ -23,6 +25,7 @@ static var campbellsDialogue = [
 	["This old dog just can't keep up anymore!", "Old Mutt!", "*the dog is visibly upset*"],
 	["Have you seen Fido?", "Help me find Fido", "Can you find Fido please?"], 
 	["Fido is where?", "Oh my goodness, thank you!", "You will regret this!"],
+	["You will see", "You will all see what you have done to me", "I must scream"],
 	["Fido is gone. Forever.", "What will I do???", "*INTENSE SCREAMING*"]
 ]
 static var issDialogue = [
@@ -30,5 +33,6 @@ static var issDialogue = [
 	[""], 
 	["you two seem... new here\n you don't look like us", "I don't know how long\n I've been here... ", "take a look around...\n familiarize this place"],
 	["Ah, I knew it", "There's something over there", "Go there, figure out what it is..."],
+	
 	
 ]
