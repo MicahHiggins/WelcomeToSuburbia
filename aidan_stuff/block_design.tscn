@@ -219,11 +219,11 @@ autowrap_mode = 2
 width = 150.0
 
 [node name="Sprite3D" type="Sprite3D" parent="BillboardRoot/Rotator"]
-transform = Transform3D(-0.19091883, 0, -0.19091883, 0, 0.27, 0, 0.19091883, 0, -0.19091883, -0.15, 3.682, -0.16)
+transform = Transform3D(-0.19091883, 0, -0.19091883, 0, 0.26, 0, 0.19091883, 0, -0.19091883, -0.15, 3.682, -0.16)
 texture = ExtResource("11_exxux")
 
 [node name="Sprite3D2" type="Sprite3D" parent="BillboardRoot/Rotator"]
-transform = Transform3D(0.19091883, 0, 0.1909188, 0, 0.27, 0, -0.1909188, 0, 0.19091883, 0.15, 3.682, 0.16)
+transform = Transform3D(0.19091885, 0, 0.19091882, 0, 0.26, 0, -0.19091882, 0, 0.19091885, 0.15, 3.682, 0.16)
 texture = ExtResource("11_exxux")
 
 [node name="Houses" type="Node3D" parent="."]

@@ -5,20 +5,20 @@ extends Node3D
 @onready var sprite_3d2: Sprite3D = $Rotator/Sprite3D2
 
 @export var default_texture: Texture2D = preload("res://Assets/Images/suburbia_title_card.png")
-@export var default_sprite_scale: Vector3 = Vector3(0.27, 0.27, 0.27)
+@export var default_sprite_scale: Vector3 = Vector3(0.27, 0.26, 0.27)
 
 var unique_iteration_images := {
 	2: {
-		"texture": preload("res://Assets/Images/BB_are_you_lost.webp"),
-		"scale": Vector3(0.4, 0.4, 0.4)
+		"texture": preload("res://Assets/Images/BB_where_are_you_going.webp"),
+		"scale": Vector3(0.38, 0.38, 0.38)
 	},
 	4: {
-		"texture": preload("res://Assets/Images/BB_where_are_you_going.webp"),
-		"scale": Vector3(0.27, 0.27, 0.27)
+		"texture": preload("res://Assets/Images/BB_are_you_lost.webp"),
+		"scale": Vector3(0.38, 0.38, 0.38)
 	},
 	6: {
 		"texture": preload("res://Assets/Images/BB_youll_never_get_home.webp"),
-		"scale": Vector3(0.27, 0.27, 0.27)
+		"scale": Vector3(0.38, 0.38, 0.38)
 	}
 }
 

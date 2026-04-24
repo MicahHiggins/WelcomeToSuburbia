@@ -136,6 +136,18 @@ tracks/8/keys = {
 "update": 0,
 "values": [Vector2(0, 646)]
 }
+tracks/9/type = "value"
+tracks/9/imported = false
+tracks/9/enabled = true
+tracks/9/path = NodePath("settings:visible")
+tracks/9/interp = 1
+tracks/9/loop_wrap = true
+tracks/9/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
 
 [sub_resource type="Animation" id="Animation_fan4m"]
 resource_name = "postcard switch"
@@ -248,6 +260,18 @@ tracks/8/keys = {
 "update": 0,
 "values": [Vector2(0, 646), Vector2(576, 646), Vector2(1154, 646)]
 }
+tracks/9/type = "value"
+tracks/9/imported = false
+tracks/9/enabled = true
+tracks/9/path = NodePath("settings:visible")
+tracks/9/interp = 1
+tracks/9/loop_wrap = true
+tracks/9/keys = {
+"times": PackedFloat32Array(0, 0.4893113),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [false, true]
+}
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_mekh1"]
 _data = {
@@ -308,9 +332,9 @@ anchors_preset = -1
 anchor_right = 0.2560764
 anchor_bottom = 0.10185185
 offset_left = 106.0
-offset_top = 225.0
+offset_top = 259.0
 offset_right = 150.0
-offset_bottom = 256.0
+offset_bottom = 290.0
 theme_override_fonts/font = ExtResource("9_fan4m")
 theme_override_font_sizes/font_size = 28
 text = "Host
@@ -322,9 +346,9 @@ anchor_left = -0.0034722222
 anchor_right = 0.2560764
 anchor_bottom = 0.12808642
 offset_left = 112.0
-offset_top = 331.0
+offset_top = 365.0
 offset_right = 150.0
-offset_bottom = 362.0
+offset_bottom = 396.0
 theme_override_fonts/font = ExtResource("9_fan4m")
 theme_override_font_sizes/font_size = 28
 text = "Join
@@ -340,11 +364,21 @@ theme_override_font_sizes/font_size = 24
 text = "Quit
 "
 
+[node name="settings" type="Button" parent="Menu/CanvasLayer"]
+visible = false
+offset_left = 106.0
+offset_top = 159.0
+offset_right = 445.0
+offset_bottom = 249.0
+theme_override_fonts/font = ExtResource("9_fan4m")
+theme_override_font_sizes/font_size = 28
+text = "Settings"
+
 [node name="joinCode" type="LineEdit" parent="Menu/CanvasLayer"]
 offset_left = 189.0
-offset_top = 450.0
+offset_top = 484.0
 offset_right = 366.0
-offset_bottom = 490.0
+offset_bottom = 524.0
 
 [node name="start text" type="Label" parent="Menu/CanvasLayer"]
 offset_left = 327.0
@@ -364,6 +398,7 @@ libraries = {
 }
 
 [node name="pause" type="CanvasLayer" parent="Menu"]
+visible = false
 
 [node name="Background" type="ColorRect" parent="Menu/pause"]
 offset_right = 1162.0
@@ -664,6 +699,7 @@ theme_override_font_sizes/font_size = 30
 text = "Back"
 
 [node name="Controls" type="VBoxContainer" parent="Menu/SettingsMenu"]
+custom_minimum_size = Vector2(0, 40)
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
@@ -678,6 +714,7 @@ grow_vertical = 2
 size_flags_horizontal = 4
 
 [node name="VBoxContainer" type="VBoxContainer" parent="Menu/SettingsMenu/Controls"]
+custom_minimum_size = Vector2(0, 100)
 layout_mode = 2
 
 [node name="Label" type="Label" parent="Menu/SettingsMenu/Controls/VBoxContainer"]
@@ -700,8 +737,12 @@ layout_mode = 2
 layout_mode = 2
 theme_override_fonts/font = ExtResource("12_nqjqn")
 
-[node name="BackButton" type="Button" parent="Menu/SettingsMenu/Controls/VBoxContainer"]
+[node name="BackButton" type="Button" parent="Menu/SettingsMenu/Controls"]
 layout_mode = 2
+tooltip_text = "Back"
+theme_override_fonts/font = ExtResource("12_nqjqn")
+theme_override_font_sizes/font_size = 24
+text = "Back"
 
 [node name="Interact" type="CanvasLayer" parent="Menu"]
 
@@ -710,8 +751,9 @@ layout_mode = 2
 [connection signal="pressed" from="Menu/CanvasLayer/Host" to="LobbyManager" method="_on_host_pressed"]
 [connection signal="pressed" from="Menu/CanvasLayer/Join" to="LobbyManager" method="_on_join_pressed"]
 [connection signal="pressed" from="Menu/CanvasLayer/quit2" to="LobbyManager" method="_on_pause_quit_pressed"]
+[connection signal="pressed" from="Menu/CanvasLayer/settings" to="LobbyManager" method="_on_settings_MM_pressed"]
 [connection signal="pressed" from="Menu/pause/quit" to="LobbyManager" method="_on_pause_quit_pressed"]
 [connection signal="pressed" from="Menu/pause/menu" to="LobbyManager" method="_on_pause_back_to_menu_pressed"]
-[connection signal="pressed" from="Menu/pause/settings" to="LobbyManager" method="_on_settings_pressed"]
 [connection signal="pressed" from="Menu/pause/settings" to="LobbyManager" method="_on_pause_settings_pressed"]
+[connection signal="pressed" from="Menu/pause/settings" to="LobbyManager" method="_on_settings_pressed"]
 [connection signal="pressed" from="Menu/pause/copy" to="LobbyManager" method="_on_pause_copy_code_pressed"]
