@@ -40,11 +40,11 @@ class_name VoiceChat
 @export var softclip_start: float = 0.00
 @export var softclip_full: float = 0.18
 
-# --- EXTRA DIRECTIONALITY (the “make it feel more directional” knobs) ---
-@export var force_point_source: bool = true # sets spread ~ 0
+# --- DIRECTIONALITY (works on all builds) ---
+@export var force_point_source: bool = true # sets spread=0 if available
 @export var directional_cone_enabled: bool = true
-@export var cone_angle_deg: float = 130.0              # smaller = more directional
-@export var cone_outside_atten_db: float = -10.0       # how much quieter outside the cone
+@export var cone_angle_deg: float = 130.0          # smaller = more directional
+@export var cone_outside_atten_db: float = -10.0   # how quiet when behind/outside
 
 # script is on Head, VoicePlayer3D is a child under Head
 @export var voice_player_path: NodePath = NodePath("VoicePlayer3D")
@@ -119,19 +119,9 @@ func _apply_voice_player_defaults() -> void:
 	_voice_player.volume_db = base_volume_db
 	_voice_player.stream_paused = false
 
-	# tighter “point source” = stronger left/right feeling
-	if force_point_source and "spread" in _voice_player:
+	# tighter point-source = stronger left/right
+	if force_point_source and ("spread" in _voice_player):
 		_voice_player.spread = 0.0
-
-	# optional cone = front louder, behind quieter (biggest “more directional” trick)
-	if directional_cone_enabled and "emission_angle_enabled" in _voice_player:
-		_voice_player.emission_angle_enabled = true
-		_voice_player.emission_angle = clampf(cone_angle_deg, 30.0, 180.0)
-		if "emission_angle_filter_attenuation_db" in _voice_player:
-			_voice_player.emission_angle_filter_attenuation_db = cone_outside_atten_db
-	else:
-		if "emission_angle_enabled" in _voice_player:
-			_voice_player.emission_angle_enabled = false
 
 	if "attenuation_filter_cutoff_hz" in _voice_player:
 		_voice_player.attenuation_filter_cutoff_hz = lowpass_near_hz
@@ -331,7 +321,7 @@ func _read_compressed_voice() -> PackedByteArray:
 	return out
 
 # =========================
-#   RECEIVE / PLAY (ROUTED TO SPEAKER NODE)
+#   RECEIVE / PLAY (ROUTED)
 # =========================
 @rpc("any_peer", "call_local", "unreliable")
 func _rpc_voice_packet(speaker_auth: int, compressed: PackedByteArray) -> void:
@@ -340,7 +330,7 @@ func _rpc_voice_packet(speaker_auth: int, compressed: PackedByteArray) -> void:
 	if _is_local_authority_player():
 		return
 
-	# Only the VoiceChat node belonging to that speaker should play it.
+	# only the speaker's own VoiceChat node should play it
 	if int(get_multiplayer_authority()) != int(speaker_auth):
 		return
 
@@ -427,7 +417,7 @@ func _softclip(x: float, amt: float) -> float:
 	return tanh(x * k) / tanh(k)
 
 # =========================
-#   EXTRA DISTANCE GAIN + DISTANCE FX
+#   EXTRA DISTANCE GAIN + DISTANCE FX + DIRECTION CONE
 # =========================
 func _distance_to_listener() -> float:
 	if _listener_cam == null or _voice_player == null:
@@ -440,6 +430,35 @@ func _fx_t() -> float:
 		return 0.0
 	return clampf((d - fx_start_m) / maxf(0.001, (fx_full_m - fx_start_m)), 0.0, 1.0)
 
+func _cone_atten_db() -> float:
+	# returns 0 when in front; negative dB when behind/outside cone
+	if not directional_cone_enabled:
+		return 0.0
+	if _listener_cam == null or _voice_player == null:
+		return 0.0
+
+	var to_listener: Vector3 = (_listener_cam.global_position - _voice_player.global_position)
+	if to_listener.length() < 0.001:
+		return 0.0
+	to_listener = to_listener.normalized()
+
+	# speaker forward (Godot -Z is forward)
+	var speaker_forward: Vector3 = (-_voice_player.global_transform.basis.z).normalized()
+
+	var dotv: float = clampf(speaker_forward.dot(to_listener), -1.0, 1.0)
+	var ang_deg: float = rad_to_deg(acos(dotv)) # 0 = directly in front, 180 = behind
+
+	var half: float = clampf(cone_angle_deg * 0.5, 5.0, 180.0)
+
+	# smooth ramp: inside cone => 0db, outside => cone_outside_atten_db
+	if ang_deg <= half:
+		return 0.0
+
+	# ramp from half..180
+	var t: float = clampf((ang_deg - half) / maxf(0.001, (180.0 - half)), 0.0, 1.0)
+	t = t * t * (3.0 - 2.0 * t) # smoothstep
+	return lerp(0.0, cone_outside_atten_db, t)
+
 func _apply_extra_distance_gain() -> void:
 	if _voice_player == null or _listener_cam == null:
 		return
@@ -450,6 +469,10 @@ func _apply_extra_distance_gain() -> void:
 
 	var shaped: float = pow(t, gain_curve_pow)
 	var extra_db: float = lerp(near_boost_db, far_cut_db, shaped)
+
+	# add directional attenuation
+	extra_db += _cone_atten_db()
+
 	_voice_player.volume_db = base_volume_db + extra_db
 
 func _apply_distance_fx() -> void:
@@ -473,9 +496,13 @@ func _current_softclip_amount() -> float:
 	var t := _fx_t()
 	return lerp(softclip_start, softclip_full, t)
 
+# =========================
+#   DEBUG
+# =========================
 func _debug_tick() -> void:
 	print("VOICE DBG | local_auth:", _is_local_authority_player(),
 		" talk_on:", _talk_toggle_on,
 		" recording:", _recording,
 		" auth:", int(get_multiplayer_authority()),
+		" cone_db:", _cone_atten_db(),
 		" fx_t:", _fx_t())
