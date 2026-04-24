@@ -1,4 +1,4 @@
-[gd_scene load_steps=49 format=3 uid="uid://r8vqf0qcnkdn"]
+[gd_scene load_steps=50 format=3 uid="uid://r8vqf0qcnkdn"]
 
 [ext_resource type="Script" uid="uid://4p6bc6ac8elf" path="res://aidan_stuff/block_design.gd" id="1_jmv40"]
 [ext_resource type="Texture2D" uid="uid://but80wsucm4q2" path="res://textures/GrassTextures/GrassAlbedo.png" id="2_bkv0n"]
@@ -36,6 +36,7 @@
 [ext_resource type="PackedScene" uid="uid://eginvg4sxfqg" path="res://Max's Folder (do not touch!!!)/transistion.tscn" id="26_ov7qd"]
 [ext_resource type="PackedScene" uid="uid://vlcwe6uf7phu" path="res://NPC/random_npc.tscn" id="34_34jml"]
 [ext_resource type="PackedScene" uid="uid://b2qs55r6f7vro" path="res://Assets/RandomObjects/pianos/toy_piano_listen.tscn" id="35_atsmq"]
+[ext_resource type="PackedScene" uid="uid://bcnocbxtq6q3y" path="res://Max's Folder (do not touch!!!)/easter_egg.tscn" id="37_2vyiy"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_0wadw"]
 albedo_color = Color(0.60271376, 0.7674062, 0.73615, 1)
@@ -2802,6 +2803,21 @@ transform = Transform3D(-0.0022688902, 0, 0.2499897, 0, 0.25, 0, -0.2499897, 0, 
 [node name="toy_pianoListen" parent="." instance=ExtResource("35_atsmq")]
 transform = Transform3D(-0.048762877, 0, 0.011053595, 0, 0.05, 0, -0.011053595, 0, -0.048762877, -2.8555684, 0.20157123, -12.225139)
 
+[node name="EasterEgg" parent="." instance=ExtResource("37_2vyiy")]
+transform = Transform3D(-0.23359, 0, -0.08908261, 0, 0.25, 0, 0.08908261, 0, -0.23359, -1.5126842, 0.26411033, -2.3878887)
+
+[node name="NPC_bob" parent="EasterEgg" index="0"]
+transform = Transform3D(0.19396043, 0, -0.98100936, 0, 1, 0, 0.98100936, 0, 0.19396043, -1.2883754, 0.36479056, -0.27412224)
+
+[node name="Dog" parent="EasterEgg" index="1"]
+transform = Transform3D(-0.1494292, 0, 0.013073371, 0, 0.15, 0, -0.013073371, 0, -0.1494292, 0, 0, -0.7013316)
+
+[node name="QuestMarkerBlue" parent="EasterEgg" index="3"]
+transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 0.34628248, 0.87346554, 4.6174345)
+
+[node name="CollisionShape3D" parent="EasterEgg/Area3D" index="0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.32477355, 0, 4.460268)
+
 [connection signal="body_entered" from="LoadingSystem" to="." method="_on_area_3d_body_entered"]
 [connection signal="body_exited" from="LoadingSystem" to="." method="_on_area_3d_body_exited"]
 [connection signal="body_entered" from="IterationDetector" to="IterationDetector" method="_on_body_entered"]
@@ -2809,3 +2825,4 @@ transform = Transform3D(-0.048762877, 0, 0.011053595, 0, 0.05, 0, -0.011053595, 
 [connection signal="body_entered" from="Dog/Area3D" to="Dog/Fido" method="_on_area_3d_body_entered"]
 
 [editable path="AudioCues/heartBeatDetector"]
+[editable path="EasterEgg"]
