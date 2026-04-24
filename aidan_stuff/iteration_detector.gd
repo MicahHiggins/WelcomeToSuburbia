@@ -16,7 +16,7 @@ func server_trigger_event():
 		return
 	
 	print("Server: Triggering global iteration change")
-	if GlobalVariables.iterations >= 1 && GlobalVariables.iterations < 6:
+	if GlobalVariables.iterations >= 1 && GlobalVariables.iterations < 5:
 		return null
 	questHub.it_change()
 	
