@@ -16,7 +16,7 @@ extends CanvasLayer
 @onready var sound_back_button = $Sound/BackButton
 
 @onready var actions_container = $Controls/VBoxContainer/ScrollContainer/ActionsContainer
-@onready var controls_back_button = $Controls/VBoxContainer/BackButton
+@onready var controls_back_button = $Controls/BackButton
 
 var opened_from: String = ""
 var waiting_for_action: String = ""
@@ -62,6 +62,19 @@ func open_from(source: String) -> void:
 func close_menu() -> void:
 	waiting_for_action = ""
 	hide()
+
+	var menu_root := get_parent()
+	if menu_root == null:
+		return
+
+	if opened_from == "main":
+		var main_menu_node = menu_root.get_node_or_null("CanvasLayer")
+		if main_menu_node != null:
+			main_menu_node.show()
+	elif opened_from == "pause":
+		var pause_menu_node = menu_root.get_node_or_null("pause")
+		if pause_menu_node != null:
+			pause_menu_node.show()
 
 func show_main_page() -> void:
 	main_page.show()

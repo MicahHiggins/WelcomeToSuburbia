@@ -612,6 +612,15 @@ func _on_pause_settings_pressed() -> void:
 		settings_menu.open_from("pause")
 	else:
 		push_error("SettingsMenu node was not found.")
+		
+func _on_settings_MM_pressed() -> void:
+	if main_menu != null:
+		main_menu.hide()
+
+	if settings_menu != null:
+		settings_menu.open_from("main")
+	else:
+		push_error("SettingsMenu node was not found.")
 
 func _on_pause_copy_code_pressed() -> void:
 	var code_text := ""
