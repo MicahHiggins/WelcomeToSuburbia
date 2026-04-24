@@ -80,6 +80,62 @@ size = Vector3(30, 10, 1)
 [sub_resource type="SphereShape3D" id="SphereShape3D_ga440"]
 radius = 10.976
 
+[sub_resource type="Animation" id="Animation_j6y2v"]
+resource_name = "BUS_MOVE"
+length = 22.0
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("busssss2:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 21.933332),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector3(17, 0.587, -9.109), Vector3(-32, 0.587, -9.109)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("busssss2:visible")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.01, 21.966667),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [true, false]
+}
+
+[sub_resource type="Animation" id="Animation_nkfvy"]
+resource_name = "BUS_MOVE2"
+length = 30.0
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("busssss2:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0.01, 29.917572),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector3(0.5905409, 0.587, 8.964042), Vector3(-67, 0.587, 8.964)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("busssss2:visible")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.01, 29.917572),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [true, false]
+}
+
 [sub_resource type="Animation" id="Animation_3rgr2"]
 resource_name = "Bus_move"
 length = 9.0
@@ -149,62 +205,6 @@ tracks/2/keys = {
 "transitions": PackedFloat32Array(1),
 "update": 1,
 "values": [true]
-}
-
-[sub_resource type="Animation" id="Animation_j6y2v"]
-resource_name = "BUS_MOVE"
-length = 22.0
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("busssss2:position")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0, 21.933332),
-"transitions": PackedFloat32Array(1, 1),
-"update": 0,
-"values": [Vector3(17, 0.587, -9.109), Vector3(-32, 0.587, -9.109)]
-}
-tracks/1/type = "value"
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/path = NodePath("busssss2:visible")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
-tracks/1/keys = {
-"times": PackedFloat32Array(0.01, 21.966667),
-"transitions": PackedFloat32Array(1, 1),
-"update": 1,
-"values": [true, false]
-}
-
-[sub_resource type="Animation" id="Animation_nkfvy"]
-resource_name = "BUS_MOVE2"
-length = 30.0
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("busssss2:position")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0.01, 29.917572),
-"transitions": PackedFloat32Array(1, 1),
-"update": 0,
-"values": [Vector3(0.5905409, 0.587, 8.964042), Vector3(-67, 0.587, 8.964)]
-}
-tracks/1/type = "value"
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/path = NodePath("busssss2:visible")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
-tracks/1/keys = {
-"times": PackedFloat32Array(0.01, 29.917572),
-"transitions": PackedFloat32Array(1, 1),
-"update": 1,
-"values": [true, false]
 }
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_ov7qd"]

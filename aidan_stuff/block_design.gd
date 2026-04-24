@@ -30,7 +30,7 @@ var entered := false
 func _ready() -> void:
 	
 	#AudioManager.gameStart.emit()
-	
+	questHub.iteration_changed.connect(treeChange)
 	GlobalVariables.iterations = 0
 	ITER_check = GlobalVariables.iterations
 	GlobalVariables.dialogueSignal.emit()
@@ -45,14 +45,15 @@ func _ready() -> void:
 		if not multiplayer.peer_connected.is_connected(_on_peer_connected):
 			multiplayer.peer_connected.connect(_on_peer_connected)
 
-func _process(delta: float) -> void:
-	if ITER_check == GlobalVariables.iterations:
-		return
-	else:
-		ITER_check = GlobalVariables.iterations
-		if GlobalVariables.iterations > 4:
-			trees.visible = false
-			trees_no_leaves.visible = true
+
+func treeChange():
+	if GlobalVariables.iterations > 4:
+		trees.visible = false
+		trees_no_leaves.visible = true
+	
+	
+	
+
 		
 func _on_peer_connected(peer_id: int) -> void:
 	# ADDED: defer one frame so the joining peer has finished instancing the level tree
