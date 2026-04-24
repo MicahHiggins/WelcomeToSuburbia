@@ -360,7 +360,7 @@ _data = {
 script = ExtResource("1_l5n62")
 player_scene = ExtResource("2_6bcdd")
 intro_anim_player = NodePath("../Menu/CanvasLayer/AnimationPlayer")
-intro_gate_nodes = [NodePath("../Menu/CanvasLayer/Host"), NodePath("../Menu/CanvasLayer/Join"), NodePath("../Menu/CanvasLayer/quit2")]
+intro_gate_nodes = [NodePath("../Menu/CanvasLayer/Host"), NodePath("../Menu/CanvasLayer/Join"), NodePath("../Menu/CanvasLayer/quit2"), NodePath("../Menu/CanvasLayer/joinCode")]
 press_any_node = NodePath("../Menu/CanvasLayer/start text")
 
 [node name="PlayersRoot" type="Node3D" parent="."]
