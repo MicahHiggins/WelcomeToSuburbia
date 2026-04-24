@@ -34,23 +34,66 @@ var _video_wait_deadline: float = 0.0
 var _wait_pids: Array[int] = []
 var _video_done_by_pid: Dictionary = {} # int -> bool
 
+
+# =========================
+# NET HELPERS (fixes "multiplayer is null" crash)
+# =========================
+func _net_mp() -> MultiplayerAPI:
+	if not is_inside_tree():
+		return null
+	return get_tree().multiplayer
+
+func _net_has_peer() -> bool:
+	var mp := _net_mp()
+	return mp != null and mp.has_multiplayer_peer()
+
+func _net_is_server() -> bool:
+	var mp := _net_mp()
+	return mp != null and mp.has_multiplayer_peer() and mp.is_server()
+
+func _net_unique_id() -> int:
+	var mp := _net_mp()
+	if mp != null and mp.has_multiplayer_peer():
+		return mp.get_unique_id()
+	return 1
+
+func _net_server_peer_id() -> int:
+	var mp := _net_mp()
+	if mp == null or not mp.has_multiplayer_peer():
+		return -1
+	if mp.is_server():
+		return mp.get_unique_id()
+	var peers: Array = mp.get_peers()
+	if peers.is_empty():
+		return -1
+	var best: int = int(peers[0])
+	for p_any in peers:
+		var p: int = int(p_any)
+		if p < best:
+			best = p
+	return best
+
+
 func _enter_tree() -> void:
 	if not is_in_group("bat_swing_gate"):
 		add_to_group("bat_swing_gate")
+
 
 func _ready() -> void:
 	if play_video_player != null:
 		play_video_player.visible = false
 
-	if multiplayer.has_multiplayer_peer() and not multiplayer.is_server():
+	# clients should not be "active" triggers
+	if _net_has_peer() and not _net_is_server():
 		set_deferred("monitoring", false)
 		set_deferred("monitorable", false)
 	else:
 		set_deferred("monitoring", true)
 		set_deferred("monitorable", true)
 
+
 func _physics_process(delta: float) -> void:
-	if multiplayer.has_multiplayer_peer() and not multiplayer.is_server():
+	if _net_has_peer() and not _net_is_server():
 		return
 
 	if _level_change_queued:
@@ -92,6 +135,7 @@ func _physics_process(delta: float) -> void:
 			do_dbg = true
 
 	_try_complete_gate_server(do_dbg)
+
 
 func _try_complete_gate_server(do_dbg: bool) -> void:
 	if require_puzzle2_done and not _is_puzzle2_done():
@@ -138,6 +182,7 @@ func _try_complete_gate_server(do_dbg: bool) -> void:
 		_level_change_queued = true
 		_level_change_timer = maxf(0.0, level_change_delay_sec)
 
+
 func _begin_video_wait_server(ok_pids: Array[int], do_dbg: bool) -> void:
 	_video_waiting = true
 	_video_wait_deadline = maxf(0.25, video_wait_timeout_sec)
@@ -152,6 +197,7 @@ func _begin_video_wait_server(ok_pids: Array[int], do_dbg: bool) -> void:
 	if do_dbg:
 		print("GATE | begin video wait | wait_pids:", _wait_pids, " timeout:", _video_wait_deadline)
 
+
 func _all_wait_pids_done() -> bool:
 	for pid in _wait_pids:
 		if not _video_done_by_pid.has(pid):
@@ -160,9 +206,10 @@ func _all_wait_pids_done() -> bool:
 			return false
 	return true
 
+
 @rpc("any_peer", "reliable")
 func _rpc_client_video_done(pid: int) -> void:
-	if multiplayer.has_multiplayer_peer() and not multiplayer.is_server():
+	if _net_has_peer() and not _net_is_server():
 		return
 	if pid <= 0:
 		return
@@ -171,9 +218,11 @@ func _rpc_client_video_done(pid: int) -> void:
 		if debug_enabled:
 			print("GATE | video done ack | pid:", pid)
 
+
 @rpc("any_peer", "call_local", "reliable")
 func _rpc_play_gate_video() -> void:
 	_play_video_local_and_ack()
+
 
 func _play_video_local_and_ack() -> void:
 	var wait_sec := _estimate_video_seconds_client()
@@ -190,14 +239,14 @@ func _play_video_local_and_ack() -> void:
 		var t2 := get_tree().create_timer(maxf(0.05, wait_sec))
 		await t2.timeout
 
-	var pid := multiplayer.get_unique_id() if multiplayer.has_multiplayer_peer() else 1
-	if multiplayer.has_multiplayer_peer():
-		var sid := _server_peer_id()
+	var pid := _net_unique_id()
+	if _net_has_peer():
+		var sid := _net_server_peer_id()
 		if sid > 0:
 			rpc_id(sid, "_rpc_client_video_done", int(pid))
 
+
 func _estimate_video_seconds_client() -> float:
-	# If the stream length is unknown, use the server timeout (not the 3s fallback).
 	var fallback := maxf(0.0, video_wait_timeout_sec)
 
 	if play_video_player == null or not is_instance_valid(play_video_player):
@@ -216,8 +265,9 @@ func _estimate_video_seconds_client() -> float:
 
 	return len_sec + 0.15
 
+
 func _server_drop_and_clear_for_pids(pids: Array[int], do_dbg: bool) -> void:
-	if multiplayer.has_multiplayer_peer() and not multiplayer.is_server():
+	if _net_has_peer() and not _net_is_server():
 		return
 
 	var im := _get_item_manager()
@@ -232,7 +282,6 @@ func _server_drop_and_clear_for_pids(pids: Array[int], do_dbg: bool) -> void:
 		if pid <= 0 or not pids.has(pid):
 			continue
 
-		# Drop anything physically held (CarryObjectMarker child)
 		if im != null and p is Node3D:
 			var marker := (p as Node3D).get_node_or_null("Head/CarryObjectMarker") as Node
 			if marker != null and marker.get_child_count() > 0:
@@ -244,12 +293,12 @@ func _server_drop_and_clear_for_pids(pids: Array[int], do_dbg: bool) -> void:
 						if do_dbg:
 							print("GATE INV | force dropped held item for pid:", pid, " key:", key_str)
 
-		# Safety: clear inventory array too (UI / any leftover bookkeeping)
 		var inv_any: Variant = p.get("inventory")
 		if inv_any is Array:
 			var inv: Array = inv_any as Array
 			inv.clear()
 			p.set("inventory", inv)
+
 
 func _get_item_manager() -> Node:
 	var scene := get_tree().current_scene
@@ -260,6 +309,7 @@ func _get_item_manager() -> Node:
 		return direct
 	return scene.find_child(String(item_manager_name), true, false)
 
+
 func _is_puzzle2_done() -> bool:
 	var nodes: Array = get_tree().get_nodes_in_group(String(puzzle_state_group))
 	if nodes.is_empty():
@@ -269,6 +319,7 @@ func _is_puzzle2_done() -> bool:
 		return false
 	var v: Variant = st.get("puzzle2_done")
 	return (v is bool) and bool(v)
+
 
 func _collect_overlapping_union(do_dbg: bool) -> Dictionary:
 	var union: Dictionary = {}
@@ -294,8 +345,9 @@ func _collect_overlapping_union(do_dbg: bool) -> Dictionary:
 
 	return union
 
+
 func _call_level_change_level3() -> void:
-	if multiplayer.has_multiplayer_peer() and not multiplayer.is_server():
+	if _net_has_peer() and not _net_is_server():
 		return
 
 	var lf: Node = get_tree().get_first_node_in_group("level_flow_manager")
@@ -305,6 +357,7 @@ func _call_level_change_level3() -> void:
 		return
 	if lf.has_method("request_level_change"):
 		lf.call("request_level_change", level_3_index)
+
 
 func _peer_id_from_player(p: Node) -> int:
 	if p == null:
@@ -316,20 +369,11 @@ func _peer_id_from_player(p: Node) -> int:
 		return int(nm)
 	return -1
 
+
 func _server_peer_id() -> int:
-	if not multiplayer.has_multiplayer_peer():
-		return -1
-	if multiplayer.is_server():
-		return multiplayer.get_unique_id()
-	var peers: Array = multiplayer.get_peers()
-	if peers.is_empty():
-		return -1
-	var best: int = int(peers[0])
-	for p_any in peers:
-		var p: int = int(p_any)
-		if p < best:
-			best = p
-	return best
+	# kept for compatibility (no longer used)
+	return _net_server_peer_id()
+
 
 func _is_coordinator_gate() -> bool:
 	var gates: Array = get_tree().get_nodes_in_group("bat_swing_gate")
@@ -347,6 +391,7 @@ func _is_coordinator_gate() -> bool:
 			best = g
 			best_path = p
 	return best == self
+
 
 func _coordinator_path() -> String:
 	var gates: Array = get_tree().get_nodes_in_group("bat_swing_gate")
