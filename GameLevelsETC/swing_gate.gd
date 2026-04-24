@@ -36,12 +36,16 @@ var _video_done_by_pid: Dictionary = {} # int -> bool
 
 
 # =========================
-# NET HELPERS (fixes "multiplayer is null" crash)
+# NET HELPERS (safe in/out of tree, no SceneTree.multiplayer property)
 # =========================
 func _net_mp() -> MultiplayerAPI:
 	if not is_inside_tree():
 		return null
-	return get_tree().multiplayer
+	var tree := get_tree()
+	if tree == null:
+		return null
+	# Works on more builds than get_tree().multiplayer
+	return tree.get_multiplayer()
 
 func _net_has_peer() -> bool:
 	var mp := _net_mp()
