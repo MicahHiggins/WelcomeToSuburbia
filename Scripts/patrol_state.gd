@@ -10,25 +10,23 @@ class_name PatrolState
 
 @export var talk_range: Area3D
 
+# if we never find waypoints after retries, fall back to TalkState
+@export var fallback_to_talk_if_no_waypoints: bool = true
+
+# super small multiplayer sync
+@export var net_sync_anim: bool = true
+
 var _wps: Array[Node3D] = []
 var _idx: int = 0
 var _wait_t: float = 0.0
 var _loop: bool = true
 
-var _retry_t: float = 0.0
+var _retry_timer: float = 0.0
 var _retry_left: float = 0.0
-
-# super small multiplayer sync
-@export var net_sync_anim: bool = true
+var _did_fallback_to_talk: bool = false
 
 var _anim_player: AnimationPlayer = null
-var _anim_players:= []
 var _last_anim: StringName = &""
-
-# ADDED: prevents TalkState spam when no waypoints
-@export var no_path_to_talk_cooldown: float = 0.75
-var _no_path_cd: float = 0.0
-
 
 func enter(msg := {}) -> void:
 	_wps.clear()
@@ -36,65 +34,69 @@ func enter(msg := {}) -> void:
 	_wait_t = 0.0
 	_loop = true
 
-	_retry_t = 0.0
+	_retry_timer = 0.0
 	_retry_left = retry_max_seconds
+	_did_fallback_to_talk = false
 
 	_last_anim = &""
 	_cache_anim_player()
-
-	# ADDED
-	_no_path_cd = 0.0
 
 	if npc == null:
 		return
 
 	_try_build_path()
 
-	_play_anim_local(&"NewWalking")
-	_net_broadcast_anim(&"NewWalking")
-
+	# if we spawn with no waypoints, don't start walking in place
+	if _wps.size() == 0:
+		_play_anim_local(&"NewStanding")
+		_net_broadcast_anim(&"NewStanding")
+	else:
+		_play_anim_local(&"NewWalking")
+		_net_broadcast_anim(&"NewWalking")
 
 func physics_update(delta: float) -> void:
 	var npc3d := npc as NPC
 	if npc3d == null:
 		return
 
-	# clients do NOT run patrol AI (server is the boss)
+	# clients do NOT run patrol AI
 	if multiplayer.has_multiplayer_peer() and not multiplayer.is_server():
 		return
 
-	_play_anim_local(&"NewWalking")
-	_net_broadcast_anim(&"NewWalking")
-
-	# talk interrupt (optional)
+	# talk interrupt
 	if _is_player_in_talk_range():
 		npc3d.save_patrol_resume(_idx, _wait_t)
 		npc3d.velocity.x = 0.0
 		npc3d.velocity.z = 0.0
-
+		_play_anim_local(&"NewStanding")
+		_net_broadcast_anim(&"NewStanding")
 		_net_broadcast_state_change(&"TalkState", {})
 		change_state.emit(&"TalkState", {})
 		return
 
-	# ADDED: cooldown tick
-	if _no_path_cd > 0.0:
-		_no_path_cd -= delta
-
-	# If no waypoints, retry (PCG timing)
+	# no waypoints: retry for a while, then fall back to TalkState (and STOP walking anim)
 	if _wps.size() == 0:
+		npc3d.velocity.x = 0.0
+		npc3d.velocity.z = 0.0
+		_play_anim_local(&"NewStanding")
+		_net_broadcast_anim(&"NewStanding")
+
 		if retry_autofind and _retry_left > 0.0:
 			_retry_left -= delta
-			_retry_t -= delta
-			if _retry_t <= 0.0:
-				_retry_t = retry_interval
+			_retry_timer -= delta
+			if _retry_timer <= 0.0:
+				_retry_timer = retry_interval
 				_try_build_path()
 
-		# ADDED: only switch to TalkState occasionally (prevents ping-pong spam)
-		if _wps.size() == 0 and _no_path_cd <= 0.0:
-			_no_path_cd = no_path_to_talk_cooldown
-			_net_broadcast_state_change(&"TalkState", {})
-			change_state.emit(&"TalkState", {})
+		if fallback_to_talk_if_no_waypoints and not _did_fallback_to_talk and _retry_left <= 0.0 and _wps.size() == 0:
+			_did_fallback_to_talk = true
+			_net_broadcast_state_change(&"TalkState", {"from_no_waypoints": true})
+			change_state.emit(&"TalkState", {"from_no_waypoints": true})
 		return
+
+	# we have waypoints -> ensure walking anim
+	_play_anim_local(&"NewWalking")
+	_net_broadcast_anim(&"NewWalking")
 
 	# wait at waypoint
 	if _wait_t > 0.0:
@@ -102,7 +104,6 @@ func physics_update(delta: float) -> void:
 		return
 
 	_idx = clampi(_idx, 0, _wps.size() - 1)
-
 	var wp := _wps[_idx]
 	if wp == null or not is_instance_valid(wp):
 		_wps.clear()
@@ -111,6 +112,7 @@ func physics_update(delta: float) -> void:
 	var target := wp.global_position
 	var look_target := target
 	look_target.y -= 0.55
+
 	npc3d.move_toward_world(target, delta)
 	npc3d.look_at(look_target)
 
@@ -121,8 +123,6 @@ func physics_update(delta: float) -> void:
 		if wait_at_waypoint > 0.0:
 			_wait_t = wait_at_waypoint
 		_advance()
-		return
-
 
 func _try_build_path() -> void:
 	var npc3d := npc as NPC
@@ -146,12 +146,10 @@ func _try_build_path() -> void:
 	else:
 		_idx = _closest_index(npc3d.global_position, _wps)
 
-
 func _advance() -> void:
 	_idx += 1
 	if _idx >= _wps.size():
 		_idx = 0 if _loop else (_wps.size() - 1)
-
 
 func _closest_index(pos: Vector3, wps: Array[Node3D]) -> int:
 	var best_i := 0
@@ -166,7 +164,6 @@ func _closest_index(pos: Vector3, wps: Array[Node3D]) -> int:
 			best_i = i
 	return best_i
 
-
 func _is_player_in_talk_range() -> bool:
 	if talk_range == null or not is_instance_valid(talk_range):
 		return false
@@ -174,7 +171,6 @@ func _is_player_in_talk_range() -> bool:
 		if b != null and b.is_in_group("player"):
 			return true
 	return false
-
 
 func _cache_anim_player() -> void:
 	_anim_player = null
@@ -185,22 +181,21 @@ func _cache_anim_player() -> void:
 	if npc3d == null:
 		return
 
-	var model_node := find_descendants_in_group(npc3d, "NPC_Body")
-	for n in model_node:
+	var model_nodes := find_descendants_in_group(npc3d, "NPC_Body")
+	for n in model_nodes:
 		_anim_player = find_descendant_in_group(n, "NPC_Animation") as AnimationPlayer
+		if _anim_player != null:
+			return
 
 func _play_anim_local(anim_name: StringName) -> void:
 	if _anim_player == null:
 		_cache_anim_player()
 	if _anim_player == null:
 		return
-
 	if _last_anim == anim_name and _anim_player.is_playing():
 		return
-
 	_last_anim = anim_name
 	_anim_player.play(String(anim_name))
-
 
 func _net_broadcast_anim(anim_name: StringName) -> void:
 	if not net_sync_anim:
@@ -209,20 +204,15 @@ func _net_broadcast_anim(anim_name: StringName) -> void:
 		return
 	if not multiplayer.is_server():
 		return
-
-	# only send when it changes
 	if _last_anim != anim_name:
 		return
-
 	rpc("_rpc_play_anim", String(anim_name))
-
 
 @rpc("any_peer", "call_local", "unreliable")
 func _rpc_play_anim(anim_name: String) -> void:
 	if multiplayer.has_multiplayer_peer() and multiplayer.is_server():
 		return
 	_play_anim_local(StringName(anim_name))
-
 
 func _net_broadcast_state_change(state_name: StringName, msg: Dictionary) -> void:
 	if not multiplayer.has_multiplayer_peer():
@@ -231,32 +221,25 @@ func _net_broadcast_state_change(state_name: StringName, msg: Dictionary) -> voi
 		return
 	rpc("_rpc_force_state", String(state_name), msg)
 
-
 @rpc("any_peer", "call_local", "reliable")
 func _rpc_force_state(state_name: String, msg: Dictionary) -> void:
 	if multiplayer.has_multiplayer_peer() and multiplayer.is_server():
 		return
 	change_state.emit(StringName(state_name), msg)
 
-
 func find_descendant_in_group(node: Node, group: String) -> Node:
 	if node.is_in_group(group):
 		return node
-
 	for child in node.get_children():
 		var result = find_descendant_in_group(child, group)
 		if result:
 			return result
-
 	return null
 
 func find_descendants_in_group(node: Node, group: String) -> Array:
 	var results: Array = []
-	
 	if node.is_in_group(group):
 		results.append(node)
-		
 	for child in node.get_children():
 		results += find_descendants_in_group(child, group)
-		
 	return results

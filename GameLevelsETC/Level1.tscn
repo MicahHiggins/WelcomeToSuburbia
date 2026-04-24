@@ -134,6 +134,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 stream = ExtResource("9_gsr76")
+expand = true
 
 [node name="ColorRect" type="ColorRect" parent="IntroLayer"]
 offset_right = 1160.0
