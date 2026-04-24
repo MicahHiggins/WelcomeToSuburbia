@@ -135,9 +135,8 @@ base_volume_db = 4.0
 playback_buffer_sec = 0.05
 near_boost_db = 20.0
 far_cut_db = 40.0
-icon_color_off = Color(0.71485245, 0, 0.061652586, 0.34901962)
-icon_color_on = Color(0.46213686, 0.8052713, 0.47091788, 0.9019608)
-icon_outline_color = Color(0, 0, 0, 0.90588236)
+icon_anchor = Vector2(12, -50)
+icon_size = 30.0
 debug_interval_sec = 4.0
 
 [node name="VoicePlayer3D" type="AudioStreamPlayer3D" parent="Head"]
