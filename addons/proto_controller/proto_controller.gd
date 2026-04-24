@@ -1118,6 +1118,7 @@ func _physics_authority(delta: float) -> void:
 
 	if can_jump and Input.is_action_just_pressed(input_jump) and is_on_floor():
 		velocity.y = jump_velocity
+		#%FootstepAnimation.play("Jump")
 
 	var input_vec := Input.get_vector(input_left, input_right, input_forward, input_back)
 	var wants_to_sprint := can_sprint and Input.is_action_pressed(input_sprint)

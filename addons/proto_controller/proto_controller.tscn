@@ -1,4 +1,4 @@
-[gd_scene load_steps=20 format=3 uid="uid://bs72ogkvdd7d6"]
+[gd_scene load_steps=21 format=3 uid="uid://bs72ogkvdd7d6"]
 
 [ext_resource type="Script" uid="uid://psbmqqwxvny5" path="res://addons/proto_controller/proto_controller.gd" id="1_ucva2"]
 [ext_resource type="Script" uid="uid://6tcwk75iwlkk" path="res://addons/proto_controller/voice_chat.gd" id="2_q1ipm"]
@@ -67,7 +67,7 @@ tracks/1/enabled = true
 tracks/1/path = NodePath("../Head/Camera3D")
 tracks/1/interp = 1
 tracks/1/loop_wrap = true
-tracks/1/keys = PackedFloat32Array(0, 1, 0, -0.13, -0.5, 0.1, 1, 0, -0.04, -0.5, 0.23333335, 1, 0, -0.13, -0.5)
+tracks/1/keys = PackedFloat32Array(0, 1, 0, 0, 0, 0.1, 1, 0, 0.09, 0, 0.23333335, 1, 0, 0, 0)
 
 [sub_resource type="Animation" id="Animation_6dqce"]
 resource_name = "walk"
@@ -94,8 +94,19 @@ tracks/1/interp = 1
 tracks/1/loop_wrap = true
 tracks/1/keys = PackedFloat32Array(0, 1, 0, 0, 0, 0.1, 1, 0, 0.09, 0, 0.3, 1, 0, 0, 0)
 
+[sub_resource type="Animation" id="Animation_q1ipm"]
+resource_name = "Jump"
+tracks/0/type = "position_3d"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("../Head/Camera3D")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = PackedFloat32Array(0, 1, 0, 0, 0, 0.23333333, 1, 0, 1, 0, 0.33333334, 1, 0, 0.6333333, 0, 0.43333334, 1, 0, 0.2181482, 0, 0.6333333, 1, 0, 0, 0)
+
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_0rk7u"]
 _data = {
+&"Jump": SubResource("Animation_q1ipm"),
 &"RESET": SubResource("Animation_5hfox"),
 &"run": SubResource("Animation_0rk7u"),
 &"walk": SubResource("Animation_6dqce")
