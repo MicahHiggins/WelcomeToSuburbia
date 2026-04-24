@@ -2,7 +2,8 @@ extends Node3D
 
 @onready var peek_anim: AnimationPlayer = $peekAnim
 @onready var quest_marker_: questMarker = $"QuestMarker!"
-@onready var jumpscare_1: AudioStreamPlayer = $jumpscare1
+
+@onready var jumpscare_1: AudioStreamPlayer3D = $jumpscare1
 
 #@onready var audio_stream_player_3d: AudioStreamPlayer3D = $AudioStreamPlayer3D
 
@@ -55,6 +56,8 @@ func _on_area_4_quest_body_entered(body: Node3D) -> void:
 	if body.is_in_group("player") && body.is_multiplayer_authority():
 		peek_anim.play("peek")
 		if GlobalVariables.isaac_quest_progression == 2:
+			
+			#await get_tree().create_timer(1.0).timeout
 			jumpscare_1.play()
 			
 			#GlobalVariables.isaac_quest_progression = 5
