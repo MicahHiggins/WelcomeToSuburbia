@@ -570,10 +570,10 @@ theme_override_font_sizes/font_size = 24
 text = "Level 1"
 
 [node name="IterationChanngeButton" parent="Menu/pause" instance=ExtResource("13_nqjqn")]
-offset_left = 416.0
-offset_top = 341.0
-offset_right = 416.0
-offset_bottom = 341.0
+offset_left = -151.0
+offset_top = 1309.0
+offset_right = -151.0
+offset_bottom = 1309.0
 
 [node name="postcard" type="TextureRect" parent="Menu/pause"]
 offset_left = 434.00003
