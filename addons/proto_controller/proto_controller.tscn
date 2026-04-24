@@ -1,7 +1,7 @@
 [gd_scene load_steps=20 format=3 uid="uid://bs72ogkvdd7d6"]
 
 [ext_resource type="Script" uid="uid://psbmqqwxvny5" path="res://addons/proto_controller/proto_controller.gd" id="1_ucva2"]
-[ext_resource type="Script" path="res://addons/proto_controller/voice_chat.gd" id="2_q1ipm"]
+[ext_resource type="Script" uid="uid://6tcwk75iwlkk" path="res://addons/proto_controller/voice_chat.gd" id="2_q1ipm"]
 [ext_resource type="Script" uid="uid://boitue63820b1" path="res://addons/proto_controller/ray_cast_3d.gd" id="2_wr06p"]
 [ext_resource type="AudioStream" uid="uid://77vhd06aou5i" path="res://Audio/SFX/Steps_gravel-006.ogg" id="3_5hfox"]
 [ext_resource type="Script" uid="uid://cfienyrl5pmdh" path="res://addons/proto_controller/player_audio.gd" id="3_h60nn"]
@@ -103,7 +103,7 @@ _data = {
 
 [node name="ProtoController" type="CharacterBody3D" groups=["player"]]
 collision_layer = 8
-collision_mask = 7
+collision_mask = 11
 script = ExtResource("1_ucva2")
 base_speed = 3.2
 jump_velocity = 3.5
@@ -131,19 +131,18 @@ shape = SubResource("CapsuleShape3D_iof21")
 [node name="Head" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6066794, -0.30353436)
 script = ExtResource("2_q1ipm")
-hear_radius = 80.0
-unit_size = 0.8
 base_volume_db = 4.0
-playback_buffer_sec = 0.05
-far_cut_db = -1.0
+playback_buffer_sec = 0.5
+near_boost_db = 20.0
+far_cut_db = 35.0
+icon_anchor = Vector2(12, -50)
+icon_size = 30.0
 debug_interval_sec = 4.0
 
 [node name="VoicePlayer3D" type="AudioStreamPlayer3D" parent="Head"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.6066794, 0.30353436)
 attenuation_model = 2
-volume_db = 2.0
-unit_size = 0.8
-max_db = 4.0
+unit_size = 1.0
 max_distance = 80.0
 
 [node name="CarryObjectMarker" type="Marker3D" parent="Head"]

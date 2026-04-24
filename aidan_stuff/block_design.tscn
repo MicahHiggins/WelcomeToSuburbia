@@ -1,4 +1,4 @@
-[gd_scene load_steps=46 format=3 uid="uid://r8vqf0qcnkdn"]
+[gd_scene load_steps=48 format=3 uid="uid://r8vqf0qcnkdn"]
 
 [ext_resource type="Script" uid="uid://4p6bc6ac8elf" path="res://aidan_stuff/block_design.gd" id="1_jmv40"]
 [ext_resource type="Texture2D" uid="uid://but80wsucm4q2" path="res://textures/GrassTextures/GrassAlbedo.png" id="2_bkv0n"]
@@ -32,7 +32,10 @@
 [ext_resource type="Script" uid="uid://cefpvj7tg03be" path="res://aidan_stuff/bus.gd" id="23_3rgr2"]
 [ext_resource type="PackedScene" uid="uid://gk88lcwyw5hu" path="res://Assets/RandomObjects/cellar_investigate.tscn" id="23_5xofl"]
 [ext_resource type="PackedScene" uid="uid://cisg4q78neeyi" path="res://Assets/RandomObjects/bus/Bus_no_collisions.tscn" id="24_3rgr2"]
+[ext_resource type="PackedScene" uid="uid://1t83iwhp72wj" path="res://Max's Folder (do not touch!!!)/nice_event.tscn" id="25_exxux"]
 [ext_resource type="PackedScene" uid="uid://eginvg4sxfqg" path="res://Max's Folder (do not touch!!!)/transistion.tscn" id="26_ov7qd"]
+[ext_resource type="PackedScene" uid="uid://vlcwe6uf7phu" path="res://NPC/random_npc.tscn" id="34_34jml"]
+[ext_resource type="PackedScene" uid="uid://b2qs55r6f7vro" path="res://Assets/RandomObjects/pianos/toy_piano_listen.tscn" id="35_atsmq"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_0wadw"]
 albedo_color = Color(0.60271376, 0.7674062, 0.73615, 1)
@@ -2179,7 +2182,6 @@ transform = Transform3D(0.13999991, 0, 8.058851e-05, 0, 0.13999988, 0, -8.058851
 transform = Transform3D(-8.5525986e-05, 0, -0.13999997, 0, 0.13999999, 0, 0.13999997, 0, -8.5525986e-05, 10.09155, 0.14870933, 4.097175)
 
 [node name="LoadingSystem" type="Area3D" parent="."]
-transform = Transform3D(0.8, 0, 0, 0, 0.8, 0, 0, 0, 0.8, 0, 0, 0)
 collision_layer = 0
 collision_mask = 8
 
@@ -2624,6 +2626,9 @@ transform = Transform3D(-1.1049919, 0, 8.742278e-08, 0, 1, 0, -9.660147e-08, 0, 
 [node name="Bush25" parent="Bushes" instance=ExtResource("12_x5kdk")]
 transform = Transform3D(-1.1049919, 0, 8.742278e-08, 0, 1, 0, -9.660147e-08, 0, -1, -12.594591, 0.48610795, 9.781204)
 
+[node name="NiceEvent" parent="Bushes" instance=ExtResource("25_exxux")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -9.563141, 0.523866, 13.107133)
+
 [node name="Streetlights" type="Node3D" parent="."]
 
 [node name="StreetLight" parent="Streetlights" instance=ExtResource("13_bcxsy")]
@@ -2657,7 +2662,7 @@ collision_mask = 8
 script = ExtResource("15_v0qsu")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="IterationDetector"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.46524048, 0, -6.886136)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.46524048, 0, 2.0064173)
 shape = SubResource("BoxShape3D_milrp")
 
 [node name="Timer" type="Timer" parent="IterationDetector"]
@@ -2786,7 +2791,16 @@ wait_time = 5.0
 one_shot = true
 
 [node name="Kidnap" parent="." instance=ExtResource("26_ov7qd")]
-transform = Transform3D(0.25, 0, 0, 0, 0.25, 0, 0, 0, 0.25, 5.8738375, 0.51520073, -9.402044)
+transform = Transform3D(0.25, 0, 0, 0, 0.25, 0, 0, 0, 0.25, 2.1319547, 0.51520073, 8.536851)
+
+[node name="random npc" parent="." instance=ExtResource("34_34jml")]
+transform = Transform3D(0.24, 0, 0, 0, 0.24, 0, 0, 0, 0.24, -15.649306, 0.13961601, -2.8400602)
+
+[node name="random npc2" parent="." instance=ExtResource("34_34jml")]
+transform = Transform3D(-0.0022688902, 0, 0.2499897, 0, 0.25, 0, -0.2499897, 0, -0.0022688902, -13.434885, 2.6299963, -6.658599)
+
+[node name="toy_pianoListen" parent="." instance=ExtResource("35_atsmq")]
+transform = Transform3D(-0.048762877, 0, 0.011053595, 0, 0.05, 0, -0.011053595, 0, -0.048762877, -2.8555684, 0.20157123, -12.225139)
 
 [connection signal="body_entered" from="LoadingSystem" to="." method="_on_area_3d_body_entered"]
 [connection signal="body_exited" from="LoadingSystem" to="." method="_on_area_3d_body_exited"]

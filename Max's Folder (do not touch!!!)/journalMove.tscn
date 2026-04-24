@@ -1,0 +1,243 @@
+[gd_scene load_steps=12 format=3 uid="uid://dwwsikp8d5qah"]
+
+[ext_resource type="Texture2D" uid="uid://cow66gwyru17d" path="res://Audio/UI/grid.png" id="1_ki3uv"]
+[ext_resource type="Script" uid="uid://bvbelbmok2g1n" path="res://Max's Folder (do not touch!!!)/journal_move.gd" id="1_ovr1x"]
+[ext_resource type="FontFile" uid="uid://c5y1av38605l6" path="res://addons/Font/GimletVariable-VF-Testing.ttf" id="2_ovr1x"]
+[ext_resource type="Script" uid="uid://c8d8y0v8e3yhm" path="res://aidan_stuff/curr_obj.gd" id="3_4bwar"]
+[ext_resource type="AudioStream" uid="uid://c4e8opng4w4i" path="res://Audio/UI/questUpdate.mp3" id="5_11n8y"]
+[ext_resource type="AudioStream" uid="uid://bqausc616kevw" path="res://Audio/UI/pageFlip.mp3" id="6_6f1hn"]
+[ext_resource type="FontFile" uid="uid://b8sauwugqtx80" path="res://addons/Font/GimletDisplay-Bold-Testing.otf" id="7_t3o8s"]
+
+[sub_resource type="Animation" id="Animation_ovr1x"]
+resource_name = "moveJournal"
+length = 0.5
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.5),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector2(1447, 203), Vector2(1164, 203.00002)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("tutorial:visible")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.06666666, 0.7),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [false, true]
+}
+
+[sub_resource type="Animation" id="Animation_4bwar"]
+resource_name = "moveBack"
+length = 0.5
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.46666667),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector2(1164, 203.00002), Vector2(1449, 203)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("tutorial:visible")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.43333334),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
+}
+
+[sub_resource type="Animation" id="Animation_x57f4"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(1446, 336)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("tutorial:visible")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_11n8y"]
+_data = {
+&"RESET": SubResource("Animation_x57f4"),
+&"moveBack": SubResource("Animation_4bwar"),
+&"moveJournal": SubResource("Animation_ovr1x")
+}
+
+[node name="Journal" type="Control"]
+layout_mode = 3
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = 294.0
+offset_top = 12.0
+offset_right = 294.0
+offset_bottom = 12.0
+grow_horizontal = 0
+grow_vertical = 2
+scale = Vector2(1.5, 1.5)
+script = ExtResource("1_ovr1x")
+
+[node name="NinePatchRect" type="NinePatchRect" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.87000006
+anchor_top = 0.416
+anchor_right = 0.87000006
+anchor_bottom = 0.416
+offset_left = -193.0
+offset_top = -95.0
+offset_right = -21.0
+offset_bottom = 148.0
+texture = ExtResource("1_ki3uv")
+patch_margin_left = 7
+patch_margin_top = 7
+patch_margin_right = 7
+patch_margin_bottom = 7
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -147.0
+offset_top = -81.0
+offset_right = 1616.0
+offset_bottom = 400.0
+grow_horizontal = 0
+grow_vertical = 2
+scale = Vector2(0.05, 0.05)
+theme_override_constants/outline_size = 10
+theme_override_fonts/font = ExtResource("2_ovr1x")
+theme_override_font_sizes/font_size = 400
+text = "Journal "
+
+[node name="CurrObj" type="VBoxContainer" parent="."]
+layout_mode = 0
+offset_left = -183.33333
+offset_top = -54.0
+offset_right = 2866.6667
+offset_bottom = 1763.0
+scale = Vector2(0.05, 0.05)
+size_flags_horizontal = 4
+theme_override_constants/separation = 12
+script = ExtResource("3_4bwar")
+
+[node name="main" type="Label" parent="CurrObj"]
+layout_mode = 2
+size_flags_horizontal = 2
+size_flags_vertical = 8
+theme_override_colors/font_color = Color(1, 0.14117648, 0.3529412, 1)
+theme_override_colors/font_shadow_color = Color(0.39607844, 0.9529412, 0.8901961, 0)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/line_spacing = 0
+theme_override_constants/paragraph_spacing = 0
+theme_override_constants/shadow_offset_x = 0
+theme_override_constants/shadow_offset_y = 0
+theme_override_constants/outline_size = 8
+theme_override_constants/shadow_outline_size = 0
+theme_override_fonts/font = ExtResource("7_t3o8s")
+theme_override_font_sizes/font_size = 250
+text = "Find Home (130)
+"
+
+[node name="side" type="Label" parent="CurrObj"]
+layout_mode = 2
+size_flags_horizontal = 6
+size_flags_vertical = 8
+theme_override_colors/font_color = Color(0.28132126, 0.5044148, 0.8053218, 1)
+theme_override_colors/font_shadow_color = Color(0.39607844, 0.9529412, 0.8901961, 0)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/line_spacing = 0
+theme_override_constants/paragraph_spacing = 0
+theme_override_constants/shadow_offset_x = 0
+theme_override_constants/shadow_offset_y = 0
+theme_override_constants/outline_size = 8
+theme_override_constants/shadow_outline_size = 0
+theme_override_fonts/font = ExtResource("7_t3o8s")
+theme_override_font_sizes/font_size = 250
+text = "
+"
+
+[node name="Sounds" type="Node" parent="."]
+
+[node name="QuestUpdate" type="AudioStreamPlayer" parent="Sounds"]
+stream = ExtResource("5_11n8y")
+
+[node name="PageFlip" type="AudioStreamPlayer" parent="Sounds"]
+stream = ExtResource("6_6f1hn")
+volume_db = -1.51
+
+[node name="PageFlip2" type="AudioStreamPlayer" parent="Sounds"]
+stream = ExtResource("6_6f1hn")
+volume_db = -1.25
+pitch_scale = 0.73
+
+[node name="update" type="Label" parent="."]
+layout_mode = 0
+offset_left = -375.33334
+offset_top = -84.00001
+offset_right = -203.33334
+offset_bottom = -59.000008
+theme_override_colors/font_color = Color(0.7682696, 0.15388125, 0.20916292, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/shadow_offset_y = 1
+theme_override_constants/outline_size = 3
+theme_override_fonts/font = ExtResource("7_t3o8s")
+theme_override_font_sizes/font_size = 20
+text = "Journal Update!"
+
+[node name="tutorial" type="Label" parent="."]
+visible = false
+layout_mode = 0
+offset_left = -384.0
+offset_top = -125.33334
+offset_right = -210.0
+offset_bottom = -102.33334
+theme_override_constants/outline_size = 6
+theme_override_fonts/font = ExtResource("7_t3o8s")
+theme_override_font_sizes/font_size = 15
+text = "hold 'E' to see journal"
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+&"": SubResource("AnimationLibrary_11n8y")
+}

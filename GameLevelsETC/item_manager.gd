@@ -1,48 +1,47 @@
 # res://ItemManager.gd
 extends Node
-# ------------------------------------------------------------
-# ItemManager (SERVER authoritative)
-# ------------------------------------------------------------
 
-const SERVER_ID: int = 1
 @export var max_inventory_slots: int = 2
 
-# Drop tuning
 @export var drop_forward_distance: float = 1.2
 @export var drop_up_offset: float = 0.7
 @export var drop_impulse_strength: float = 1.0
 @export var drop_downward_impulse: float = 0.0
 @export var drop_clear_velocity: bool = true
 
-# "Slow fall" tuning (RigidBody3D only)
 @export var drop_linear_damp: float = 6.0
 @export var drop_angular_damp: float = 8.0
 @export var cap_fall_speed: bool = true
 @export var max_downward_speed: float = 3.0
 
-# Held physics (RigidBody3D only)
 @export var held_linear_damp: float = 0.0
 @export var held_angular_damp: float = 0.0
 @export var held_gravity_scale: float = 0.0
 @export var drop_gravity_scale: float = 1.0
 
-# Attack / Use tuning
 @export var attack_animation_name: StringName = &"swing"
 @export var attack_restart_if_playing: bool = true
 
-# Keyed by STABLE scene-relative key (ex: "Items/BatClean")
-var _held_by: Dictionary = {}           # NodePath -> int (peer_id), -1 = free
-var _original_parent: Dictionary = {}   # NodePath -> NodePath (scene-relative parent path)
+var _held_by: Dictionary = {}
+var _original_parent: Dictionary = {}
+var _original_scale: Dictionary = {}
+var _last_world_xform: Dictionary = {}
 
-# remember original local scale so held items don't "change size"
-var _original_scale: Dictionary = {}    # NodePath -> Vector3
+func _server_peer_id() -> int:
+	if not multiplayer.has_multiplayer_peer():
+		return -1
+	if multiplayer.is_server():
+		return multiplayer.get_unique_id()
+	var peers := multiplayer.get_peers()
+	if peers == null or peers.is_empty():
+		return -1
+	var best := int(peers[0])
+	for p_any in peers:
+		var p := int(p_any)
+		if p < best:
+			best = p
+	return best
 
-# last known world transform for late-join reconstruction
-var _last_world_xform: Dictionary = {}  # NodePath -> Transform3D
-
-# =========================
-#      READY / LATE JOIN
-# =========================
 func _ready() -> void:
 	_register_scene_items()
 
@@ -136,9 +135,6 @@ func sync_full_state(payload: Array) -> void:
 		else:
 			apply_drop(item_key, world_xform, Vector3.ZERO)
 
-# =========================
-#      PATH HELPERS
-# =========================
 func _scene_root() -> Node:
 	return get_tree().current_scene
 
@@ -156,9 +152,6 @@ func _to_scene_path(n: Node) -> NodePath:
 		return NodePath("")
 	return scene.get_path_to(n)
 
-# =========================
-#   STABLE ITEM LOOKUP
-# =========================
 func _resolve_item_anywhere(item_key: NodePath) -> Node:
 	var direct: Node = _resolve_scene_path(item_key)
 	if direct != null:
@@ -182,9 +175,6 @@ func _stable_key_for_item(item: Node) -> NodePath:
 			return NodePath(s)
 	return _to_scene_path(item)
 
-# =========================
-#      PLAYER LOOKUP
-# =========================
 func _player_for_peer(peer_id: int) -> Node3D:
 	var players: Array = get_tree().get_nodes_in_group("player")
 	for n in players:
@@ -195,9 +185,6 @@ func _player_for_peer(peer_id: int) -> Node3D:
 			return p3d
 	return null
 
-# =========================
-#   COLLISION HELPERS
-# =========================
 func _set_collision_shapes_enabled(root: Node, enabled: bool) -> void:
 	var stack: Array[Node] = [root]
 	while stack.size() > 0:
@@ -213,9 +200,6 @@ func _set_collision_shapes_enabled(root: Node, enabled: bool) -> void:
 			if child != null:
 				stack.append(child)
 
-# =========================
-#   PHYSICS HELPERS
-# =========================
 func _freeze_for_hold(item: Node) -> void:
 	_set_collision_shapes_enabled(item, false)
 
@@ -271,9 +255,6 @@ func _deferred_finalize_drop(item_key: NodePath) -> void:
 		rb.gravity_scale = drop_gravity_scale
 		_apply_slow_fall(rb)
 
-# =========================
-#   ANIMATION HELPERS
-# =========================
 func _find_item_anim_player(item: Node) -> AnimationPlayer:
 	if item == null:
 		return null
@@ -285,9 +266,6 @@ func _find_item_anim_player(item: Node) -> AnimationPlayer:
 	var found: Node = item.find_child("AnimationPlayer", true, false)
 	return found as AnimationPlayer
 
-# ============================================================
-#   SERVER FORCE PICKUP (for LevelFlow auto-equip + restart)
-# ============================================================
 @rpc("any_peer", "reliable")
 func server_force_pickup_for_peer(item_path: NodePath, peer_id: int) -> void:
 	if not multiplayer.is_server():
@@ -310,7 +288,6 @@ func _server_pickup_for_peer(item_path: NodePath, peer_id: int) -> void:
 	if String(item_key) == "":
 		return
 
-	# Ensure tracked state exists
 	if not _original_parent.has(item_key):
 		var parent_path: NodePath = _to_scene_path(item.get_parent())
 		_original_parent[item_key] = parent_path
@@ -321,7 +298,6 @@ func _server_pickup_for_peer(item_path: NodePath, peer_id: int) -> void:
 	if not _held_by.has(item_key):
 		_held_by[item_key] = -1
 
-	# If we think it's held but the node isn't actually attached, clear stale hold.
 	if int(_held_by[item_key]) != -1:
 		var holder: int = int(_held_by[item_key])
 		var p_check: Node3D = _player_for_peer(holder)
@@ -373,9 +349,6 @@ func _server_pickup_for_peer(item_path: NodePath, peer_id: int) -> void:
 			new_inv.append(StringName(item.name))
 		p.rpc_id(peer_id, "server_set_inventory", new_inv)
 
-# =========================
-#   SERVER: PICKUP REQUEST
-# =========================
 @rpc("any_peer", "reliable")
 func request_pickup(item_path: NodePath) -> void:
 	if not multiplayer.is_server():
@@ -387,9 +360,6 @@ func request_pickup(item_path: NodePath) -> void:
 
 	_server_pickup_for_peer(item_path, sender)
 
-# =========================
-#  ALL PEERS: APPLY PICKUP
-# =========================
 @rpc("any_peer", "call_local", "reliable")
 func apply_pickup(item_key: NodePath, player_path: NodePath, new_owner_id: int) -> void:
 	var item: Node = _resolve_item_anywhere(item_key)
@@ -425,13 +395,9 @@ func apply_pickup(item_key: NodePath, player_path: NodePath, new_owner_id: int) 
 			n3b.transform = Transform3D.IDENTITY
 			n3b.scale = saved_scale
 
-	# PATCH: this must be has_method, not `"set_held" in item`
 	if item.has_method("set_held"):
 		item.call_deferred("set_held", true)
 
-# =========================
-#    SERVER: DROP REQUEST
-# =========================
 @rpc("any_peer", "reliable")
 func request_drop(item_key: NodePath) -> void:
 	if not multiplayer.is_server():
@@ -462,7 +428,9 @@ func request_drop(item_key: NodePath) -> void:
 	var drop_pos: Vector3 = p.global_position + forward * drop_forward_distance + Vector3.UP * drop_up_offset
 	var drop_xform: Transform3D = Transform3D(item.global_transform.basis, drop_pos)
 
-	item.set_multiplayer_authority(SERVER_ID)
+	var sid := _server_peer_id()
+	if sid > 0:
+		item.set_multiplayer_authority(sid)
 	_last_world_xform[item_key] = drop_xform
 
 	rpc("apply_drop", item_key, drop_xform, forward)
@@ -475,9 +443,6 @@ func request_drop(item_key: NodePath) -> void:
 			new_inv.remove_at(idx)
 		p.rpc_id(sender, "server_set_inventory", new_inv)
 
-# =========================
-#  ALL PEERS: APPLY DROP
-# =========================
 @rpc("any_peer", "call_local", "reliable")
 func apply_drop(item_key: NodePath, world_xform: Transform3D, impulse_forward: Vector3) -> void:
 	var item: Node3D = _resolve_item_anywhere(item_key) as Node3D
@@ -505,19 +470,69 @@ func apply_drop(item_key: NodePath, world_xform: Transform3D, impulse_forward: V
 	item.global_transform = world_xform
 	item.scale = saved_scale
 
-	item.set_multiplayer_authority(SERVER_ID)
+	var sid := _server_peer_id()
+	if sid > 0:
+		item.set_multiplayer_authority(sid)
 
 	_unfreeze_for_drop(item, impulse_forward)
 
-	# PATCH: this must be has_method, not `"set_held" in item`
 	if item.has_method("set_held"):
 		item.call_deferred("set_held", false)
 
 	call_deferred("_deferred_finalize_drop", item_key)
 
-# =========================
-#   SERVER: USE/ATTACK
-# =========================
+
+# --- ADD TO ItemManager.gd ---
+
+@rpc("any_peer", "reliable")
+func server_force_drop_for_peer(item_key: NodePath, peer_id: int) -> void:
+	if not multiplayer.is_server():
+		return
+	if peer_id <= 0:
+		return
+	_server_drop_for_peer(item_key, peer_id)
+
+func _server_drop_for_peer(item_key: NodePath, peer_id: int) -> void:
+	if not multiplayer.is_server():
+		return
+
+	var item: Node3D = _resolve_item_anywhere(item_key) as Node3D
+	if item == null:
+		return
+
+	if not _held_by.has(item_key):
+		return
+	if int(_held_by[item_key]) != peer_id:
+		return
+
+	var p: Node3D = _player_for_peer(peer_id)
+	if p == null:
+		return
+
+	_held_by[item_key] = -1
+	if item.has_meta("locked"):
+		item.set_meta("locked", false)
+
+	var forward: Vector3 = (-p.global_transform.basis.z).normalized()
+	var drop_pos: Vector3 = p.global_position + forward * drop_forward_distance + Vector3.UP * drop_up_offset
+	var drop_xform: Transform3D = Transform3D(item.global_transform.basis, drop_pos)
+
+	var sid := _server_peer_id()
+	if sid > 0:
+		item.set_multiplayer_authority(sid)
+
+	_last_world_xform[item_key] = drop_xform
+
+	rpc("apply_drop", item_key, drop_xform, forward)
+
+	if "inventory" in p and p.has_method("server_set_inventory"):
+		var id_to_remove: StringName = StringName(item.name)
+		var new_inv: Array[StringName] = (p.inventory as Array[StringName]).duplicate()
+		var idx: int = new_inv.find(id_to_remove)
+		if idx != -1:
+			new_inv.remove_at(idx)
+		p.rpc_id(peer_id, "server_set_inventory", new_inv)
+		
 @rpc("any_peer", "reliable")
 func request_use_attack(item_key: NodePath) -> void:
 	if not multiplayer.is_server():
@@ -534,9 +549,6 @@ func request_use_attack(item_key: NodePath) -> void:
 
 	rpc("apply_use_attack", item_key)
 
-# =========================
-#  ALL PEERS: PLAY SWING
-# =========================
 @rpc("any_peer", "call_local", "reliable")
 func apply_use_attack(item_key: NodePath) -> void:
 	var item: Node = _resolve_item_anywhere(item_key)
@@ -555,9 +567,6 @@ func apply_use_attack(item_key: NodePath) -> void:
 
 	ap.play(attack_animation_name)
 
-# =========================
-#   OPTIONAL: DEBUG HELP
-# =========================
 func debug_print_state() -> void:
 	print("Held map:")
 	for k in _held_by.keys():

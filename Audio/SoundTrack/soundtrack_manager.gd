@@ -8,6 +8,8 @@ extends Node
 @onready var timer: Timer = $Track1/Timer
 
 
+var toggle_menu_music := false
+
 
 func randNum():
 	return randi_range(1, 3)
@@ -21,6 +23,17 @@ func randNum_start():
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	questHub.iteration_changed.connect(playTune)
+	GlobalVariables.menuMusic.connect(menuMusicPlay)
+	
+
+func menuMusicPlay():
+	
+	if toggle_menu_music == false:
+		wttn_1.play()
+		toggle_menu_music = true
+	
+	else:
+		wttn_1.stop()
 	
 
 func playTune(value: int):
@@ -47,6 +60,8 @@ func playTune(value: int):
 		5:
 			wttn_3.play()
 		6: 
+			wttn_3.play()
+		_:
 			wttn_3.play()
 			
 			

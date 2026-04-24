@@ -17,13 +17,19 @@ var iteration5 = 0
 var puzzleType = 0
 var algoDebug = false
 
+var winPuzzle3 := false
+
 signal dialogueSignal
 
 signal cellarLevel
 
 signal level2change
+signal level1Start
 
 signal interact
+
+signal menuMusic
+
 var playerTalking = false
 
 #for questing

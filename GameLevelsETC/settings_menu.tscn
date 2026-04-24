@@ -1,4 +1,4 @@
-[gd_scene load_steps=0 format=3 uid="uid://daxdsv01elbh4"]
+[gd_scene format=3 uid="uid://daxdsv01elbh4"]
 
 [node name="SettingsMenu" type="CanvasLayer"]
 visible = false

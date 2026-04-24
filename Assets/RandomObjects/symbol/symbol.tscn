@@ -1,28 +1,60 @@
-[gd_scene load_steps=5 format=3 uid="uid://bk12xaa431jqc"]
+[gd_scene load_steps=7 format=4 uid="uid://bk12xaa431jqc"]
 
 [ext_resource type="Script" uid="uid://dibtxmcc3x423" path="res://Scripts/symbol.gd" id="1_vauly"]
 [ext_resource type="Shader" uid="uid://bmhpbpjw1o8xe" path="res://symbol.gdshader" id="2_6abkr"]
 
-[sub_resource type="TorusMesh" id="TorusMesh_i78t8"]
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_scqj5"]
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_4vmqd"]
+[sub_resource type="ArrayMesh" id="ArrayMesh_sdxms"]
+_surfaces = [{
+"aabb": AABB(-1.55, -1.55, -0.11, 3.1, 3.1, 0.22),
+"format": 34896613377,
+"index_count": 132,
+"index_data": PackedByteArray("BwAGABIABgARABIAEgATAAcAEgARABMAAAATABEABgAAABEABwATABAAAAAQABMABwAQAAIAAgAGAAcACwAAAAYAAgAQAA8AEAABAA8AAAABABAAFAAPAAEAAgAPABQAFAABAA4ADgACABQADgABAA0AAAANAAEACQACAA4ADgANAAkACwAVAAAABAACAAkAAgAEAAYABgAKAAsACgAVAAsABgAEAAoACgAFABUABQAAABUABAAFAAoACAAAAAUABAAIAAUAAAAIAA0ADAAIAAQADAAWAAgABAAXAAwAFwAWAAwABAAJABcAAwAIABYADQAIAAMAFwADABYACQANAAMACQADABcA"),
+"lods": [0.5624108, PackedByteArray("BgAKAAsACgAFAAsABAAFAAoABgAEAAoACwAFAAAACwAAAAYABAAIAAUACAAAAAUADAAIAAQADAADAAgABAAJAAwACQADAAwAAgAEAAYABAACAAkADQAIAAMACQANAAMAAAAIAA0ADgANAAkACQACAA4AAAANAAEADgABAA0AAgAPAA4ADgAPAAEAEAABAA8AAgAQAA8AAAABABAABwAQAAIAAgAGAAcAAAAQABEABgAAABEABwARABAABgARAAcA"), 1.3090489, PackedByteArray("AgAGAAcABgAAAAcABwAAAAIABgAFAAAAAAABAAIABAAFAAYAAgAEAAYACAAAAAUAAAAIAAEABAAIAAUACQACAAEABAACAAkAAQAIAAkABAADAAgACQAIAAMACQADAAQA"), 1.9869924, PackedByteArray("AAABAAIAAQAAAAIAAgAAAAMAAgADAAQABAADAAAABAAAAAIABAAAAAUABAAFAAAA")],
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 24,
+"vertex_data": PackedByteArray("/3/mnP//AAClFAAA//8AABhj/38AAAAAWesAAP//AADmnP9/AAAAAP//Wev//wAA/3/mnAAAAAAAAFnrAAAAAOac/3///wAA/38YYwAAAAD//1nrAAAAAFnr//8AAAAA//+lFAAAAAD/fxhj//8AAKUUAAAAAAAAAAClFP//AAAYY/9///8AAKUU/////wAApRT//wAAAAAAAFnr//8AAAAApRQAAAAAWev/////AAD//6UU//8AAFnrAAAAAAAA")
+}]
+blend_shape_mode = 0
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_xg1k1"]
+resource_name = "X_WallX"
+_surfaces = [{
+"aabb": AABB(-1.55, -1.55, -0.11, 3.1, 3.1, 0.22),
+"format": 34896613383,
+"index_count": 132,
+"index_data": PackedByteArray("BwAGABIABgARABIAEgATAAcAEgARABMAAAATABEABgAAABEABwATABAAAAAQABMABwAQAAIAAgAGAAcACwAAAAYAAgAQAA8AEAABAA8AAAABABAAFAAPAAEAAgAPABQAFAABAA4ADgACABQADgABAA0AAAANAAEACQACAA4ADgANAAkACwAVAAAABAACAAkAAgAEAAYABgAKAAsACgAVAAsABgAEAAoACgAFABUABQAAABUABAAFAAoACAAAAAUABAAIAAUAAAAIAA0ADAAIAAQADAAWAAgABAAXAAwAFwAWAAwABAAJABcAAwAIABYADQAIAAMAFwADABYACQANAAMACQADABcA"),
+"lods": [0.5624108, PackedByteArray("BgAKAAsACgAFAAsABAAFAAoABgAEAAoACwAFAAAACwAAAAYABAAIAAUACAAAAAUADAAIAAQADAADAAgABAAJAAwACQADAAwAAgAEAAYABAACAAkADQAIAAMACQANAAMAAAAIAA0ADgANAAkACQACAA4AAAANAAEADgABAA0AAgAPAA4ADgAPAAEAEAABAA8AAgAQAA8AAAABABAABwAQAAIAAgAGAAcAAAAQABEABgAAABEABwARABAABgARAAcA"), 1.3090489, PackedByteArray("AgAGAAcABgAAAAcABwAAAAIABgAFAAAAAAABAAIABAAFAAYAAgAEAAYACAAAAAUAAAAIAAEABAAIAAUACQACAAEABAACAAkAAQAIAAkABAADAAgACQAIAAMACQADAAQA"), 1.9869924, PackedByteArray("AAABAAIAAQAAAAIAAgAAAAMAAgADAAQABAADAAAABAAAAAIABAAAAAUABAAFAAAA")],
+"material": SubResource("StandardMaterial3D_scqj5"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 24,
+"vertex_data": PackedByteArray("/3/mnP///OWlFAAA//9t5hhj/38AABnaWesAAP//3OXmnP9/AACw+P//Wev//y3y/3/mnAAAyvIAAFnrAAAw2uac/3///7vx/38YYwAAyvL//1nrAABX+Fnr//8AAEHy//+lFAAAHfn/fxhj///85aUUAAAAAH/yAAClFP//dKkYY/9///+qqaUU/////1jlpRT//wAAZPMAAFnr////qQAApRQAAMvZWev/////6+b//6UU//+J8VnrAAAAACLzh46IpvRwv1lfbEbiFHL7WK3KFXE8qd94UryFGU9sJuG0qN53rEN55jPL2XH/uy4ZKcqUcHdxdllGRD3nBG9D0eZvmdAzjuummbySGetwk9CybMXjxo5XpmCo+HYZQ/vl")
+}]
+blend_shape_mode = 0
+shadow_mesh = SubResource("ArrayMesh_sdxms")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_sqfj4"]
 render_priority = 0
 shader = ExtResource("2_6abkr")
 shader_parameter/reveal = 0.0
 shader_parameter/glow_color = Color(0.3, 0.9, 1, 1)
-shader_parameter/glow_strength = 3.0
-shader_parameter/base_alpha = 0.65
-shader_parameter/base_brightness = 0.35
+shader_parameter/glow_strength = 10.0
+shader_parameter/base_alpha = 0.75
+shader_parameter/base_brightness = 0.45
 shader_parameter/flicker_amount = 0.15
 shader_parameter/pulse_amount = 0.25
 shader_parameter/pulse_speed = 2.2
 
 [node name="Symbol" type="Node3D" groups=["uv_reveal"]]
 script = ExtResource("1_vauly")
-glow_color = Color(0.2071996, 0.015976882, 0.08617854, 1)
+glow_color = Color(0.95686275, 0.015686275, 0.08627451, 1)
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 0.08849446, -0.99607664, 0, 0.99607664, 0.08849446, 0.051041484, 0, 0)
+[node name="WallX" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.7, 0, 0, 0, 0.7, 0, 0, 0, 0.7, 0, 0, 0)
 layers = 256
-mesh = SubResource("TorusMesh_i78t8")
-surface_material_override/0 = SubResource("ShaderMaterial_4vmqd")
+mesh = SubResource("ArrayMesh_xg1k1")
+skeleton = NodePath("")
+surface_material_override/0 = SubResource("ShaderMaterial_sqfj4")

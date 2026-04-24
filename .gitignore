@@ -2,3 +2,5 @@
 .godot/
 /android/
 Assets/Videos/KidnapwithSound.ogv
+addons/godotsteam_server/win64/~libgodotsteam_server.windows.template_debug.x86_64.dll
+addons/godotsteam/win64/~libgodotsteam.windows.template_debug.x86_64.dll

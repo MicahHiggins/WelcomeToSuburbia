@@ -3,6 +3,9 @@ extends TileMapLayer
 @onready var clear: Button = $"../Clear"
 @onready var enter: Button = $"../../Buttons4Draw/Enter"
 @onready var label: Label = $"../../Buttons4Draw/Label"
+@onready var win: AudioStreamPlayer = $"../../Sounds/win"
+@onready var lose: AudioStreamPlayer = $"../../Sounds/lose"
+@onready var cabinet: AudioStreamPlayer = $"../../Sounds/cabinet"
 
 var gridSize = 30
 var Dict = {}
@@ -111,12 +114,23 @@ func _on_button_pressed() -> void:
 	var percentage = perc * 100.0
 
 	label.text = "Calculating Results..."
-	await get_tree().create_timer(1.0).timeout
-
+	await get_tree().create_timer(1.0).timeout 
+	
 	if percentage >= 60.0:
-		label.text = "You Win: %.2f%%" % percentage
+		label.text = "You Win: %.2f" % percentage
+		win.play()
+		cabinet.play()
+		puzzleTwoComplete.emit()
+
+
 		_request_puzzle_two_complete()
+		
+
+
+
+
 	else:
+		lose.play()
 		label.text = "You Lose: %.2f%%" % percentage
 
 func _on_enter_pressed() -> void:
