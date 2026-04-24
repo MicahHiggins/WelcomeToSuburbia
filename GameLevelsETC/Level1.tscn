@@ -1,4 +1,4 @@
-[gd_scene load_steps=17 format=3 uid="uid://d1ibgfwne281y"]
+[gd_scene load_steps=16 format=3 uid="uid://d1ibgfwne281y"]
 
 [ext_resource type="Script" uid="uid://bw77jeuwa8wio" path="res://GameLevelsETC/level_1.gd" id="1_oh3op"]
 [ext_resource type="PackedScene" uid="uid://bs2jm62cmkbrk" path="res://addons/instant-realistic-light/light_scene.tscn" id="3_jo2a5"]
@@ -6,7 +6,6 @@
 [ext_resource type="PackedScene" uid="uid://bst3bb8d7vieb" path="res://Max's Folder (do not touch!!!)/pcgRescaled.tscn" id="7_d084q"]
 [ext_resource type="Script" uid="uid://c5qchfyao7ahn" path="res://GameLevelsETC/tether_system.gd" id="7_ki0f2"]
 [ext_resource type="VideoStream" uid="uid://rveiqlnsvich" path="res://Assets/Videos/MicahAnimationFULL.ogv" id="9_gsr76"]
-[ext_resource type="PackedScene" uid="uid://cmrqbt412sk4a" path="res://ladder.tscn" id="10_5owxm"]
 [ext_resource type="Script" uid="uid://cjg7ws1b5cnm7" path="res://GameLevelsETC/telleport_manager.gd" id="15_vlwaf"]
 [ext_resource type="PackedScene" uid="uid://bf38tvkrxj6ds" path="res://GameLevelsETC/CellarLevel.tscn" id="16_17epn"]
 
@@ -148,6 +147,3 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 60.076946, -1.0910182, 58.385
 
 [node name="SpawnJoin" type="Marker3D" parent="Spawn"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 57.48046, -0.7124307, 57.944424)
-
-[node name="Ladder" parent="." instance=ExtResource("10_5owxm")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 55.63675, 0, 48.425625)

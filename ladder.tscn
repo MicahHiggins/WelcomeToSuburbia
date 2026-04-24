@@ -68,6 +68,7 @@ shape = SubResource("BoxShape3D_cq4ai")
 [node name="CreditScroller" type="CanvasLayer" parent="."]
 script = ExtResource("2_lqhsa")
 title_hold_sec = 5.0
+scroll_speed_px_per_sec = 1.0
 
 [node name="VBox" type="VBoxContainer" parent="CreditScroller"]
 

@@ -20,8 +20,9 @@ class_name CreditsScroller
 @export var force_top_layer: int = 20000
 @export var block_input_while_playing: bool = true
 
-@export var credits_top_padding_px: float = 140.0
-@export var credits_bottom_padding_px: float = 220.0
+@export var side_padding_px: int = 120
+@export var credits_top_padding_px: int = 200
+@export var credits_bottom_padding_px: int = 1400
 
 # font sizes
 @export var title_font_size: int = 84
@@ -35,7 +36,7 @@ var _title_layer: Control
 var _title_label: Label
 
 var _scroll: ScrollContainer
-var _content: Control
+var _margin: MarginContainer
 var _vbox: VBoxContainer
 var _top_spacer: Control
 var _credits_rich: RichTextLabel
@@ -56,7 +57,6 @@ func _build_ui() -> void:
 	if _bg != null and is_instance_valid(_bg):
 		return
 
-	# ===== BG =====
 	_bg = ColorRect.new()
 	_bg.name = "BG"
 	_bg.set_anchors_preset(Control.PRESET_FULL_RECT)
@@ -64,7 +64,6 @@ func _build_ui() -> void:
 	_bg.mouse_filter = (Control.MOUSE_FILTER_STOP if block_input_while_playing else Control.MOUSE_FILTER_IGNORE)
 	add_child(_bg)
 
-	# ===== TITLE (no scroll) =====
 	_title_layer = Control.new()
 	_title_layer.name = "TitleLayer"
 	_title_layer.set_anchors_preset(Control.PRESET_FULL_RECT)
@@ -73,7 +72,6 @@ func _build_ui() -> void:
 
 	_title_label = Label.new()
 	_title_label.name = "BigThanks"
-	_title_label.text = big_thanks_text
 	_title_label.set_anchors_preset(Control.PRESET_FULL_RECT)
 	_title_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_title_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
@@ -81,7 +79,6 @@ func _build_ui() -> void:
 	_title_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_title_layer.add_child(_title_label)
 
-	# ===== SCROLL =====
 	_scroll = ScrollContainer.new()
 	_scroll.name = "Scroll"
 	_scroll.set_anchors_preset(Control.PRESET_FULL_RECT)
@@ -90,22 +87,18 @@ func _build_ui() -> void:
 	_scroll.mouse_filter = (Control.MOUSE_FILTER_STOP if block_input_while_playing else Control.MOUSE_FILTER_IGNORE)
 	add_child(_scroll)
 
-	_content = Control.new()
-	_content.name = "Content"
-	_content.set_anchors_preset(Control.PRESET_FULL_RECT)
-	_scroll.add_child(_content)
+	_margin = MarginContainer.new()
+	_margin.name = "Margin"
+	_margin.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_margin.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	_scroll.add_child(_margin)
 
 	_vbox = VBoxContainer.new()
 	_vbox.name = "VBox"
-	_vbox.anchor_left = 0.0
-	_vbox.anchor_top = 0.0
-	_vbox.anchor_right = 1.0
-	_vbox.anchor_bottom = 0.0
-	_vbox.offset_left = 80
-	_vbox.offset_right = -80
-	_vbox.offset_top = 0
+	_vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_vbox.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
 	_vbox.add_theme_constant_override("separation", 24)
-	_content.add_child(_vbox)
+	_margin.add_child(_vbox)
 
 	_top_spacer = Control.new()
 	_top_spacer.name = "TopSpacer"
@@ -117,8 +110,9 @@ func _build_ui() -> void:
 	_credits_rich.bbcode_enabled = true
 	_credits_rich.fit_content = true
 	_credits_rich.scroll_active = false
-	_credits_rich.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_credits_rich.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_credits_rich.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
+	_credits_rich.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_vbox.add_child(_credits_rich)
 
 	_bottom_spacer = Control.new()
@@ -140,6 +134,21 @@ func _force_to_viewport_root() -> void:
 		reparent(root)
 	layer = force_top_layer
 
+func _sync_width_to_viewport() -> void:
+	var vp := get_viewport()
+	if vp == null:
+		return
+	var w := int(vp.size.x)
+
+	_margin.add_theme_constant_override("margin_left", side_padding_px)
+	_margin.add_theme_constant_override("margin_right", side_padding_px)
+	_margin.add_theme_constant_override("margin_top", 0)
+	_margin.add_theme_constant_override("margin_bottom", 0)
+
+	_margin.custom_minimum_size.x = w
+	_vbox.custom_minimum_size.x = max(0, w - side_padding_px * 2)
+	_credits_rich.custom_minimum_size.x = max(0, w - side_padding_px * 2)
+
 func _set_credits_text() -> void:
 	_top_spacer.custom_minimum_size.y = credits_top_padding_px
 	_bottom_spacer.custom_minimum_size.y = credits_bottom_padding_px
@@ -155,7 +164,6 @@ func play() -> void:
 	_force_to_viewport_root()
 	visible = true
 
-	# TITLE phase
 	_title_label.text = big_thanks_text
 	_title_layer.visible = true
 	_scroll.visible = false
@@ -165,15 +173,16 @@ func play() -> void:
 	if title_hold_sec > 0.0:
 		await get_tree().create_timer(title_hold_sec).timeout
 
-	# CREDITS phase
 	_title_layer.visible = false
 	_scroll.visible = true
 
 	_set_credits_text()
 
-	# Let Control layout + ScrollBar values settle
+	# let layout settle, then lock widths so it doesn't collapse to a thin line
 	await get_tree().process_frame
+	_sync_width_to_viewport()
 	await get_tree().process_frame
+	_sync_width_to_viewport()
 
 	_scroll.scroll_vertical = 0
 
@@ -185,9 +194,8 @@ func play() -> void:
 		var dt := get_process_delta_time()
 
 		var sb := _scroll.get_v_scroll_bar()
-		var max_scroll := int(max(0.0, sb.max_value))
+		var max_scroll := int(max(0.0, sb.max_value - sb.page))
 		if max_scroll <= 0:
-			# Nothing to scroll (content fits on screen)
 			break
 
 		_scroll.scroll_vertical += int(scroll_speed_px_per_sec * dt)
