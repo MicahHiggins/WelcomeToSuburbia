@@ -23,4 +23,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.296562, 0.6372285, -9.6596
 [node name="NPC_Campbells" parent="." instance=ExtResource("2_bvngj")]
 transform = Transform3D(0.25, 0, 0, 0, 0.25, 0, 0, 0, 0.25, 8.151035, 0.4424472, -8.379852)
 
+[node name="father_body" parent="NPC_Campbells" index="6"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.14828491, -0.3574679, 0.47244644)
+
 [editable path="NPC_Campbells"]
