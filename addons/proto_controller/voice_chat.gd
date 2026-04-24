@@ -40,12 +40,18 @@ class_name VoiceChat
 @export var softclip_start: float = 0.00
 @export var softclip_full: float = 0.18
 
+# --- DIRECTIONALITY (works on all builds) ---
+@export var force_point_source: bool = true # sets spread=0 if available
+@export var directional_cone_enabled: bool = true
+@export var cone_angle_deg: float = 130.0          # smaller = more directional
+@export var cone_outside_atten_db: float = -10.0   # how quiet when behind/outside cone
+
 # script is on Head, VoicePlayer3D is a child under Head
 @export var voice_player_path: NodePath = NodePath("VoicePlayer3D")
 
 # UI (small icon bottom)
 @export var show_talk_icon: bool = true
-@export var icon_anchor: Vector2 = Vector2(12.0, -14.0) # (x from left, y from bottom)
+@export var icon_anchor: Vector2 = Vector2(12.0, -14.0)
 @export var icon_size: float = 18.0
 @export var icon_color_off: Color = Color(1, 1, 1, 0.35)
 @export var icon_color_on: Color = Color(1, 1, 1, 0.90)
@@ -67,7 +73,6 @@ var _playback: AudioStreamGeneratorPlayback = null
 
 var _dbg_t: float = 0.0
 var _gain_t: float = 0.0
-
 var _listener_cam: Camera3D = null
 
 # toggle state
@@ -78,10 +83,8 @@ var _toggle_prev_pressed: bool = false
 var _ui_layer: CanvasLayer = null
 var _icon_label: Label = null
 
-
 func _enter_tree() -> void:
 	_inherit_authority_from_owner()
-
 
 func _ready() -> void:
 	_steam = _get_steam_singleton()
@@ -108,15 +111,6 @@ func _ready() -> void:
 
 	set_process(true)
 
-	if debug_print:
-		print("VoiceChat ready | node_auth:", int(get_multiplayer_authority()),
-			" local_uid:", (multiplayer.get_unique_id() if multiplayer.has_multiplayer_peer() else -1),
-			" local_auth:", _is_local_authority_player(),
-			" steam_ok:", _steam_ok,
-			" sr:", _sample_rate,
-			" playback:", _playback != null)
-
-
 func _apply_voice_player_defaults() -> void:
 	_voice_player.max_distance = hear_radius
 	_voice_player.attenuation_model = AudioStreamPlayer3D.ATTENUATION_INVERSE_DISTANCE
@@ -125,11 +119,14 @@ func _apply_voice_player_defaults() -> void:
 	_voice_player.volume_db = base_volume_db
 	_voice_player.stream_paused = false
 
+	# tighter point-source = stronger left/right
+	if force_point_source and ("spread" in _voice_player):
+		_voice_player.spread = 0.0
+
 	if "attenuation_filter_cutoff_hz" in _voice_player:
 		_voice_player.attenuation_filter_cutoff_hz = lowpass_near_hz
 	if "attenuation_filter_db" in _voice_player:
 		_voice_player.attenuation_filter_db = -6.0
-
 
 func _process(dt: float) -> void:
 	if not enable_voice:
@@ -144,12 +141,10 @@ func _process(dt: float) -> void:
 	if _listener_cam == null or not is_instance_valid(_listener_cam):
 		_listener_cam = get_viewport().get_camera_3d()
 
-	# local authority handles toggle + send
 	if _is_local_authority_player():
 		_update_toggle_state()
 		_capture_and_send_voice()
 	else:
-		# listeners
 		_gain_t += dt
 		var step: float = 1.0 / maxf(gain_update_hz, 1.0)
 		if _gain_t >= step:
@@ -162,7 +157,6 @@ func _process(dt: float) -> void:
 	if debug_print and _dbg_t >= debug_interval_sec:
 		_dbg_t = 0.0
 		_debug_tick()
-
 
 # =========================
 #   TOGGLE INPUT
@@ -179,19 +173,14 @@ func _update_toggle_state() -> void:
 		_update_talk_icon()
 	_toggle_prev_pressed = pressed
 
-
 func _wants_talk() -> bool:
 	if not enable_voice:
 		return false
 	if not _steam_ok:
 		return false
-
 	if not InputMap.has_action(ptt_action):
 		return false
-
-	# toggle mode only (what you asked for)
 	return _talk_toggle_on
-
 
 # =========================
 #   UI ICON
@@ -214,18 +203,14 @@ func _build_talk_icon_ui() -> void:
 	_icon_label.add_theme_color_override("font_color", icon_color_off)
 	_icon_label.add_theme_color_override("font_outline_color", icon_outline_color)
 	_icon_label.add_theme_constant_override("outline_size", icon_outline_px)
-
-	# approximate sizing
 	_icon_label.add_theme_font_size_override("font_size", int(icon_size))
 	_ui_layer.add_child(_icon_label)
-
 
 func _update_talk_icon() -> void:
 	if _icon_label == null:
 		return
 	var c := icon_color_on if _talk_toggle_on else icon_color_off
 	_icon_label.add_theme_color_override("font_color", c)
-
 
 # =========================
 #   AUTHORITY
@@ -250,7 +235,6 @@ func _is_local_authority_player() -> bool:
 	if not multiplayer.has_multiplayer_peer():
 		return true
 	return int(get_multiplayer_authority()) == int(multiplayer.get_unique_id())
-
 
 # =========================
 #   STEAM
@@ -277,7 +261,6 @@ func _run_steam_callbacks_safe() -> void:
 		_steam.call("run_callbacks")
 	elif _steam.has_method("runCallbacks"):
 		_steam.call("runCallbacks")
-
 
 # =========================
 #   SEND
@@ -315,7 +298,8 @@ func _capture_and_send_voice() -> void:
 		return
 
 	if multiplayer.has_multiplayer_peer():
-		rpc("_rpc_voice_packet", compressed)
+		var speaker_auth: int = int(get_multiplayer_authority())
+		rpc("_rpc_voice_packet", speaker_auth, compressed)
 
 func _read_compressed_voice() -> PackedByteArray:
 	var out := PackedByteArray()
@@ -336,16 +320,20 @@ func _read_compressed_voice() -> PackedByteArray:
 
 	return out
 
-
 # =========================
-#   RECEIVE / PLAY
+#   RECEIVE / PLAY (ROUTED)
 # =========================
 @rpc("any_peer", "call_local", "unreliable")
-func _rpc_voice_packet(compressed: PackedByteArray) -> void:
+func _rpc_voice_packet(speaker_auth: int, compressed: PackedByteArray) -> void:
 	if compressed.is_empty():
 		return
 	if _is_local_authority_player():
 		return
+
+	# only the speaker's own VoiceChat node should play it
+	if int(get_multiplayer_authority()) != int(speaker_auth):
+		return
+
 	_play_compressed_local(compressed)
 
 func _play_compressed_local(compressed: PackedByteArray) -> void:
@@ -428,9 +416,8 @@ func _softclip(x: float, amt: float) -> float:
 	var k := 1.0 + amt * 6.0
 	return tanh(x * k) / tanh(k)
 
-
 # =========================
-#   EXTRA DISTANCE GAIN + DISTANCE FX
+#   EXTRA DISTANCE GAIN + DISTANCE FX + DIRECTION CONE
 # =========================
 func _distance_to_listener() -> float:
 	if _listener_cam == null or _voice_player == null:
@@ -443,6 +430,30 @@ func _fx_t() -> float:
 		return 0.0
 	return clampf((d - fx_start_m) / maxf(0.001, (fx_full_m - fx_start_m)), 0.0, 1.0)
 
+func _cone_atten_db() -> float:
+	if not directional_cone_enabled:
+		return 0.0
+	if _listener_cam == null or _voice_player == null:
+		return 0.0
+
+	var to_listener: Vector3 = (_listener_cam.global_position - _voice_player.global_position)
+	if to_listener.length() < 0.001:
+		return 0.0
+	to_listener = to_listener.normalized()
+
+	var speaker_forward: Vector3 = (-_voice_player.global_transform.basis.z).normalized()
+
+	var dotv: float = clampf(speaker_forward.dot(to_listener), -1.0, 1.0)
+	var ang_deg: float = rad_to_deg(acos(dotv))
+
+	var half: float = clampf(cone_angle_deg * 0.5, 5.0, 180.0)
+	if ang_deg <= half:
+		return 0.0
+
+	var t: float = clampf((ang_deg - half) / maxf(0.001, (180.0 - half)), 0.0, 1.0)
+	t = t * t * (3.0 - 2.0 * t) # smoothstep
+	return lerp(0.0, cone_outside_atten_db, t)
+
 func _apply_extra_distance_gain() -> void:
 	if _voice_player == null or _listener_cam == null:
 		return
@@ -453,6 +464,9 @@ func _apply_extra_distance_gain() -> void:
 
 	var shaped: float = pow(t, gain_curve_pow)
 	var extra_db: float = lerp(near_boost_db, far_cut_db, shaped)
+
+	extra_db += _cone_atten_db()
+
 	_voice_player.volume_db = base_volume_db + extra_db
 
 func _apply_distance_fx() -> void:
@@ -476,7 +490,6 @@ func _current_softclip_amount() -> float:
 	var t := _fx_t()
 	return lerp(softclip_start, softclip_full, t)
 
-
 # =========================
 #   DEBUG
 # =========================
@@ -484,5 +497,6 @@ func _debug_tick() -> void:
 	print("VOICE DBG | local_auth:", _is_local_authority_player(),
 		" talk_on:", _talk_toggle_on,
 		" recording:", _recording,
-		" maxd:", hear_radius,
+		" auth:", int(get_multiplayer_authority()),
+		" cone_db:", _cone_atten_db(),
 		" fx_t:", _fx_t())
